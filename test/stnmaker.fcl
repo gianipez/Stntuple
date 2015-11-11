@@ -4,7 +4,7 @@
 #
 # read digitized hits from the input file, no digitization, no random numbers
 #
-# $Id: stnmaker.fcl,v 1.1 2014/06/13 06:13:03 murat Exp $
+# testing the repository change 
 
 #include "minimalMessageService.fcl"
 #include "standardProducers.fcl"
