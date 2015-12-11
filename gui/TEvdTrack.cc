@@ -44,7 +44,7 @@
 
 #include "Stntuple/gui/TEvdTrack.hh"
 #include "Stntuple/gui/TStnVisManager.hh"
-#include "Stntuple/mod/TAnaDump.hh"
+//#include "Stntuple/mod/TAnaDump.hh"
 #include "Stntuple/base/TObjHandle.hh"
 
 
@@ -113,7 +113,7 @@ void TEvdTrack::PaintXY(Option_t* Option) {
 
   //  printf(" %2i dem ",i);
 
-  TAnaDump::Instance()->printKalRep(fKrep,"","");
+  //  TAnaDump::Instance()->printKalRep(fKrep,"","");
 //-----------------------------------------------------------------------------
 // also display the reconstructed track, use s=0
 //-----------------------------------------------------------------------------
@@ -142,7 +142,7 @@ void TEvdTrack::PaintRZ(Option_t* Option) {
   CLHEP::Hep3Vector tdir;
   HepPoint          tpos;
   TPolyLine         pline;
-  int               /*np,*/ nl, nst;
+  int               nplanes, /*npanels,*/ nl;
 
   mu2e::GeomHandle<mu2e::TTracker> handle;
 
@@ -150,7 +150,7 @@ void TEvdTrack::PaintRZ(Option_t* Option) {
 
   const mu2e::Straw  *hstraw, *s, *straw[2];		// first straw
   
-  nst     = tracker->nDevices();
+  nplanes = tracker->nPlanes();
 //-----------------------------------------------------------------------------
 // first display track hits - active and not 
 //-----------------------------------------------------------------------------
@@ -182,17 +182,18 @@ void TEvdTrack::PaintRZ(Option_t* Option) {
 //-----------------------------------------------------------------------------
   HelixTraj trkHel(fKrep->helix(0).params(),fKrep->helix(0).covariance());
 
-  for (int ist=0; ist<nst; ist++) {
-    const mu2e::Device* dev = &tracker->getDevice(ist);
-    //    np = dev->nSectors();
+  for (int iplane=0; iplane<nplanes; iplane++) {
+    const mu2e::Plane* plane = &tracker->getPlane(iplane);
 //-----------------------------------------------------------------------------
-// 3 panels in the same plane have the same Z and do not overlap - no need to 
-// duplicate
-// panels 0 and 1 are at different Z
+// a plane is made of 2 'faces' or 6 panels, panels 0 and 1 on different faces
 //-----------------------------------------------------------------------------
-//    double flip;
-    for (int ich=0; ich<2; ich++) {
-      const mu2e::Sector* panel = &dev->getSector(ich);
+//    npanels = plane->nPanels();
+//-----------------------------------------------------------------------------
+// 3 panels in the same plane have the same Z and do not overlap - 
+// no need to duplicate; panels 0 and 1 are at different Z
+//-----------------------------------------------------------------------------
+    for (int iface=0; iface<2; iface++) {
+      const mu2e::Panel* panel = &plane->getPanel(iface);
       nl       = panel->nLayers();
 					// deal with the compiler warnings
       zwire[0] = -1.e6;
@@ -232,11 +233,11 @@ void TEvdTrack::PaintRZ(Option_t* Option) {
 	ds     = (zt[ipoint]-tpos.z())/tdir.z();
 	fKrep->traj().getInfo(flen+ds,tpos,tdir);
 //-----------------------------------------------------------------------------
-// for each plane, loop over 3 panels in it
+// for each face, loop over 3 panels in it
 //-----------------------------------------------------------------------------
 	rt[ipoint] = -1.e6;
 	for (int ipp=0; ipp<3; ipp++) {
-	  const mu2e::Sector* pp = &dev->getSector(2*ipp+ich);
+	  const mu2e::Panel* pp = &plane->getPanel(2*ipp+iface);
 	  s = &pp->getLayer(0).getStraw(0);
 	  const Hep3Vector* wd = &s->getDirection();
 	  double r = (tpos.x()*wd->y()-tpos.y()*wd->x()); // *flip;

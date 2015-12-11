@@ -5,6 +5,12 @@
 
 ClassImp(TCalHitData)
 
+//-----------------------------------------------------------------------------
+// a prototype of the future schema evolution
+//-----------------------------------------------------------------------------
+void TCalHitData::ReadV1(TBuffer &R__b) {
+}
+
 //_____________________________________________________________________________
 void TCalHitData::Streamer(TBuffer &R__b) {
   int nwi = 2;

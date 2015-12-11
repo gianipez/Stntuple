@@ -74,6 +74,12 @@ Int_t TGenParticle::Init(Int_t ip, Int_t idhep, Int_t istdhep,
   return 0;
 }
 
+//-----------------------------------------------------------------------------
+Int_t TGenParticle::Init(Int_t Ip, const TParticle* P) {
+  printf("ERROR: TGenParticle::Init is not defined yet\n");
+  return -1;
+}
+
 //_____________________________________________________________________________
 TGenParticle::~TGenParticle() {
 }

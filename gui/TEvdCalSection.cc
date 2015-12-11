@@ -135,6 +135,12 @@ void TEvdCalSection::Paint(Option_t* option) {
 
 
 //_____________________________________________________________________________
+int TEvdCalSection::InitEvent() {
+  printf(" ERROR: dummy TEvdCalSection::InitEvent() was called.\n");
+  return 0;
+}
+
+//_____________________________________________________________________________
 void TEvdCalSection::PaintXY(Option_t* Option) {
 //-----------------------------------------------------------------------------
 // draw vanes or disks

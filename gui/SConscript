@@ -19,6 +19,7 @@ subdir  = os.path.basename(dd);
 libname = dirname+'_'+subdir
 d1      = libname+'-shared';
 tmpdir  = 'tmp/src/'+d1
+babarlibs = env['BABARLIBS']
 
 # print " >>>>>>>>> ENTERING "+dd
 # print "dd = "+dd, "dirname = "+dirname, "subdir = "+subdir, "libname = "+libname
@@ -112,7 +113,24 @@ for dict in list_of_dict_files:
 rootlibs = [ 'Core', 'Cint', 'RIO', 'Net', 'Hist', 'Spectrum', 'MLP', 'Graf', 'Graf3d', 'Gpad', 'Tree',
              'Rint', 'Postscript', 'Matrix', 'Physics', 'MathCore', 'Thread', 'Gui', 'm', 'dl' ]
 
-libs     = [ ]
+libs     = [ 'Stntuple_obj', 'Stntuple_base',
+             'mu2e_RecoDataProducts' ,
+             'mu2e_MCDataProducts' ,
+             'mu2e_CalorimeterGeom',
+             'mu2e_GeometryService',
+             'mu2e_ConditionsService',
+             'mu2e_Mu2eUtilities',
+             'mu2e_Mu2eInterfaces',
+             babarlibs,
+             'art_Framework_Core',
+             'art_Framework_Services_Registry',
+             'art_Persistency_Common',
+             'art_Persistency_Provenance',
+             'art_Utilities',
+             'Reflex',
+             'cetlib',
+             'boost_system'
+             ]
 #------------------------------------------------------------------------------
 # build the shared library with non-module code
 #------------------------------------------------------------------------------

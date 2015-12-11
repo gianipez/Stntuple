@@ -15,15 +15,15 @@ namespace mu2e {
 };
 
 class TEvdStation;
-class TEvdFace;
+class TEvdPanel;
 
 class TEvdPlane: public TObject {
 public:
   
 protected:
   int                 fID;
-  int                 fNFaces;
-  TObjArray*          fListOfFaces;
+  int                 fNPanels;
+  TObjArray*          fListOfPanels;
 
   TEvdStation*        fStation; 		// backward pointers
   const mu2e::Plane*  fPlane;
@@ -39,8 +39,8 @@ public:
 //-----------------------------------------------------------------------------
 // accessors
 //-----------------------------------------------------------------------------
-  int       NFaces     () { return fNFaces;  }
-  TEvdFace* Face  (int I) { return (TEvdFace*) fListOfFaces->UncheckedAt(I); }
+  int        NPanels    () { return fNPanels;  }
+  TEvdPanel* Panel (int I) { return (TEvdPanel*) fListOfPanels->UncheckedAt(I); }
 //-----------------------------------------------------------------------------
 // modifiers
 //-----------------------------------------------------------------------------

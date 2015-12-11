@@ -131,7 +131,7 @@ public:
   void  SetPickMode   (Int_t Mode) { fPickMode    = Mode; }
   void  SetDisplayHits(Int_t Mode) { fDisplayHits = Mode; }
 
-  void  Set(Int_t Side, Int_t Wedge) ; // **MENU**
+  //  void  Set(Int_t Side, Int_t Wedge) ; // **MENU**
 
 
   int   InitEvent();

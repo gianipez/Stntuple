@@ -207,6 +207,26 @@ void TDisk::GetPosition(int I, TVector2* Pos) {
 }
 
 //-----------------------------------------------------------------------------
+double TDisk::GetRadius(THexIndex* Index) {
+  double x, y, step, r;
+
+  step = fHexSize+2*fDeadSpace;
+  x    = step*(Index->fL+Index->fK)*sqrt(3.)/2.;
+  y    = step*(Index->fL-Index->fK)/2.;
+  r    = sqrt(x*x+y*y);
+
+  return r;
+}
+
+//-----------------------------------------------------------------------------
+double TDisk::GetRadius(int I) {
+  THexIndex  hex_index;
+  
+  GetHexIndex(I,&hex_index);
+  return GetRadius(&hex_index);
+}
+
+//-----------------------------------------------------------------------------
 int TDisk::IsInside(THexIndex* Index, double* Fraction) {
 
   int       inside, nvin(0), nbelow(0), nabove(0);

@@ -15,8 +15,8 @@
 #include "TBox.h"
 #include "TObjArray.h"
 
-#include "art/Framework/Principal/Event.h"
-#include "art/Framework/Principal/Handle.h"
+// #include "art/Framework/Principal/Event.h"
+// #include "art/Framework/Principal/Handle.h"
 
 #include "GeometryService/inc/GeometryService.hh"
 #include "GeometryService/inc/GeomHandle.hh"
@@ -35,7 +35,7 @@
 
 #include "Stntuple/obj/TDisk.hh"
 
-#include "CalorimeterGeom/inc/VaneCalorimeter.hh"
+// #include "CalorimeterGeom/inc/VaneCalorimeter.hh"
 #include "CalorimeterGeom/inc/Crystal.hh"
 #include "CalorimeterGeom/inc/Disk.hh"
 #include "CalorimeterGeom/inc/DiskCalorimeter.hh"

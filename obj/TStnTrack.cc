@@ -859,4 +859,12 @@ void TStnTrack::Print(Option_t* Option) const {
   }
 }
 
+//-----------------------------------------------------------------------------
+Int_t TStnTrack::GetMomentum(TLorentzVector* Momentum) {
+  Momentum->SetXYZT(fMomentum.Px(),fMomentum.Py(),fMomentum.Pz(),fMomentum.E());
+  return 0;
+}
+
+
+
 // } // end namespace

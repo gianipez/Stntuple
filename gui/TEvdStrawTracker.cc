@@ -23,7 +23,7 @@
 
 #include "Stntuple/gui/TEvdStraw.hh"
 #include "Stntuple/gui/TEvdPlane.hh"
-#include "Stntuple/gui/TEvdFace.hh"
+// #include "Stntuple/gui/TEvdFace.hh"
 #include "Stntuple/gui/TEvdPanel.hh"
 #include "Stntuple/gui/TEvdStation.hh"
 #include "Stntuple/gui/TEvdStrawTracker.hh"
@@ -99,30 +99,26 @@ void TEvdStrawTracker::PaintRZ(Option_t* option) {
 
   TEvdStation*   station;
   TEvdPlane*     plane;
-  TEvdFace*      face;
+  //  TEvdFace*      face;
   TEvdPanel*     panel;
   TEvdStraw*     straw;
 
-  int            nplanes, nfaces, npanels, nlayers, nstraws;
+  int            nplanes, npanels, nlayers, nstraws;
 
   for (int ist=0; ist<fNStations; ist++) {
     station = Station(ist);
     nplanes = station->NPlanes();
     for (int ipl=0; ipl<nplanes; ipl++) {
-      plane  = station->Plane(ipl);
-      nfaces = plane->NFaces();
-      for (int ifc=0; ifc<nfaces; ifc++) {
-	face    = plane->Face(ifc);
-	npanels = face->NPanels();
-	for (int ipanel=0; ipanel<npanels; ipanel++) {
-	  panel   = face->Panel(ipanel);
-	  nlayers = panel->NLayers();
-	  for (int il=0; il<nlayers; il++) {
-	    nstraws = panel->NStraws(il);
-	    for (int is=0; is<nstraws; is++) {
-	      straw  = panel->Straw(il,is);
-	      straw->PaintRZ();
-	    }
+      plane   = station->Plane(ipl);
+      npanels = plane->NPanels();
+      for (int ipanel=0; ipanel<npanels; ipanel++) {
+	panel   = plane->Panel(ipanel);
+	nlayers = panel->NLayers();
+	for (int il=0; il<nlayers; il++) {
+	  nstraws = panel->NStraws(il);
+	  for (int is=0; is<nstraws; is++) {
+	    straw  = panel->Straw(il,is);
+	    straw->PaintRZ();
 	  }
 	}
       }

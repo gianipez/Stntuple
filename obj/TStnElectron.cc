@@ -27,6 +27,11 @@ TStnElectron::TStnElectron(Int_t Number) : TObject () {
   fTrack   = 0;
 }
 
+//-----------------------------------------------------------------------------
+Int_t TStnElectron::GetMomentum(TLorentzVector* Momentum) {
+  Momentum->SetXYZT(fMomentum.Px(),fMomentum.Py(),fMomentum.Pz(),fMomentum.E());
+  return 0;
+}
 
 //_____________________________________________________________________________
 TStnElectron::~TStnElectron() {

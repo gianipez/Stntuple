@@ -12,8 +12,8 @@
 #include "TArc.h"
 #include "TArrow.h"
 #include "TBox.h"
-#include "art/Framework/Principal/Event.h"
-#include "art/Framework/Principal/Handle.h"
+// #include "art/Framework/Principal/Event.h"
+// #include "art/Framework/Principal/Handle.h"
 
 #include "GeometryService/inc/GeometryService.hh"
 #include "GeometryService/inc/GeomHandle.hh"
@@ -26,7 +26,7 @@
 #include "Stntuple/gui/TEvdStrawHit.hh"
 #include "Stntuple/gui/TEvdTrkStrawHit.hh"
 #include "Stntuple/gui/TEvdStation.hh"
-#include "Stntuple/gui/TEvdFace.hh"
+// #include "Stntuple/gui/TEvdFace.hh"
 #include "Stntuple/gui/TEvdPanel.hh"
 #include "Stntuple/gui/TEvdPlane.hh"
 #include "Stntuple/gui/TEvdStrawTracker.hh"
@@ -35,7 +35,7 @@
 #include "RecoDataProducts/inc/StrawHitCollection.hh"
 #include "RecoDataProducts/inc/StrawHitPositionCollection.hh"
 
-#include "Stntuple/mod/TAnaDump.hh"
+// #include "Stntuple/mod/TAnaDump.hh"
 
 ClassImp(TTrkVisNode)
 
@@ -124,9 +124,9 @@ int TTrkVisNode::InitEvent() {
   TEvdStation*   station;
   TEvdPlane*     plane;
   TEvdPanel*     panel;
-  TEvdFace*      face;
+  //  TEvdFace*      face;
 
-  int            nst, nplanes, nfaces, npanels, isec; 
+  int            nst, nplanes, npanels/*, isec*/; 
 
   nst = tracker->nStations();
   for (int ist=0; ist<nst; ist++) {
@@ -134,18 +134,14 @@ int TTrkVisNode::InitEvent() {
     nplanes = station->NPlanes();
     for (int iplane=0; iplane<nplanes; iplane++) {
       plane = station->Plane(iplane);
-      nfaces = plane->NFaces();
-      for (int ifc=0; ifc<nfaces; ifc++) {
-	face    = plane->Face(ifc);
-	npanels = face->NPanels();
-	for (int ipanel=0; ipanel<npanels; ipanel++) {
-	  panel = face->Panel(ipanel);
-	  nl    = panel->NLayers();
-	  for (int il=0; il<nl; il++) {
-	    ns = panel->NStraws(il);
-	    for (int is=0; is<ns; is++) {
-	      panel->Straw(il,is)->Clear();
-	    }
+      npanels = plane->NPanels();
+      for (int ipanel=0; ipanel<npanels; ipanel++) {
+	panel = plane->Panel(ipanel);
+	nl    = panel->NLayers();
+	for (int il=0; il<nl; il++) {
+	  ns = panel->NStraws(il);
+	  for (int is=0; is<ns; is++) {
+	    panel->Straw(il,is)->Clear();
 	  }
 	}
       }
@@ -238,17 +234,19 @@ int TTrkVisNode::InitEvent() {
     if (intime          ) mask |= TEvdStrawHit::kInTimeBit;
     if (isFromConversion) mask |= TEvdStrawHit::kConversionBit;
     
-    int ist, ipl, ifc, ipn, il, is;
+    int ist, ipl, /*ifc,*/ ipn, il, is;
 
-    int idd = straw->id().getDevice();	// really it is a plane number in a throughout enumeration
+    ipl = straw->id().getPlane();
 
-    ist = idd / 2 ; // straw->id().getDevice();
-    ipl = idd % 2 ; // straw->id().getSector();
+    //    int idd = straw->id().getDevice();	// really it is a plane number in a throughout enumeration
 
-    isec = straw->id().getSector();
+    ist = ipl / 2 ; // *** should become straw->id().getStation();
+    //    ipl = idd % 2 ; // straw->id().getSector();
 
-    ifc  = isec%2;
-    ipn  = isec/2;
+    ipn = straw->id().getPanel();
+
+//     ifc  = isec%2;
+//     ipn  = isec/2;
 
     il   = straw->id().getLayer();
     is   = straw->id().getStraw();
@@ -258,7 +256,7 @@ int TTrkVisNode::InitEvent() {
 //     ifc = -1; //## FIXME
 //     ipn = -1;
 
-    evd_straw     = fTracker->Station(ist)->Plane(ipl)->Face(ifc)->Panel(ipn)->Straw(il,is/2);
+    evd_straw     = fTracker->Station(ist)->Plane(ipl)->Panel(ipn)->Straw(il,is/2);
 
     evd_straw_hit = new TEvdStrawHit(hit,
 				     evd_straw,
@@ -340,7 +338,7 @@ void TTrkVisNode::PaintXY(Option_t* Option) {
     hit       = (TEvdStrawHit*) fListOfStrawHits->At(i);
     straw_hit = hit->StrawHit();
     straw     = &tracker->getStraw(straw_hit->strawIndex());
-    station   = straw->id().getDevice();
+    station   = straw->id().getStation();
     time      = straw_hit->time();
 
     if ((station >= vm->MinStation()) && (station <= vm->MaxStation())) { 
@@ -358,7 +356,7 @@ void TTrkVisNode::PaintXY(Option_t* Option) {
 // now - tracks
 //-----------------------------------------------------------------------------
   TEvdTrack* evd_trk;
-  TAnaDump::Instance()->printKalRep(0,"banner");
+  //  TAnaDump::Instance()->printKalRep(0,"banner");
 
   ntrk = fListOfTracks->GetEntriesFast();
   for (int i=0; i<ntrk; i++ ) {

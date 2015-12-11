@@ -41,7 +41,7 @@
 #include "MCDataProducts/inc/StepPointMCCollection.hh"
 #include "MCDataProducts/inc/StrawDigiMCCollection.hh"
 #include "MCDataProducts/inc/PtrStepPointMCVectorCollection.hh"
-#include "MCDataProducts/inc/VirtualDetectorId.hh"
+#include "DataProducts/inc/VirtualDetectorId.hh"
 
 #include "RecoDataProducts/inc/StrawDigi.hh"
 #include "RecoDataProducts/inc/StrawHitCollection.hh"
@@ -60,68 +60,68 @@
 namespace {
 
   struct ZMap_t {
-    int    fMap[44][6][2];
+    int    fMap[44][6][2];		// 44 means "by plane"
     double fZ  [88];
   };
 
-
 //-----------------------------------------------------------------------------
-// Map[ist][isec][il]: index of the layer in Z-ordered sequence
+// Map[iplane][ipanel][il]: index of the layer in Z-ordered sequence
 //-----------------------------------------------------------------------------
   void InitTrackerZMap(const mu2e::TTracker* Tracker, ZMap_t* Map) {
     int      ix, loc;
     double   z0, z1;
 
-    int nplanes = Tracker->nDevices();
+    int nplanes = Tracker->nPlanes();
 
-    for (int ist=0; ist<nplanes; ist++) {
+    for (int ipl=0; ipl<nplanes; ipl++) {
       for (int isec=0; isec<6; isec++) {
 	ix  = isec % 2;
-	loc = 2*ist+ix;
-	Map->fMap[ist][isec][0] = loc;
-	Map->fMap[ist][isec][1] = loc;
+	loc = 2*ipl+ix;
+	Map->fMap[ipl][isec][0] = loc;
+	Map->fMap[ipl][isec][1] = loc;
       }
-					// form list of Z-s
-
+					// form the list of Z-coordinates
       const mu2e::Layer *l0, *l1;
 
-      l0 = &Tracker->getDevice(ist).getSector(0).getLayer(0);
-      l1 = &Tracker->getDevice(ist).getSector(0).getLayer(1);
+      l0 = &Tracker->getPlane(ipl).getPanel(0).getLayer(0);
+      l1 = &Tracker->getPlane(ipl).getPanel(0).getLayer(1);
       z0 = l0->straw0MidPoint().z();
       z1 = l1->straw0MidPoint().z();
 
-      Map->fZ[2*ist] = (z0+z1)/2.;
+      Map->fZ[2*ipl] = (z0+z1)/2.;
 
-      l0 = &Tracker->getDevice(ist).getSector(1).getLayer(0);
-      l1 = &Tracker->getDevice(ist).getSector(1).getLayer(1);
+      l0 = &Tracker->getPlane(ipl).getPanel(1).getLayer(0);
+      l1 = &Tracker->getPlane(ipl).getPanel(1).getLayer(1);
       z0 = l0->straw0MidPoint().z();
       z1 = l1->straw0MidPoint().z();
 
-      Map->fZ[2*ist+1] = (z0+z1)/2.;
+      Map->fZ[2*ipl+1] = (z0+z1)/2.;
     }
   }
 
 //-----------------------------------------------------------------------------
-// for a given Z find closest Z-layer
+// for a given Z find closest Z-layer, returns 'Plane'
+// 'Offset' is a 'face number' within the Plane
 //-----------------------------------------------------------------------------
-  void get_station(const mu2e::TTracker* Tracker, ZMap_t* Map, double Z, int* Station, int* Offset) {
+  void get_station(const mu2e::TTracker* Tracker, ZMap_t* Map, double Z, int* Plane, int* Offset) {
 
     double dz, dz_min(1.e10);
-    int    ist    = -1;
+    int    iface(-1);
+					// looks that Device == Plane 
+    int nplanes = Tracker->nPlanes();
+					// a plane has 2 "faces", 2 layers in each
+    int nfaces  = 2*nplanes;
 
-    int nplanes = Tracker->nDevices();
-
-    for (int i=0; i<2*nplanes; i++) {
+    for (int i=0; i<nfaces; i++) {
       dz = Map->fZ[i]-Z;
-
       if (fabs(dz) < dz_min) {
-	ist    = i;
+	iface  = i;
 	dz_min = fabs(dz);
       }
     }
 
-    *Station = ist / 2;
-    *Offset  = ist % 2;
+    *Plane   = iface / 2;
+    *Offset  = iface % 2;
   }
 
 };
@@ -487,13 +487,13 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 
 	const mu2e::StrawId& straw_id = straw->id();
 	
-	int ist = straw_id.getDevice();
+	int ist = straw_id.getStation();
 	
 	track->fNHPerStation[ist] += 1;
 	
-	int sec = straw_id.getSector();
-	int lay = straw_id.getLayer ();
-	int bit = zmap.fMap[ist][sec][lay];
+	int pan = straw_id.getPanel();
+	int lay = straw_id.getLayer();
+	int bit = zmap.fMap[ist][pan][lay];
 
 	track->fHitMask.SetBit(bit,1);
       }
@@ -545,13 +545,12 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 // given track parameters, build the expected hit mask
 //-----------------------------------------------------------------------------
     double z, closest_z(-1.e6), dz, zw, dz_min, s;
-    int    station, offset;
+    int    iplane, offset;
     int    nz(88);
 
     for (int iz=0; iz<nz; iz++) {
       z = zmap.fZ[iz];
 					// find the track hit closest to that Z
-
       dz_min = 1.e10;
       for(TrkHotList::hot_iterator it=hot_list->begin(); it<hot_list->end(); it++) {
 
@@ -579,23 +578,25 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 
       HepPoint    pz    = krep->position(s);
 
-      get_station(tracker,&zmap,z,&station,&offset);
+      get_station(tracker,&zmap,z,&iplane,&offset);
 
-      const mu2e::Sector*     sec0 = NULL;
-      const mu2e::Sector*     sec;
-      const mu2e::Device*     dev;
-      double            min_dphi = 1.e10;
-      double            dphi, nx, ny, wx, wy, wrho, rho, phi0;
-      Hep3Vector        w0mid;
-      int               isec;
+      const mu2e::Panel*  panel0 = NULL;
+      const mu2e::Panel*  panel;
+      const mu2e::Plane*  plane;
+      double              min_dphi(1.e10);
+      double              dphi, nx, ny, wx, wy, wrho, rho, phi0;
+      Hep3Vector          w0mid;
+      int                 ipanel;
+
+      plane = &tracker->getPlane(iplane);
+
       for (int i=0; i<3; i++) {
-	isec = 2*i+offset;		// segment number
+	ipanel = 2*i+offset;		// panel number
 					// check if point pz(x0,y0) overlaps with the segment iseg
 					// expected mask is set to zero
-	dev   = &tracker->getDevice(station);
-	sec   = &dev->getSector(isec);
+	panel = &plane->getPanel(ipanel);
 	
-	w0mid = sec->straw0MidPoint();
+	w0mid = panel->straw0MidPoint();
 					// also calculate pho wrt the sector
 	wx    = w0mid.x();
 	wy    = w0mid.y();
@@ -612,13 +613,13 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 	dphi = TVector2::Phi_mpi_pi(phi0-pz.phi());
 	if ((abs(dphi) < min_dphi) && (rho > wrho)) {
 	  min_dphi = fabs(dphi);
-	  sec0 = sec;
+	  panel0   = panel;
 	}
       }
 //-----------------------------------------------------------------------------
 // OK, closest segment found, set the expected bit..
 //-----------------------------------------------------------------------------
-      if (sec0 != NULL) {
+      if (panel0 != NULL) {
 	track->fExpectedHitMask.SetBit(iz,1);
       }
     }

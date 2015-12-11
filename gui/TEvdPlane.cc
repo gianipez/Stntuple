@@ -23,46 +23,48 @@
 
 #include "Stntuple/gui/TEvdStation.hh"
 #include "Stntuple/gui/TEvdPlane.hh"
-#include "Stntuple/gui/TEvdFace.hh"
+#include "Stntuple/gui/TEvdPanel.hh"
 #include "Stntuple/gui/TStnVisManager.hh"
+
+#include "TrackerGeom/inc/Plane.hh"
 
 
 ClassImp(TEvdPlane)
 
 //_____________________________________________________________________________
 TEvdPlane::TEvdPlane(): TObject() {
-  fID          = -1;
-  fListOfFaces = NULL;
-  fNFaces      = 0;
+  fID           = -1;
+  fListOfPanels = NULL;
+  fNPanels      = 0;
 }
 
 //_____________________________________________________________________________
 TEvdPlane::TEvdPlane(int ID, const mu2e::Plane* Plane, TEvdStation* Station): TObject() {
 
   int        id;
-  TEvdFace*  evd_face;
+  TEvdPanel*  evd_panel;
 
   fID      = ID;
   fStation = Station;
   fPlane   = Plane;
-  fNFaces  = Plane->nFaces();
+  fNPanels  = Plane->nPanels();
 
-  fListOfFaces = new TObjArray(fNFaces);
+  fListOfPanels = new TObjArray(fNPanels);
 
-  for (int i=0; i<fNFaces; i++) {
-    const mu2e::Face* face = &fPlane->getFaces().at(i);
+  for (int i=0; i<fNPanels; i++) {
+    const mu2e::Panel* panel = &fPlane->getPanels().at(i);
 
-    id       = -1; // fNFaces*Plane->id()+i;
-    evd_face = new TEvdFace(id,face,this);
+    id       = -1; // fNPanels*Plane->id()+i;
+    evd_panel = new TEvdPanel(id,panel,this);
 
-    fListOfFaces->Add(evd_face);
+    fListOfPanels->Add(evd_panel);
   }
 }
 
 //_____________________________________________________________________________
 TEvdPlane::~TEvdPlane() {
-  fListOfFaces->Delete();
-  delete fListOfFaces;
+  fListOfPanels->Delete();
+  delete fListOfPanels;
 }
 
 //-----------------------------------------------------------------------------

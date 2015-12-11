@@ -52,7 +52,7 @@ public:
 	//-----------------------------------------------------------------------------
 	// Accessors
 	//-----------------------------------------------------------------------------
-	TObjArray* GetListOfTracks();
+  //	TObjArray* GetListOfTracks();
 
 	int		SectionID() { return fSectionID; }
 	TEvdCrvBar*  EvdCrvBar(int barIndex);

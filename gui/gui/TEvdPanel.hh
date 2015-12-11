@@ -14,7 +14,7 @@ namespace mu2e {
   class Panel;
 };
 
-class TEvdFace;
+class TEvdPlane;
 class TEvdStraw;
 
 class TEvdPanel: public TObject {
@@ -26,7 +26,7 @@ protected:
   int                fNStraws[2];
   TObjArray*         fListOfStraws[2];
 
-  TEvdFace*          fFace; 		// backward pointer
+  TEvdPlane*         fPlane; 		// backward pointer
   const mu2e::Panel* fPanel;
 
 public:
@@ -34,7 +34,7 @@ public:
 // constructors and destructor
 //-----------------------------------------------------------------------------
   TEvdPanel();
-  TEvdPanel(int Number, const mu2e::Panel* Panel, TEvdFace* Face); 
+  TEvdPanel(int Number, const mu2e::Panel* Panel, TEvdPlane* Plane); 
 
   virtual ~TEvdPanel();
 //-----------------------------------------------------------------------------

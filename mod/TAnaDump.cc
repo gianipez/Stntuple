@@ -640,8 +640,8 @@ void TAnaDump::printKalRep(const KalRep* Krep, const char* Opt, const char* Pref
 	     );
 
       printf(" %2i %2i %2i %2i",
-	     straw->id().getDevice(),
-	     straw->id().getSector(),
+	     straw->id().getPlane(),
+	     straw->id().getPanel(),
 	     straw->id().getLayer(),
 	     straw->id().getStraw()
 	     );
@@ -1107,7 +1107,7 @@ void TAnaDump::printStrawHit(const mu2e::StrawHit* Hit, const mu2e::StepPointMC*
     if ((opt == "") || (opt.Index("banner") >= 0)) {
       printf("-----------------------------------------------------------------------------------");
       printf("-------------------------------------------------\n");
-      printf("   I   SHID  Flags      Station Sector Layer Straw     Time          dt       eDep ");
+      printf("   I   SHID  Flags      Plane   Panel  Layer Straw     Time          dt       eDep ");
       printf("     PDG PDG(M)       GENID       ID         p   \n");
       printf("-----------------------------------------------------------------------------------");
       printf("-------------------------------------------------\n");
@@ -1160,8 +1160,8 @@ void TAnaDump::printStrawHit(const mu2e::StrawHit* Hit, const mu2e::StepPointMC*
       if (Flags >= 0) printf(" %08x",Flags);
       else            printf("        ");
       printf("  %5i  %5i   %5i   %5i   %8.3f   %8.3f   %9.6f   %4i   %4i  %10i  %10i %8.3f\n",
-	     straw->id().getDevice(),
-	     straw->id().getSector(),
+	     straw->id().getPlane(),
+	     straw->id().getPanel(),
 	     straw->id().getLayer(),
 	     straw->id().getStraw(),
 	     Hit->time(),
