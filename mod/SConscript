@@ -130,22 +130,6 @@ libs     = [ 'Stntuple_val',
              'boost_filesystem',
              'boost_system'
            ];
-
-plugin_libs = [ libs,
-                       'mu2e_KalmanTests',
-                       'mu2e_ConditionsService',
-                       'mu2e_GeometryService',
-                       'mu2e_TrackerGeom',
-                       'mu2e_ConfigTools',
-                       'fhiclcpp',
-                       'cetlib',
-                       'CLHEP',
-                       rootlibs,
-                       extrarootlibs,
-                       'xerces-c',
-                       'boost_filesystem',
-                       'boost_system',
-                     ] ;
 #------------------------------------------------------------------------------
 # dictionary files are located under $WORK_DIR/tmp
 # build several shared libraries: one for all source files,
@@ -165,7 +149,7 @@ for module in Glob('*_module.cc', strings=True):
     mname = string.split(os.path.basename(module),'.')[0];
     lib   = '#/lib/libmu2e_'+dirname+'_'+mname+'.so';
 #    print "obj: "+obj, "lib:"+lib
-    env.SharedLibrary(lib,obj,LIBS = ['libStntuple_mod.so',plugin_libs, rootlibs]);
+    env.SharedLibrary(lib,obj,LIBS = ['libStntuple_mod.so',libs]);
 #------------------------------------------------------------------------------
 # compile local non-module .cc files 
 #------------------------------------------------------------------------------
