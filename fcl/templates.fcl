@@ -21,31 +21,44 @@ BEGIN_PROLOG
   calRecoSeq    : [ MakeCaloProtoCluster, MakeCaloCluster ]
 
 # hit pre-making for TrkPatRec; FSHPreStereo is needed to flag straw hits
-  tprMakeHitSeq : [ FSHPreStereo, MakeStereoHits, FlagStrawHits, FlagBkgHits ]
+  tprPrepHitSeq : [ FSHPreStereo, MakeStereoHits, FlagStrawHits, FlagBkgHits ]
 
 # CalPatRec
-  cprMakeHitSeq : [ CalPatRecFSHP, CalPatRecMakeStrawHitPositions, CalPatRecMakeStereoHits,  
+  cprPrepHitSeq : [ CalPatRecFSHP, CalPatRecMakeStrawHitPositions, CalPatRecMakeStereoHits,  
 		    CalPatRecFlagStrawHits, CalPatRecFlagBkgHits ]
 
-  trkPatRecSeq  : [ @sequence::tprMakeHitSeq, TrkPatRec, MergePatRec ]
+  trkPatRecSeq     : [ @sequence::tprPrepHitSeq, TimePeakFinder, PosHelixFinder, TRFDownstreameMinus , MergePatRec ]
+  trkPatRecDemSeq  : [ @sequence::tprPrepHitSeq, TimePeakFinder, PosHelixFinder, TRFDownstreameMinus , MergePatRec ]
+  trkPatRecDmmSeq  : [ @sequence::tprPrepHitSeq, TimePeakFinder, PosHelixFinder, TRFDownstreammuMinus, MergePatRec ]
 
-  calPatRecSeq  : [ @sequence::cprMakeHitSeq, CalPatRec, MergePatRec ]
+  calPatRecSeq  : [ @sequence::cprPrepHitSeq, CalPatRec, MergePatRec ]
 
-  allPatRecSeq  : [ @sequence::tprMakeHitSeq, TrkPatRec, @sequence::cprMakeHitSeq, CalPatRec, MergePatRec ]
+  allPatRecSeq  : [ @sequence::tprPrepHitSeq, TimePeakFinder, PosHelixFinder, TRFDownstreameMinus, 
+		    @sequence::cprPrepHitSeq, CalPatRec, 
+		    MergePatRec ]
 
 # event for the downstream particles, avikPID requires running both electron and muon track reconstruction 
 
 # hit making - just once, but two modules
 
-  trkPatRecDemDmmSeq  : [ @sequence::tprMakeHitSeq, TrkPatRecDem, TrkPatRecDmm, MergePatRecDem, MergePatRecDmm ]
+  trkPatRecDemDmmSeq  : [ @sequence::tprPrepHitSeq, TimePeakFinder, PosHelixFinder, 
+			  TRFDownstreameMinus, 
+			  TRFDownstreammuMinus, 
+			  MergePatRecDem, MergePatRecDmm ]
 
-  calPatRecDemDmmSeq  : [ @sequence::cprMakeHitSeq, CalPatRecDem, CalPatRecDmm, MergePatRecDem, MergePatRecDmm ]
+  calPatRecDemDmmSeq  : [ @sequence::cprPrepHitSeq, CalPatRecDem, CalPatRecDmm, MergePatRecDem, MergePatRecDmm ]
 
-  allPatRecDemSeq     : [ @sequence::tprMakeHitSeq, TrkPatRecDem, @sequence::cprMakeHitSeq, CalPatRecDem, MergePatRecDem ]
-  allPatRecDmmSeq     : [ @sequence::tprMakeHitSeq, TrkPatRecDmm, @sequence::cprMakeHitSeq, CalPatRecDmm, MergePatRecDmm ]
+  allPatRecDemSeq     : [ @sequence::tprPrepHitSeq, TimePeakFinder, PosHelixFinder,  TRFDownstreameMinus, 
+			  @sequence::cprPrepHitSeq, CalPatRecDem, 
+			  MergePatRecDem ]
 
-  allPatRecDemDmmSeq  : [ @sequence::tprMakeHitSeq, TrkPatRecDem, TrkPatRecDmm, 
-			  @sequence::cprMakeHitSeq, CalPatRecDem, CalPatRecDmm, 
+  allPatRecDmmSeq     : [ @sequence::tprPrepHitSeq, TimePeakFinder, PosHelixFinder,  TRFDownstreammuMinus, 
+			  @sequence::cprPrepHitSeq, CalPatRecDmm, 
+			  MergePatRecDmm ]
+
+  allPatRecDemDmmSeq  : [ @sequence::tprPrepHitSeq, TimePeakFinder, PosHelixFinder,  
+			  TRFDownstreameMinus, TRFDownstreammuMinus, 
+			  @sequence::cprPrepHitSeq, CalPatRecDem, CalPatRecDmm, 
 			  MergePatRecDem, MergePatRecDmm ]
 
 # AvikPID on input takes MergePatRecDem and MergePatRecDmm
@@ -129,9 +142,14 @@ physics : {
 	MakeStereoHits       : @local::MakeStereoHits
 	FlagStrawHits        : @local::FlagStrawHits
 	FlagBkgHits          : @local::FlagBkgHits
-	TrkPatRec            : { @table::TrkPatRecDownstreameMinus  }
-	TrkPatRecDem         : { @table::TrkPatRecDownstreameMinus  }
-	TrkPatRecDmm         : { @table::TrkPatRecDownstreammuMinus }
+
+	TimePeakFinder       : @local::TimePeakFinder
+	PosHelixFinder       : @local::PosHelixFinder
+
+	TRFDownstreameMinus : { @table::TrkRecFitDownstreameMinus  }
+	TRFDownstreammuMinus: { @table::TrkRecFitDownstreammuMinus }
+#	TrkPatRecDem         : { @table::TrkRecFitDownstreameMinus  }
+#	TrkPatRecDmm         : { @table::TrkRecFitDownstreammuMinus }
 #------------------------------------------------------------------------------
 # CalPatRec modules
 #------------------------------------------------------------------------------

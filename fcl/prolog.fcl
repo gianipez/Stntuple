@@ -76,13 +76,13 @@ StntupleMaker3 : { @table::StntupleMaker
 # make 3 track blocks, for the moment need to specify all other labels
 # default (in prolog): just one track block "TrackBlock" with output of MergePatRec
 #------------------------------------------------------------------------------
-    trackBlockName          : [ "TrackBlock"           , "TrkPatRec" , "CalPatRec" ] 
-    trkRecoModuleLabel      : [ "MergePatRec"          , "TrkPatRec" , "CalPatRec" ]
-    trkExtrapolModuleLabel  : [ "TrackCaloIntersection",          "" ,          "" ]
-    trkCaloMatchModuleLabel : [                      "",          "" ,          "" ]
-    pidModuleLabel          : [                      "",          "" ,          "" ]
-    fitParticle             : [                      11,           11,          11 ]
-    fitDirection            : [                       0,            0,           0 ]
+    trackBlockName          : [ "TrackBlock"           , "TrkPatRec"           , "CalPatRec" ]
+    trkRecoModuleLabel      : [ "MergePatRec"          , "TRFDownstreameMinus" , "CalPatRec" ]
+    trkExtrapolModuleLabel  : [ "TrackCaloIntersection",                    "" ,          "" ]
+    trkCaloMatchModuleLabel : [                      "",                    "" ,          "" ]
+    pidModuleLabel          : [                      "",                    "" ,          "" ]
+    fitParticle             : [                      11,                     11,          11 ]
+    fitDirection            : [                       0,                      0,           0 ]
 }
 
 FillStntuple : { 
