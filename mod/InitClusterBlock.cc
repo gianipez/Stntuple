@@ -23,7 +23,7 @@
 #include "CalorimeterGeom/inc/DiskCalorimeter.hh"
 
 #include "RecoDataProducts/inc/KalRepPtrCollection.hh"
-#include "KalmanTests/inc/TrkStrawHit.hh"
+#include "TrkReco/inc/TrkStrawHit.hh"
 
 // #include "TrackCaloMatching/inc/TrkToCaloExtrapolCollection.hh"
 #include "TrackCaloMatching/inc/TrackClusterMatch.hh"
@@ -126,7 +126,7 @@ int  StntupleInitMu2eClusterBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode)
     const mu2e::CaloCluster::CaloCrystalHitPtrVector list_of_crystals = cluster->fCaloCluster->caloCrystalHitsPtrVector();
 
     int nh = list_of_crystals.size();
-    Hep3Vector pos;
+    CLHEP::Hep3Vector pos;
 //-----------------------------------------------------------------------------
 // print individual crystals in local vane coordinate system
 // Y and Z 

@@ -24,10 +24,10 @@
 #include "CalorimeterGeom/inc/VaneCalorimeter.hh"
 
 #include "RecoDataProducts/inc/KalRepPtrCollection.hh"
-#include "KalmanTests/inc/TrkStrawHit.hh"
+#include "TrkReco/inc/TrkStrawHit.hh"
 // #include "KalmanTests/inc/KalFitResult.hh"
-#include "KalmanTests/inc/Doublet.hh"
-#include "KalmanTests/inc/DoubletAmbigResolver.hh"
+#include "RecoDataProducts/inc/Doublet.hh"
+#include "TrkReco/inc/DoubletAmbigResolver.hh"
 
 // #include "TrackCaloMatching/inc/TrkToCaloExtrapolCollection.hh"
 // #include "TrackCaloMatching/inc/TrkToCaloExtrapol.hh"
@@ -52,6 +52,8 @@
 
 #include "CalPatRec/inc/AlgorithmIDCollection.hh"
 					          // BaBar 
+#include "BTrk/ProbTools/ChisqConsistency.hh"
+#include "BTrk/BbrGeom/BbrVectorErr.hh"
 #include "BTrk/BbrGeom/TrkLineTraj.hh"
 #include "BTrk/TrkBase/TrkPoca.hh"
 #include "BTrk/KalmanTrack/KalHit.hh"
@@ -172,7 +174,7 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
     InitTrackerZMap(tracker,&zmap);
     initialized = 1;
 
-    _dar = new mu2e::DoubletAmbigResolver(fhicl::ParameterSet(),0,0);
+    _dar = new mu2e::DoubletAmbigResolver(fhicl::ParameterSet(),0.,0,0);
   }
 
   ev_number = AnEvent->event();
@@ -308,8 +310,8 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 //-----------------------------------------------------------------------------
 // in all cases define momentum at lowest Z - ideally, at the tracker entrance
 //-----------------------------------------------------------------------------
-    h1_fltlen      = krep->firstHit()->kalHit()->hitOnTrack()->fltLen();
-    hn_fltlen      = krep->lastHit ()->kalHit()->hitOnTrack()->fltLen();
+    h1_fltlen      = krep->firstHit()->kalHit()->hit()->fltLen();
+    hn_fltlen      = krep->lastHit ()->kalHit()->hit()->fltLen();
     entlen         = std::min(h1_fltlen,hn_fltlen);
 
 //-----------------------------------------------------------------------------
@@ -340,7 +342,7 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
     CLHEP::Hep3Vector momdir = fitmom.unit();
     BbrVectorErr      momerr = krep->momentumErr(entlen);
     
-    HepVector momvec(3);
+    CLHEP::HepVector momvec(3);
     for (int i=0; i<3; i++) momvec[i] = momdir[i];
     
     fitmom_err = sqrt(momerr.covMatrix().similarity(momvec));
@@ -386,7 +388,7 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
     track->fP0 = sqrt(px0*px0+py0*py0+pz0*pz0);
 //-----------------------------------------------------------------------------
     const mu2e::TrkStrawHit  *hit, *closest_hit(NULL);
-    const TrkHotList*        hot_list = krep->hotList();
+    const TrkHitVector*       hot_list = &krep->hitVector();
     
     track->fChi2C = -1.;   // unused
 
@@ -417,7 +419,7 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
       
       s_hit0 = &list_of_straw_hits->at(0);
 
-      for (auto it=hot_list->begin(); it<hot_list->end(); it++) {
+      for (auto it=hot_list->begin(); it!=hot_list->end(); it++) {
 	++ntrkhits;
 	hit   = (const mu2e::TrkStrawHit*) &(*it);
 	straw = &hit->straw();
@@ -433,10 +435,10 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 //-----------------------------------------------------------------------------
 	  if (hit->isActive()) {
 	    if (hit->driftRadius() > 0.2) {
-	      const Hep3Vector* v1 = &straw->getMidPoint();
+	      const CLHEP::Hep3Vector* v1 = &straw->getMidPoint();
 	      HepPoint p1(v1->x(),v1->y(),v1->z());
 	      
-	      const Hep3Vector* v2 = &stmc[0]->position();
+	      const CLHEP::Hep3Vector* v2 = &stmc[0]->position();
 	      HepPoint    p2(v2->x(),v2->y(),v2->z());
 	      
 	      TrkLineTraj trstraw(p1,straw->getDirection()  ,0.,0.);
@@ -552,7 +554,7 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
       z = zmap.fZ[iz];
 					// find the track hit closest to that Z
       dz_min = 1.e10;
-      for(TrkHotList::hot_iterator it=hot_list->begin(); it<hot_list->end(); it++) {
+      for(auto it=hot_list->begin(); it!=hot_list->end(); it++) {
 
 	hit = (const mu2e::TrkStrawHit*) &(*it);
 	
@@ -585,7 +587,7 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
       const mu2e::Plane*  plane;
       double              min_dphi(1.e10);
       double              dphi, nx, ny, wx, wy, wrho, rho, phi0;
-      Hep3Vector          w0mid;
+      CLHEP::Hep3Vector   w0mid;
       int                 ipanel;
 
       plane = &tracker->getPlane(iplane);
@@ -730,9 +732,9 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 //    const mu2e::TrkToCaloExtrapol* extrk;
     const mu2e::TrkCaloIntersect*  extrk;
     const KalRep *                 krep;
-    Hep3Vector                     x1, x2;
+    CLHEP::Hep3Vector                     x1, x2;
     HepPoint                       extr_point;
-    Hep3Vector                     extr_mom;
+    CLHEP::Hep3Vector                     extr_mom;
     int                            iv, next;
     TStnTrack::InterData_t*        vint;
 

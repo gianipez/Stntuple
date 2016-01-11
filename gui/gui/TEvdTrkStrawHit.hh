@@ -13,7 +13,7 @@
 #include "TLine.h"
 
 #ifndef __CINT__
-#include "KalmanTests/inc/TrkStrawHit.hh"
+#include "TrkReco/inc/TrkStrawHit.hh"
 #else
 namespace mu2e {
   class TrkStrawHit;

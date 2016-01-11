@@ -38,7 +38,7 @@
 #include "GeometryService/inc/GeometryService.hh"
 #include "GeometryService/inc/GeomHandle.hh"
 
-#include "KalmanTests/inc/TrkStrawHit.hh"
+#include "TrkReco/inc/TrkStrawHit.hh"
 
 #include "TTrackerGeom/inc/TTracker.hh"
 
@@ -47,6 +47,7 @@
 //#include "Stntuple/mod/TAnaDump.hh"
 #include "Stntuple/base/TObjHandle.hh"
 
+#include "CLHEP/Vector/ThreeVector.h"
 
 ClassImp(TEvdTrack)
 
@@ -155,9 +156,9 @@ void TEvdTrack::PaintRZ(Option_t* Option) {
 // first display track hits - active and not 
 //-----------------------------------------------------------------------------
   const mu2e::TrkStrawHit  *hit;
-  const TrkHotList*        hot_list = fKrep->hotList();
+  const TrkHitVector*       hot_list = &fKrep->hitVector();
 
-  for(TrkHotList::hot_iterator it=hot_list->begin(); it<hot_list->end(); it++) {
+  for(auto it=hot_list->begin(); it !=hot_list->end(); it++) {
 
     hit    = (const mu2e::TrkStrawHit*) &(*it);
     rdrift = hit->driftRadius();
@@ -221,6 +222,9 @@ void TEvdTrack::PaintRZ(Option_t* Option) {
       zt[0] = zt[1]-3.;
       zt[3] = zt[2]+3.;
 
+      const CLHEP::Hep3Vector* wd;
+      double r;
+      
       for (int ipoint=0; ipoint<4; ipoint++) {
 //-----------------------------------------------------------------------------
 // estimate flen using helix
@@ -238,9 +242,9 @@ void TEvdTrack::PaintRZ(Option_t* Option) {
 	rt[ipoint] = -1.e6;
 	for (int ipp=0; ipp<3; ipp++) {
 	  const mu2e::Panel* pp = &plane->getPanel(2*ipp+iface);
-	  s = &pp->getLayer(0).getStraw(0);
-	  const Hep3Vector* wd = &s->getDirection();
-	  double r = (tpos.x()*wd->y()-tpos.y()*wd->x()); // *flip;
+	  s  = &pp->getLayer(0).getStraw(0);
+	  wd = &s->getDirection();
+	  r  = (tpos.x()*wd->y()-tpos.y()*wd->x()); // *flip;
 	  if (r > rt[ipoint]) rt[ipoint] = r;
 	}
       }
