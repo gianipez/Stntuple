@@ -44,7 +44,7 @@
 #include "Stntuple/mod/InitStntupleDataBlocks.hh"
 #include "Stntuple/mod/StntupleUtilities.hh"
 
-#include "KalmanTests/inc/TrkFitDirection.hh"
+#include "RecoDataProducts/inc/TrkFitDirection.hh"
 #include "BTrk/TrkBase/TrkParticle.hh"
 
 #include "Stntuple/alg/TStntuple.hh"

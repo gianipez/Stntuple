@@ -73,9 +73,9 @@
 #include "MCDataProducts/inc/StrawDigiMCCollection.hh"
 
 #include "BTrk/TrkBase/HelixParams.hh"
-#include "BTrk/TrkBase/TrkHotList.hh"
+// #include "BTrk/TrkBase/TrkHotList.hh"
 #include "BTrk/KalmanTrack/KalHit.hh"
-#include "KalmanTests/inc/TrkFitDirection.hh"
+#include "RecoDataProducts/inc/TrkFitDirection.hh"
 #include "BTrk/TrkBase/TrkParticle.hh"
 
 #include "RecoDataProducts/inc/CaloCrystalHit.hh"
@@ -87,7 +87,7 @@
 #include "RecoDataProducts/inc/CrvRecoPulsesCollection.hh"
 #include "RecoDataProducts/inc/CrvRecoPulses.hh"
 
-#include "KalmanTests/inc/TrkStrawHit.hh"
+#include "TrkReco/inc/TrkStrawHit.hh"
 #include "RecoDataProducts/inc/KalRepPtrCollection.hh"
 
 #include "CalPatRec/inc/CalTimePeak.hh"
