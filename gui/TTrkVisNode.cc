@@ -291,9 +291,9 @@ int TTrkVisNode::InitEvent() {
 //-----------------------------------------------------------------------------
 // add hits
 //-----------------------------------------------------------------------------
-    const TrkHitVector* hot_list = &krep->hitVector();
-    for (auto it=hot_list->begin(); it!=hot_list->end(); it++) {
-      track_hit = (const mu2e::TrkStrawHit*) &(*it);
+    const TrkHitVector* hits = &krep->hitVector();
+    for (auto it=hits->begin(); it!=hits->end(); it++) {
+      track_hit = (const mu2e::TrkStrawHit*) (*it);
       TEvdTrkStrawHit* h = new TEvdTrkStrawHit(track_hit);
       trk->AddHit(h);
     }

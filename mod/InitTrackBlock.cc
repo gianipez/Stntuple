@@ -388,7 +388,7 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
     track->fP0 = sqrt(px0*px0+py0*py0+pz0*pz0);
 //-----------------------------------------------------------------------------
     const mu2e::TrkStrawHit  *hit, *closest_hit(NULL);
-    const TrkHitVector*       hot_list = &krep->hitVector();
+    const TrkHitVector*       krep_hits = &krep->hitVector();
     
     track->fChi2C = -1.;   // unused
 
@@ -412,16 +412,15 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 
 
     if (n_straw_hits <= 0) {
-      printf(">>> ERROR in StntupleInitMu2eTrackBlock: wrong hit collection used, NHITS = %i\n",
-	     n_straw_hits);
+      printf(">>> ERROR in StntupleInitMu2eTrackBlock: Straw hit collection by module %s is empty, NHITS = %i\n",
+	     strh_module_label,n_straw_hits);
     }
     else {
-      
       s_hit0 = &list_of_straw_hits->at(0);
 
-      for (auto it=hot_list->begin(); it!=hot_list->end(); it++) {
+      for (auto it=krep_hits->begin(); it!=krep_hits->end(); it++) {
 	++ntrkhits;
-	hit   = (const mu2e::TrkStrawHit*) &(*it);
+	hit   = (const mu2e::TrkStrawHit*) /* & */ (*it);
 	straw = &hit->straw();
 	s_hit = &hit->strawHit();
 	loc   = s_hit-s_hit0;
@@ -554,9 +553,9 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
       z = zmap.fZ[iz];
 					// find the track hit closest to that Z
       dz_min = 1.e10;
-      for(auto it=hot_list->begin(); it!=hot_list->end(); it++) {
+      for(auto it=krep_hits->begin(); it!=krep_hits->end(); it++) {
 
-	hit = (const mu2e::TrkStrawHit*) &(*it);
+	hit = (const mu2e::TrkStrawHit*) (*it);
 	
 	s_hit = &hit->strawHit();
 	loc = s_hit-s_hit0;

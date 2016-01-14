@@ -1,3 +1,6 @@
+
+
+
 ///////////////////////////////////////////////////////////////////////////////
 // May 04 2013 P.Murat
 // 
@@ -156,11 +159,11 @@ void TEvdTrack::PaintRZ(Option_t* Option) {
 // first display track hits - active and not 
 //-----------------------------------------------------------------------------
   const mu2e::TrkStrawHit  *hit;
-  const TrkHitVector*       hot_list = &fKrep->hitVector();
+  const TrkHitVector*       hits = &fKrep->hitVector();
 
-  for(auto it=hot_list->begin(); it !=hot_list->end(); it++) {
+  for(auto it=hits->begin(); it !=hits->end(); it++) {
 
-    hit    = (const mu2e::TrkStrawHit*) &(*it);
+    hit    = (const mu2e::TrkStrawHit*) (*it);
     rdrift = hit->driftRadius();
 
     hstraw = &hit->straw();

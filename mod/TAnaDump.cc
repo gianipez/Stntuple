@@ -579,13 +579,14 @@ void TAnaDump::printKalRep(const KalRep* Krep, const char* Opt, const char* Pref
     printf("---------------------------------------------------------------");
     printf("------------------------------------------------------\n");
 
-    Hep3Vector pos;
+    mu2e::TrkStrawHit* hit;
+    CLHEP::Hep3Vector  pos;
     int i = 0;
 
     for (auto it=hits->begin(); it!=hits->end(); it++) {
       // TrkStrawHit inherits from TrkHitOnTrk
 
-      mu2e::TrkStrawHit* hit = (mu2e::TrkStrawHit*) &(*it);
+      hit = (mu2e::TrkStrawHit*) (*it);
 
       const mu2e::StrawHit* sh = &hit->strawHit();
       mu2e::Straw*   straw = (mu2e::Straw*) &hit->straw();
@@ -1748,7 +1749,7 @@ void TAnaDump::refitTrack(void* Trk, double NSig) {
 
     TrkHit* hit = (TrkHit*) &(*it);
 
-    const mu2e::TrkStrawHit* straw_hit = (const mu2e::TrkStrawHit*) &(*it);
+    const mu2e::TrkStrawHit* straw_hit = (const mu2e::TrkStrawHit*) (*it);
 
     double res = straw_hit->resid();
 
