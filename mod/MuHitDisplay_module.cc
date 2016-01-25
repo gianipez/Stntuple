@@ -476,7 +476,7 @@ namespace mu2e {
 	if (geom->hasElement<mu2e::DiskCalorimeter>()) {
 	  mu2e::GeomHandle<mu2e::DiskCalorimeter> dc_handle;
 	  dc = dc_handle.get();
-
+	  
 	  //-----------------------------------------------------------------------------
 	  // TCalVisNode: calorimeter, CaloCrystalHits and CaloCrystals
 	  //-----------------------------------------------------------------------------

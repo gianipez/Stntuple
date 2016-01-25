@@ -119,12 +119,10 @@ physics : {
 	TimePeakFinder       : @local::TimePeakFinder
 	RobustHelixFinder    : @local::RobustHelixFinder
 	TrkRecFit            : @local::TrkRecFit
-	
 #------------------------------------------------------------------------------
 # CalPatRec modules
 #------------------------------------------------------------------------------
 	MakeCaloCluster      : @local::MakeCaloCluster
-
 #------------------------------------------------------------------------------
 # needed for analysis
 #------------------------------------------------------------------------------

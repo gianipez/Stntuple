@@ -234,13 +234,15 @@ int TTrkVisNode::InitEvent() {
     if (intime          ) mask |= TEvdStrawHit::kInTimeBit;
     if (isFromConversion) mask |= TEvdStrawHit::kConversionBit;
     
-    int ist, ipl, /*ifc,*/ ipn, il, is;
+    int ist, ipl, ippl, /*ifc,*/ ipn, il, is;
 
-    ipl = straw->id().getPlane();
+    ipl = straw->id().getPlane(); // plane number here runs from 0 to 2*NStations-1
 
     //    int idd = straw->id().getDevice();	// really it is a plane number in a throughout enumeration
 
-    ist = ipl / 2 ; // *** should become straw->id().getStation();
+    ist  = ipl / 2 ; // *** should become straw->id().getStation();
+    ippl = ipl % 2 ; // plane number within the station
+
     //    ipl = idd % 2 ; // straw->id().getSector();
 
     ipn = straw->id().getPanel();
@@ -256,7 +258,7 @@ int TTrkVisNode::InitEvent() {
 //     ifc = -1; //## FIXME
 //     ipn = -1;
 
-    evd_straw     = fTracker->Station(ist)->Plane(ipl)->Panel(ipn)->Straw(il,is/2);
+    evd_straw     = fTracker->Station(ist)->Plane(ippl)->Panel(ipn)->Straw(il,is/2);
 
     evd_straw_hit = new TEvdStrawHit(hit,
 				     evd_straw,
