@@ -13,6 +13,7 @@
 #include "TBox.h"
 #include "TEllipse.h"
 #include "TObjArray.h"
+#include "TPolyLine.h"
 
 // #include "art/Framework/Principal/Handle.h"
 
@@ -22,12 +23,6 @@
 #include "Stntuple/obj/TDisk.hh"
 #include "Stntuple/obj/TStnCrystal.hh"
 
-// #include "CalorimeterGeom/inc/VaneCalorimeter.hh"
-// #include "CalorimeterGeom/inc/Crystal.hh"
-// #include "CalorimeterGeom/inc/Disk.hh"
-// #include "CalorimeterGeom/inc/DiskCalorimeter.hh"
-// #include "CalorimeterGeom/inc/Calorimeter.hh"
-
 ClassImp(TDisk)
 
 //_____________________________________________________________________________
@@ -36,7 +31,8 @@ TDisk::TDisk(): TObject() {
 
 //_____________________________________________________________________________
 TDisk::TDisk(int SectionID, double RMin, double RMax, double Z0, 
-	     double HexSize, double DeadSpace, double MinFraction) : TObject() {
+	     int NEdges,
+	     double Size, double DeadSpace, double MinFraction) : TObject() {
 
   TStnCrystal     *crystal;
   int             n1;
@@ -52,57 +48,62 @@ TDisk::TDisk(int SectionID, double RMin, double RMax, double Z0,
   fRMin         = RMin;
   fRMax         = RMax;
   fZ0           = Z0;
-  fHexSize      = HexSize;		// full size
+  fSize         = Size;		// full size
   fDeadSpace    = DeadSpace;
   fMinFraction  = MinFraction;
 					// account for spacing between the crystals
-  size          = fHexSize+2*fDeadSpace;
+  size          = fSize+2*fDeadSpace;
 
-  fNRings       = (int(fRMax/size-0.2)+1)*1.2+1;
+  if (NEdges == 6) {
 
-  n1            = 1 + 3*fNRings*(fNRings-1);
+    fNRings       = (int(fRMax/size-0.2)+1)*1.2+1;
 
-  fFirst            = new int[fNRings];
-  fNCrystalsPerRing = new int[fNRings];
-  fNInside          = new int[fNRings];
+    n1            = 1 + 3*fNRings*(fNRings-1);
 
-  fFirst           [0] = 0;
-  fNCrystalsPerRing[0] = 1;
-  fNInside         [0] = 0;
+    fFirst            = new int[fNRings];
+    fNCrystalsPerRing = new int[fNRings];
+    fNInside          = new int[fNRings];
 
-  for (int i=1; i<fNRings; i++) {
-    fFirst           [i] = 1 + 3*i*(i-1);
-    fNCrystalsPerRing[i] = 6*i;
-    fNInside         [i] = 0;
-  }
+    fFirst           [0] = 0;
+    fNCrystalsPerRing[0] = 1;
+    fNInside         [0] = 0;
 
-  int        loc, inside; 
-  double     fraction;
-  THexIndex  hex_index;
-
-  fListOfCrystals = new TObjArray(n1);
-  fNCrystals   = 0;
-
-  for (int ir=0; ir<fNRings; ir++) {
-
-    for (int ic=0; ic<fNCrystalsPerRing[ir]; ic++) {
-      loc       = fFirst[ir]+ic;
-      GetHexIndex(loc,&hex_index);
-      //      ring      = GetRing  (&hex_index);
-      inside    = IsInside(&hex_index,&fraction);
-
-      if (inside) {
-	GetPosition(&hex_index,&pos);
-	crystal = new TStnCrystal(&hex_index,pos.X(),pos.Y(),Z0,fHexSize);
-	crystal->SetDisk(this);
-	fListOfCrystals->Add(crystal);
-	fNInside[ir] += 1;
-      }
+    for (int i=1; i<fNRings; i++) {
+      fFirst           [i] = 1 + 3*i*(i-1);
+      fNCrystalsPerRing[i] = 6*i;
+      fNInside         [i] = 0;
     }
 
-    fNCrystals += fNInside[ir];
-  }
+    int        loc, inside; 
+    double     fraction;
+    THexIndex  hex_index;
 
+    fListOfCrystals = new TObjArray(n1);
+    fNCrystals   = 0;
+
+    for (int ir=0; ir<fNRings; ir++) {
+
+      for (int ic=0; ic<fNCrystalsPerRing[ir]; ic++) {
+	loc       = fFirst[ir]+ic;
+	GetHexIndex(loc,&hex_index);
+	//      ring      = GetRing  (&hex_index);
+	inside    = IsInside(&hex_index,&fraction);
+
+	if (inside) {
+	  GetPosition(&hex_index,&pos);
+	  crystal = new TStnCrystal(&hex_index,pos.X(),pos.Y(),Z0,fNEdges,fSize);
+	  crystal->SetDisk(this);
+	  fListOfCrystals->Add(crystal);
+	  fNInside[ir] += 1;
+	}
+      }
+
+      fNCrystals += fNInside[ir];
+    }
+  }
+  else {
+    printf(" TDisk::TDisk ERROR: square crystals are not handled yet\n");
+  }
   //  fFirst          = SectionID*fNCrystals;
 }
 
@@ -124,10 +125,10 @@ void TDisk::Clear(Option_t* Opt) {
 //-----------------------------------------------------------------------------
 void TDisk::Print(Option_t* Opt) const {
   printf("------------------------------------------------------------------------\n");
-  printf(" ID   RMin    RMax   HexSize   MaxFraction NCrystals   NRings  Offset  \n");
+  printf(" ID   RMin    RMax      Size   MaxFraction NCrystals   NRings  Offset  \n");
   printf("------------------------------------------------------------------------\n");
   printf("%3i %8.3f %8.3f %8.3f  %5.1f %5i  %5i  %5i\n",
-	 fSectionID,fRMin,fRMax,fHexSize,fMinFraction,fNCrystals,
+	 fSectionID,fRMin,fRMax,fSize,fMinFraction,fNCrystals,
 	 fNRings,fChannelOffset);
 }
 
@@ -191,7 +192,7 @@ int TDisk::GetRing(int I) {
 void TDisk::GetPosition(THexIndex* Index, TVector2* Pos) {
   double x, y, step;
 
-  step = fHexSize+2*fDeadSpace;
+  step = fSize+2*fDeadSpace;
   x    = step*(Index->fL+Index->fK)*sqrt(3.)/2.;
   y    = step*(Index->fL-Index->fK)/2.;
   Pos->Set(x,y);
@@ -210,7 +211,7 @@ void TDisk::GetPosition(int I, TVector2* Pos) {
 double TDisk::GetRadius(THexIndex* Index) {
   double x, y, step, r;
 
-  step = fHexSize+2*fDeadSpace;
+  step = fSize+2*fDeadSpace;
   x    = step*(Index->fL+Index->fK)*sqrt(3.)/2.;
   y    = step*(Index->fL-Index->fK)/2.;
   r    = sqrt(x*x+y*y);
@@ -233,13 +234,13 @@ int TDisk::IsInside(THexIndex* Index, double* Fraction) {
   double    x0, y0, r, x, y, phi, s, s0, /*s1,*/ r0, dr, adr;
   double    fr, step;
 					// crystal center position
-  step = fHexSize+2*fDeadSpace;
+  step = fSize+2*fDeadSpace;
   x0   = step*(Index->fL+Index->fK)*sqrt(3.)/2.;
   y0   = step*(Index->fL-Index->fK)/2.;
 
 					// loop over 6 vertices and check if 
 					// all of them are inside
-  double rho = fHexSize/sqrt(3.);
+  double rho = fSize/sqrt(3.);
 
   for (int i=0; i<6; i++) {
     phi = i*TMath::Pi()/3;
@@ -280,11 +281,11 @@ int TDisk::IsInside(THexIndex* Index, double* Fraction) {
 //-----------------------------------------------------------------------------
       dr  = r0 -fRMax;
       adr = fabs(dr);
-      if (adr > fHexSize/2) adr = fHexSize/2.;
+      if (adr > fSize/2) adr = fSize/2.;
 
-      s   = fHexSize*fHexSize*sqrt(3)/2;
-      //      s1  = (2*fHexSize-adr)*adr/sqrt(3.);
-      s0  = (3*fHexSize-2*adr)*(fHexSize-2*adr)/4/sqrt(3);
+      s   = fSize*fSize*sqrt(3)/2;
+      //      s1  = (2*fSize-adr)*adr/sqrt(3.);
+      s0  = (3*fSize-2*adr)*(fSize-2*adr)/4/sqrt(3);
 
       if (dr <= 0) {
 	fr = 1-s0/s;
@@ -298,11 +299,11 @@ int TDisk::IsInside(THexIndex* Index, double* Fraction) {
 // crystal crosses the inner ring
 //-----------------------------------------------------------------------------
       adr = fabs(dr);
-      if (adr > fHexSize/2) adr = fHexSize/2.;
+      if (adr > fSize/2) adr = fSize/2.;
 
-      s   = fHexSize*fHexSize*sqrt(3)/2;
-      //      s1  = (2*fHexSize-adr)*adr/sqrt(3.);
-      s0  = (3*fHexSize-2*adr)*(fHexSize-2*adr)/4/sqrt(3);
+      s   = fSize*fSize*sqrt(3)/2;
+      //      s1  = (2*fSize-adr)*adr/sqrt(3.);
+      s0  = (3*fSize-2*adr)*(fSize-2*adr)/4/sqrt(3);
       if (dr > 0) {
 	fr = 1-s0/s;
       }
@@ -354,7 +355,7 @@ void TDisk::Paint(Option_t* Opt) {
 
     //    printf(" i, r, l,k, x,y : %5i %5i %5i %5i %10.4lf %10.4lf\n",i,ring, hex_index.fL,hex_index.fK,pos.X(),pos.Y());
 
-    double rho = fHexSize/sqrt(3.);
+    double rho = fSize/sqrt(3.);
 
     for (int iv=0; iv<7; iv++) {
       int l = iv % 6;

@@ -186,7 +186,9 @@ void TAnaDump::printCaloCluster(const mu2e::CaloCluster* Cl, const char* Opt) {
   
   if (opt.Index("hits") >= 0) {
 
-    Hep3Vector pos;
+    const mu2e::Crystal           *cr;
+    const CLHEP::Hep3Vector       *pos;
+    //    Hep3Vector pos;
     int  iz, ir;
 //-----------------------------------------------------------------------------
 // print individual crystals in local vane coordinate system
@@ -198,7 +200,10 @@ void TAnaDump::printCaloCluster(const mu2e::CaloCluster* Cl, const char* Opt) {
       const mu2e::CaloCrystalHit* hit = &(*caloClusterHits.at(i));
       int id = hit->id();
       
-      pos = cal->crystalOriginInSection(id);
+      cr = &cal->crystal(id);
+
+      pos = &cr->localPosition();
+      //      pos = cal->crystalOriginInSection(id);
 
       if(geom->hasElement<mu2e::VaneCalorimeter>() ){
 	mu2e::GeomHandle<mu2e::VaneCalorimeter> cgvane;
@@ -215,9 +220,9 @@ void TAnaDump::printCaloCluster(const mu2e::CaloCluster* Cl, const char* Opt) {
 	     hit->time(),
 	     iz,ir,
 	     hit->energyDep(),
-	     pos.x(),
-	     pos.y(),
-	     pos.z(),
+	     pos->x(),
+	     pos->y(),
+	     pos->z(),
 	     hit->energyDepTotal()
 	     );
     }
@@ -284,10 +289,15 @@ void TAnaDump::printCaloProtoCluster(const mu2e::CaloProtoCluster* Cluster, cons
   TString opt = Opt;
 
   int section_id(-1), iz, ir;
-  Hep3Vector pos;
+
+  const mu2e::Calorimeter       * cal(NULL);
+  const mu2e::Crystal           *cr;
+  const CLHEP::Hep3Vector       *pos;
 
   art::ServiceHandle<mu2e::GeometryService> geom;
   mu2e::GeomHandle  <mu2e::Calorimeter>     cg;
+
+  cal = cg.get();
 
   if ((opt == "") || (opt == "banner")) {
     printf("-----------------------------------------------------------------------------------------------------\n");
@@ -318,7 +328,10 @@ void TAnaDump::printCaloProtoCluster(const mu2e::CaloProtoCluster* Cluster, cons
       const mu2e::CaloCrystalHit* hit = &(*caloClusterHits.at(i));
       int id = hit->id();
       
-      pos = cg->crystalOriginInSection(id);
+      //      pos = cg->crystalOriginInSection(id);
+
+      cr  = &cal->crystal(id);
+      pos = &cr->localPosition();
 
       if (geom->hasElement<mu2e::VaneCalorimeter>()) {
 	mu2e::GeomHandle<mu2e::VaneCalorimeter> cgvane;
@@ -335,9 +348,9 @@ void TAnaDump::printCaloProtoCluster(const mu2e::CaloProtoCluster* Cluster, cons
 	     hit->time(),
 	     iz,ir,
 	     hit->energyDep(),
-	     pos.x(),
-	     pos.y(),
-	     pos.z(),
+	     pos->x(),
+	     pos->y(),
+	     pos->z(),
 	     hit->energyDepTotal()
 	     );
     }

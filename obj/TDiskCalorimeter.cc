@@ -70,6 +70,7 @@ int TDiskCalorimeter::Init(GeomData_t* Geom) {
 			 Geom->fRMin[i],
 			 Geom->fRMax[i],
 			 Geom->fZ0  [i],
+			 Geom->fNEdges,
 			 Geom->fHexSize,
 			 dead_space,
 			 Geom->fMinFraction);

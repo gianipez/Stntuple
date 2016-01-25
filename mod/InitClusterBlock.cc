@@ -108,7 +108,9 @@ int  StntupleInitMu2eClusterBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode)
 // tracks are supposed to be already initialized
 //-----------------------------------------------------------------------------
   const mu2e::CaloCluster       *cl;
+  const mu2e::Crystal           *cr;
   const mu2e::CaloCrystalHit    *hit;
+  const CLHEP::Hep3Vector       *pos;
   int                           id, ncl;
 
   double                        sume, sume2, sumy, sumx, sumy2, sumx2, sumxy, qn;
@@ -126,7 +128,6 @@ int  StntupleInitMu2eClusterBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode)
     const mu2e::CaloCluster::CaloCrystalHitPtrVector list_of_crystals = cluster->fCaloCluster->caloCrystalHitsPtrVector();
 
     int nh = list_of_crystals.size();
-    CLHEP::Hep3Vector pos;
 //-----------------------------------------------------------------------------
 // print individual crystals in local vane coordinate system
 // Y and Z 
@@ -146,17 +147,19 @@ int  StntupleInitMu2eClusterBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode)
       hit = &(*list_of_crystals.at(ih));
       e   = hit->energyDep();
       id  = hit->id();
-      pos = cal->crystalOriginInSection(id);
+      cr = &cal->crystal(id);
+
+      pos = &cr->localPosition();
       
       if (e > kMinECrystal) {
 	qn    += 1.;
 	sume  += e;
 	sume2 += e*e;
-	sumx  += e*pos.x();
-	sumy  += e*pos.y();
-	sumx2 += e*pos.x()*pos.x();
-	sumxy += e*pos.x()*pos.y();
-	sumy2 += e*pos.y()*pos.y();
+	sumx  += e*pos->x();
+	sumy  += e*pos->y();
+	sumx2 += e*pos->x()*pos->x();
+	sumxy += e*pos->x()*pos->y();
+	sumy2 += e*pos->y()*pos->y();
 	
 	if (ih<2) {
 	  e2 += e;

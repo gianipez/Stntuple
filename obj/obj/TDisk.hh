@@ -38,6 +38,7 @@ public:
 					
   TObjArray*         fListOfCrystals;	// list of crystals
   int                fNCrystals;
+  int                fNEdges;		// 6:hex or 4:square crystals
 
   int                fNRings;
   //  int                fNInsideTot;
@@ -50,7 +51,7 @@ public:
   double             fRMin;
   double             fRMax;
   double             fZ0;
-  double             fHexSize;
+  double             fSize;             // hex size for hex crystals, side - for square
   double             fDeadSpace;	// wrapper+shell
   double             fMinFraction;	// min fraction of area to add a crystal
 //-----------------------------------------------------------------------------
@@ -61,7 +62,8 @@ public:
 	double   RMin       , 
 	double   RMax       , 
 	double   Z0         ,
-	double   HexSize    , 
+	int      NEdges     ,
+	double   Size       , 
 	double   DeadSpace  , 
 	double   MinFraction);
 
@@ -101,7 +103,7 @@ public:
   double         GetRadius(int I);
   double         GetRadius(THexIndex* Index);
 
-  double         GetCrystalArea() { return  fHexSize*fHexSize*sqrt(3.)/2.; }
+  double         GetCrystalArea() { return  fSize*fSize*sqrt(3.)/2.; }
 
   // calculates inside fraction  
   int            IsInside(THexIndex* Index, double *Fraction);

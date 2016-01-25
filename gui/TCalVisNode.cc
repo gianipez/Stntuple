@@ -43,15 +43,21 @@
 
 ClassImp(TCalVisNode)
 
-//_____________________________________________________________________________
-  TCalVisNode::TCalVisNode(const char* Name, const mu2e::Disk* Disk, int   SectionID)
+//-----------------------------------------------------------------------------
+// nedges = 4: square crystal, 6: hex
+//-----------------------------------------------------------------------------
+  TCalVisNode::TCalVisNode(const char* Name, const mu2e::Disk* Disk, int SectionID)
     :TVisNode(Name) 
 {
-  TEvdCrystal            *evd_cr;
-  const mu2e::Crystal    *cr;
+  TEvdCrystal                             *evd_cr;
+  const mu2e::Crystal                     *cr;
+  mu2e::GeomHandle<mu2e::DiskCalorimeter>  dc;
 
   fMinClusterEnergy = 5.;
   fMinCrystalEnergy = 0.;
+
+  double crystal_size = dc->caloGeomInfo().crystalHalfTrans();
+  int    nedges       = dc->caloGeomInfo().crystalNedges();
 
   fSectionID         = SectionID;
   fListOfEvdCrystals = new TObjArray();
@@ -66,7 +72,7 @@ ClassImp(TCalVisNode)
   
   for (int i=0; i<fNCrystals; i++) {
     cr     = &Disk->crystal(i);
-    evd_cr = new TEvdCrystal(cr,disk);
+    evd_cr = new TEvdCrystal(cr,nedges,crystal_size,disk);
     fListOfEvdCrystals->Add(evd_cr);
   }
 

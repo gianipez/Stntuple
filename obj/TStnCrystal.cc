@@ -23,15 +23,10 @@
 
 #include "Stntuple/obj/TStnCrystal.hh"
 #include "Stntuple/base/TVisManager.hh"
-#include "Stntuple/base/THexagon.hh"
+#include "Stntuple/base/TStnHexagon.hh"
+#include "Stntuple/base/TStnSquare.hh"
 #include "Stntuple/base/TObjHandle.hh"
 #include "Stntuple/obj/TCalHitData.hh"
-
-// #include "CalorimeterGeom/inc/VaneCalorimeter.hh"
-// #include "CalorimeterGeom/inc/Crystal.hh"
-// #include "CalorimeterGeom/inc/Disk.hh"
-// #include "CalorimeterGeom/inc/DiskCalorimeter.hh"
-// #include "CalorimeterGeom/inc/Calorimeter.hh"
 
 ClassImp(TStnCrystal)
 
@@ -40,18 +35,25 @@ TStnCrystal::TStnCrystal(THexIndex* Index,
 			 double     X0,
 			 double     Y0,
 			 double     Z0,
-			 double     HexSize): TObject() {
+			 int        NEdges,
+			 double     Size): TObject() {
 
   fHexIndex.fL = Index->fL;
   fHexIndex.fK = Index->fK;
 
   fCenter.SetXYZ(X0,Y0,Z0);
-  fHexSize = HexSize;
-  fHexagon.SetPos(X0,Y0);
-  fHexagon.SetSize(30.);
-  fHexagon.SetLineColor(1);
-  fHexagon.SetFillColor(0);
-  fHexagon.SetFillStyle(0);
+  fSize   = Size;
+  fNEdges = NEdges;
+  if (fNEdges == 4) {
+    fShape = new TStnHexagon(X0,Y0,fSize);
+  }
+  else {
+    fShape = new TStnSquare(X0,Y0,fSize);
+  }
+
+  fShape->SetLineColor(1);
+  fShape->SetFillColor(0);
+  fShape->SetFillStyle(0);
 
   //  fDisk       = Disk;
   fListOfHits = new TObjArray(10);
@@ -94,8 +96,8 @@ void TStnCrystal::PaintXY(Option_t* Option) {
 
 //-----------------------------------------------------------------------------
 void TStnCrystal::PaintCal(Option_t* Option) {
-  fHexagon.Paint("f");
-  fHexagon.Paint("same");
+  fShape->Paint("f");
+  fShape->Paint("same");
 }
 
 

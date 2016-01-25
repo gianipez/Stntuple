@@ -24,7 +24,8 @@
 #include "Stntuple/gui/TEvdCrystal.hh"
 #include "Stntuple/gui/TStnVisManager.hh"
 
-#include "Stntuple/base/THexagon.hh"
+#include "Stntuple/base/TStnHexagon.hh"
+#include "Stntuple/base/TStnSquare.hh"
 #include "Stntuple/base/TObjHandle.hh"
 
 #include "CalorimeterGeom/inc/VaneCalorimeter.hh"
@@ -36,18 +37,20 @@
 ClassImp(TEvdCrystal)
 
 //-----------------------------------------------------------------------------
-  TEvdCrystal::TEvdCrystal(const mu2e::Crystal* Cr, TDisk* Disk): TObject() {
+  TEvdCrystal::TEvdCrystal(const mu2e::Crystal* Cr, int NEdges, double Size, TDisk* Disk): TObject() {
   fCrystal = Cr;
 
   const CLHEP::Hep3Vector  *pos;
 
+  fNEdges = NEdges;
   pos = &Cr->position();
 
-  fHexagon.SetPos(pos->x()+3904.,pos->y());
-  fHexagon.SetSize(30.);
-  fHexagon.SetLineColor(1);
-  fHexagon.SetFillColor(0);
-  fHexagon.SetFillStyle(0);
+  if      (fNEdges == 4) fShape = new TStnSquare (Size,pos->x()+3904.,pos->y());
+  else if (fNEdges == 6) fShape = new TStnHexagon(Size,pos->x()+3904.,pos->y());
+
+  fShape->SetLineColor(1);
+  fShape->SetFillColor(0);
+  fShape->SetFillStyle(0);
 
   fDisk       = Disk;
   fListOfHits = new TClonesArray("TObjHandle",10);
@@ -56,6 +59,7 @@ ClassImp(TEvdCrystal)
 
 //-----------------------------------------------------------------------------
 TEvdCrystal::~TEvdCrystal() {
+  delete fShape;
 }
 
 //-----------------------------------------------------------------------------
@@ -88,8 +92,8 @@ void TEvdCrystal::PaintXY(Option_t* Option) {
 
 //-----------------------------------------------------------------------------
 void TEvdCrystal::PaintCal(Option_t* Option) {
-  fHexagon.Paint("f");
-  fHexagon.Paint("same");
+  fShape->Paint("f");
+  fShape->Paint("same");
 }
 
 

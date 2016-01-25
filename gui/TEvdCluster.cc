@@ -23,6 +23,7 @@
 
 #include "Stntuple/gui/TEvdCluster.hh"
 #include "Stntuple/gui/TStnVisManager.hh"
+#include "Stntuple/base/TStnShape.hh"
 
 #include "CalorimeterGeom/inc/VaneCalorimeter.hh"
 #include "CalorimeterGeom/inc/Crystal.hh"
@@ -109,14 +110,14 @@ void TEvdCluster::PaintXY(Option_t* Option) {
 // 2015-01-27: doesn't do anything
 //-----------------------------------------------------------------------------
 void TEvdCluster::PaintCal(Option_t* Option) {
-  TEvdCrystal* cr; 
-  THexagon     hex;
+//   TEvdCrystal* cr; 
+//   const TStnShape*   shape;
   
   int nc = fListOfCrystals->GetEntries();
   
   for (int i=0; i<nc; i++) {
-    cr = Crystal(i);
-    hex = *cr->Hexagon();
+//     cr    = Crystal(i);
+//     shape = cr->Shape();
 //     hex.SetFillStyle(1024);
 //     hex.SetFillColor(0);
 //     hex.SetLineColor(kBlue);

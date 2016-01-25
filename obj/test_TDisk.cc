@@ -7,13 +7,15 @@
 
 
 //-----------------------------------------------------------------------------
-void test_001_TDisk(double RMin, double RMax, double HexSize, double DeadSpace, double Fraction, const char* Opt) {
+// NEdges = 6
+//-----------------------------------------------------------------------------
+void test_001_TDisk(double RMin, double RMax, int NEdges, double Size, double DeadSpace, double Fraction, const char* Opt) {
 
   TDisk* disk;
 
   double rmin, rmax;
 
-  disk = new TDisk(1,RMin, RMax, 0, HexSize, DeadSpace, Fraction);
+  disk = new TDisk(1,RMin, RMax, 0, NEdges, Size, DeadSpace, Fraction);
 
   rmin = disk->GetRMin();
   rmax = disk->GetRMax();
@@ -32,7 +34,7 @@ void test_001_TDisk(double RMin, double RMax, double HexSize, double DeadSpace, 
   //   printf(" i, NTot NIn : %5i %5i %5i\n",i,disk->GetNCrystalsPerRing(i),disk->GetNInside(i));
   // }
 
-  printf("rin,rout,hsize,nr = %7.2f %7.2f %6.2f %3i ",RMin,RMax,HexSize,disk->GetNRings());
+  printf("rin,rout,hsize,nr = %7.2f %7.2f %6.2f %3i ",RMin,RMax,Size,disk->GetNRings());
 
   printf("nin,area: %4i %8.5f",nin, area);
 

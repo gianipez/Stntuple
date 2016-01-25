@@ -11,7 +11,7 @@
 #include "TArc.h"
 
 #include "Stntuple/base/TVisNode.hh"
-#include "Stntuple/base/THexagon.hh"
+#include "Stntuple/base/TStnShape.hh"
 
 #ifndef __CINT__
 #include "CalorimeterGeom/inc/Crystal.hh"
@@ -38,7 +38,8 @@ protected:
 
   TClonesArray*         fListOfHits;
 					// display in XY view
-  THexagon              fHexagon;
+  TStnShape*            fShape;
+  int                   fNEdges;        // 4:square 6:hex
 
   int                   fFillStyle;
   int                   fFillColor;
@@ -53,29 +54,29 @@ public:
 // constructors and destructor
 //-----------------------------------------------------------------------------
   TEvdCrystal() {}
-  TEvdCrystal(const mu2e::Crystal* Cr, TDisk* Disk); 
+  TEvdCrystal(const mu2e::Crystal* Cr, int NEdges, double Size, TDisk* Disk); 
 
   virtual ~TEvdCrystal();
 //-----------------------------------------------------------------------------
 // accessors
 //-----------------------------------------------------------------------------
-  TClonesArray*   ListOfHits   () { return fListOfHits; }
-  int             NHits        () const { return fNHits;      }
-  float           Energy       () const { return fEnergy;     }
-  double          Radius       () const { return fHexagon.Radius(); }
-  TDisk*          Disk         () const { return fDisk; }
-  double          X0           () const { return fHexagon.X0(); }
-  double          Y0           () const { return fHexagon.Y0(); }
-  const THexagon* Hexagon      () const { return (const THexagon*) &fHexagon; }
+  TClonesArray*    ListOfHits   () { return fListOfHits; }
+  int              NHits        () const { return fNHits;      }
+  float            Energy       () const { return fEnergy;     }
+  double           Radius       () const { return fShape->Radius(); }
+  TDisk*           Disk         () const { return fDisk; }
+  double           X0           () const { return fShape->X0(); }
+  double           Y0           () const { return fShape->Y0(); }
+  const TStnShape* Shape        () const { return fShape; }
 
   const mu2e::Crystal* Crystal() const { return fCrystal;    }
 //-----------------------------------------------------------------------------
 // modifiers
 //-----------------------------------------------------------------------------
-  void  SetFillStyle(int Style) { fHexagon.fFillStyle = Style; }
-  void  SetFillColor(int Color) { fHexagon.fFillColor = Color; }
-  void  SetLineColor(int Color) { fHexagon.fLineColor = Color; }
-  void  SetLineWidth(int Width) { fHexagon.fLineWidth = Width; }
+  void  SetFillStyle(int Style) { fShape->fFillStyle = Style; }
+  void  SetFillColor(int Color) { fShape->fFillColor = Color; }
+  void  SetLineColor(int Color) { fShape->fLineColor = Color; }
+  void  SetLineWidth(int Width) { fShape->fLineWidth = Width; }
 
   void   AddHit(const mu2e::CaloCrystalHit* CrystalHit);
 

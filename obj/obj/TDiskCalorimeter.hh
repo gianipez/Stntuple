@@ -30,6 +30,7 @@ public:
 
   struct GeomData_t {
     int    fNDisks;
+    int    fNEdges;
     double fRMin[4];
     double fRMax[4];
     double fZ0  [4];
