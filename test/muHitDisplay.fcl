@@ -42,8 +42,12 @@ physics.filters.InitStntuple.histFileName : "egun_stnmaker.stn"
 #------------------------------------------------------------------------------
 # debugging
 #------------------------------------------------------------------------------
-# physics.producers.CalPatRecDem.diagLevel : 1
-# physics.producers.CalPatRecDmm.diagLevel : 1
+physics.producers.CalPatRec.debugLevel               : 100
+physics.producers.CalPatRec.HelixFitHack.debugLevel  : 100
+physics.producers.CalPatRec.HelixFitHack.debugLevel2 : 100
+physics.producers.CalPatRec.SeedFitHack.debugLevel   : 100
+physics.producers.CalPatRec.KalFitHack.debugLevel    : 100
+physics.producers.CalPatRec.KalFitHack.DoubletAmbigResolver.debugLevel  : 100
 # physics.producers.AvikPID.debugLevel     : 100
 #------------------------------------------------------------------------------
 # everything below is appended by murat/scripts/submit_mu2e_job

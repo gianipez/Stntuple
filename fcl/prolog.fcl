@@ -80,9 +80,11 @@ StntupleMaker3 : { @table::StntupleMaker
     trkRecoModuleLabel      : [ "MergePatRec"          , "TRFDownstreameMinus" , "CalPatRec" ]
     trkExtrapolModuleLabel  : [ "TrackCaloIntersection",                    "" ,          "" ]
     trkCaloMatchModuleLabel : [                      "",                    "" ,          "" ]
-    pidModuleLabel          : [                      "",                    "" ,          "" ]
+    pidModuleLabel          : [               "AvikPID",             "AvikPID" ,   "AvikPID" ]
     fitParticle             : [                      11,                     11,          11 ]
     fitDirection            : [                       0,                      0,           0 ]
+
+    makePid                 : 0
 }
 
 FillStntuple : { 

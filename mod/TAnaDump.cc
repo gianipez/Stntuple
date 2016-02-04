@@ -701,9 +701,8 @@ void TAnaDump::printKalRep(const KalRep* Krep, const char* Opt, const char* Pref
 //-----------------------------------------------------------------------------
 // test: calculated residual in fTmp[0]
 //-----------------------------------------------------------------------------
-      Test_000(Krep,hit);
-
-      printf(" %7.3f",fTmp[0]);
+//       Test_000(Krep,hit);
+//       printf(" %7.3f",fTmp[0]);
 
       printf("\n");
     }

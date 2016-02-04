@@ -45,7 +45,7 @@ ClassImp(TEvdCrystal)
   fNEdges = NEdges;
   pos = &Cr->position();
 
-  if      (fNEdges == 4) fShape = new TStnSquare (Size,pos->x()+3904.,pos->y());
+  if      (fNEdges == 4) fShape = new TStnSquare (2*Size,pos->x()+3904.,pos->y());
   else if (fNEdges == 6) fShape = new TStnHexagon(Size,pos->x()+3904.,pos->y());
 
   fShape->SetLineColor(1);
