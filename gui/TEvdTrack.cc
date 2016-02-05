@@ -113,21 +113,19 @@ void TEvdTrack::Paint(Option_t* Option) {
 }
 
 //-----------------------------------------------------------------------------
+// to display the reconstructed track in XY, use its parameters in the middle 
+// of the tracker, at s=0
+//-----------------------------------------------------------------------------
 void TEvdTrack::PaintXY(Option_t* Option) {
 
-  //  printf(" %2i dem ",i);
-
-  //  TAnaDump::Instance()->printKalRep(fKrep,"","");
-//-----------------------------------------------------------------------------
-// also display the reconstructed track, use s=0
-//-----------------------------------------------------------------------------
-//	HelixParams hel = trk->helix(0);
   double d0, om, r, phi0, x0, y0;
 
-  d0   = fKrep->helix(0.).d0();
-  om   = fKrep->helix(0.).omega();
+  HelixParams hel = fKrep->helix(0);
+
+  d0   = hel.d0();
+  om   = hel.omega();
   r    = fabs(1./om);
-  phi0 = fKrep->helix(0.).phi0();
+  phi0 = hel.phi0();
     
   x0   =  -(1/om+d0)*sin(phi0);
   y0   =   (1/om+d0)*cos(phi0);

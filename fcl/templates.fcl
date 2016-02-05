@@ -337,7 +337,10 @@ physics : {
     allpatrec_reco_display      : [ @sequence::calRecoSeq, @sequence::allPatRecSeq, @sequence::vadimPidSeq, MuHitDisplay ]
     calpatrec_reco_display      : [ @sequence::calRecoSeq, @sequence::calPatRecSeq, @sequence::vadimPidSeq, MuHitDisplay ]
     trkpatrec_reco_display      : [ @sequence::calRecoSeq, @sequence::trkPatRecSeq, @sequence::vadimPidSeq, MuHitDisplay ]
-    dem_reco_display            : [ @sequence::calRecoSeq, TimePeakFinder, PosHelixFinder, TRFDownstreameMinus, CalPatRec, MergePatRec, MuHitDisplay ]
+    dem_reco_display            : [ @sequence::calRecoSeq, TimePeakFinder, PosHelixFinder, TRFDownstreameMinus, 
+				    CalPatRec, MergePatRec, 
+				    @sequence::vadimPidSeq, 
+				    MuHitDisplay ]
 #
     gen_allpatrec_reco_display  : [ @sequence::generatorSeq, @sequence::hitMakerSeq ,
 				    @sequence::calRecoSeq  , @sequence::allPatRecSeq, @sequence::vadimPidSeq, MuHitDisplay ]

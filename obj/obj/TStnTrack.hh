@@ -81,10 +81,13 @@ class TStnTrack : public TObject {
     kNFreeIntsV7   =  7,
     kNFreeFloatsV7 =  5,
 
-    kNFreeIntsv8   =  7,
+    kNFreeIntsV8   =  7,
     kNFreeFloatsV8 =  4,
 
-    kNFreeInts     =  5,
+    kNFreeIntsV9   =  5,
+    kNFreeFloatsV9 =  4,
+
+    kNFreeInts     =  5,     //         in V10 2 words per intersection are added
     kNFreeFloats   =  4
   };
 
@@ -121,6 +124,8 @@ public:
     float        fChi2Time;		// track-cluster match chi&^2 (time)
     float        fPath;			// track path in the disk
     float        fIntDepth;             // assumed interaction depth, added in V6;
+    float        fDr;                   // DR(cluster-track), signed  (aded in V10)
+    float        fSInt;                 // interaction length, calculated (added in V10)
     const mu2e::CaloCluster*       fCluster;
     const mu2e::TrkToCaloExtrapol* fExtrk;
   };
@@ -142,25 +147,22 @@ public:
   int                       fNGoodMcHits;   // Nhits produced by the associated MC particle
   int                       fPartID;        // MC particle ID (number in the list)
   int                       fNMcStrawHits;  // Nhits by associated particle in the straw tracker
-  int                       fAlgorithmID;   // bit-packed : (alg_mask << 16 ) | best
-  int                       fNHits;         // undefined before V9: total number of hits associated with the track
-  int                       fNDoublets;     // undefined before V9: 
-                                            //  number of opposite sign doublets
-                                            //  opposite signs << 4
-                                            //  number of hits with no ambiguity resolved << 16
-  int                       fInt[kNFreeInts];     // provision for future expension
+  int                       fAlgorithmID;     // bit-packed : (alg_mask << 16 ) | best
+  int                       fNHits;           // undefined before V9: total number of hits associated with the track
+  int                       fNDoublets;       // undefined before V9: nd_os | (nd_ss << 8) | (nhitsambig0 << 16) 
+  int                       fInt[kNFreeInts]; // provision for future expension
   
   float                     fChi2;
-  float                     fChi2C;          // *NOT USED* 
+  float                     fChi2C;           // *NOT USED* 
   float                     fFitCons;
   float                     fT0;
   float                     fT0Err;
   float                     fFitMomErr;
-  float                     fTanDip;	 // at Z=Z0
-  float                     fP;		 // total momentum in the first point
+  float                     fTanDip;	      // at Z=Z0
+  float                     fP;		      // total momentum in the first point
   float                     fCharge;
-  float                     fPt;	 // transverse momentum in the first point
-  float                     fD0;	 // at Z=Z0
+  float                     fPt;	      // transverse momentum in the first point
+  float                     fD0;	      // at Z=Z0
   float                     fZ0;
 
   float                     fPStOut;    // MC momentum in the VD ST_Out 
@@ -192,7 +194,7 @@ public:
   float                     fPhi0;	          // phi0 at Z0 **specify in V8 , no I/O changes***
   float                     fFloat[kNFreeFloats]; // provision for future I/O expansion
 
-  InterData_t               fDisk[kNDisks];       // track intersections with disks
+  InterData_t               fDisk [kNDisks];      // track intersections with disks
 //-----------------------------------------------------------------------------
 //  transient data members, all the persistent ones should go above
 //-----------------------------------------------------------------------------
@@ -293,8 +295,11 @@ public:
   void ReadV4(TBuffer& R__b);
   void ReadV5(TBuffer& R__b);
   void ReadV6(TBuffer& R__b);
+  void ReadV7(TBuffer& R__b);
+  void ReadV8(TBuffer& R__b);
+  void ReadV9(TBuffer& R__b);
 
-  ClassDef(TStnTrack,9)
+  ClassDef(TStnTrack,10)
 
 };
 

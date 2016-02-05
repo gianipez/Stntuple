@@ -396,7 +396,7 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
       track->fNHPerStation[j] = 0;
     }
     
-    int     loc, ipart, nhits, n_straw_hits, found, ntrkhits(0), nhitsnoambig(0); // , pdg_code;
+    int     loc, ipart, nhits, n_straw_hits, found, ntrkhits(0), nhitsambig0(0); // , pdg_code;
     int     id(-1),  npart(0), part_pdg_code[100], part_nh[100], part_id[100];
     int     nwrong = 0;
     double  mcdoca;
@@ -453,8 +453,8 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 	      if (hit->ambig()*mcdoca < 0) {
 		nwrong += 1;
 	      }
-	      if (hit->ambig()       == 0){
-		++nhitsnoambig;
+	      if (hit->ambig()       == 0) {
+		++nhitsambig0;
 	      }
 	    }
 	  }
@@ -541,7 +541,7 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
       }
     }
 
-    track->fNDoublets = nd_os | (nd_ss << 8) | (nhitsnoambig << 16);
+    track->fNDoublets = nd_os | (nd_ss << 8) | (nhitsambig0 << 16);
 //-----------------------------------------------------------------------------
 // given track parameters, build the expected hit mask
 //-----------------------------------------------------------------------------
@@ -834,6 +834,8 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 	  vint->fChi2Time     = tcm->chi2_time();
 	  vint->fIntDepth     = tcm->int_depth();
 	  vint->fPath         = tcm->ds();
+	  vint->fDr           = tcm->dr();
+	  vint->fSInt         = tcm->sint();
 	}
 	else {
 	  printf("%s : ADDITIONAL MATCH for track %i on vane = %i\n", oname,itrk,iv);
