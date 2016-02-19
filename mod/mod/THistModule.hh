@@ -71,6 +71,9 @@ public:
   TFile*     File            () { return fgFile;         }
   TObjArray* HistogramList   () { return fHistogramList; }
 
+
+  static:: TObjArray* GetListOfModules() { return fgModuleList; }
+
 //-----------------------------------------------------------------------------
 // other methods
 // define name of the output ROOT file, this can be done once per job
