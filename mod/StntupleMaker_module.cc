@@ -47,8 +47,11 @@
 #include "RecoDataProducts/inc/TrkFitDirection.hh"
 #include "BTrk/TrkBase/TrkParticle.hh"
 
+#include "Stntuple/base/TNamedHandle.hh"
 #include "Stntuple/alg/TStntuple.hh"
 #include "Stntuple/mod/StntupleGlobals.hh"
+
+#include "TrkReco/inc/DoubletAmbigResolver.hh"
 
 using namespace std; 
 
@@ -99,6 +102,10 @@ protected:
   double                   fMinECrystal ;  // 
 
   TNamed*                  fVersion;
+
+  TNamedHandle*            fDarHandle;
+
+  DoubletAmbigResolver*    fDar;
 //------------------------------------------------------------------------------
 // function members
 //------------------------------------------------------------------------------
@@ -171,13 +178,19 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
   TModule::fFolder->Add(fVersion);
 
   fgTimeOffsets = new SimParticleTimeOffset(PSet.get<fhicl::ParameterSet>("TimeOffsets"));
+  fDar          = new DoubletAmbigResolver (PSet.get<fhicl::ParameterSet>("DoubletAmbigResolver"),0.,0,0);
 
+  fDarHandle    = new TNamedHandle("DarHandle",fDar);
+
+  fFolder->Add(fDarHandle);
 }
 
 
 //------------------------------------------------------------------------------
 StntupleMaker::~StntupleMaker() {
   delete fgTimeOffsets;
+  delete fDar;
+  delete fDarHandle;
   delete fVersion;
 }
 
@@ -321,13 +334,12 @@ void StntupleMaker::beginJob() {
 	track_data->AddCollName("mu2e::StrawHitCollection"            ,fMakeStrawHitModuleLabel.data()   ,"");
 	track_data->AddCollName("mu2e::StrawDigiMCCollection"         ,fMakeStrawHitModuleLabel.data()   ,"StrawHitMC");
 	track_data->AddCollName("mu2e::PtrStepPointMCVectorCollection",fMakeStrawHitModuleLabel.data()   ,"StrawHitMCPtr");
-	//	track_data->AddCollName("mu2e::TrkToCaloExtrapolCollection"   ,fTrkExtrapolModuleLabel [i].data(),"");
 	track_data->AddCollName("mu2e::TrkCaloIntersectCollection"    ,fTrkExtrapolModuleLabel [i].data(),"");
 	track_data->AddCollName("mu2e::CaloClusterCollection"         ,fCaloClusterMaker.data()          ,"");
-	//	track_data->AddCollName("mu2e::TrackClusterMatchOldCollection"   ,fTrkCaloMatchModuleLabel[i].data(),"");
 	track_data->AddCollName("mu2e::TrackClusterMatchCollection"   ,fTrkCaloMatchModuleLabel[i].data(),"");
 	track_data->AddCollName("mu2e::PIDProductCollection"          ,fPidModuleLabel[i].data()         ,"");
 	track_data->AddCollName("mu2e::StepPointMCCollection"         ,fG4ModuleLabel.data()             ,"");
+	track_data->AddCollName("module"                              ,GetName()                         ,"DarHandle");
       }
     }
   }

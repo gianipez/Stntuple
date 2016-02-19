@@ -58,6 +58,8 @@
 #include "BTrk/TrkBase/TrkPoca.hh"
 #include "BTrk/KalmanTrack/KalHit.hh"
 
+#include "Stntuple/mod/THistModule.hh"
+#include "Stntuple/base/TNamedHandle.hh"
 
 namespace {
 
@@ -142,7 +144,7 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
   const KalRep              *krep;
   double                    h1_fltlen, hn_fltlen, entlen, fitmom_err;
   TStnTrack*                track;
-  TStnTrackBlock            *data;   
+  TStnTrackBlock            *data(0);   
 
   static  ZMap_t            zmap;
 
@@ -166,16 +168,11 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
   char   pidp_module_label[100], pidp_description[100];
   char   g4_module_label  [100], g4_description  [100];
 
+  char   module_name      [100], dar_name        [100];
+
 
   mu2e::GeomHandle<mu2e::TTracker> ttHandle;
   tracker = ttHandle.get();
-
-  if (initialized == 0) {
-    InitTrackerZMap(tracker,&zmap);
-    initialized = 1;
-
-    _dar = new mu2e::DoubletAmbigResolver(fhicl::ParameterSet(),0.,0,0);
-  }
 
   ev_number = AnEvent->event();
   rn_number = AnEvent->run();
@@ -184,6 +181,18 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 
   data = (TStnTrackBlock*) Block;
   data->Clear();
+
+  if (initialized == 0) {
+    InitTrackerZMap(tracker,&zmap);
+    initialized = 1;
+
+    data->GetModuleLabel("module",module_name);
+    data->GetDescription("module",dar_name   );
+
+    THistModule* m   = static_cast<THistModule*>  (THistModule::GetListOfModules()->FindObject(module_name));
+    TNamedHandle* nh = static_cast<TNamedHandle*> (m->GetFolder()->FindObject(dar_name));
+    _dar             = static_cast<mu2e::DoubletAmbigResolver*> (nh->Object());
+  }
 
   data->GetModuleLabel("mu2e::AlgorithmIDCollection",algs_module_label);
   data->GetDescription("mu2e::AlgorithmIDCollection",algs_description );

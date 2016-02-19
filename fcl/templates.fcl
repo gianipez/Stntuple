@@ -107,7 +107,7 @@ services : {
     #   Timing                : { }fcl/
 
     user : {
-        GeometryService        : { inputFile      : "JobConfig/TDR/geom_MothersToHits.txt" }
+        GeometryService        : { inputFile      : "JobConfig/cd3/geom_baseline.txt"      }
         ConditionsService      : { conditionsfile : "Mu2eG4/test/conditions_01.txt"        }
         GlobalConstantsService : { inputFile      : "Mu2eG4/test/globalConstants_01.txt"   }
         BTrkHelper             : @local::BTrkHelperDefault
@@ -125,7 +125,7 @@ services.scheduler.wantSummary: true
 physics : {
     producers: {
         generate             : { @table::StoppedMuonConversionGun }
-	g4run                : @local::g4run
+	g4run                : @local::mu2eg4runDefaultSingleStage
 #------------------------------------------------------------------------------
 # hit makers
 #------------------------------------------------------------------------------
@@ -306,14 +306,8 @@ physics : {
     trkpatrec_reco_stnmaker     : [ @sequence::calRecoSeq, @sequence::trkPatRecSeq, @sequence::pidSeq, @sequence::stnmakerSeq, EventFilter ]
     calpatrec_reco_stnmaker     : [ @sequence::calRecoSeq, @sequence::calPatRecSeq, @sequence::pidSeq, @sequence::stnmakerSeq, EventFilter ]
 #------------------------------------------------------------------------------
-    gen_allpatrec_reco_stnmaker    : [ @sequence::generatorSeq, @sequence::hitMakerSeq ,
-				       @sequence::calRecoSeq  , @sequence::allPatRecSeq,
-				       @sequence::vadimPidSeq , @sequence::stnmakerSeq , EventFilter]
-
-    genmix_allpatrec_reco_stnmaker : [ @sequence::genMixSeq   , @sequence::hitMakerSeq ,
-				       @sequence::calRecoSeq  , @sequence::allPatRecSeq,
-				       @sequence::vadimPidSeq , @sequence::stnmakerSeq , EventFilter]
-
+# only electron reconstruction turned on
+#------------------------------------------------------------------------------
     gen_trkpatrec_reco_stnmaker : [ @sequence::generatorSeq, @sequence::hitMakerSeq ,
 				    @sequence::calRecoSeq  , @sequence::trkPatRecSeq,
 				    @sequence::vadimPidSeq , @sequence::stnmakerSeq , EventFilter ]
@@ -321,9 +315,19 @@ physics : {
     gen_calpatrec_reco_stnmaker : [ @sequence::generatorSeq, @sequence::hitMakerSeq ,
 				    @sequence::calRecoSeq  , @sequence::calPatRecSeq, 
 				    @sequence::vadimPidSeq , @sequence::stnmakerSeq , EventFilter ]
+    gen_allpatrec_reco_stnmaker    : [ @sequence::generatorSeq, @sequence::hitMakerSeq ,
+				       @sequence::calRecoSeq  , @sequence::allPatRecSeq,
+				       @sequence::vadimPidSeq , @sequence::stnmakerSeq , EventFilter]
+#------------------------------------------------------------------------------
+# same with mixed background 
+#------------------------------------------------------------------------------
+    genmix_allpatrec_reco_stnmaker : [ @sequence::genMixSeq   , @sequence::hitMakerSeq ,
+				       @sequence::calRecoSeq  , @sequence::allPatRecSeq,
+				       @sequence::vadimPidSeq , @sequence::stnmakerSeq , EventFilter]
 
+#------------------------------------------------------------------------------
 # AvikPID requires both electron and muon reconstruction sequences
-
+#------------------------------------------------------------------------------
     gen_allpatrec_dem_dmm_reco_stnmaker : [ @sequence::generatorSeq, @sequence::hitMakerSeq       ,
 					    @sequence::calRecoSeq  , @sequence::allPatRecDemDmmSeq,
 					    @sequence::avikPidSeq  , @sequence::stnmakerSeq       , EventFilter ]
@@ -337,8 +341,9 @@ physics : {
     allpatrec_reco_display      : [ @sequence::calRecoSeq, @sequence::allPatRecSeq, @sequence::vadimPidSeq, MuHitDisplay ]
     calpatrec_reco_display      : [ @sequence::calRecoSeq, @sequence::calPatRecSeq, @sequence::vadimPidSeq, MuHitDisplay ]
     trkpatrec_reco_display      : [ @sequence::calRecoSeq, @sequence::trkPatRecSeq, @sequence::vadimPidSeq, MuHitDisplay ]
-    dem_reco_display            : [ @sequence::calRecoSeq, TimePeakFinder, PosHelixFinder, TRFDownstreameMinus, 
-				    CalPatRec, MergePatRec, 
+
+    dem_reco_display            : [ @sequence::calRecoSeq, 
+				    @sequence::allPatRecSeq,
 				    @sequence::vadimPidSeq, 
 				    MuHitDisplay ]
 #

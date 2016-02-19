@@ -47,11 +47,12 @@ StntupleMaker : {
     makeStrawHitModuleLabel : "makeSH"
     generatorModuleLabel    : "generate"
 
+    DoubletAmbigResolver    : { @table::DoubletAmbigResolver }
+
     trackBlockName          : [ "TrackBlock"   ]
     trkRecoModuleLabel      : [ "MergePatRec"  ]
     fitParticle             : [             11 ] # 11:electron  , 13:muon etc
     fitDirection            : [              0 ] #  0:downstream,  1:upstream
-#    trkExtrapolModuleLabel  : [ "TrkExtrapol"  ]
     trkExtrapolModuleLabel  : [ "TrackCaloIntersection"  ]
     trkCaloMatchModuleLabel : [ "CaloMatching"           ]
 #    pidModuleLabel          : [ "ParticleID"   ]
