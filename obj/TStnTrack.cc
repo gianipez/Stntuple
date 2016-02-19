@@ -1569,16 +1569,24 @@ void TStnTrack::Print(Option_t* Option) const {
 //-----------------------------------------------------------------------------
 // print banner
 //-----------------------------------------------------------------------------
-    printf("---------------------------------------------------------------------------------------------\n");
-    printf(" i  na nw   id_word      p      momerr     T0    T0Err       D0    TanDip  chi2/dof    fcon  \n");
-    printf("---------------------------------------------------------------------------------------------\n");
+    printf("---------------------------------------------------------------------------------------------------------------------------------------\n");
+    printf(" i  nh  na nw nosd nssd na0 ncl alg_mask    id_word   q    p      momerr     T0     T0Err       D0      Z0    TanDip  chi2/dof     fcon \n");
+    printf("---------------------------------------------------------------------------------------------------------------------------------------\n");
   }
 
   if ((opt == "") || (opt.Index("data") >= 0)) {
-    printf("%2i %3i %2i 0x%08x %8.3f %7.3f  %8.3f %6.3f  %8.3f %7.4f  %8.3f %8.3e \n",
-	   fNumber,t->NActive(),t->NWrong(), t->fIDWord,
-	   fP*fCharge, fFitMomErr, fT0, fT0Err, fD0, fTanDip, 
+    printf("%2i %3i %3i %2i %4i %4i %3i %3i 0x%08x",
+	   fNumber,t->NHits(), t->NActive(),t->NWrong(), 
+	   t->NOSDoublets(), t->NSSDoublets(), t->NHitsNoAmbig(),
+	   t->NClusters(),
+	   t->AlgMask());
+
+    printf(" 0x%08x %1.0f %8.3f %7.3f  %8.3f %6.3f  %8.3f %8.3f %7.4f  %8.3f %8.3e",
+	   t->fIDWord,
+	   fCharge, 
+	   fP*fCharge, fFitMomErr, fT0, fT0Err, fD0, fZ0, fTanDip, 
 	   t->Chi2Dof(),t->FitCons());
+    printf("\n");
   }
 }
 
