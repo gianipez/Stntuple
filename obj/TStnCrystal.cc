@@ -25,7 +25,7 @@
 #include "Stntuple/base/TVisManager.hh"
 #include "Stntuple/base/TStnHexagon.hh"
 #include "Stntuple/base/TStnSquare.hh"
-#include "Stntuple/base/TObjHandle.hh"
+// #include "Stntuple/base/TObjHandle.hh"
 #include "Stntuple/obj/TCalHitData.hh"
 
 ClassImp(TStnCrystal)
