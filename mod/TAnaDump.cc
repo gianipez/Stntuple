@@ -982,6 +982,81 @@ void TAnaDump::printCaloCrystalHits(const char* ModuleLabel,
   }
 }
 
+//-----------------------------------------------------------------------------
+void TAnaDump::printCaloDigiCollection(const char* ModuleLabel, 
+				       const char* ProductName,
+				       const char* ProcessName) {
+
+  art::Selector  selector(art::ProductInstanceNameSelector(ProductName) &&
+			  art::ProcessNameSelector(ProcessName)         && 
+			  art::ModuleLabelSelector(ModuleLabel)            );
+
+  art::Handle<mu2e::CaloDigiCollection> calodigisHandle;
+
+  fEvent->get(selector,calodigisHandle);
+
+  const mu2e::CaloDigiCollection* calodigis;
+
+  calodigis = calodigisHandle.operator->();
+
+  int nhits = calodigis->size();
+
+  const mu2e::CaloDigi* hit;
+
+  printf("----------------------------------------------------------------\n");
+  printf("ReadoutID      Time      NSamples               \n");
+  printf("----------------------------------------------------------------\n");
+
+  for (int ic=0; ic<nhits; ic++) {
+    hit  = &calodigis->at(ic);
+
+    printf("%7i  %10.3f %5i\n",
+	   hit->roId(),
+	   hit->t0(),
+	   hit->nSamples());
+  }
+}
+
+
+
+//-----------------------------------------------------------------------------
+void TAnaDump::printRecoCaloDigiCollection(const char* ModuleLabel, 
+				       const char* ProductName,
+				       const char* ProcessName) {
+
+  art::Selector  selector(art::ProductInstanceNameSelector(ProductName) &&
+			  art::ProcessNameSelector(ProcessName)         && 
+			  art::ModuleLabelSelector(ModuleLabel)            );
+
+  art::Handle<mu2e::RecoCaloDigiCollection> recocalodigisHandle;
+
+  fEvent->get(selector,recocalodigisHandle);
+
+  const mu2e::RecoCaloDigiCollection* recocalodigis;
+
+  recocalodigis = recocalodigisHandle.operator->();
+
+  int nhits = recocalodigis->size();
+
+  const mu2e::RecoCaloDigi* hit;
+
+  printf("-----------------------------------------------------------------------------------\n");
+  printf("ReadoutID      Time      Time-Chi2     Energy     Amplitude      PSD               \n");
+  printf("-----------------------------------------------------------------------------------\n");
+
+  for (int ic=0; ic<nhits; ic++) {
+    hit  = &recocalodigis->at(ic);
+
+    printf("%7i  %10.3f   %10.3f   %10.3f   %10.3f   %10.3f\n",
+	   hit->ROid(),
+	   hit->time(),
+	   hit->tChi2(),
+	   hit->edep(),
+	   hit->amplitude(),
+	   hit->psd());
+  }
+}
+
 //------------------------------------------------------------------
 // void TAnaDump::printTrackClusterLink(const char* ModuleLabel, 
 // 			     const char* ProductName,

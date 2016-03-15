@@ -81,6 +81,14 @@ public:
 			     const char* ProductName = "", 
 			     const char* ProcessName = ""); 
 
+  void printCaloDigiCollection(const char* ModuleLabel, 
+			       const char* ProductName = "", 
+			       const char* ProcessName = ""); 
+
+  void printRecoCaloDigiCollection(const char* ModuleLabel, 
+				   const char* ProductName = "", 
+				   const char* ProcessName = "");
+
   void printCaloHits        (const char* ModuleLabel, 
 			     const char* ProductName = "", 
 			     const char* ProcessName = ""); 
