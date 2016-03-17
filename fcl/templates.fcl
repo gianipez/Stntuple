@@ -14,6 +14,9 @@ BEGIN_PROLOG
 
   hitMakerSeq   : [ MakeCaloReadoutHits, MakeCaloCrystalHits, makeSD, makeSH ]
 
+  digiMakerSeq  : [ MakeCaloCompressedHits     , CaloDigisFromStepPointMCs, CaloHitsFromCaloDigis, 
+  		    CaloCrystalHitsFromCaloHits,  makeSD, makeSH ]
+ 
 # MC generator and hit makers
   genHitsSeq    : [ @sequence::generatorSeq, @sequence::hitMakerSeq ]
 
@@ -129,12 +132,19 @@ physics : {
 #------------------------------------------------------------------------------
 # hit makers
 #------------------------------------------------------------------------------
-        protonTimeMap        : { @table::protonTimeMap }
-        muonTimeMap          : { @table::muonTimeMap }
-        makeSD               : @local::makeSD
-        makeSH               : @local::makeSHfromSD
-	MakeCaloReadoutHits  : @local::MakeCaloReadoutHits
-	MakeCaloCrystalHits  : @local::MakeCaloCrystalHitsNew
+        protonTimeMap          : { @table::protonTimeMap }
+        muonTimeMap            : { @table::muonTimeMap }
+        makeSD                 : @local::makeSD
+        makeSH                 : @local::makeSHfromSD
+	MakeCaloCompressedHits : @local::MakeCaloCompressedHits
+	MakeCaloReadoutHits    : @local::MakeCaloReadoutHits
+	MakeCaloCrystalHits    : @local::MakeCaloCrystalHitsNew
+#------------------------------------------------------------------------------
+# caloriemter digi maker
+#------------------------------------------------------------------------------
+	CaloDigisFromStepPointMCs   :{ @table::CaloDigisFromStepPointMCs}
+	CaloHitsFromCaloDigis       :{ @table::CaloHitsFromCaloDigis}
+	CaloCrystalHitsFromCaloHits :{ @table::CaloCrystalHitsFromCaloHits}
 #------------------------------------------------------------------------------
 #  default tracking
 #------------------------------------------------------------------------------
@@ -318,6 +328,9 @@ physics : {
     gen_allpatrec_reco_stnmaker    : [ @sequence::generatorSeq, @sequence::hitMakerSeq ,
 				       @sequence::calRecoSeq  , @sequence::allPatRecSeq,
 				       @sequence::vadimPidSeq , @sequence::stnmakerSeq , EventFilter]
+    gen_allpatrec_digi_stnmaker    : [ @sequence::generatorSeq, @sequence::digiMakerSeq ,
+				       @sequence::calRecoSeq  , @sequence::allPatRecSeq, @sequence::vadimPidSeq, 
+				       @sequence::stnmakerSeq  ]
 #------------------------------------------------------------------------------
 # same with mixed background 
 #------------------------------------------------------------------------------
@@ -342,13 +355,19 @@ physics : {
     calpatrec_reco_display      : [ @sequence::calRecoSeq, @sequence::calPatRecSeq, @sequence::vadimPidSeq, MuHitDisplay ]
     trkpatrec_reco_display      : [ @sequence::calRecoSeq, @sequence::trkPatRecSeq, @sequence::vadimPidSeq, MuHitDisplay ]
 
-    dem_reco_display            : [ @sequence::calRecoSeq, 
+    dem_reco_display            : [ @sequence::digiMakerSeq ,
+				    @sequence::calRecoSeq, 
 				    @sequence::allPatRecSeq,
 				    @sequence::vadimPidSeq, 
+				    @sequence::stnmakerSeq ,
 				    MuHitDisplay ]
 #
     gen_allpatrec_reco_display  : [ @sequence::generatorSeq, @sequence::hitMakerSeq ,
-				    @sequence::calRecoSeq  , @sequence::allPatRecSeq, @sequence::vadimPidSeq, MuHitDisplay ]
+				    @sequence::calRecoSeq  , @sequence::allPatRecSeq, @sequence::vadimPidSeq, 
+				    @sequence::stnmakerSeq , MuHitDisplay ]
+    gen_allpatrec_digi_display  : [ @sequence::generatorSeq, @sequence::digiMakerSeq ,
+				    @sequence::calRecoSeq  , @sequence::allPatRecSeq, @sequence::vadimPidSeq, 
+				    @sequence::stnmakerSeq , MuHitDisplay ]
 
     gen_calpatrec_reco_display  : [ @sequence::generatorSeq, @sequence::hitMakerSeq,
 				    @sequence::calRecoSeq, @sequence::calPatRecSeq, @sequence::vadimPidSeq, MuHitDisplay ]
