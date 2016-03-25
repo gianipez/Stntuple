@@ -23,7 +23,7 @@
 #include "CalorimeterGeom/inc/DiskCalorimeter.hh"
 
 #include "RecoDataProducts/inc/KalRepPtrCollection.hh"
-#include "TrkReco/inc/TrkStrawHit.hh"
+// #include "TrkReco/inc/TrkStrawHit.hh"
 
 // #include "TrackCaloMatching/inc/TrkToCaloExtrapolCollection.hh"
 #include "TrackCaloMatching/inc/TrackClusterMatch.hh"

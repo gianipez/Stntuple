@@ -24,7 +24,7 @@
 #include "CalorimeterGeom/inc/VaneCalorimeter.hh"
 
 #include "RecoDataProducts/inc/KalRepPtrCollection.hh"
-#include "TrkReco/inc/TrkStrawHit.hh"
+#include "BTrkData/inc/TrkStrawHit.hh"
 // #include "KalmanTests/inc/KalFitResult.hh"
 #include "RecoDataProducts/inc/Doublet.hh"
 #include "TrkReco/inc/DoubletAmbigResolver.hh"
