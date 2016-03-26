@@ -73,6 +73,13 @@ BEGIN_PROLOG
 
   stnmakerSeq   : [ InitStntuple, StntupleMaker, FillStntuple ]
 
+  gen_allpatrec_dem_dmm_reco_stnmaker_seq : [ @sequence::generatorSeq, @sequence::hitMakerSeq       ,
+					      @sequence::calRecoSeq  , @sequence::allPatRecDemDmmSeq,
+					      @sequence::avikPidSeq  , @sequence::stnmakerSeq       , EventFilter ]
+
+  genmix_allpatrec_dem_dmm_reco_stnmaker_seq : [ @sequence::genMixSeq , @sequence::hitMakerSeq       ,
+						 @sequence::calRecoSeq, @sequence::allPatRecDemDmmSeq,
+						 @sequence::avikPidSeq, @sequence::stnmakerSeq       , EventFilter ]
 END_PROLOG
 
 #include "minimalMessageService.fcl"
