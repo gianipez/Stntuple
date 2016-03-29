@@ -53,3 +53,6 @@ Stnana.Package                Stntuple
 # +Stnana.Package               murat
 # +Stnana.Package               zzx
 #------------------------------------------------------------------------------
+# MU2E: 2. version of PID templates - in ConditionsService/data
+#------------------------------------------------------------------------------
+mu2e.PidVersion                v5_7_0
