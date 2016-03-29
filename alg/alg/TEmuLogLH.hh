@@ -44,15 +44,19 @@ public:
   // smooth_new*   fMuoDtFunc;
   // smooth_new*   fMuoEpFunc;
 //-----------------------------------------------------------------------------
-// 
+// constructor and destructor
 //-----------------------------------------------------------------------------
   TEmuLogLH();
-  TEmuLogLH(const char* FnEle, const char* FnMuo);
-
   ~TEmuLogLH();
 //-----------------------------------------------------------------------------
 // initialization
 //-----------------------------------------------------------------------------
+					// versions: "v4_2_4", "v5_7_0"
+  int  Init(const char* Version);
+
+  int  Init_v4_2_4();
+  int  Init_v5_7_0();
+
   void InitEleDtHist(const char* Fn);
   void InitMuoDtHist(const char* Fn);
 
@@ -67,11 +71,6 @@ public:
 
   void InitEleXsHist(const char* Fn);
   void InitMuoXsHist(const char* Fn);
-					// versions: "v4_2_4"
-  int  Init(const char* Version);
-
-  int  Init_v4_2_4();
-  int  Init_v5_7_0();
 //-----------------------------------------------------------------------------
 // log(LH) of a given hypothesis is normally negative. 
 // If the calculated likelihood is zero, the returned value of Log(LH) 

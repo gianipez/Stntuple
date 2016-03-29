@@ -3,6 +3,7 @@
 //-----------------------------------------------------------------------------
 #include "Stntuple/alg/TEmuLogLH.hh"
 #include "TMath.h"
+#include "TEnv.h"
 // #include "murat/plot/smooth_new.hh"
 
 ClassImp(TEmuLogLH)
@@ -33,48 +34,10 @@ TEmuLogLH::TEmuLogLH() {
     fEleEpHist[i] = NULL;
     fMuoEpHist[i] = NULL;
   }
+
+  const char* pid_version = gEnv->GetValue("mu2e.PidVersion","");
+  if (pid_version != 0) Init(pid_version);
 }
-
-//-----------------------------------------------------------------------------
-// real costructor
-//-----------------------------------------------------------------------------
-TEmuLogLH::TEmuLogLH(const char* FnEle,  const char* FnMuo) {
-  //  TH1  *h1;
-
-  printf(" >>> ERROR : TEmuLogLH::TEmuLogLH(const char* FnEle,  const char* FnMuo) called by mistake\n");
-  
-  // h1 = get_mu2e_histogram(FnEle,"TCalm002/Hist/trk_1/dt");
-  // fEleDtHist = (TH1*) h1->Clone("ele_dt");
-
-  // // rebin if necessary
-  // fEleDtHist->Rebin(4);
-  // fEleDtFunc = new smooth_new(fEleDtHist);
-
-  // h1 = get_mu2e_histogram(FnEle,"TCalm002/Hist/trk_1/ep");
-  // fEleEpHist = (TH1*) h1->Clone("ele_ep");
-
-  // // rebin if necessary
-  // fEleEpHist->Rebin(1);
-  // fEleEpFunc = new smooth_new(fEleEpHist);
-
-//-----------------------------------------------------------------------------
-// muon part
-//-----------------------------------------------------------------------------
-  // h1 = get_mu2e_histogram(FnMuo,"TCalm002/Hist/trk_1/dt");
-  // fMuoDtHist = (TH1*) h1->Clone("muo_dt");
-
-  // // rebin if necessary
-  // fMuoDtHist->Rebin(4);
-  // fMuoDtFunc = new smooth_new(fMuoDtHist);
-
-  // h1 = get_mu2e_histogram(FnMuo,"TCalm002/Hist/trk_1/ep");
-  // fMuoEpHist = (TH1*) h1->Clone("muo_ep");
-
-  // // rebin if necessary
-  // fMuoEpHist->Rebin(1);
-  // fMuoEpFunc = new smooth_new(fMuoEpHist);
-}
-
 
 //-----------------------------------------------------------------------------
 TEmuLogLH::~TEmuLogLH() {
