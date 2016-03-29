@@ -71,6 +71,7 @@ public:
   int  Init(const char* Version);
 
   int  Init_v4_2_4();
+  int  Init_v5_7_0();
 //-----------------------------------------------------------------------------
 // log(LH) of a given hypothesis is normally negative. 
 // If the calculated likelihood is zero, the returned value of Log(LH) 

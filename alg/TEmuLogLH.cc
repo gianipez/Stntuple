@@ -618,8 +618,36 @@ int TEmuLogLH::Init_v4_2_4() {
 }
 
 //-----------------------------------------------------------------------------
-// default initialization: use electron and muon templates from e00s1412 and m00s1412
-// TrackAna trk_13
+//
+//-----------------------------------------------------------------------------
+int TEmuLogLH::Init_v5_7_0() {
+
+  char f_ele_ep_vs_path[256], f_ele_dt[256], f_ele_xs[256];
+  char f_muo_ep_vs_path[256], f_muo_dt[256], f_muo_xs[256];
+
+  const char* dir = getenv("MU2E_BASE_RELEASE");
+
+  sprintf(f_ele_ep_vs_path,"%s/ConditionsService/data/v5_7_0/pid_ele_ep_vs_path.tbl",dir);
+  sprintf(f_ele_dt        ,"%s/ConditionsService/data/v5_7_0/pid_ele_dt.tbl",dir);
+  sprintf(f_ele_xs        ,"%s/ConditionsService/data/v5_7_0/pid_ele_xdrds.tbl",dir);
+
+  sprintf(f_muo_ep_vs_path,"%s/ConditionsService/data/v5_7_0/pid_muo_ep_vs_path.tbl",dir);
+  sprintf(f_muo_dt        ,"%s/ConditionsService/data/v5_7_0/pid_muo_dt.tbl",dir);
+  sprintf(f_muo_xs        ,"%s/ConditionsService/data/v5_7_0/pid_muo_xdrds.tbl",dir);
+
+  InitEleEpHist(f_ele_ep_vs_path);
+  InitEleDtHist(f_ele_dt);
+  InitEleXsHist(f_ele_xs);
+
+  InitMuoEpHist(f_muo_ep_vs_path);
+  InitMuoDtHist(f_muo_dt);
+  InitMuoXsHist(f_muo_xs);
+
+  return 0;
+}
+
+//-----------------------------------------------------------------------------
+// initialization
 //-----------------------------------------------------------------------------
 int TEmuLogLH::Init(const char* Version) {
   
@@ -629,6 +657,7 @@ int TEmuLogLH::Init(const char* Version) {
   ver.ToLower();
   
   if (ver == "v4_2_4") Init_v4_2_4();
+  if (ver == "v5_7_0") Init_v5_7_0();
   else {
     printf(" >>> ERROR in TEmuLogLH::Init: unknown version : %s, BAILING OUT\n",Version); 
   }
