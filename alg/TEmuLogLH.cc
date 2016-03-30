@@ -457,12 +457,14 @@ void TEmuLogLH::InitEleEpHist(const TH2F* Hist) {
 
   nx                 = fEleEpVsPath->GetNbinsX();
 
+  TH1D* hpx = fEleEpVsPath->ProjectionX("hpx_EleEpVsPath");
+    
   imin[0]            = 1;		// first bin
   imax[fNEpSlices-1] = nx;
 
   int isl=0;
   for (int ix=1; ix<=nx; ix++) {
-    x1 = fEleEpVsPath->GetBinLowEdge(ix);
+    x1 = hpx->GetBinLowEdge(ix);
     if (x1 >= fPath[isl+1]) {
       imax[isl  ] = ix-1;
       imin[isl+1] = ix;
@@ -477,6 +479,8 @@ void TEmuLogLH::InitEleEpHist(const TH2F* Hist) {
     hint = fEleEpHist[i]->Integral();
     fEleEpHist[i]->Scale(1./hint);
   }
+
+  delete hpx;
 }
 
 //-----------------------------------------------------------------------------
