@@ -145,11 +145,11 @@ void TAnaDump::printCaloCluster(const mu2e::CaloCluster* Cl, const char* Opt) {
 
   if ((opt == "") || (opt == "banner")) {
     printf("-----------------------------------------------------------------------------------------------");
-    printf("-------------------------------\n");
-    printf("       Address  VaneID  Parent  NC       Time    Row   Col   Energy  X(loc)     Y(loc)   Z(loc)");
+    printf("--------------------------------------\n");
+    printf("       Address  DiskID  Parent  NC       Time    Row   Col   Energy     X(loc)     Y(loc)   Z(loc)");
     printf("        X          Y          Z\n");
     printf("-----------------------------------------------------------------------------------------------");
-    printf("-------------------------------\n");
+    printf("--------------------------------------\n");
   }
  
   if ((opt == "") || (opt.Index("data") >= 0)) {

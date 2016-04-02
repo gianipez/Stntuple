@@ -89,9 +89,9 @@ void TMcTruthVisNode::PaintXY(Option_t* option) {
   std::vector<double> xStep, yStep;
 
     if ( !info ) {
-      printf("[%s] >>> ERROR: SimParticleInfo missing, SKIPPING EVENT\n",oname);
+      printf(">>> [%s] ERROR: SimParticleInfo missing. SKIPPING EVENT\n",oname);
       firstStep = 0;
-      //      return;
+      return;
     }
     else {
       firstStep = &info->firstStepPointMCinTracker();

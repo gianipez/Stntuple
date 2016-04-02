@@ -87,8 +87,11 @@ class TStnTrack : public TObject {
     kNFreeIntsV9   =  5,
     kNFreeFloatsV9 =  4,
 
-    kNFreeInts     =  5,     //         in V10 2 words per intersection are added
-    kNFreeFloats   =  4
+    kNFreeIntsV10  =  5,     //         in V10 2 words per intersection are added
+    kNFreeFloatsV10=  4,
+
+    kNFreeInts     =  5,     //         V11: add Dave's TrkQual, I/O doesn't change
+    kNFreeFloats   =  3
   };
 
   enum { kMaxNLayers = 88 }; // 22x2*2
@@ -118,35 +121,35 @@ public:
     float        fDy;			// TRK-CL
     float        fDz;
     float        fDt;			// TRK-CL , _corrected_ by _dTOffset (!)
-    float        fDu;			// added in V6
-    float        fDv;			// added in V6
+    float        fDu;			// ** added in V6
+    float        fDv;			// ** added in V6
     float        fChi2Match;		// track-cluster match chi&^2 (coord)
     float        fChi2Time;		// track-cluster match chi&^2 (time)
     float        fPath;			// track path in the disk
-    float        fIntDepth;             // assumed interaction depth, added in V6;
-    float        fDr;                   // DR(cluster-track), signed  (aded in V10)
-    float        fSInt;                 // interaction length, calculated (added in V10)
+    float        fIntDepth;             // ** added in V6 :assumed interaction depth
+    float        fDr;                   // ** added in V10: DR(cluster-track), signed
+    float        fSInt;                 // ** added in V10: interaction length, calculated
     const mu2e::CaloCluster*       fCluster;
     const mu2e::TrkToCaloExtrapol* fExtrk;
   };
     
-  TLorentzVector            fMomentum;         // this assumes DELE fit hypothesis
+  TLorentzVector            fMomentum;        // this assumes DELE fit hypothesis
   
-  TBitset                   fHitMask;	       // bit #i: 1 if there is a hit 
-  TBitset                   fExpectedHitMask;   // bit #i: 1 if expect to have a hit at this Z
+  TBitset                   fHitMask;	      // bit #i: 1 if there is a hit 
+  TBitset                   fExpectedHitMask; // bit #i: 1 if expect to have a hit at this Z
 
-  int                       fNumber;       // track index in the list of reconstructed tracks
-  int                       fNHyp;          // number of hyp's with successfull fits
-  int                       fBestHyp[2];    // hypothesis with the best chi2/ndof
-  int                       fIDWord;	    // now - for selection "C"
-  
-  int                       fNActive;	    // NWrong << 16 + NActive
-  int                       fVaneID;	    // 
-  int                       fDiskID;	    // 
-  int                       fPdgCode;       // PDF code of the particle produced most hits
-  int                       fNGoodMcHits;   // Nhits produced by the associated MC particle
-  int                       fPartID;        // MC particle ID (number in the list)
-  int                       fNMcStrawHits;  // Nhits by associated particle in the straw tracker
+  int                       fNumber;          // track index in the list of reconstructed tracks
+  int                       fNHyp;            // number of hyp's with successfull fits
+  int                       fBestHyp[2];      // hypothesis with the best chi2/ndof
+  int                       fIDWord;	      // now - for selection "C"
+
+  int                       fNActive;	      // NWrong << 16 + NActive
+  int                       fVaneID;	      // 
+  int                       fDiskID;	      // 
+  int                       fPdgCode;         // PDF code of the particle produced most hits
+  int                       fNGoodMcHits;     // Nhits produced by the associated MC particle
+  int                       fPartID;          // MC particle ID (number in the list)
+  int                       fNMcStrawHits;    // Nhits by associated particle in the straw tracker
   int                       fAlgorithmID;     // bit-packed : (alg_mask << 16 ) | best
   int                       fNHits;           // undefined before V9: total number of hits associated with the track
   int                       fNDoublets;       // undefined before V9: nd_os | (nd_ss << 8) | (nhitsambig0 << 16) 
@@ -192,6 +195,7 @@ public:
   float                     fP2;                  // momentum defined at Z0
   float                     fC0;	          // curvature at Z0
   float                     fPhi0;	          // phi0 at Z0 **specify in V8 , no I/O changes***
+  float                     fTrkQual;             // ** added in V11
   float                     fFloat[kNFreeFloats]; // provision for future I/O expansion
 
   InterData_t               fDisk [kNDisks];      // track intersections with disks
@@ -277,7 +281,11 @@ public:
   
   KalRep*   GetKalRep() { return fKalRep[0]; }
   
-  float  Phi0 () const { return fFloat[0];}
+  float  P0         () const { return fP0;      }
+  float  P2         () const { return fP2;      }
+  float  C0         () const { return fC0;      }
+  float  Phi0       () const { return fPhi0;    }
+  float  DaveTrkQual() const { return fTrkQual; }
 //-----------------------------------------------------------------------------
 // setters
 //-----------------------------------------------------------------------------
@@ -292,14 +300,15 @@ public:
 //-----------------------------------------------------------------------------
 // schema evolution
 //-----------------------------------------------------------------------------
-  void ReadV4(TBuffer& R__b);
-  void ReadV5(TBuffer& R__b);
-  void ReadV6(TBuffer& R__b);
-  void ReadV7(TBuffer& R__b);
-  void ReadV8(TBuffer& R__b);
-  void ReadV9(TBuffer& R__b);
+  void ReadV4 (TBuffer& R__b);
+  void ReadV5 (TBuffer& R__b);
+  void ReadV6 (TBuffer& R__b);
+  void ReadV7 (TBuffer& R__b);
+  void ReadV8 (TBuffer& R__b);
+  void ReadV9 (TBuffer& R__b);
+  void ReadV10(TBuffer& R__b);
 
-  ClassDef(TStnTrack,10)
+  ClassDef(TStnTrack,11)
 
 };
 

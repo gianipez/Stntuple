@@ -92,6 +92,9 @@
 
 #include "CalPatRec/inc/CalTimePeak.hh"
 
+#include "TrkReco/inc/DoubletAmbigResolver.hh"
+#include "TrkDiag/inc/KalDiag.hh"
+
 // ROOT includes
 #include "TApplication.h"
 #include "TArc.h"
@@ -108,16 +111,12 @@
 #include "TNtuple.h"
 #include "TDatabasePDG.h"
 
-// Other includes
-// #include "CLHEP/Units/SystemOfUnits.h"
-
+#include "Stntuple/base/TNamedHandle.hh"
 #include "Stntuple/gui/gui/TStnVisManager.hh"
-// nodes represent objects to be displayed
 #include "Stntuple/gui/THeaderVisNode.hh"
 #include "Stntuple/gui/TCalVisNode.hh"
 #include "Stntuple/gui/TCrvVisNode.hh"
 #include "Stntuple/gui/TTrkVisNode.hh"
-// #include "Stntuple/gui/TStrawHitVisNode.hh"
 #include "Stntuple/gui/TMcTruthVisNode.hh"
 
 #include "Stntuple/alg/TStnTrackID.hh"
@@ -137,21 +136,19 @@ namespace mu2e {
 
   class MuHitDisplay : public THistModule {
   private:
-    //-----------------------------------------------------------------------------
-    // Input parameters: Module labels 
-    //-----------------------------------------------------------------------------
-    std::string        moduleLabel_;	             // this module label
+//-----------------------------------------------------------------------------
+// Input parameters: Module labels 
+//-----------------------------------------------------------------------------
+    std::string        _moduleLabel;	             // this module label
     std::string        _processName;
-    std::string        generatorModuleLabel_;
-    std::string        fG4ModuleLabel;
-    std::string        caloClusterModuleLabel_;
-    std::string		   crvRecoPulsesModuleLabel_;
+    std::string        _generatorModuleLabel;
+    std::string        _g4ModuleLabel;
+    std::string        _caloClusterModuleLabel;
+    std::string	       _crvRecoPulsesModuleLabel;
 
-    std::string        fCaloClusterAlgorithm;
-    std::string        fCaloClusterSeeding;
-    std::string        producerName_;
+    std::string        _producerName;
 
-    std::string        fMakeStrawHitModuleLabel;
+    std::string        _makeStrawHitModuleLabel;
     std::string        fStrawHitPosMaker;
     std::string        fStrawHitFlagMaker;
 
@@ -166,31 +163,24 @@ namespace mu2e {
 
 
     int                fGeneratorID;
-    // Name of the tracker StepPoint collection
-    std::string        trackerStepPoints_;
-
-    // Cuts used inside SimParticleWithHits:
-    //  - drop hits with too little energy deposited.
-    //  - drop SimParticles with too few hits.
-
-
-    // name for creating module label
+    string             _trackerStepPoints;
     string             fDirectionAndParticle;
 
-    double              minEnergyDep_;
-    double              timeWindow_;
+    double             _minEnergyDep;
+    double             _timeWindow;
 
-    mu2e::StrawHitFlag         fGoodHitMask;
-    mu2e::StrawHitFlag         fBadHitMask;
-    size_t                     minHits_;
+    mu2e::StrawHitFlag fGoodHitMask;
+    mu2e::StrawHitFlag fBadHitMask;
+    size_t             _minHits;
 
 
     bool               fDisplayBackgroundHits;
-    bool               clickToAdvance_;
     bool               fPrintHits;
     int                fUseStereoHits;
-    // Control for CRV-specific viewing
-    bool				showCRVOnly_;
+//-----------------------------------------------------------------------------
+// Control for CRV-specific viewing
+//-----------------------------------------------------------------------------
+    bool				_showCRVOnly;
     bool				foundCRV;
     bool				foundTrkr;
     bool				foundTrkr_StrawHitColl;
@@ -201,18 +191,14 @@ namespace mu2e {
     bool				foundCalo_ClusterColl;
     bool				foundCalo;
 
-    fhicl::ParameterSet _vmConfig;
-    //-----------------------------------------------------------------------------
-    // end of input parameters
-    //-----------------------------------------------------------------------------
-    // Options to control the display
-
-    // hit flag bits which should be ON and OFF
-
-
-
-    TApplication*        fApplication;
-    TCanvas*             fCanvas;
+    fhicl::ParameterSet                 _vmConfig;
+//-----------------------------------------------------------------------------
+// end of input parameters
+// Options to control the display
+// hit flag bits which should be ON and OFF
+//-----------------------------------------------------------------------------
+    TApplication*                               fApplication;
+    TCanvas*                                    fCanvas;
 
     const mu2e::Calorimeter*                    fCal;              //
 
@@ -244,25 +230,31 @@ namespace mu2e {
 
     mu2e::SimParticlesWithHits*                 fSimParticlesWithHits; // 
 
-    int                 fNClusters;
+    int                    fNClusters;
     // 4 hypotheses: dem, uep, dmm, ump
-    int                 fNTracks[4];
+    int                    fNTracks[4];
 		
-    TMarker*            fMarker;
+    TMarker*               fMarker;
 
-    TStnVisManager*     fVisManager;
-    TStnTrackBlock*     fTrackBlock;
-    TStnClusterBlock*   fClusterBlock;
-    TStnHeaderBlock*    fHeaderBlock;
+    TStnVisManager*        fVisManager;
+    TStnTrackBlock*        fTrackBlock;
+    TStnClusterBlock*      fClusterBlock;
+    TStnHeaderBlock*       fHeaderBlock;
 
-    TStnTrackID*        fTrackID;
+    TStnTrackID*           fTrackID;
 
-    double              fTrackerP;   	// CE momentum on entrance to the straw tracker
-    double              fTrackerPt;	// CE Pt on entrance to the straw tracker
+    double                 fTrackerP;   	// CE momentum on entrance to the straw tracker
+    double                 fTrackerPt;	// CE Pt on entrance to the straw tracker
 
-    const CalTimePeak*  fTimePeak;
+    const CalTimePeak*     fTimePeak;
 
-    const TTracker*     fTracker;    // straw tracker geometry
+    const TTracker*        fTracker;    // straw tracker geometry
+
+    TNamedHandle*          fDarHandle;
+    TNamedHandle*          fKalDiagHandle;
+
+    DoubletAmbigResolver*  fDar;
+    KalDiag*               fKalDiag;
 
   public:
     explicit MuHitDisplay(fhicl::ParameterSet const& pset);
@@ -286,16 +278,16 @@ namespace mu2e {
   //-----------------------------------------------------------------------------
   MuHitDisplay::MuHitDisplay(fhicl::ParameterSet const& pset) :
     THistModule(pset, "MuHitDisplay"),
-    moduleLabel_(pset.get<std::string>("module_label")),
+    _moduleLabel(pset.get<std::string>("module_label")),
     _processName(pset.get<string>("processName", "")),
-    generatorModuleLabel_(pset.get<std::string>("generatorModuleLabel")),
-    fG4ModuleLabel(pset.get<std::string>("g4ModuleLabel")),
-    caloClusterModuleLabel_(pset.get<std::string>("caloClusterModuleLabel")),
-    crvRecoPulsesModuleLabel_(pset.get<std::string>("crvRecoPulsesModuleLabel")),
+    _generatorModuleLabel(pset.get<std::string>("generatorModuleLabel")),
+    _g4ModuleLabel(pset.get<std::string>("g4ModuleLabel")),
+    _caloClusterModuleLabel(pset.get<std::string>("caloClusterModuleLabel")),
+    _crvRecoPulsesModuleLabel(pset.get<std::string>("crvRecoPulsesModuleLabel")),
 				
-    producerName_(""),
+    _producerName(""),
 
-    fMakeStrawHitModuleLabel(pset.get<std::string>("strawHitMakerModuleLabel")),
+    _makeStrawHitModuleLabel(pset.get<std::string>("strawHitMakerModuleLabel")),
     fStrawHitPosMaker(pset.get<std::string>("strawHitPosMakerModuleLabel")),
     fStrawHitFlagMaker(pset.get<std::string>("strawHitFlagMakerModuleLabel")),
 
@@ -310,18 +302,17 @@ namespace mu2e {
     fParticleHypo((TrkParticle::type)            (pset.get<int>("fitParticle"))),
 
     fGeneratorID(pset.get<int>("generatorID", GenId::conversionGun)),
-    trackerStepPoints_(pset.get<std::string>("trackerStepPoints")),
-    minEnergyDep_(pset.get<double>("minEnergyDep", 0)),
-    timeWindow_(pset.get<double>("timeWindow", 1.e6)),
+    _trackerStepPoints(pset.get<std::string>("trackerStepPoints")),
+    _minEnergyDep(pset.get<double>("minEnergyDep", 0)),
+    _timeWindow(pset.get<double>("timeWindow", 1.e6)),
     fGoodHitMask(pset.get<std::vector<std::string> >("goodHitMask")),
     fBadHitMask(pset.get<std::vector<std::string> >("badHitMask")),
-    minHits_(pset.get<unsigned>("minHits")),
+    _minHits(pset.get<unsigned>("minHits")),
 
     fDisplayBackgroundHits(pset.get<bool>("displayBackgroundHits", false)),
-    clickToAdvance_(pset.get<bool>("clickToAdvance", false)),
     fPrintHits(pset.get<bool>("printHits", false)),
     fUseStereoHits(pset.get<bool>("useStereoHits", false)),
-    showCRVOnly_(pset.get<bool>("showCRVOnly", false)),
+    _showCRVOnly(pset.get<bool>("showCRVOnly", false)),
 
 
     _vmConfig(pset.get<fhicl::ParameterSet>("visManager", fhicl::ParameterSet()))
@@ -343,20 +334,30 @@ namespace mu2e {
 
     fDirectionAndParticle = fTrkDirection.name() + fParticleHypo.name();
 
-    foundCRV = false;
+    foundCRV  = false;
     foundTrkr = false;
     foundCalo = false;
 
-    fCrvPulseColl_Right = new CrvRecoPulsesCollection();
-    fCrvPulseColl_Left = new CrvRecoPulsesCollection();
-    fCrvPulseColl_TopDS = new CrvRecoPulsesCollection();
-    fCrvPulseColl_TopTS = new CrvRecoPulsesCollection();
+    fCrvPulseColl_Right   = new CrvRecoPulsesCollection();
+    fCrvPulseColl_Left    = new CrvRecoPulsesCollection();
+    fCrvPulseColl_TopDS   = new CrvRecoPulsesCollection();
+    fCrvPulseColl_TopTS   = new CrvRecoPulsesCollection();
     fCrvPulseColl_Dwnstrm = new CrvRecoPulsesCollection();
-    fCrvPulseColl_Upstrm = new CrvRecoPulsesCollection();
+    fCrvPulseColl_Upstrm  = new CrvRecoPulsesCollection();
+
+    fDar           = new DoubletAmbigResolver (pset.get<fhicl::ParameterSet>("DoubletAmbigResolver"),0.,0,0);
+    fDarHandle     = new TNamedHandle("DarHandle",fDar);
+
+    fKalDiag       = new KalDiag(pset.get<fhicl::ParameterSet>("KalDiag",fhicl::ParameterSet()));
+    fKalDiagHandle = new TNamedHandle("KalDiagHandle",fKalDiag);
+
+    fFolder->Add(fDarHandle);
+    fFolder->Add(fKalDiagHandle);
   }
 
   //-----------------------------------------------------------------------------
   MuHitDisplay::~MuHitDisplay() {
+
     if (fApplication) delete fApplication;
 
     delete fCrvPulseColl_Right;
@@ -365,6 +366,9 @@ namespace mu2e {
     delete fCrvPulseColl_TopTS;
     delete fCrvPulseColl_Dwnstrm;
     delete fCrvPulseColl_Upstrm;
+
+    delete fKalDiag;
+    delete fDar;
   }
 
 
@@ -380,8 +384,8 @@ namespace mu2e {
     }
 
     // Create a canvas with a guaranteed unique name; the module label is unique within a job.
-    TString name = "canvas_" + moduleLabel_;
-    TString title = "Canvas for " + moduleLabel_;
+    TString name  = "canvas_"     + _moduleLabel;
+    TString title = "Canvas for " + _moduleLabel;
 
     fCanvas = new TCanvas(name, title, 800, 800);
     fMarker = new TMarker(0, 0, 20);
@@ -394,21 +398,21 @@ namespace mu2e {
     const char* charDirectionAndParticle = fDirectionAndParticle.c_str();
 
 
-    fClusterBlock->AddCollName("mu2e::CaloClusterCollection",
-			       caloClusterModuleLabel_.data(),
-			       "");
-    fClusterBlock->AddCollName("mu2e::TrackClusterLink", fTrkCalMatch.data(), "");
+    fClusterBlock->AddCollName("mu2e::CaloClusterCollection"       ,_caloClusterModuleLabel.data()    ,"");
 
-    fTrackBlock->AddCollName("mu2e::CaloClusterCollection", caloClusterModuleLabel_.data(), "");
-    fTrackBlock->AddCollName("mu2e::KalRepCollection", fTrkRecoModuleLabel.data(), charDirectionAndParticle);
-    fTrackBlock->AddCollName("mu2e::TrkToCaloExtrapolCollection", fTrkExtrapol.data(), "");
-    fTrackBlock->AddCollName("mu2e::TrackClusterLink", fTrkCalMatch.data(), "");
-    fTrackBlock->AddCollName("mu2e::StrawHitCollection", fMakeStrawHitModuleLabel.data(), "");
-    fTrackBlock->AddCollName("mu2e::StrawDigiMCCollection", fMakeStrawHitModuleLabel.data(), "StrawHitMC");
-    fTrackBlock->AddCollName("mu2e::PtrStepPointMCVectorCollection", fMakeStrawHitModuleLabel.data(), "StrawHitMCPtr");
-    fTrackBlock->AddCollName("mu2e::PIDProductCollection", fPidModuleLabel.data(), "");
+    fTrackBlock->AddCollName("mu2e::KalRepCollection"              ,fTrkRecoModuleLabel.data()        ,charDirectionAndParticle);
+    fTrackBlock->AddCollName("mu2e::StrawHitCollection"            ,_makeStrawHitModuleLabel.data()   ,"");
+    fTrackBlock->AddCollName("mu2e::StrawDigiMCCollection"         ,_makeStrawHitModuleLabel.data()   ,"StrawHitMC");
+    fTrackBlock->AddCollName("mu2e::PtrStepPointMCVectorCollection",_makeStrawHitModuleLabel.data()   ,"StrawHitMCPtr");
+    fTrackBlock->AddCollName("mu2e::TrkCaloIntersectCollection"    ,fTrkExtrapol.data()               ,"");
+    fTrackBlock->AddCollName("mu2e::CaloClusterCollection"         ,_caloClusterModuleLabel.data()    ,"");
+    fTrackBlock->AddCollName("mu2e::TrackClusterMatchCollection"   ,fTrkCalMatch.data()               ,"");
+    fTrackBlock->AddCollName("mu2e::PIDProductCollection"          ,fPidModuleLabel.data()            ,"");
+    fTrackBlock->AddCollName("mu2e::StepPointMCCollection"         ,_g4ModuleLabel.data()             ,"");
+    fTrackBlock->AddCollName("DarHandle"                           ,GetName()                         ,"DarHandle");
+    fTrackBlock->AddCollName("KalDiagHandle"                       ,GetName()                         ,"KalDiagHandle");
 
-    TAnaDump::Instance()->AddObject("MuHitDisplay::TrackBlock", fTrackBlock);
+    TAnaDump::Instance()->AddObject("MuHitDisplay::TrackBlock"  , fTrackBlock);
     TAnaDump::Instance()->AddObject("MuHitDisplay::ClusterBlock", fClusterBlock);
   }
 
@@ -429,116 +433,107 @@ namespace mu2e {
 
     fVisManager->SetTitleNode(new THeaderVisNode("HeaderVisNode", fHeaderBlock));
 
-    if(showCRVOnly_)
-      {
-	TCrvVisNode      *crv_node[6];
+    if (_showCRVOnly) {
+      TCrvVisNode      *crv_node[6];
+      
+      crv_node[0] = new TCrvVisNode("CrvVisNode#0", 0);
+      crv_node[0]->SetRecoPulsesCollection(&fCrvPulseColl_Right);
+      fVisManager->AddNode(crv_node[0]);
+      crv_node[1] = new TCrvVisNode("CrvVisNode#1", 1);
+      crv_node[1]->SetRecoPulsesCollection(&fCrvPulseColl_Left);
+      fVisManager->AddNode(crv_node[1]);
+      crv_node[2] = new TCrvVisNode("CrvVisNode#2", 2);
+      crv_node[2]->SetRecoPulsesCollection(&fCrvPulseColl_TopDS);
+      fVisManager->AddNode(crv_node[2]);
+      crv_node[3] = new TCrvVisNode("CrvVisNode#3", 3);
+      crv_node[3]->SetRecoPulsesCollection(&fCrvPulseColl_Dwnstrm);
+      fVisManager->AddNode(crv_node[3]);
+      crv_node[4] = new TCrvVisNode("CrvVisNode#4", 4);
+      crv_node[4]->SetRecoPulsesCollection(&fCrvPulseColl_Upstrm);
+      fVisManager->AddNode(crv_node[4]);
+      crv_node[5] = new TCrvVisNode("CrvVisNode#5", 8);
+      crv_node[5]->SetRecoPulsesCollection(&fCrvPulseColl_TopTS);
+      fVisManager->AddNode(crv_node[5]);
+    }
+    else {
+      TCalVisNode      *cal_node[2];
+      TTrkVisNode      *trk_node;
+      TMcTruthVisNode  *mctr_node;
 
-	crv_node[0] = new TCrvVisNode("CrvVisNode#0", 0);
-	crv_node[0]->SetRecoPulsesCollection(&fCrvPulseColl_Right);
-	fVisManager->AddNode(crv_node[0]);
-	crv_node[1] = new TCrvVisNode("CrvVisNode#1", 1);
-	crv_node[1]->SetRecoPulsesCollection(&fCrvPulseColl_Left);
-	fVisManager->AddNode(crv_node[1]);
-	crv_node[2] = new TCrvVisNode("CrvVisNode#2", 2);
-	crv_node[2]->SetRecoPulsesCollection(&fCrvPulseColl_TopDS);
-	fVisManager->AddNode(crv_node[2]);
-	crv_node[3] = new TCrvVisNode("CrvVisNode#3", 3);
-	crv_node[3]->SetRecoPulsesCollection(&fCrvPulseColl_Dwnstrm);
-	fVisManager->AddNode(crv_node[3]);
-	crv_node[4] = new TCrvVisNode("CrvVisNode#4", 4);
-	crv_node[4]->SetRecoPulsesCollection(&fCrvPulseColl_Upstrm);
-	fVisManager->AddNode(crv_node[4]);
-	crv_node[5] = new TCrvVisNode("CrvVisNode#5", 8);
-	crv_node[5]->SetRecoPulsesCollection(&fCrvPulseColl_TopTS);
-	fVisManager->AddNode(crv_node[5]);
+      const mu2e::DiskCalorimeter  *dc;
+//-----------------------------------------------------------------------------
+// parse the configuration module parameters
+//-----------------------------------------------------------------------------
+      int debug_level = _vmConfig.get<int>("debugLevel");
+      fVisManager->SetDebugLevel(debug_level);
+
+      int display_straw_digi_mc = _vmConfig.get<int>("displayStrawDigiMC");
+      fVisManager->SetDisplayStrawDigiMC(display_straw_digi_mc);
+//-----------------------------------------------------------------------------
+// do the geometry
+//-----------------------------------------------------------------------------
+      art::ServiceHandle<mu2e::GeometryService> geom;
+
+      if (geom->hasElement<mu2e::DiskCalorimeter>()) {
+	mu2e::GeomHandle<mu2e::DiskCalorimeter> dc_handle;
+	dc = dc_handle.get();
+//-----------------------------------------------------------------------------
+// TCalVisNode: calorimeter, CaloCrystalHits and CaloCrystals
+//-----------------------------------------------------------------------------
+	cal_node[0] = new TCalVisNode("CalVisNode#0", &dc->disk(0), 0);
+	cal_node[0]->SetListOfClusters(&fListOfClusters);
+	cal_node[0]->SetListOfCrystalHits(&fListOfCrystalHits);
+	cal_node[0]->SetCalTimePeakColl(&fCalTimePeakColl);
+	fVisManager->AddNode(cal_node[0]);
+
+	cal_node[1] = new TCalVisNode("CalVisNode#1", &dc->disk(1), 1);
+	cal_node[1]->SetListOfClusters(&fListOfClusters);
+	cal_node[1]->SetListOfCrystalHits(&fListOfCrystalHits);
+	cal_node[1]->SetCalTimePeakColl(&fCalTimePeakColl);
+	fVisManager->AddNode(cal_node[1]);
       }
-    else
-      {
-
-	TCalVisNode      *cal_node[2];
-	TTrkVisNode      *trk_node;
-	TMcTruthVisNode  *mctr_node;
-
-	const mu2e::DiskCalorimeter  *dc;
-	//-----------------------------------------------------------------------------
-	// parse the configuration module parameters
-	//-----------------------------------------------------------------------------
-	int debug_level = _vmConfig.get<int>("debugLevel");
-	fVisManager->SetDebugLevel(debug_level);
-
-	int display_straw_digi_mc = _vmConfig.get<int>("displayStrawDigiMC");
-	fVisManager->SetDisplayStrawDigiMC(display_straw_digi_mc);
-	//-----------------------------------------------------------------------------
-	// do the geometry
-	//-----------------------------------------------------------------------------
-	art::ServiceHandle<mu2e::GeometryService> geom;
-
-	if (geom->hasElement<mu2e::DiskCalorimeter>()) {
-	  mu2e::GeomHandle<mu2e::DiskCalorimeter> dc_handle;
-	  dc = dc_handle.get();
-	  
-	  //-----------------------------------------------------------------------------
-	  // TCalVisNode: calorimeter, CaloCrystalHits and CaloCrystals
-	  //-----------------------------------------------------------------------------
-	  cal_node[0] = new TCalVisNode("CalVisNode#0", &dc->disk(0), 0);
-	  cal_node[0]->SetListOfClusters(&fListOfClusters);
-	  cal_node[0]->SetListOfCrystalHits(&fListOfCrystalHits);
-	  cal_node[0]->SetCalTimePeakColl(&fCalTimePeakColl);
-	  fVisManager->AddNode(cal_node[0]);
-
-	  cal_node[1] = new TCalVisNode("CalVisNode#1", &dc->disk(1), 1);
-	  cal_node[1]->SetListOfClusters(&fListOfClusters);
-	  cal_node[1]->SetListOfCrystalHits(&fListOfCrystalHits);
-	  cal_node[1]->SetCalTimePeakColl(&fCalTimePeakColl);
-	  fVisManager->AddNode(cal_node[1]);
-	}
-	else {
-	  printf("[%s] >>> ERROR : DiskCalorimeter is not defined\n", oname);
-	  dc = 0;
-	}
-
-	//-----------------------------------------------------------------------------
-	// TrkVisNode: tracker, tracks and straw hits
-	//-----------------------------------------------------------------------------
-	trk_node = new TTrkVisNode("TrkVisNode", fTracker, NULL);
-	trk_node->SetStrawHitColl(&fStrawHitColl);
-	trk_node->SetStrawHitPosColl(&fStrawHitPosColl);
-	trk_node->SetStrawHitFlagColl(&fStrawHitFlagColl);
-	trk_node->SetCalTimePeakColl(&fCalTimePeakColl);
-	trk_node->SetKalRepPtrColl(&_kalRepPtrColl);
-	trk_node->SetMcPtrColl(&hits_mcptr);
-	trk_node->SetStrawDigiMCColl(&_strawDigiMCColl);
-	fVisManager->AddNode(trk_node);
-
-	//-----------------------------------------------------------------------------
-	// MC truth: StepPointMC's and something else - not entirely sure
-	//-----------------------------------------------------------------------------
-	mctr_node = new TMcTruthVisNode("McTruthVisNode");
-	mctr_node->SetListOfHitsMcPtr(&hits_mcptr);
-	mctr_node->SetStepPointMCCollection(&_stepPointMCColl);
-	mctr_node->SetSimParticlesWithHits(&fSimParticlesWithHits);
-	mctr_node->SetGenpColl(&fGenParticleColl);
-	fVisManager->AddNode(mctr_node);
+      else {
+	printf("[%s] >>> ERROR : DiskCalorimeter is not defined\n", oname);
+	dc = 0;
       }
-		
+//-----------------------------------------------------------------------------
+// TrkVisNode: tracker, tracks and straw hits
+//-----------------------------------------------------------------------------
+      trk_node = new TTrkVisNode("TrkVisNode", fTracker, NULL);
+      trk_node->SetStrawHitColl(&fStrawHitColl);
+      trk_node->SetStrawHitPosColl(&fStrawHitPosColl);
+      trk_node->SetStrawHitFlagColl(&fStrawHitFlagColl);
+      trk_node->SetCalTimePeakColl(&fCalTimePeakColl);
+      trk_node->SetKalRepPtrColl(&_kalRepPtrColl);
+      trk_node->SetMcPtrColl(&hits_mcptr);
+      trk_node->SetStrawDigiMCColl(&_strawDigiMCColl);
+      fVisManager->AddNode(trk_node);
+//-----------------------------------------------------------------------------
+// MC truth: StepPointMC's and something else - not entirely sure
+//-----------------------------------------------------------------------------
+      mctr_node = new TMcTruthVisNode("McTruthVisNode");
+      mctr_node->SetListOfHitsMcPtr(&hits_mcptr);
+      mctr_node->SetStepPointMCCollection(&_stepPointMCColl);
+      mctr_node->SetSimParticlesWithHits(&fSimParticlesWithHits);
+      mctr_node->SetGenpColl(&fGenParticleColl);
+      fVisManager->AddNode(mctr_node);
+    }
   }
 
-  //-----------------------------------------------------------------------------
-  // get data from the event record
-  //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// get data from the event record
+//-----------------------------------------------------------------------------
   int MuHitDisplay::getData(const art::Event* Evt) {
     const char* oname = "MuHitDisplay::getData";
-    
-    //-----------------------------------------------------------------------------
-    //  CRV pulse information
-    //-----------------------------------------------------------------------------
-    
+//-----------------------------------------------------------------------------
+//  CRV pulse information
+//-----------------------------------------------------------------------------
     art::Handle<CrvRecoPulsesCollection> pulsesHandle;
-    Evt->getByLabel(crvRecoPulsesModuleLabel_, pulsesHandle);
+    Evt->getByLabel(_crvRecoPulsesModuleLabel, pulsesHandle);
     
     if (pulsesHandle.isValid()) {
       foundCRV = true;
-      printf(">>> %s MSG: CrvRecoPulsesCollection by %s, found. CONTINUE\n", oname, crvRecoPulsesModuleLabel_.data());
+      printf(">>> [%s] MSG: CrvRecoPulsesCollection by %s, found. CONTINUE\n", oname, _crvRecoPulsesModuleLabel.data());
       const mu2e::CrvRecoPulsesCollection* fCrvPulseColl = (CrvRecoPulsesCollection*) pulsesHandle.product();
       
       // Clear the map pointers in preperation to (re)fill them with new information
@@ -581,80 +576,76 @@ namespace mu2e {
 	    fCrvPulseColl_TopTS->insert(std::pair<const mu2e::CRSScintillatorBarIndex, mu2e::CrvRecoPulses>(icrpc->first, icrpc->second));
 	    break;
 	  }
-      } // Loop over RecoPulses
+      }
 								
       printf(">>> Section-collections filled\n");
     }
     else {
-      printf(">>> %s ERROR: CrvRecoPulsesCollection by %s is missing, CONTINUE.\n",
-	     oname, crvRecoPulsesModuleLabel_.data());
-      //      return -1;
+      printf(">>> [%s] WARNING: CrvRecoPulsesCollection by %s is missing. CONTINUE.\n",
+	     oname, _crvRecoPulsesModuleLabel.data());
     }
     
-    if (showCRVOnly_) { //If only displaying the CRV, skip everything else
+    if (_showCRVOnly) { //If only displaying the CRV, skip everything else
       printf("!!!!! ONLY SHOWING THE CRV\n");
       return 0;
     }
     else {
-      //-----------------------------------------------------------------------------
-      //  MC truth - gen particles
-      //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//  MC truth - gen particles
+//-----------------------------------------------------------------------------
       art::Handle<GenParticleCollection> gensHandle;
-      Evt->getByLabel(generatorModuleLabel_, gensHandle);
+      Evt->getByLabel(_generatorModuleLabel, gensHandle);
+
       if (gensHandle.isValid()) fGenParticleColl = gensHandle.product();
-		  
       else {
-	printf(">>> %s ERROR: GenParticleCollection by %s is missing. BAIL OUT\n",
-	       oname, generatorModuleLabel_.data());
-	return -1;
+	fGenParticleColl = 0;
+	printf(">>> [%s] WARNING: GenParticleCollection by %s is missing. CONTINUE\n",
+	       oname, _generatorModuleLabel.data());
       }
 
       art::Handle<PtrStepPointMCVectorCollection> mcptrHandle;
-      Evt->getByLabel(fMakeStrawHitModuleLabel, "StrawHitMCPtr", mcptrHandle);
+      Evt->getByLabel(_makeStrawHitModuleLabel, "StrawHitMCPtr", mcptrHandle);
 
 
       if (mcptrHandle.isValid()) hits_mcptr = mcptrHandle.product();
       else {
-	printf(">>> %s ERROR:PtrStepPointMCVectorCollection  by %s is missing. BAIL OUT\n",
-	       oname, fMakeStrawHitModuleLabel.data());
+	printf(">>> [%s] ERROR: PtrStepPointMCVectorCollection  by %s is missing. BAIL OUT\n",
+	       oname, _makeStrawHitModuleLabel.data());
 	return -1;
       }
 
       art::Handle<StepPointMCCollection> stepsHandle;
-      art::Selector getTrackerSteps(art::ProductInstanceNameSelector(trackerStepPoints_) &&
+      art::Selector getTrackerSteps(art::ProductInstanceNameSelector(_trackerStepPoints) &&
 				    art::ProcessNameSelector(_processName) &&
-				    art::ModuleLabelSelector(fG4ModuleLabel));
-      //Evt->getByLabel(fG4ModuleLabel,trackerStepPoints_,stepsHandle);
+				    art::ModuleLabelSelector(_g4ModuleLabel));
       Evt->get(getTrackerSteps, stepsHandle);
 
       if (stepsHandle.isValid()) _stepPointMCColl = stepsHandle.product();
 
       else                       _stepPointMCColl = NULL;
-
-
-      //-----------------------------------------------------------------------------
-      //  straw hit information
-      //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//  straw hit information
+//-----------------------------------------------------------------------------
       art::Handle<StrawHitCollection> shH;
-      Evt->getByLabel(fMakeStrawHitModuleLabel, shH);
+      Evt->getByLabel(_makeStrawHitModuleLabel, shH);
 
 
       if (shH.isValid()) fStrawHitColl = shH.product();
       else {
-	printf(">>> %s ERROR:StrawHitCollection by %s is missing. BAIL OUT\n",
-	       oname, fMakeStrawHitModuleLabel.data());
+	printf(">>> [%s] ERROR: StrawHitCollection by %s is missing. BAIL OUT\n",
+	       oname, _makeStrawHitModuleLabel.data());
 	return -1;
       }
 
       art::Handle<StrawDigiMCCollection> handle;
       art::Selector sel_straw_digi_mc(art::ProductInstanceNameSelector("StrawHitMC") &&
 				      art::ProcessNameSelector(_processName) &&
-				      art::ModuleLabelSelector(fMakeStrawHitModuleLabel));
+				      art::ModuleLabelSelector(_makeStrawHitModuleLabel));
       Evt->get(sel_straw_digi_mc, handle);
       if (handle.isValid()) _strawDigiMCColl = handle.product();
       else {
-	printf(">>> ERROR un %s: mu2e::StrawDigiMCCollection by %s is missing. BAIL OUT\n",
-	       oname, fMakeStrawHitModuleLabel.data());
+	printf(">>> [%s] ERROR: mu2e::StrawDigiMCCollection by %s is missing. BAIL OUT\n",
+	       oname, _makeStrawHitModuleLabel.data());
 	return -1;
       }
 
@@ -664,7 +655,7 @@ namespace mu2e {
 
       if (shpH.isValid()) fStrawHitPosColl = shpH.product();
       else {
-	printf(">>> %s ERROR:StrawHitPositionCollection by %s is missing. BAIL OUT\n",
+	printf(">>> [%s] ERROR:StrawHitPositionCollection by %s is missing. BAIL OUT\n",
 	       oname, fStrawHitPosMaker.data());
 	return -1;
       }
@@ -675,13 +666,13 @@ namespace mu2e {
 
       if (shfH.isValid()) fStrawHitFlagColl = shfH.product();
       else {
-	printf(">>> %s ERROR: StrawHitFlagCollection by %s is missing. BAIL OUT\n",
+	printf(">>> [%s] ERROR: StrawHitFlagCollection by %s is missing. BAIL OUT\n",
 	       oname, fStrawHitFlagMaker.data());
 	return -1;
       }
-      //-----------------------------------------------------------------------------
-      // calorimeter crystal hit data
-      //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// calorimeter crystal hit data
+//-----------------------------------------------------------------------------
       art::Handle<CaloCrystalHitCollection> ccHandle;
       Evt->getByLabel(fCrystalHitMaker.data(), ccHandle);
 
@@ -691,26 +682,26 @@ namespace mu2e {
       }
       else {
 	fListOfCrystalHits = NULL;
-	printf(">>> %s ERROR: CaloCrystalHitCollection by %s is missing. BAIL OUT\n",
+	printf(">>> [%s] ERROR: CaloCrystalHitCollection by %s is missing. BAIL OUT\n",
 	       oname, fCrystalHitMaker.data());
       }
-      //-----------------------------------------------------------------------------
-      // calorimeter cluster data
-      //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// calorimeter cluster data
+//-----------------------------------------------------------------------------
       art::Handle<CaloClusterCollection> calo_cluster_handle;
-      Evt->getByLabel(caloClusterModuleLabel_, producerName_, calo_cluster_handle);
+      Evt->getByLabel(_caloClusterModuleLabel, _producerName, calo_cluster_handle);
 
       if (calo_cluster_handle.isValid()) {
 	fListOfClusters = calo_cluster_handle.product();
       }
       else {
 	fListOfClusters = NULL;
-	printf(">>> %s ERROR: CaloClusterCollection by %s is missing. BAIL OUT\n",
-	       oname, caloClusterModuleLabel_.data());
+	printf(">>> [%s] ERROR: CaloClusterCollection by %s is missing. BAIL OUT\n",
+	       oname, _caloClusterModuleLabel.data());
       }
-      //-----------------------------------------------------------------------------
-      // timepeaks 
-      //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// timepeaks 
+//-----------------------------------------------------------------------------
       fCalTimePeakColl = NULL;
       fTimePeak = NULL;
 
@@ -720,9 +711,9 @@ namespace mu2e {
       Evt->getByLabel("CalPatRec", charDirectionAndParticle, tpch);
       if (tpch.isValid()) {
 	fCalTimePeakColl = tpch.product();
-	//-----------------------------------------------------------------------------
-	// find the right time peak to display - display the first one with the track
-	//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// find the right time peak to display - display the first one with the track
+//-----------------------------------------------------------------------------
 	const CalTimePeak* tp;
 	int ipeak = -1;
 	if (fCalTimePeakColl != NULL) {
@@ -738,9 +729,9 @@ namespace mu2e {
 	}
 	fVisManager->SetTimePeak(ipeak);
       }
-      //-----------------------------------------------------------------------------
-      // tracking data - downstream moving electrons
-      //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// tracking data - downstream moving electrons
+//-----------------------------------------------------------------------------
       art::Handle<KalRepPtrCollection> krepHandle;
       Evt->getByLabel(fTrkRecoModuleLabel.data(), charDirectionAndParticle, krepHandle);
 
@@ -754,15 +745,15 @@ namespace mu2e {
     return 0;
   }
 
-  //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
   void MuHitDisplay::Init(art::Event* Evt) {
     //    TStnCluster*    cluster;
     int             id_word, ntrk;
     TStnTrack*      track;
 
-    //-----------------------------------------------------------------------------
-    // initialize tracks and determine track quality
-    //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// initialize tracks and determine track quality
+//-----------------------------------------------------------------------------
     StntupleInitMu2eTrackBlock(fTrackBlock, Evt, 0);
 
     fNTracks[0] = fTrackBlock->NTracks();
@@ -774,14 +765,14 @@ namespace mu2e {
       id_word = fTrackID->IDWord(track);
       track->fIDWord = id_word;
     }
-    //-----------------------------------------------------------------------------
-    // initialize clusters
-    //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// initialize clusters
+//-----------------------------------------------------------------------------
     StntupleInitMu2eClusterBlock(fClusterBlock, Evt, 0);
     fNClusters = fClusterBlock->NClusters();
-    //-----------------------------------------------------------------------------
-    // find momentum of the G4 particle in front of the tracker
-    //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// find momentum of the G4 particle in front of the tracker
+//-----------------------------------------------------------------------------
     art::Handle<mu2e::StepPointMCCollection> handle;
     const mu2e::StepPointMCCollection*       coll(0);
 
@@ -828,7 +819,7 @@ namespace mu2e {
   }
 
 
-  //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
   bool MuHitDisplay::filter(art::Event& Evt) {
     const char* oname = "MuHitDisplay::filter";
 
@@ -851,7 +842,6 @@ namespace mu2e {
 
     const KalRep*       trk;
     const CaloCluster   *cl;
-    //    int             vane_id;
     double              xl, yl, event_time;
     float               q;
 
@@ -860,8 +850,7 @@ namespace mu2e {
 
     printf("[%s] RUN: %10i EVENT: %10i\n", oname, Evt.run(), Evt.event());
 
-    if (showCRVOnly_)
-      {
+    if (_showCRVOnly) {
 	if (firstCall == 1) {
 	  firstCall = 0;
 	  InitVisManager();
@@ -874,9 +863,9 @@ namespace mu2e {
 
 	fCanvas->cd(0);
 	fCanvas->Clear();
-	//-----------------------------------------------------------------------------
-	// Draw the frame
-	//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Draw the frame
+//-----------------------------------------------------------------------------
 	double plotLimits(850.);
 	fCanvas->DrawFrame(-plotLimits, -plotLimits, plotLimits, plotLimits);
 
@@ -887,65 +876,62 @@ namespace mu2e {
 	fVisManager->DisplayEvent();
 	// go into interactive mode, till '.q'
 	TModule::filter(Evt);
-
-	//-----------------------------------------------------------------------------
-	// memory cleanup
-	//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// memory cleanup
+//-----------------------------------------------------------------------------
 	if (graph) delete graph;
 
 	return true;
       }
-		
-    // Geometry of the tracker envelope.
-
+//-----------------------------------------------------------------------------
+// Geometry of the tracker envelope.
+//-----------------------------------------------------------------------------
     TubsParams envelope(fTracker->getInnerTrackerEnvelopeParams());
 
     // Tracker calibration object.
     mu2e::ConditionsHandle<mu2e::TrackerCalibrations> trackCal("ignored");
-
-    //-----------------------------------------------------------------------------
-    // init VisManager - failed to do it in beginJob - what is the right place for doing it?
-    //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// init VisManager - failed to do it in beginJob - what is the right place for doing it?
+//-----------------------------------------------------------------------------
     if (firstCall == 1) {
       firstCall = 0;
       InitVisManager();
     }
     fDump->SetEvent(Evt);
-    //-----------------------------------------------------------------------------
-    // get event data and initialize data blocks
-    //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// get event data and initialize data blocks
+//-----------------------------------------------------------------------------
     rc = getData(&Evt);
 
     if (rc < 0) {
-      printf(" %s ERROR: not all data products present, BAIL OUT\n", oname);
+      printf(">>> [%s] ERROR: not all data products present, BAIL OUT\n", oname);
       return true;
     }
 
     Init(&Evt);
-
+//-----------------------------------------------------------------------------
+// Construct an object that ties together all of the simulated particle and hit info.
+//-----------------------------------------------------------------------------
     art::ServiceHandle<mu2e::GeometryService> geom;
-
-    // Construct an object that ties together all of the simulated particle and hit info.
 
     if (fSimParticlesWithHits) delete fSimParticlesWithHits;
 
     fSimParticlesWithHits = new SimParticlesWithHits(Evt,
-						     fG4ModuleLabel,
-
-						     fMakeStrawHitModuleLabel,
-						     trackerStepPoints_,
-						     minEnergyDep_,
-						     minHits_);
-    //-----------------------------------------------------------------------------
-    // is he finding the first particle?
-    //-----------------------------------------------------------------------------
+						     _g4ModuleLabel,
+						     _makeStrawHitModuleLabel,
+						     _trackerStepPoints,
+						     _minEnergyDep,
+						     _minHits);
+//-----------------------------------------------------------------------------
+// is he finding the first particle?
+//-----------------------------------------------------------------------------
     SimParticleCollection::key_type key(1);
 
     SimParticleInfo const *info(fSimParticlesWithHits->findOrNull(key));
     const StepPointMC     *firstStep;
 
     if (!info) {
-      printf("[%s] *** ERROR: SimParticleInfo missing, SKIPPING EVENT: %10i\n", oname, Evt.event());
+      printf(">>> [%s] WARNING: SimParticleInfo is missing for event %10i. CONTINUE.\n", oname, Evt.event());
       firstStep = 0;
     }
     else {
@@ -969,14 +955,12 @@ namespace mu2e {
       box->SetFillColor(4);
       box->SetLineColor(4);
     }
-
-    //  DISPLAY:;
-
+//-----------------------------------------------------------------------------
+//  DISPLAY: 1. Draw the frame
+//-----------------------------------------------------------------------------
     fCanvas->cd(0);
     fCanvas->Clear();
-    //-----------------------------------------------------------------------------
-    // Draw the frame
-    //-----------------------------------------------------------------------------
+
     double plotLimits(850.);
     fCanvas->DrawFrame(-plotLimits, -plotLimits, plotLimits, plotLimits);
 
@@ -984,9 +968,9 @@ namespace mu2e {
 				oname, Evt.run(), Evt.event(), fNTracks[0], fNClusters));
     t.SetTextSize(0.02);
     t.Draw();
-    //-----------------------------------------------------------------------------
-    // Draw the inner and outer boundaries of the tracker
-    //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Draw the inner and outer boundaries of the tracker
+//-----------------------------------------------------------------------------
     arc->SetFillStyle(0);
     arc->SetLineColor(kBlack);
 
@@ -1021,41 +1005,46 @@ namespace mu2e {
 	pos2.set(1., 1., 1.);
 	mom2.set(1., 1., 1.);
       }
-      //-----------------------------------------------------------------------------
-      // The generated signal particle.
-      //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// The generated signal particle.
+//-----------------------------------------------------------------------------
       // this is not necessarily correct (for mixed events) !
-      gen_signal = &fGenParticleColl->at(0);
-      pdg_id = gen_signal->pdgId();
-      // ROOT returns charge in units of dbar-quark charge
 
-      q = TDatabasePDG::Instance()->GetParticle(pdg_id)->Charge() / 3.;
-      tt = new TrackTool(pdg_id, q, pos1, mom1, 1., Hep3Vector());
-      tg = new TrackTool(pdg_id, q, gen_signal->position(), gen_signal->momentum(), 1., Hep3Vector());
-      tmid = new TrackTool(pdg_id, q, pos2, mom2, 1., Hep3Vector());
+      if (fGenParticleColl) {
 
-      int npt = _stepPointMCColl->size();
-      for (int ipt = 0; ipt<npt; ++ipt){
-	StepPointMC const& step = _stepPointMCColl->at(ipt);
-	if (step.totalEDep() > minEnergyDep_) {
-	  xStep.push_back(step.position().x());
-	  yStep.push_back(step.position().y());
+	gen_signal = &fGenParticleColl->at(0);
+	pdg_id = gen_signal->pdgId();
+	// ROOT returns charge in units of dbar-quark charge
+
+	q = TDatabasePDG::Instance()->GetParticle(pdg_id)->Charge() / 3.;
+	tt = new TrackTool(pdg_id, q, pos1, mom1, 1., Hep3Vector());
+	tg = new TrackTool(pdg_id, q, gen_signal->position(), gen_signal->momentum(), 1., Hep3Vector());
+	tmid = new TrackTool(pdg_id, q, pos2, mom2, 1., Hep3Vector());
+
+	int npt = _stepPointMCColl->size();
+	for (int ipt = 0; ipt<npt; ++ipt){
+	  StepPointMC const& step = _stepPointMCColl->at(ipt);
+	  if (step.totalEDep() > _minEnergyDep) {
+	    xStep.push_back(step.position().x());
+	    yStep.push_back(step.position().y());
+	  }
 	}
+	arc->SetFillStyle(0);
+	arccalo->SetFillStyle(0);
+	
+	arc->SetLineColor(kRed);
+	arc->DrawArc(tt->xc(), tt->yc(), tt->rho());
+	arc->SetLineColor(kMagenta);
+	arc->DrawArc(tmid->xc(), tmid->yc(), tmid->rho());
+	arc->SetLineColor(kRed);
       }
-      arc->SetFillStyle(0);
-      arccalo->SetFillStyle(0);
-
-      arc->SetLineColor(kRed);
-      arc->DrawArc(tt->xc(), tt->yc(), tt->rho());
-      arc->SetLineColor(kMagenta);
-      arc->DrawArc(tmid->xc(), tmid->yc(), tmid->rho());
-      arc->SetLineColor(kRed);
     }
+//-----------------------------------------------------------------------------
+// Draw disks: the inner and outer calorimeter boundaries
+//-----------------------------------------------------------------------------
     double rmin, rmax;
-    //-----------------------------------------------------------------------------
-    // Draw disks: the inner and outer calorimeter boundaries
-    //-----------------------------------------------------------------------------
     mu2e::GeomHandle<mu2e::DiskCalorimeter> dc;
+
     ndisks = dc->nDisk();
 
     for (int id = 0; id<ndisks; id++) {
@@ -1065,11 +1054,10 @@ namespace mu2e {
       arccalo->DrawArc(0., 0., rmax);
       arccalo->DrawArc(0., 0., rmin);
     }
-    //-----------------------------------------------------------------------------
-    // print reconstructed tracks - all 4 hypotheses for comparison...
-    //-----------------------------------------------------------------------------
-    printf("[%s] NTRACKS = %4i, NCLUSTERS = %4i\n", oname, fNTracks[0], fNClusters);
-    printf("\n");
+//-----------------------------------------------------------------------------
+// print reconstructed tracks - all 4 hypotheses for comparison...
+//-----------------------------------------------------------------------------
+    printf(">>> [%s] NTRACKS = %4i, NCLUSTERS = %4i\n", oname, fNTracks[0], fNClusters);
 
     opt = "data";
     if (fPrintHits) opt += "+hits";
@@ -1084,9 +1072,9 @@ namespace mu2e {
 	trk = _kalRepPtrColl->at(i).get();
 	printf(" %2i dem ", i);
 	TAnaDump::Instance()->printKalRep(trk, opt);
-	//-----------------------------------------------------------------------------
-	// also display the reconstructed track, use s=0
-	//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// also display the reconstructed track, use s=0
+//-----------------------------------------------------------------------------
 	//	HelixParams hel = trk->helix(0);
 	d0 = trk->helix(0.).d0();
 	om = trk->helix(0.).omega();
@@ -1106,9 +1094,9 @@ namespace mu2e {
 	e->Draw();
       }
     }
-    //-----------------------------------------------------------------------------
-    // Calorimeter Clusters: print and prepare to display
-    //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Calorimeter Clusters: print and prepare to display
+//-----------------------------------------------------------------------------
     event_time = -1.;
     if (fNClusters > 0) {
       TAnaDump::Instance()->printCaloCluster(0, "banner");
@@ -1117,18 +1105,18 @@ namespace mu2e {
 	cl = &fListOfClusters->at(i);
 
 	TAnaDump::Instance()->printCaloCluster(cl, opt);
-	//-----------------------------------------------------------------------------
-	// event time defined by the first, most energetic cluster
-	// no more division into split/non-split clusters
-	//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// event time defined by the first, most energetic cluster
+// no more division into split/non-split clusters
+//-----------------------------------------------------------------------------
 	if (i == 0) event_time = cl->time() + 15.;
       }
 
       for (int i = 0; i<fNClusters; i++) {
 	cl = &fListOfClusters->at(i);
-	//-----------------------------------------------------------------------------
-	// display only clusters with E > 5 MeV
-	//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// display only clusters with E > 5 MeV
+//-----------------------------------------------------------------------------
 	if (cl->energyDep() > 5.) {
 
 	  xl = cl->cog3Vector().x(); // +3904.;
@@ -1151,9 +1139,9 @@ namespace mu2e {
 	}
       }
     }
-    //-----------------------------------------------------------------------------
-    // Loop over straw hits. If flagBackgroundHits = true, filter them out
-    //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Loop over straw hits. If flagBackgroundHits = true, filter them out
+//-----------------------------------------------------------------------------
     int                          ihit, n_straw_hits, display_hit;
     bool                         isFromConversion;
     double                       sigv, vnorm, v, sigr;
@@ -1216,13 +1204,10 @@ namespace mu2e {
 	    }
 	  }
 	}
-
-
-	//-----------------------------------------------------------------------------
-	// Position along the wire comes from time division - but we are only displaying
-
-	// StrawHitPositions
-	//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Position along the wire comes from time division - but we are only displaying
+// StrawHitPositions
+//-----------------------------------------------------------------------------
 	v = trackCal->TimeDiffToDistance(straw->index(), hit->dt());
 	vnorm = v / straw->getHalfLength();
 	if (fUseStereoHits) {
@@ -1233,9 +1218,9 @@ namespace mu2e {
 	  sigr = hitpos->posRes(StrawHitPosition::rho);
 	}
 	else {
-	  //-----------------------------------------------------------------------------
-	  // old default, draw semi-random errors
-	  //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// old default, draw semi-random errors
+//-----------------------------------------------------------------------------
 	  sigv = trackCal->TimeDivisionResolution(straw->index(), vnorm) / 2.; // P.Murat
 	  sigr = 5.; // in mm
 	}
@@ -1245,17 +1230,13 @@ namespace mu2e {
 	vx1 = vx0 + sigv*(*w);
 	vx2 = vx0 - sigv*(*w);
 
-	intime = fabs(hit->time() - event_time) < timeWindow_;
-
-	//-----------------------------------------------------------------------------
-
-	// hit colors:
-	// -----------
-	// CE hits : red (in time), blue (out-of-time)
-	// the rest: cyan+3 (if any bad bit), otherwise - black 
-	//-----------------------------------------------------------------------------
-
-
+	intime = fabs(hit->time() - event_time) < _timeWindow;
+//-----------------------------------------------------------------------------
+// hit colors:
+// -----------
+// CE hits : red (in time), blue (out-of-time)
+// the rest: cyan+3 (if any bad bit), otherwise - black 
+//-----------------------------------------------------------------------------
 	if (isFromConversion) {
 	  if (intime) color = kRed;
 	  else        color = kBlue;
@@ -1266,10 +1247,9 @@ namespace mu2e {
 					
 	  else color = kBlack;
 	}
-
-	//-----------------------------------------------------------------------------
-	// not sure why the logic is that complicated
-	//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// not sure why the logic is that complicated
+//-----------------------------------------------------------------------------
 	if ((isFromConversion) || (intime)) {
 					
 	  line->SetLineColor(color);
@@ -1282,11 +1262,9 @@ namespace mu2e {
 	}
       }
     }
-
-    //-----------------------------------------------------------------------------
-
-    // Draw StepPointMCCollection.
-    //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Draw StepPointMCCollection.
+//-----------------------------------------------------------------------------
     if (xStep.size() <= 0) {
     }
     else {
@@ -1295,9 +1273,9 @@ namespace mu2e {
       graph->SetMarkerSize(0.5);
       graph->Draw("PSAME");
     }
-    //-----------------------------------------------------------------------------
-    // red marker and arrow: first point on the track.
-    //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// red marker and arrow: first point on the track.
+//-----------------------------------------------------------------------------
     double xf1 = pos1.x();
     double yf1 = pos1.y();
     TGraph genPoint(1, &xf1, &yf1);
@@ -1321,9 +1299,9 @@ namespace mu2e {
       arrow->SetLineColor(kBlue);
       arrow->DrawArrow(d0x, d0y, d0x2, d0y2, 0.01, ">");
     }
-    //-----------------------------------------------------------------------------
-    // blue cross - origin.
-    //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// blue cross - origin.
+//-----------------------------------------------------------------------------
     double xo = 0.;
     double yo = 0.;
     TGraph genPointo(1, &xo, &yo);
@@ -1336,15 +1314,16 @@ namespace mu2e {
     fCanvas->Update();
 
     printf("N(hits) = %5i, N(displayed hits): %5i\n", n_straw_hits, n_displayed_hits);
-    printf("number of clusters      : %5i\n", fNClusters);
 
     fVisManager->SetEvent(Evt);
     fVisManager->DisplayEvent();
-    // go into interactive mode, till '.q'
+//-----------------------------------------------------------------------------
+// go into interactive mode, till '.q' is pressed
+//-----------------------------------------------------------------------------
     TModule::filter(Evt);
-    //-----------------------------------------------------------------------------
-    // memory cleanup
-    //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// memory cleanup
+//-----------------------------------------------------------------------------
     list_of_ellipses.Delete();
 
     if (tt) {
@@ -1356,14 +1335,14 @@ namespace mu2e {
     if (graph) delete graph;
 
     return true;
-  } // end of ::filter.
+  } 
 
-  //_____________________________________________________________________________
-  int MuHitDisplay::getCRVSection(int shieldNumber)
-  {
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+  int MuHitDisplay::getCRVSection(int shieldNumber) {
     int CRVSection = -1;
-    switch (shieldNumber)
-      {
+    switch (shieldNumber) {
       case 0:
       case 1:
       case 2:

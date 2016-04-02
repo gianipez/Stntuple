@@ -52,6 +52,7 @@
 #include "Stntuple/mod/StntupleGlobals.hh"
 
 #include "TrkReco/inc/DoubletAmbigResolver.hh"
+#include "TrkDiag/inc/KalDiag.hh"
 
 using namespace std; 
 
@@ -104,8 +105,10 @@ protected:
   TNamed*                  fVersion;
 
   TNamedHandle*            fDarHandle;
+  TNamedHandle*            fKalDiagHandle;
 
   DoubletAmbigResolver*    fDar;
+  KalDiag*                 fKalDiag;
 //------------------------------------------------------------------------------
 // function members
 //------------------------------------------------------------------------------
@@ -177,12 +180,16 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
   fVersion      = new TNamed(ver,text);
   TModule::fFolder->Add(fVersion);
 
-  fgTimeOffsets = new SimParticleTimeOffset(PSet.get<fhicl::ParameterSet>("TimeOffsets"));
-  fDar          = new DoubletAmbigResolver (PSet.get<fhicl::ParameterSet>("DoubletAmbigResolver"),0.,0,0);
+  fgTimeOffsets  = new SimParticleTimeOffset(PSet.get<fhicl::ParameterSet>("TimeOffsets"));
 
-  fDarHandle    = new TNamedHandle("DarHandle",fDar);
+  fDar           = new DoubletAmbigResolver (PSet.get<fhicl::ParameterSet>("DoubletAmbigResolver"),0.,0,0);
+  fDarHandle     = new TNamedHandle("DarHandle",fDar);
+
+  fKalDiag       = new KalDiag(PSet.get<fhicl::ParameterSet>("KalDiag",fhicl::ParameterSet()));
+  fKalDiagHandle = new TNamedHandle("KalDiagHandle",fKalDiag);
 
   fFolder->Add(fDarHandle);
+  fFolder->Add(fKalDiagHandle);
 }
 
 
@@ -339,7 +346,8 @@ void StntupleMaker::beginJob() {
 	track_data->AddCollName("mu2e::TrackClusterMatchCollection"   ,fTrkCaloMatchModuleLabel[i].data(),"");
 	track_data->AddCollName("mu2e::PIDProductCollection"          ,fPidModuleLabel[i].data()         ,"");
 	track_data->AddCollName("mu2e::StepPointMCCollection"         ,fG4ModuleLabel.data()             ,"");
-	track_data->AddCollName("module"                              ,GetName()                         ,"DarHandle");
+	track_data->AddCollName("DarHandle"                           ,GetName()                         ,"DarHandle");
+	track_data->AddCollName("KalDiagHandle"                       ,GetName()                         ,"KalDiagHandle");
       }
     }
   }

@@ -10,6 +10,8 @@
 #include <Stntuple/mod/InitStntupleDataBlocks.hh>
 #include <Stntuple/mod/StntupleUtilities.hh>
 
+#include "MCDataProducts/inc/ProtonBunchIntensity.hh"
+
 void stntuple_get_version(char* ver, char* test);
 
 //_____________________________________________________________________________
@@ -34,11 +36,29 @@ Int_t StntupleInitMu2eHeaderBlock(TStnDataBlock* block, AbsEvent* AnEvent, int m
   header->fRunNumber     = AnEvent->run();
   header->fSectionNumber = AnEvent->subRun();
   header->fMcFlag        = 1.; // gblEnv->monteFlag();
-  header->fInstLum       = -1;
 
   header->fNTracks       = -1;
 //-----------------------------------------------------------------------------
-//  instantaneous luminosity
+// instantaneous luminosity
+//-----------------------------------------------------------------------------
+  header->fInstLum       = -1.;
+
+  static char pbi_module_label[] = "protonBunchIntensity";
+  static char pbi_description [] = "";
+
+  art::Handle<mu2e::ProtonBunchIntensity>  pbiHandle;
+  const mu2e::ProtonBunchIntensity*        pbi;
+
+  if (pbi_module_label[0] != 0) {
+    AnEvent->getByLabel(pbi_module_label,pbi_description,pbiHandle);
+    if (pbiHandle.isValid()) {
+      pbi = pbiHandle.product();
+      header->fInstLum = pbi->intensity();
+    }
+  }
+
+//-----------------------------------------------------------------------------
+//  STNTUPLE version
 //-----------------------------------------------------------------------------
   char  ver[200], text[200];
   stntuple_get_version(ver,text);

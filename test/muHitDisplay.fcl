@@ -4,9 +4,7 @@
 # run electron-only reconstruction and display the results
 # no random numbers ! 
 #------------------------------------------------------------------------------
-# muStops must be commented out for grid production.
 BEGIN_PROLOG
-#  muStops    : [ @local::mergedMuonStops ]
   pdgCode    : 11
   bgHitFiles : @nil
 END_PROLOG
@@ -24,14 +22,31 @@ source       : {
     fileNames : ["data_03.root"]
     maxEvents : -1
 }
-
 #
 # can use path names specified in 'physics.' context w/o prefixing
 #
-# physics.trigger_paths : [ allpatrec_reco_display ]
-physics.trigger_paths : [ dem_reco_display ]
-physics.end_paths     : [ out ]
+physics : { @table::physics 
+    # trigger_paths : [ allpatrec_reco_display ]
+    # trigger_paths : [ dem_reco_display ]
+    trigger_paths : [ hit_reco_display_dem ]
+    end_paths     : [ out ]
 
+    producers : { @table::physics.producers 
+	CalPatRec : { @table::physics.producers.CalPatRec 
+	    # debugLevel               : 100
+	    # HelixFitHack.debugLevel  : 100
+	    # HelixFitHack.debugLevel2 : 100
+	    # SeedFitHack.debugLevel   : 100
+	    # KalFitHack.debugLevel    : 100
+	    # KalFitHack.DoubletAmbigResolver.debugLevel  : 100
+	}
+    }
+
+    filters : { @table::physics.filters 
+	MuHitDisplay : { @table::MuHitDisplay
+	}
+    }
+}
 services.TFileService.fileName            : "egun_stnmaker.hist"
 physics.filters.InitStntuple.histFileName : "egun_stnmaker.stn" 
 #------------------------------------------------------------------------------
@@ -42,12 +57,6 @@ physics.filters.InitStntuple.histFileName : "egun_stnmaker.stn"
 #------------------------------------------------------------------------------
 # debugging
 #------------------------------------------------------------------------------
-physics.producers.CalPatRec.debugLevel               : 100
-physics.producers.CalPatRec.HelixFitHack.debugLevel  : 100
-physics.producers.CalPatRec.HelixFitHack.debugLevel2 : 100
-physics.producers.CalPatRec.SeedFitHack.debugLevel   : 100
-physics.producers.CalPatRec.KalFitHack.debugLevel    : 100
-physics.producers.CalPatRec.KalFitHack.DoubletAmbigResolver.debugLevel  : 100
 # physics.producers.AvikPID.debugLevel     : 100
 #------------------------------------------------------------------------------
 # everything below is appended by murat/scripts/submit_mu2e_job

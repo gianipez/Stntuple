@@ -1,11 +1,6 @@
 //
-//  Filter events passing only th ones from teh list (A module to look at the provenance of a product.
+//  Filter events passing only the ones from the list (A module to look at the provenance of a product.
 //
-//  $Id: EventFilter_module.cc,v 1.4 2013/10/21 21:15:46 kutschke Exp $
-//  $Author: kutschke $
-//  $Date: 2013/10/21 21:15:46 $
-//
-//  Original author Rob Kutschke
 //
 
 #include "MCDataProducts/inc/GenParticleCollection.hh"
