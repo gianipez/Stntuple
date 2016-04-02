@@ -95,6 +95,13 @@ BEGIN_PROLOG
   stnmaker_dem_dmm_seq   : [ InitStntuple, StntupleMakerDemDmm, FillStntuple ]
 
 #------------------------------------------------------------------------------
+  hits_calo_tprdem_stnmaker_seq : [ @sequence::timeMapSeq, @sequence::hitMakerSeq, 
+				    @sequence::calRecoSeq, 
+				    @sequence::trkPatRecDemSeq,
+				    @sequence::trkCaloMatchingDemSeq,
+				    #				      AvikPID, 
+				    @sequence::stnmaker_dem_seq, EventFilter ]
+
   trkpatrec_dem_reco_stnmaker_seq : [ @sequence::calRecoSeq, 
 				      @sequence::trkPatRecDemSeq,
 				      @sequence::trkCaloMatchingDemSeq,
