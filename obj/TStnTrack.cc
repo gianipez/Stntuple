@@ -220,10 +220,6 @@ void TStnTrack::ReadV4(TBuffer &R__b) {
   
   if (imaxep >= 0) fVMaxEp = &fDisk[imaxep];
   else             fVMaxEp = NULL;
-//-----------------------------------------------------------------------------
-// introdiced in V7, initialize to produce nonsence results if used
-//-----------------------------------------------------------------------------
-  fC0 = -1.e12;
 }
 
 
@@ -443,10 +439,6 @@ void TStnTrack::ReadV5(TBuffer &R__b) {
   
   if (imaxep >= 0) fVMaxEp = &fDisk[imaxep];
   else             fVMaxEp = NULL;
-//-----------------------------------------------------------------------------
-// introdiced in V7, initialize to produce nonsence results if used
-//-----------------------------------------------------------------------------
-  fC0 = -1.e12;
 }
 
 
@@ -671,10 +663,6 @@ void TStnTrack::ReadV6(TBuffer &R__b) {
   
   if (imaxep >= 0) fVMaxEp = &fDisk[imaxep];
   else             fVMaxEp = NULL;
-//-----------------------------------------------------------------------------
-// undefined in V6, set to produce nonsence results if used
-//-----------------------------------------------------------------------------
-  fC0 = -1.e12;
 }
 
 
@@ -902,10 +890,6 @@ void TStnTrack::ReadV7(TBuffer &R__b) {
   
   if (imaxep >= 0) fVMaxEp = &fDisk[imaxep];
   else             fVMaxEp = NULL;
-//-----------------------------------------------------------------------------
-// undefined in V6, set to produce nonsence results if used
-//-----------------------------------------------------------------------------
-  fC0 = -1.e12;
 }
 
 
@@ -1137,10 +1121,6 @@ void TStnTrack::ReadV8(TBuffer &R__b) {
   
   if (imaxep >= 0) fVMaxEp = &fDisk[imaxep];
   else             fVMaxEp = NULL;
-//-----------------------------------------------------------------------------
-// undefined in V6, set to produce nonsence results if used
-//-----------------------------------------------------------------------------
-  fC0 = -1.e12;
 }
 
 //-----------------------------------------------------------------------------
@@ -1373,10 +1353,6 @@ void TStnTrack::ReadV9(TBuffer &R__b) {
   
   if (imaxep >= 0) fVMaxEp = &fDisk[imaxep];
   else             fVMaxEp = NULL;
-//-----------------------------------------------------------------------------
-// undefined in V6, set to produce nonsence results if used
-//-----------------------------------------------------------------------------
-  fC0 = -1.e12;
 }
 
 //-----------------------------------------------------------------------------
@@ -1610,10 +1586,6 @@ void TStnTrack::ReadV10(TBuffer &R__b) {
   
   if (imaxep >= 0) fVMaxEp = &fDisk[imaxep];
   else             fVMaxEp = NULL;
-//-----------------------------------------------------------------------------
-// undefined in V6, set to produce nonsence results if used
-//-----------------------------------------------------------------------------
-  fC0 = -1.e12;
 }
 
 

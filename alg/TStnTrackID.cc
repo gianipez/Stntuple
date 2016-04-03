@@ -62,6 +62,8 @@ TStnTrackID::TStnTrackID(const char* Name): TNamed(Name,Name) {
 
   fMinD2           = -1.e6;
   fMaxD2           =  1.e6;
+
+  fMinTrkQual      = -100.;     // if undefined , = 100
 				// initialize spare words to zero
 
   for (int i=0; i< kNFreeInts  ; i++) fInteger[i] = 0;
@@ -77,22 +79,19 @@ TStnTrackID::~TStnTrackID() {
 //  need to implement the D0 cuts
 //-----------------------------------------------------------------------------
 int TStnTrackID::IDWord(TStnTrack* Track) {
-  Int_t      id_word = 0;
-  int        nactive;
-  double     fcons, d0, t0, t0_err, fitmom_err, tan_dip, two_over_omega, rmax;
+  Int_t      id_word(0), nactive;
+  double     fcons, d0, t0, t0_err, fitmom_err, tan_dip, rmax;
+  double     trk_qual;
   
-  //  KalRep* trk = Track->fKalRep[0];
-
-  fcons      = Track->fFitCons;
-  t0         = Track->fT0;
-  t0_err     = Track->fT0Err;
-  nactive    = Track->NActive();
-  tan_dip    = Track->fTanDip;
-  fitmom_err = Track->fFitMomErr;
-  d0         = Track->fD0;
-					// so far - kludge
-  two_over_omega = 0. ;			// 2/c0 - signed diameter
-  rmax           = d0+two_over_omega;
+  fcons          = Track->fFitCons;
+  t0             = Track->fT0;
+  t0_err         = Track->fT0Err;
+  nactive        = Track->NActive();
+  tan_dip        = Track->fTanDip;
+  fitmom_err     = Track->fFitMomErr;
+  d0             = Track->fD0;
+  rmax           = d0+2./fabs(Track->C0());	// 2/|c0| - diameter
+  trk_qual       = Track->DaveTrkQual();
 
   if (fcons            <  fMinFitCons  ) id_word |= kFitConsBit ;
   if (t0               <  fMinT0       ) id_word |= kT0Bit ;
@@ -108,6 +107,7 @@ int TStnTrackID::IDWord(TStnTrack* Track) {
 
   if (rmax             <  fMinD2       ) id_word |= kD2Bit ;
   if (rmax             >  fMaxD2       ) id_word |= kD2Bit ;
+  if (trk_qual         <  fMinTrkQual  ) id_word |= kTrkQualBit ;
 
   return  (id_word & fUseMask);
 }

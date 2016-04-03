@@ -27,7 +27,8 @@ public:
     kFitMomErrBit      = 0x1 <<  4,     // 0x00000010
     kTanDipBit         = 0x1 <<  5,     // 0x00000020
     kD1Bit             = 0x1 <<  6,     // 0x00000040
-    kD2Bit             = 0x1 <<  7      // 0x00000080
+    kD2Bit             = 0x1 <<  7,     // 0x00000080
+    kTrkQualBit        = 0x1 <<  8      // 0x00000100
   };
 
   enum { 
@@ -70,6 +71,8 @@ protected:
   Float_t    fMinD2;			// R2 - maximal track radius, asymmetric cut
   Float_t    fMaxD2;
 
+  Float_t    fMinTrkQual;               // min track quality
+
   Float_t    fFloat[kNFreeFloats];	// spare words, added in V5
 
   void*      fEOR;		// ! end of record
@@ -92,6 +95,7 @@ public:
   Float_t MaxFitMomErr () const { return fMaxFitMomErr; }
   Float_t MinTanDip    () const { return fMinTanDip;    }
   Float_t MaxTanDip    () const { return fMaxTanDip;    }
+  Float_t MaxTrkQual   () const { return fMaxTanDip;    }
 //-----------------------------------------------------------------------------
 // modifiers
 //-----------------------------------------------------------------------------
@@ -104,6 +108,7 @@ public:
 
   void    SetMinTanDip   (Float_t TanDip ) { fMinTanDip     = TanDip;  }
   void    SetMaxTanDip   (Float_t TanDip ) { fMaxTanDip     = TanDip;  }
+  void    SetMinTrkQual  (Float_t TrkQual) { fMinTrkQual    = TrkQual; }
 //-----------------------------------------------------------------------------
 // other methods
 //-----------------------------------------------------------------------------

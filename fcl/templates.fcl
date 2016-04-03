@@ -15,6 +15,9 @@ BEGIN_PROLOG
 		    , dioMixer, protonMixer, neutronMixer, photonMixer, ootMixer, flashMixer
 		    , @sequence::timeMapSeq ]
 
+  mix_seq       : [ dioMixer, protonMixer, neutronMixer, photonMixer, ootMixer, flashMixer
+		    , @sequence::timeMapSeq ]
+
   hitMakerSeq   : [ MakeCaloReadoutHits, MakeCaloCrystalHits, makeSD, makeSH ]
 
   digiMakerSeq  : [ MakeCaloCompressedHits     , CaloDigisFromStepPointMCs, CaloHitsFromCaloDigis, 
@@ -93,14 +96,28 @@ BEGIN_PROLOG
   stnmaker_dem_seq       : [ InitStntuple, StntupleMakerDem   , FillStntuple ]
   stnmaker_dmm_seq       : [ InitStntuple, StntupleMakerDmm   , FillStntuple ]
   stnmaker_dem_dmm_seq   : [ InitStntuple, StntupleMakerDemDmm, FillStntuple ]
-
 #------------------------------------------------------------------------------
+# *** path sequences
+#------------------------------------------------------------------------------
+  hits_calo_apr_stnmaker_seq : [ @sequence::timeMapSeq, @sequence::hitMakerSeq, 
+				 @sequence::calRecoSeq, 
+				 @sequence::allPatRecSeq,
+				 @sequence::trkCaloMatchingSeq,
+#				 AvikPID, 
+				 @sequence::stnmaker_seq ]
+
   hits_calo_tprdem_stnmaker_seq : [ @sequence::timeMapSeq, @sequence::hitMakerSeq, 
 				    @sequence::calRecoSeq, 
 				    @sequence::trkPatRecDemSeq,
 				    @sequence::trkCaloMatchingDemSeq,
 				    #				      AvikPID, 
 				    @sequence::stnmaker_dem_seq, EventFilter ]
+#------------------------------------------------------------------------------
+# read both signal and background files and mix
+#------------------------------------------------------------------------------
+  path_mix_hits_calo_apr_vpid_stnm : [ @sequence::mix_seq     , @sequence::hitMakerSeq ,
+				       @sequence::calRecoSeq  , @sequence::allPatRecSeq,
+				       @sequence::vadimPidSeq , @sequence::stnmaker_seq, EventFilter]
 
   trkpatrec_dem_reco_stnmaker_seq : [ @sequence::calRecoSeq, 
 				      @sequence::trkPatRecDemSeq,
@@ -395,7 +412,6 @@ physics : {
     genmix_allpatrec_reco_stnmaker : [ @sequence::genMixSeq   , @sequence::hitMakerSeq ,
 				       @sequence::calRecoSeq  , @sequence::allPatRecSeq,
 				       @sequence::vadimPidSeq , @sequence::stnmaker_seq , EventFilter]
-
 #------------------------------------------------------------------------------
 # AvikPID requires both electron and muon reconstruction sequences
 #------------------------------------------------------------------------------
