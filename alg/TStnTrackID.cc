@@ -60,8 +60,8 @@ TStnTrackID::TStnTrackID(const char* Name): TNamed(Name,Name) {
   fMinD1           = -80.;		// in mm
   fMaxD1           = 105.;
 
-  fMinD2           = -1.e6;
-  fMaxD2           =  1.e6;
+  fMinD2           = 450;
+  fMaxD2           = 680;
 
   fMinTrkQual      = -100.;     // if undefined , = 100
 				// initialize spare words to zero
@@ -79,9 +79,9 @@ TStnTrackID::~TStnTrackID() {
 //  need to implement the D0 cuts
 //-----------------------------------------------------------------------------
 int TStnTrackID::IDWord(TStnTrack* Track) {
-  Int_t      id_word(0), nactive;
-  double     fcons, d0, t0, t0_err, fitmom_err, tan_dip, rmax;
-  double     trk_qual;
+
+  int              id_word(0), nactive;
+  double           fcons, d0, t0, t0_err, fitmom_err, tan_dip, rmax, trk_qual;
   
   fcons          = Track->fFitCons;
   t0             = Track->fT0;
@@ -89,8 +89,8 @@ int TStnTrackID::IDWord(TStnTrack* Track) {
   nactive        = Track->NActive();
   tan_dip        = Track->fTanDip;
   fitmom_err     = Track->fFitMomErr;
-  d0             = Track->fD0;
-  rmax           = d0+2./fabs(Track->C0());	// 2/|c0| - diameter
+  d0             = Track->fD0;              // signed impact parameter, convention: mu2e-781
+  rmax           = fabs(d0+2./Track->C0()); // 2/c0 - signed diameter
   trk_qual       = Track->DaveTrkQual();
 
   if (fcons            <  fMinFitCons  ) id_word |= kFitConsBit ;
