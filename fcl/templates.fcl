@@ -115,9 +115,17 @@ BEGIN_PROLOG
 #------------------------------------------------------------------------------
 # read both signal and background files and mix
 #------------------------------------------------------------------------------
+  path_hits_calo_apr_vpid_stnm     : [ @sequence::hitMakerSeq ,
+				       @sequence::calRecoSeq  , @sequence::allPatRecSeq,
+				       @sequence::trkCaloMatchingSeq,
+				       ParticleID, 
+				       @sequence::stnmaker_seq, EventFilter]
+
   path_mix_hits_calo_apr_vpid_stnm : [ @sequence::mix_seq     , @sequence::hitMakerSeq ,
 				       @sequence::calRecoSeq  , @sequence::allPatRecSeq,
-				       @sequence::vadimPidSeq , @sequence::stnmaker_seq, EventFilter]
+				       @sequence::trkCaloMatchingSeq,
+				       ParticleID, 
+				       @sequence::stnmaker_seq, EventFilter]
 
   trkpatrec_dem_reco_stnmaker_seq : [ @sequence::calRecoSeq, 
 				      @sequence::trkPatRecDemSeq,
