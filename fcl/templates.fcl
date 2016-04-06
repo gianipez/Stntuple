@@ -123,7 +123,7 @@ BEGIN_PROLOG
 #------------------------------------------------------------------------------
 # read signal files and run full reconstruction
 #------------------------------------------------------------------------------
-  path_hits_calo_apr_vpid_stnm     : [ @sequence::hitMakerSeq ,
+  path_hits_calo_apr_vpid_stnm     : [ @sequence::timeMapSeq  , @sequence::hitMakerSeq ,
 				       @sequence::calRecoSeq  , @sequence::allPatRecSeq,
 				       @sequence::trkCaloMatchingSeq,
 				       ParticleID, 
