@@ -42,8 +42,8 @@ void TStnHeaderBlock::ReadV1(TBuffer &R__b) {
 
   TStnHeaderBlockDataV1_t data;
 
-  int nwi     = ((Int_t*  )&fInstLum   )-&fVersion;
-  int nwf     = ((Float_t*)&fLastNumber)-&fInstLum;
+  int nwi     = ((Int_t*  )&data.fInstLum   )-&data.fVersion;
+  int nwf     = ((Float_t*)&data.fLastNumber)-&data.fInstLum;
 
   R__b.ReadFastArray(&data.fVersion,nwi);
   R__b.ReadFastArray(&data.fInstLum,nwf);
