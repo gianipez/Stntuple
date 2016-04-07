@@ -10,8 +10,7 @@ BEGIN_PROLOG
 
   generatorSeq  : [ generate, g4run, detectorFilter, @sequence::timeMapSeq ]
 
-
-  genMixSeq     : [ generate, g4run, detectorFilter
+  gen_mix_seq   : [ generate, g4run, detectorFilter
 		    , dioMixer, protonMixer, neutronMixer, photonMixer, ootMixer, flashMixer
 		    , @sequence::timeMapSeq ]
 
@@ -137,6 +136,26 @@ BEGIN_PROLOG
 				       ParticleID, 
 				       @sequence::stnmaker_seq, EventFilter]
 
+  path_mix_hits_calo_apr_vpid_display : [ @sequence::mix_seq     , @sequence::hitMakerSeq ,
+				       @sequence::calRecoSeq  , @sequence::allPatRecSeq,
+				       @sequence::trkCaloMatchingSeq,
+				       ParticleID, 
+				       MuHitDisplay ]
+#------------------------------------------------------------------------------
+# generate signal, read background files, mix, run full reconstruction
+#------------------------------------------------------------------------------
+  path_gen_mix_hits_calo_apr_vpid_stnm : [ @sequence::gen_mix_seq , @sequence::hitMakerSeq ,
+					   @sequence::calRecoSeq  , @sequence::allPatRecSeq,
+					   @sequence::trkCaloMatchingSeq,
+					   ParticleID, 
+					   @sequence::stnmaker_seq, EventFilter]
+
+  path_gen_mix_hits_calo_apr_vpid_display : [ @sequence::gen_mix_seq , @sequence::hitMakerSeq ,
+					   @sequence::calRecoSeq  , @sequence::allPatRecSeq,
+					   @sequence::trkCaloMatchingSeq,
+					   ParticleID, 
+					   MuHitDisplay]
+
   trkpatrec_dem_reco_stnmaker_seq : [ @sequence::calRecoSeq, 
 				      @sequence::trkPatRecDemSeq,
 				      @sequence::trkCaloMatchingDemSeq,
@@ -165,15 +184,9 @@ BEGIN_PROLOG
   gen_allpatrec_dem_dmm_reco_stnmaker_seq : [ @sequence::generatorSeq, @sequence::hitMakerSeq       ,
 					      @sequence::allpatrec_dem_dmm_reco_stnmaker_seq ]
 
-  genmix_allpatrec_dem_dmm_reco_stnmaker_seq : [ @sequence::genMixSeq , @sequence::hitMakerSeq       ,
+  genmix_allpatrec_dem_dmm_reco_stnmaker_seq : [ @sequence::gen_mix_seq , @sequence::hitMakerSeq       ,
 						 @sequence::allpatrec_dem_dmm_reco_stnmaker_seq ]
 END_PROLOG
-
-#include "minimalMessageService.fcl"
-#include "standardProducers.fcl"
-#include "standardServices.fcl"
-#include "Stntuple/fcl/prolog.fcl"
-
 #------------------------------------------------------------------------------
 # input module definition
 #------------------------------------------------------------------------------
@@ -427,7 +440,7 @@ physics : {
 #------------------------------------------------------------------------------
 # same with mixed background 
 #------------------------------------------------------------------------------
-    genmix_allpatrec_reco_stnmaker : [ @sequence::genMixSeq   , @sequence::hitMakerSeq ,
+    genmix_allpatrec_reco_stnmaker : [ @sequence::gen_mix_seq   , @sequence::hitMakerSeq ,
 				       @sequence::calRecoSeq  , @sequence::allPatRecSeq,
 				       @sequence::vadimPidSeq , @sequence::stnmaker_seq , EventFilter]
 #------------------------------------------------------------------------------
@@ -444,7 +457,7 @@ physics : {
     gen_allpatrec_dem_dmm_reco_stnmaker : [ @sequence::gen_hits_seq, 
 					    @sequence::allpatrec_dem_dmm_reco_stnmaker_seq ]
 
-    genmix_allpatrec_dem_dmm_reco_stnmaker : [ @sequence::genMixSeq , @sequence::hitMakerSeq       ,
+    genmix_allpatrec_dem_dmm_reco_stnmaker : [ @sequence::gen_mix_seq , @sequence::hitMakerSeq       ,
 					       @sequence::calRecoSeq, @sequence::allPatRecDemDmmSeq,
 					       @sequence::avikPidSeq, @sequence::stnmaker_seq       , EventFilter ]
 #------------------------------------------------------------------------------
