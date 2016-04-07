@@ -25,7 +25,7 @@
 
 #include "Stntuple/mod/InitStntupleDataBlocks.hh"
 
-//_____________________________________________________________________________
+//-----------------------------------------------------------------------------
 int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode) 
 {
   // fill generator particle data block (GENP - GENerator Particles - 
@@ -37,11 +37,10 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
 
   std::vector<art::Handle<mu2e::SimParticleCollection>> list_of_sp;
 
-  const mu2e::SimParticleCollection*     coll(0);
-  const mu2e::SimParticle*               sim(0);
-  //  const art::Handle<mu2e::SimParticleCollection>* handle;
-  art::Handle<mu2e::SimParticleCollection> handle;
-  mu2e::StrawHitCollection*              list_of_straw_hits(0);
+  const mu2e::SimParticleCollection*       simp_coll(0);
+  const mu2e::SimParticle*                 sim(0);
+  art::Handle<mu2e::SimParticleCollection> simp_handle;
+  mu2e::StrawHitCollection*                list_of_straw_hits(0);
 
   double        px, py, pz, mass, energy;
   int           id, parent_id, n_straw_hits(0), nhits;
@@ -49,7 +48,6 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
   TParticlePDG* part;
   TDatabasePDG* pdg_db = TDatabasePDG::Instance();
   TSimParticle* simp;
-    //  TLorentzVector v;
 
   TSimpBlock* simp_block = (TSimpBlock*) Block;
   simp_block->Clear();
@@ -85,12 +83,12 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
 //        it != list_of_sp.end(); it++) {
 //     handle = it.operator -> ();
 
-  art::Selector  selector(art::ProcessNameSelector("")         && 
-			  art::ModuleLabelSelector(g4_module_label)            );
-  AnEvent->get(selector, handle);
+  art::Selector  selector(art::ProcessNameSelector("")             && 
+			  art::ModuleLabelSelector(g4_module_label)   );
+  AnEvent->get(selector,simp_handle);
 
-  if (handle.isValid()) {
-    coll = handle.product();
+  if (simp_handle.isValid()) {
+    simp_coll = simp_handle.product();
     //      prov = handle->provenance();
       
     //       printf("moduleLabel = %-20s, producedClassname = %-30s, productInstanceName = %-20s\n",
@@ -98,19 +96,19 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
     // 	     prov->producedClassName().data(),
     // 	     prov->productInstanceName().data());
 
-    for (mu2e::SimParticleCollection::const_iterator ip = coll->begin(); ip != coll->end(); ip++) {
+    for (mu2e::SimParticleCollection::const_iterator ip = simp_coll->begin(); ip != simp_coll->end(); ip++) {
       sim      = &ip->second;
       if (! sim->isPrimary())                               goto NEXT_PARTICLE;
-      id       = sim->id().asInt();
+      id        = sim->id().asInt();
       parent_id = -1;
       if (sim->parent()) parent_id = sim->parent()->id().asInt();
 
-      pdg_code  = (int) sim->pdgId();
-      creation_code = sim->creationCode();
+      pdg_code         = (int) sim->pdgId();
+      creation_code    = sim->creationCode();
       termination_code = sim->stoppingCode();
 
-      start_vol_id = sim->startVolumeIndex();
-      end_vol_id   = sim->endVolumeIndex();
+      start_vol_id     = sim->startVolumeIndex();
+      end_vol_id       = sim->endVolumeIndex();
       
       part     = pdg_db->GetParticle(pdg_code);
 
@@ -135,7 +133,8 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
       art::Handle<mu2e::StepPointMCCollection> vdhits;
       AnEvent->getByLabel(g4_module_label,"virtualdetector",vdhits);
       if (!vdhits.isValid()) {
-	printf("ERROR %s : invalid VD step points\n",oname);
+	printf("[%s] ERROR: StepPointMCCollection %s:virtualdetector NOT FOUND\n",
+	       g4_module_label,oname);
       }
       else {
 	int nvdhits = vdhits->size();
@@ -182,14 +181,10 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
 //-----------------------------------------------------------------------------
       nhits = 0;
       for (int i=0; i<n_straw_hits; i++) {
-      //      const mu2e::StepPointMC* hit = &(*steps)[i];
-	  
 	mu2e::PtrStepPointMCVector const& mcptr(stepPointMCVectorCollection->at(i) );
 
 	step = mcptr[0].operator ->();
     
-      //      hit   = &list_of_straw_hits->at(i);
-
 	art::Ptr<mu2e::SimParticle> const& simptr = step->simParticle(); 
 	art::Ptr<mu2e::SimParticle> mother = simptr;
 	while(mother->hasParent())  mother = mother->parent();
@@ -207,7 +202,8 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
     }
   }
   else {
-    printf(">>> ERROR in InitSimpBlock: failed to locate collection");
+    printf(" [%s] ERROR: SimParticleCollection %s:virtualdetector NOT FOUND",
+	   oname,g4_module_label);
     printf(". BAIL OUT. \n");
     return -1;
   }

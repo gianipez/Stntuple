@@ -23,12 +23,11 @@ mu2e::SimParticleTimeOffset* fgTimeOffsets;
 //-----------------------------------------------------------------------------
 Int_t StntupleInitMu2eVirtualDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int Mode) 
 {
-  // initialize COT data block with the `event' data
-  // return -1, if bank doesn't exist, 0, if everything is OK
 
-  int ev_number, rn_number, nhits;
+  static char   oname[] = "StntupleInitMu2eVirtualDataBlock";
 
-  static char   strh_module_label[100], strh_description[100];
+  static char   step_module_label[100], step_description[100];
+  int           ev_number, rn_number, nhits;
 
   ev_number = AnEvent->event();
   rn_number = AnEvent->run();
@@ -40,23 +39,24 @@ Int_t StntupleInitMu2eVirtualDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent, 
 //-----------------------------------------------------------------------------
 //  virtual hit information
 //-----------------------------------------------------------------------------
-  data->GetModuleLabel("mu2e::StepPointMCCollection",strh_module_label);
-  data->GetDescription("mu2e::StepPointMCCollection",strh_description);
+  data->GetModuleLabel("mu2e::StepPointMCCollection",step_module_label);
+  data->GetDescription("mu2e::StepPointMCCollection",step_description);
 
-  art::Handle<mu2e::StepPointMCCollection>       strh_handle;
+  art::Handle<mu2e::StepPointMCCollection>       step_handle;
   const mu2e::StepPointMCCollection*             list_of_hits(0);
 
   static mu2e::GlobalConstantsHandle<mu2e::ParticleDataTable> pdt;
   mu2e::ParticleDataTable::maybe_ref info;
   
-  if (strh_module_label[0] != 0) {
-    if (strh_description[0] != 0) 
-      AnEvent->getByLabel(strh_module_label, strh_description, strh_handle);
-    if (strh_handle.isValid()) list_of_hits = strh_handle.product();
+  if (step_module_label[0] != 0) {
+    if (step_description[0] != 0) 
+      AnEvent->getByLabel(step_module_label, step_description, step_handle);
+    if (step_handle.isValid()) list_of_hits = step_handle.product();
   }
 
   if (list_of_hits == NULL) {
-    printf(" >>> ERROR in : StntupleInitMu2eVirtualDataBlock no list_of_hits. BAIL OUT\n");
+    printf("[%s] ERROR: run %10i event %10i StepPointMCCollection by %s:%s is missing. BAIL OUT\n",
+	   oname,rn_number,ev_number,step_module_label,step_description);
     return -1;
   }
 
