@@ -34,6 +34,7 @@
 #include "Stntuple/obj/TStnTrackBlock.hh"
 #include "Stntuple/obj/TStrawDataBlock.hh"
 #include "Stntuple/obj/TCalDataBlock.hh"
+#include "Stntuple/obj/TStnHeaderBlock.hh"
 
 //  #include "Stntuple/obj/TStnTriggerBlock.hh"
 
@@ -262,6 +263,11 @@ void StntupleMaker::beginJob() {
   buffer_size       = THistModule::BufferSize();
 
   //  _iname1           = fFitDirection1.name() + fFitParticle1.name();
+//-----------------------------------------------------------------------------
+// header block is always there
+//-----------------------------------------------------------------------------
+  TStnHeaderBlock* header = (TStnHeaderBlock*) Event()->GetDataBlock("HeaderBlock");
+  header->AddCollName("mu2e::StrawHitCollection",fMakeStrawHitModuleLabel.data(),"");
 //-----------------------------------------------------------------------------
 // calorimeter hit data
 // this is not RAW hit data yet...

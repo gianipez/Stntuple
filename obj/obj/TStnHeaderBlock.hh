@@ -15,6 +15,11 @@ class TStnHeaderBlock : public TStnDataBlock {
   friend Int_t StntupleInitMu2eHeaderBlock     (TStnDataBlock*, AbsEvent* , int);
   friend Int_t StntupleInitMu2eHeaderBlockLinks(TStnDataBlock*, AbsEvent* , int);
 
+  enum {
+    kNFreeInts   =  5,                  // starting from version 2
+    kNFreeFloats =  5
+  };
+
 public:
   Int_t             fVersion;
   Int_t             fEventNumber;
@@ -26,18 +31,21 @@ public:
   Int_t             fGoodTrig;
   Int_t             fTrigWord;		// 
   Int_t             fNTracks;           //
+  int               fNStrawHits;        // *** added in V2 
+  int               fNCaloHits;         // *** added in V2 - total N reco pulses
+  int               fNCRVHits;          // *** added in V2 - total N CRV hits
   Int_t             fCpu;               // packed word with processing time
-  Float_t           fInstLum;		// instantaneous luminosity
-  TString           fStnVersion;        // like dev_243_16
+  int               fInt[kNFreeInts];   // provision for future I/O expansion
 
+  float             fInstLum;		 // instantaneous luminosity
+  float             fMeanLum;		 // *** added in V2 : mean luminosity (MC)
+  float             fFloat[kNFreeFloats];// provision for future I/O expansion
+  TString           fStnVersion;         // STNTUPLE version, like "dev_243_16"
 //------------------------------------------------------------------------------
-//  now the data which are not a part of STNTUPLE
+//  transient data, all persistent should go above
 //------------------------------------------------------------------------------
-					// number/run number for the last 
-					// printed event
-
-  Int_t             fLastNumber;	// !
-  Int_t             fLastRunNumber;	// ! 
+  Int_t             fLastNumber;	//! event/run numbers for the last printed event
+  Int_t             fLastRunNumber;	//! 
 //------------------------------------------------------------------------------
 //  function members
 //------------------------------------------------------------------------------
@@ -67,10 +75,10 @@ public:
   void   Print(Option_t* opt = "") const;
 
 					// ****** schema evolution
-  void   ReadV50(TBuffer& R__b);
+  void   ReadV1(TBuffer& R__b);
 
 
-  ClassDef(TStnHeaderBlock,1)	       // Mu2e STNTUPLE event header
+  ClassDef(TStnHeaderBlock,2)	       // Mu2e STNTUPLE event header
 };
 
 #endif
