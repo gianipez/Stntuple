@@ -153,7 +153,7 @@ public:
   int                       fAlgorithmID;     // bit-packed : (alg_mask << 16 ) | best
   int                       fNHits;           // undefined before V9: total number of hits associated with the track
   int                       fNDoublets;       // undefined before V9: nd_os | (nd_ss << 8) | (nhitsambig0 << 16) 
-  int                       fInt[kNFreeInts]; // provision for future expension
+  int                       fInt[kNFreeInts]; // provision for future I/O expansion
   
   float                     fChi2;
   float                     fChi2C;           // *NOT USED* 
