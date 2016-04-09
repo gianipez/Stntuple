@@ -141,13 +141,11 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
 	for (int i=0; i<nvdhits; i++) {
 	  const mu2e::StepPointMC* hit = &(*vdhits)[i];
 	  
-	  //int vdid = hit.volumeId();
 	  mu2e::VirtualDetectorId vdid(hit->volumeId());
 
 	  if (vdid.id() == mu2e::VirtualDetectorId::ST_Out) {
 
-	    art::Ptr<mu2e::SimParticle> const& simptr = hit->simParticle();
-	    const mu2e::SimParticle* sim  = simptr.operator ->();
+	    const mu2e::SimParticle* sim = hit->simParticle().get();
 
 	    if (sim == NULL) {
 	      printf(">>> ERROR: %s sim == NULL\n",oname);
@@ -162,14 +160,16 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
 	    //	    TAnaDump::Instance()->printStepPointMC(hit,"");
 
 	    art::Ptr<mu2e::SimParticle> const& simptr = hit->simParticle();
-	    const mu2e::SimParticle* sim  = simptr.operator ->();
+	    const mu2e::SimParticle* sim = simptr.get();
 
 	    if (sim == NULL) {
-	      printf(">>> ERROR: %s sim == NULL\n",oname);
+	      printf("[%s] ERROR: sim == NULL. CONTINUE.\n",oname);
 	    }
-	    int sim_id = sim->id().asInt();
-	    if (sim_id == id) {
-	      simp->SetMomTrackerFront(hit->momentum().mag());
+	    else {
+	      int sim_id = sim->id().asInt();
+	      if (sim_id == id) {
+		simp->SetMomTrackerFront(hit->momentum().mag());
+	      }
 	    }
 	  }
 	  
@@ -183,12 +183,12 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
       for (int i=0; i<n_straw_hits; i++) {
 	mu2e::PtrStepPointMCVector const& mcptr(stepPointMCVectorCollection->at(i) );
 
-	step = mcptr[0].operator ->();
+	step = mcptr[0].get(); // operator ->();
     
 	art::Ptr<mu2e::SimParticle> const& simptr = step->simParticle(); 
 	art::Ptr<mu2e::SimParticle> mother = simptr;
 	while(mother->hasParent())  mother = mother->parent();
-	const mu2e::SimParticle*    sim    = mother.operator ->();
+	const mu2e::SimParticle*    sim    = mother.get(); // operator ->();
 
 	int sim_id = sim->id().asInt();
 
