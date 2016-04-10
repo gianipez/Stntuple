@@ -64,10 +64,6 @@ namespace mu2e {
     srn = anEvent.subRun();
     evn = anEvent.event();
 
-    if ((evn % _printFreq) == 0) {
-      printf("[%s] : run, subrun event: %8i %8i %8i\n",oname,rn, srn,evn);
-    }
-
     if (_nevents > 0) {
       found = 0;
 
