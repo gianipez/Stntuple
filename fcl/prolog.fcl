@@ -196,12 +196,13 @@ MuHitDisplay: {
     }
 }
 #------------------------------------------------------------------------------
-# event list contains 3 numbers per event : run, event, subrun
+# event list contains 3 numbers per event : run, subrun, event
 # if the event list is empty, all events are passed through
 #------------------------------------------------------------------------------
 EventFilter: {
     module_type                  : EventFilter
-    eventList                    : []  # [ run1, event1, subrun1, ...]
+    printFreq                    : 1000000
+    eventList                    : []  # [ run1, subrun1, event1, ...]
 }
 
 END_PROLOG

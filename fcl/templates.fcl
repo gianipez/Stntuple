@@ -127,6 +127,11 @@ BEGIN_PROLOG
 				       @sequence::trkCaloMatchingSeq,
 				       ParticleID, 
 				       @sequence::stnmaker_seq, EventFilter]
+
+  path_calo_apr_vpid_stnm          : [ @sequence::calRecoSeq  , @sequence::allPatRecSeq,
+				       @sequence::trkCaloMatchingSeq,
+				       ParticleID, 
+				       @sequence::stnmaker_seq, EventFilter]
 #------------------------------------------------------------------------------
 # read both signal and background files, mix, run full reconstruction
 #------------------------------------------------------------------------------
@@ -137,13 +142,15 @@ BEGIN_PROLOG
 				       @sequence::stnmaker_seq, EventFilter]
 
   path_mix_hits_calo_apr_vpid_display : [ @sequence::mix_seq     , @sequence::hitMakerSeq ,
-				       @sequence::calRecoSeq  , @sequence::allPatRecSeq,
-				       @sequence::trkCaloMatchingSeq,
-				       ParticleID, 
-				       MuHitDisplay ]
+					  @sequence::calRecoSeq  , @sequence::allPatRecSeq,
+					  @sequence::trkCaloMatchingSeq,
+					  ParticleID, 
+					  MuHitDisplay ]
 #------------------------------------------------------------------------------
 # generate signal, read background files, mix, run full reconstruction
 #------------------------------------------------------------------------------
+  path_gen_mix_hits                    : [ @sequence::gen_mix_seq , @sequence::hitMakerSeq ]
+
   path_gen_mix_hits_calo_apr_vpid_stnm : [ @sequence::gen_mix_seq , @sequence::hitMakerSeq ,
 					   @sequence::calRecoSeq  , @sequence::allPatRecSeq,
 					   @sequence::trkCaloMatchingSeq,
