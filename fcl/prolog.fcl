@@ -56,7 +56,8 @@ StntupleMaker : {
     trkRecoModuleLabel      : [ "MergePatRec"  ]
     trkExtrapolModuleLabel  : [ "TrkExtrapol"  ]
     trkCaloMatchModuleLabel : [ "CaloMatching" ]
-    pidModuleLabel          : [ "AvikPID"      ]
+    pidModuleLabel          : [ "ParticleID"   ]
+#    pidModuleLabel          : [ "AvikPID"      ]
     fitParticle             : [             11 ] # 11:electron  , 13:muon etc
     fitDirection            : [              0 ] #  0:downstream,  1:upstream
 
