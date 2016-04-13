@@ -62,6 +62,8 @@ public:
   Int_t  NTracks      () const { return fNTracks;       }
 
   Float_t InstLum     () const { return fInstLum;       }
+  Float_t MeanLum     () const { return fMeanLum;       }
+  Float_t LumWeight   () const { return fInstLum/fMeanLum; }
 
   Float_t CpuTime     () const { return ((fCpu>>8)/10.0);   } // in s
   Float_t CpuSpeed    () const { return ((fCpu&0xFF)/5.0); } // in GHz
