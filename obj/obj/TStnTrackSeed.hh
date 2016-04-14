@@ -55,11 +55,11 @@ public:
   float                     fZ0;    
   float                     fTanDip;
 
-  float                     fCaloTime;   
-  float			    fCaloEnergy; 
-  float			    fCaloX;      
-  float			    fCaloY;      
-  float			    fCaloZ;      
+  float                     fClusterTime;   
+  float			    fClusterEnergy; 
+  float			    fClusterX;      
+  float			    fClusterY;      
+  float			    fClusterZ;      
 
 //-----------------------------------------------------------------------------
 // transients
@@ -86,11 +86,11 @@ public:
   float   Z0         () { return  fZ0;    }
   float   TanDip     () { return  fTanDip; }
 
-  float   CaloTime   () { return fCaloTime; }
-  float   CaloEnergy () { return fCaloEnergy;}
-  float   CaloX      () { return fCaloX;     }
-  float   CaloY      () { return fCaloY;     }
-  float   CaloZ      () { return fCaloZ;     }
+  float   ClusterTime   () { return fClusterTime; }
+  float   ClusterEnergy () { return fClusterEnergy;}
+  float   ClusterX      () { return fClusterX;     }
+  float   ClusterY      () { return fClusterY;     }
+  float   ClusterZ      () { return fClusterZ;     }
 
 //-----------------------------------------------------------------------------
 // overloaded methods of TObject

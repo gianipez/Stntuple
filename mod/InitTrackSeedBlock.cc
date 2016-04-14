@@ -63,15 +63,15 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
     trkSeed                 = &list_of_trackSeeds->at(i);
     //    cluster                 = trkSeed->_caloCluster;
     //trackerHitTime = trkSeed->_relatedTimeCluster.operator ->();
-    trackSeed->fCaloTime    = trkSeed->t0();
-    trackSeed->fCaloEnergy  = 0;
-    trackSeed->fCaloX       = 0;
-    trackSeed->fCaloY       = 0;
-    trackSeed->fCaloZ       = trkSeed->errt0 (); 
+    trackSeed->fClusterTime    = trkSeed->t0();
+    trackSeed->fClusterEnergy  = 0;
+    trackSeed->fClusterX       = 0;
+    trackSeed->fClusterY       = 0;
+    trackSeed->fClusterZ       = trkSeed->errt0 (); 
     
     
     trackSeed->fTrackSeed   = trkSeed;
-    //    trackSeed->fCaloCluster = trkSeed->CaloCluster();
+    //    trackSeed->fClusterCluster = trkSeed->CaloCluster();
     trackSeed->fNLoops      = trkSeed->nLoops();
     trackSeed->fNHits       = trkSeed->_selectedTrackerHits.size();
     trackSeed->fT0          = 0;//trkSeed->t0    ();

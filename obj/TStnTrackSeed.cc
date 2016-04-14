@@ -40,11 +40,11 @@ TStnTrackSeed::TStnTrackSeed(int i) {
   fZ0     = 0;    
   fTanDip = 0;
 
-  fCaloTime   = 0;  
-  fCaloEnergy = 0;
-  fCaloX      = 0;     
-  fCaloY      = 0;     
-  fCaloZ      = 0;     
+  fClusterTime   = 0;  
+  fClusterEnergy = 0;
+  fClusterX      = 0;     
+  fClusterY      = 0;     
+  fClusterZ      = 0;     
 
 }
 
