@@ -25,6 +25,7 @@
 namespace mu2e {
   class TrackSeed;
   class StrawHit;
+  class CaloCluster;
 }
 
 class TStnTrackSeed : public TObject {

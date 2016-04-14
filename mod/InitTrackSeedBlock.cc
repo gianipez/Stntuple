@@ -110,33 +110,33 @@ Int_t StntupleInitMu2eTrackSeedBlockLinks(TStnDataBlock* Block, AbsEvent* AnEven
   if (Block->LinksInitialized()) return 0;
 
   TStnTrackSeedBlock* tsb = (TStnTrackSeedBlock*) Block;
-  TStnClusterBlock*   clb = (TStnClusterBlock*  ) Block->GetEvent()->GetDataBlock("ClusterBlock");
+  // TStnClusterBlock*   clb = (TStnClusterBlock*  ) Block->GetEvent()->GetDataBlock("ClusterBlock");
 
-  int nclusters = clb->NClusters();
+  // int nclusters = clb->NClusters();
 
-  if (! tdata) return -1;
-
-
-  //  TStnEvent* ev   = header->GetEvent();
-  for (int i=0; i<ntrkseeds; i++) {
-    trkSeed  = tsb->TrackSeed(i);
-    b1      = trkSeed->fCaloCluster;
-
-    for (icl=0; icl<ncl; icl++) {
-      TStnCluster* cl = clb->Cluster(icl);
-      b2 = cl->fCaloCluster;
-
-      if (b1 == b2) {
-      }
-    }
+  // if (! tdata) return -1;
 
 
-    //trackerHitTime = trkSeed->_relatedTimeCluster.operator ->();
-  }
+  // //  TStnEvent* ev   = header->GetEvent();
+  // for (int i=0; i<ntrkseeds; i++) {
+  //   trkSeed  = tsb->TrackSeed(i);
+  //   b1      = trkSeed->fCaloCluster;
+
+  //   for (icl=0; icl<ncl; icl++) {
+  //     TStnCluster* cl = clb->Cluster(icl);
+  //     b2 = cl->fCaloCluster;
+
+  //     if (b1 == b2) {
+  //     }
+  //   }
+
+
+  //   //trackerHitTime = trkSeed->_relatedTimeCluster.operator ->();
+  // }
 //-----------------------------------------------------------------------------
 // mark links as initialized
 //-----------------------------------------------------------------------------
-  header->fLinksInitialized = 1;
+  tsb->fLinksInitialized = 1;
 
 
   return 0;
