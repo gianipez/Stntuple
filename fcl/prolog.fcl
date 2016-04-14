@@ -34,6 +34,7 @@ StntupleMaker : {
     makeStrawData       : 0
     makeTracks          : 1
     makeTrigger         : 0
+    makeTrackSeeds      : 0
     makeVirtualHits     : 1
 	    
     TimeOffsets          : { inputs : [ "protonTimeMap", "muonTimeMap" ] }
