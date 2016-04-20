@@ -181,6 +181,7 @@ namespace mu2e {
 // Control for CRV-specific viewing
 //-----------------------------------------------------------------------------
     bool				_showCRVOnly;
+    bool				_showTracks;
     bool				foundCRV;
     bool				foundTrkr;
     bool				foundTrkr_StrawHitColl;
@@ -313,6 +314,7 @@ namespace mu2e {
     fPrintHits(pset.get<bool>("printHits", false)),
     fUseStereoHits(pset.get<bool>("useStereoHits", false)),
     _showCRVOnly(pset.get<bool>("showCRVOnly", false)),
+    _showTracks (pset.get<bool>("showTracks")),
 
 
     _vmConfig(pset.get<fhicl::ParameterSet>("visManager", fhicl::ParameterSet()))
@@ -708,7 +710,11 @@ namespace mu2e {
       art::Handle<CalTimePeakCollection> tpch;
       const char* charDirectionAndParticle = fDirectionAndParticle.c_str();
 
-      Evt->getByLabel("CalPatRec", charDirectionAndParticle, tpch);
+      if (_showTracks){
+	Evt->getByLabel("CalPatRec", charDirectionAndParticle, tpch);
+      } else {
+	Evt->getByLabel("CalPatRec", tpch);
+      }
       if (tpch.isValid()) {
 	fCalTimePeakColl = tpch.product();
 //-----------------------------------------------------------------------------
@@ -754,15 +760,18 @@ namespace mu2e {
 //-----------------------------------------------------------------------------
 // initialize tracks and determine track quality
 //-----------------------------------------------------------------------------
-    StntupleInitMu2eTrackBlock(fTrackBlock, Evt, 0);
+    ntrk        = 0;
 
-    fNTracks[0] = fTrackBlock->NTracks();
+    if (_showTracks){
+      StntupleInitMu2eTrackBlock(fTrackBlock, Evt, 0);
 
-    ntrk = fNTracks[0];
+      fNTracks[0] = fTrackBlock->NTracks();
+      ntrk        = fNTracks[0];
+    }
 
     for (int i = 0; i<ntrk; i++) {
-      track = fTrackBlock->Track(i);
-      id_word = fTrackID->IDWord(track);
+      track          = fTrackBlock->Track(i);
+      id_word        = fTrackID->IDWord(track);
       track->fIDWord = id_word;
     }
 //-----------------------------------------------------------------------------

@@ -285,7 +285,9 @@ int TTrkVisNode::InitEvent() {
   const KalRep             *krep;  
   const mu2e::TrkStrawHit  *track_hit;
 
-  int ntrk = (*fKalRepPtrColl)->size();
+  int ntrk = 0;
+
+  if ( (*fKalRepPtrColl) != 0 )ntrk = (*fKalRepPtrColl)->size();
   
   for (int i=0; i<ntrk; i++) {
     krep = (*fKalRepPtrColl)->at(i).get();
@@ -312,7 +314,7 @@ int TTrkVisNode::InitEvent() {
 void TTrkVisNode::PaintXY(Option_t* Option) {
 
   double        time;
-  int           station, display_hit, ntrk;
+  int           station, display_hit, ntrk(0);
   TEvdStrawHit  *hit;
 
   const mu2e::StrawHit   *straw_hit;
@@ -360,7 +362,8 @@ void TTrkVisNode::PaintXY(Option_t* Option) {
   TEvdTrack* evd_trk;
   //  TAnaDump::Instance()->printKalRep(0,"banner");
 
-  ntrk = fListOfTracks->GetEntriesFast();
+  if ( (fListOfTracks) != 0 )  ntrk = fListOfTracks->GetEntriesFast();
+
   for (int i=0; i<ntrk; i++ ) {
     evd_trk = (TEvdTrack*) fListOfTracks->At(i);
     evd_trk->Paint(Option);
@@ -382,7 +385,7 @@ void TTrkVisNode::PaintXY(Option_t* Option) {
 
 //-----------------------------------------------------------------------------
 void TTrkVisNode::PaintRZ(Option_t* Option) {
-  int             ntrk, nhits;
+  int             ntrk(0), nhits;
   TEvdTrack*      evd_trk;
 
   //  TStnVisManager* vm = TStnVisManager::Instance();
@@ -403,7 +406,8 @@ void TTrkVisNode::PaintRZ(Option_t* Option) {
 //-----------------------------------------------------------------------------
 // display tracks and track hits
 //-----------------------------------------------------------------------------
-  ntrk = fListOfTracks->GetEntriesFast();
+  if (fListOfTracks != 0)  ntrk = fListOfTracks->GetEntriesFast();
+
   for (int i=0; i<ntrk; i++ ) {
     evd_trk = (TEvdTrack*) fListOfTracks->At(i);
     evd_trk->Paint(Option);

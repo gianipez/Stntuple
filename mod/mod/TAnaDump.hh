@@ -31,6 +31,7 @@ namespace mu2e {
   class GenParticle;
   class SimParticle;
   class CalTimePeak;
+  class TrackSeed;
   class TrackClusterMatch;
   class TrkStrawHit;
 }
@@ -109,6 +110,15 @@ public:
 					const char* ProductName,
 					const char* ProcessName);
   
+  void printTrackSeed          (const mu2e::TrackSeed* TrkSeed, 
+				const char* Opt = ""    ,
+				const char* Prefix = "");
+
+  void printTrackSeedCollection(const char* ModuleLabel     , 
+				const char* ProductName = "", 
+				const char* ProcessName = "",
+				int         hitOpt      = 0); 
+
   void printKalRep(const KalRep* Krep, const char* Opt = "", const char* Prefix = "");
 
   void printKalRepCollection(const char* ModuleLabel     , 

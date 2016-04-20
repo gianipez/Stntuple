@@ -152,7 +152,8 @@ MuHitDisplay: {
 
     crvRecoPulsesModuleLabel     : CrvRecoPulses
     showCRVOnly 		 : false
-	
+    showTracks                   : true
+
     generatorModuleLabel         : generate
     g4ModuleLabel                : g4run
     strawHitMakerModuleLabel     : makeSH

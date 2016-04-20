@@ -25,6 +25,8 @@
 #include "RecoDataProducts/inc/StrawHitCollection.hh"
 #include "RecoDataProducts/inc/StrawHitPositionCollection.hh"
 #include "RecoDataProducts/inc/StrawHitFlagCollection.hh"
+#include "RecoDataProducts/inc/TrackSeed.hh"
+#include "RecoDataProducts/inc/TrackSeedCollection.hh"
 
 #include "MCDataProducts/inc/GenParticle.hh"
 #include "MCDataProducts/inc/GenParticleCollection.hh"
@@ -400,6 +402,109 @@ void TAnaDump::printCaloProtoClusterCollection(const char* ModuleLabel,
       banner_printed = 1;
     }
     printCaloProtoCluster(cluster,"data");
+  }
+}
+
+//-----------------------------------------------------------------------------
+void TAnaDump::printTrackSeed(const mu2e::TrackSeed* TrkSeed,	const char* Opt, const char* Prefix){
+  TString opt = Opt;
+  
+  if ((opt == "") || (opt == "banner")) {
+    printf("---------------------------------------------------------------------------------");
+    printf("-----------------------------------------------------\n");
+    printf("%s",Prefix);
+    printf("  TrkID       Address    N      P      pT    T0    T0err");
+    printf("      D0       Z0      Phi0   TanDip    radius\n");
+    printf("---------------------------------------------------------------------------------");
+    printf("-----------------------------------------------------\n");
+  }
+ 
+  if ((opt == "") || (opt.Index("data") >= 0)) {
+    int    nhits   = TrkSeed->_selectedTrackerHits.size();
+
+    double t0     = TrkSeed->t0();
+    double t0err  = TrkSeed->errt0();
+
+    double d0     = TrkSeed->d0();
+    double z0     = TrkSeed->z0();
+    double phi0   = TrkSeed->phi0();
+    double radius = 1./fabs(TrkSeed->omega());
+    double tandip = TrkSeed->tanDip();
+
+    double mm2MeV = 3/10.;
+    double mom    = radius*mm2MeV/std::cos( std::atan(tandip));
+    double pt     = radius*mm2MeV;
+
+    printf("%5i %16p %3i %8.3f %8.5f %7.3f %7.3f",
+	   -1,
+	   TrkSeed,
+	   nhits,
+	   mom, pt, t0, t0err );
+
+    printf(" %8.3f %8.3f %8.3f %8.4f %7.4f\n",
+	   d0, z0, phi0, tandip, radius);
+  }
+
+}
+
+//-----------------------------------------------------------------------------
+
+void TAnaDump::printTrackSeedCollection(const char* ModuleLabel, 
+					const char* ProductName, 
+					const char* ProcessName,
+					int         hitOpt      ){
+  
+
+  art::Handle<mu2e::TrackSeedCollection> trkseedsHandle;
+
+  if (ProductName[0] != 0) {
+    art::Selector  selector(art::ProductInstanceNameSelector(ProductName) &&
+			    art::ProcessNameSelector(ProcessName)         && 
+			    art::ModuleLabelSelector(ModuleLabel)            );
+    fEvent->get(selector,trkseedsHandle);
+  }
+  else {
+    art::Selector  selector(art::ProcessNameSelector(ProcessName)         && 
+			    art::ModuleLabelSelector(ModuleLabel)            );
+    fEvent->get(selector,trkseedsHandle);
+  }
+//-----------------------------------------------------------------------------
+// make sure collection exists
+//-----------------------------------------------------------------------------
+  if (! trkseedsHandle.isValid()) {
+    printf("TAnaDump::printTrackSeedCollection: no TrackSeedCollection for module %s, BAIL OUT\n",
+	   ModuleLabel);
+    return;
+  }
+  
+  art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandle;
+  if (ModuleLabel[0] != 0) {
+    fEvent->getByLabel("makeSH","StrawHitMCPtr",mcptrHandle);
+    if (mcptrHandle.isValid()) {
+      fgListOfMCStrawHits = (mu2e::PtrStepPointMCVectorCollection*) mcptrHandle.product();
+    }
+    else {
+      printf(">>> ERROR in TAnaDump::printKalRepCollection: failed to locate StepPointMCCollection makeSH:StrawHitMCPtr\n");
+      fgListOfMCStrawHits = NULL;
+    }
+  }
+
+  mu2e::TrackSeedCollection*  list_of_trackSeeds;
+  list_of_trackSeeds    = (mu2e::TrackSeedCollection*) &(*trkseedsHandle);
+
+  int ntrkseeds = list_of_trackSeeds->size();
+
+  const mu2e::TrackSeed *trkseed;
+
+  int banner_printed = 0;
+  for (int i=0; i<ntrkseeds; i++) {
+    trkseed = &list_of_trackSeeds->at(i);
+    if (banner_printed == 0) {
+      printTrackSeed(trkseed,"banner");
+      banner_printed = 1;
+    }
+    printTrackSeed(trkseed,"data");
+    if(hitOpt>0) printTrackSeed(trkseed,"hits");
   }
 }
 
