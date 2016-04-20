@@ -57,11 +57,11 @@ TStnTrackID::TStnTrackID(const char* Name): TNamed(Name,Name) {
   fMaxFitMomErr    = 0.25;  		// in MeV
   fMinTanDip       = tan(M_PI/6.);	// 0.5773
   fMaxTanDip       = 1.0;  
-  fMinD1           = -80.;		// in mm
-  fMaxD1           = 105.;
+  fMinD0           = -80.;		// in mm
+  fMaxD0           = 105.;
 
-  fMinD2           = 450;
-  fMaxD2           = 680;
+  fMinRMax         = 450;
+  fMaxRMax         = 680;
 
   fMinTrkQual      = -100.;     // if undefined , = 100
 				// initialize spare words to zero
@@ -102,11 +102,11 @@ int TStnTrackID::IDWord(TStnTrack* Track) {
   if (tan_dip          <  fMinTanDip   ) id_word |= kTanDipBit ;
   if (tan_dip          >  fMaxTanDip   ) id_word |= kTanDipBit ;
 
-  if (d0               <  fMinD1       ) id_word |= kD1Bit ;
-  if (d0               >  fMaxD1       ) id_word |= kD1Bit ;
+  if (d0               <  fMinD0       ) id_word |= kD0Bit ;
+  if (d0               >  fMaxD0       ) id_word |= kD0Bit ;
 
-  if (rmax             <  fMinD2       ) id_word |= kD2Bit ;
-  if (rmax             >  fMaxD2       ) id_word |= kD2Bit ;
+  if (rmax             <  fMinRMax     ) id_word |= kRMaxBit ;
+  if (rmax             >  fMaxRMax     ) id_word |= kRMaxBit ;
   if (trk_qual         <  fMinTrkQual  ) id_word |= kTrkQualBit ;
 
   return  (id_word & fUseMask);
@@ -151,8 +151,10 @@ void TStnTrackID::FillHistograms(Hist_t& Hist, TStnTrack* Track, Int_t Mode) {
   if ((id_word & ~kNActiveBit) == 0) Hist.fNActive[1]->Fill(Track->NActive());
   if (id_word == 0) Hist.fNActive[4]->Fill(Track->NActive());
 
-//    iso1 = Muo->Iso()/pt;
-//  
+  Hist.fFitCons[0]->Fill(Track->FitCons());
+  if ((id_word & ~kFitConsBit) == 0) Hist.fFitCons[1]->Fill(Track->FitCons());
+  if (id_word == 0) Hist.fFitCons[4]->Fill(Track->FitCons());
+
 //    Hist.fIso1[0]->Fill(iso1);
 //    if ((id_word & ~kIso1Bit) == 0) Hist.fIso1[1]->Fill(iso1);
 //    if (id_word == 0) Hist.fIso1[4]->Fill(iso1);
@@ -321,8 +323,8 @@ void TStnTrackID::Print(const char* Opt) const {
   printf(" bit  3: fMaxT0Err       = %12.4f\n",fMaxT0Err     );
   printf(" bit  4: fMaxFitMomErr   = %12.4f\n",fMaxFitMomErr );
   printf(" bit  5: fTanDip         = %12.4f < tan(dip)   < %12.4f\n",fMinTanDip,fMaxTanDip);
-  printf(" bit  6: fD1             = %12.4f < D0         < %12.4f\n",fMinD1    ,fMaxD1    );
-  printf(" bit  7: fD2             = %12.4f < D0+2/omega < %12.4f\n",fMinD2    ,fMaxD2    );
+  printf(" bit  6: fD0             = %12.4f < D0         < %12.4f\n",fMinD0    ,fMaxD0    );
+  printf(" bit  7: fRMax           = %12.4f < D0+2/omega < %12.4f\n",fMinRMax  ,fMaxRMax  );
 }
 
 
