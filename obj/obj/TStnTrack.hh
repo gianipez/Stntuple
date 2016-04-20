@@ -152,7 +152,7 @@ public:
   int                       fNMcStrawHits;    // Nhits by associated particle in the straw tracker
   int                       fAlgorithmID;     // bit-packed : (alg_mask << 16 ) | best
   int                       fNHits;           // undefined before V9: total number of hits associated with the track
-  int                       fNDoublets;       // undefined before V9: nd_os | (nd_ss << 8) | (nhitsambig0 << 16) 
+  int                       fNDoublets;       // undefined before V9: nd_os | (nd_ss << 8) | (nhitsambig0 << 16) | (nda << 24)
   int                       fInt[kNFreeInts]; // provision for future I/O expansion
   
   float                     fChi2;
@@ -229,9 +229,11 @@ public:
   int    NActive  () const { return (fNActive      ) & 0xffff; }
   int    NWrong   () const { return (fNActive >> 16) & 0xffff; }
 
-  int    NOSDoublets  () const { return (fNDoublets      ) & 0xff; }
-  int    NSSDoublets  () const { return (fNDoublets >> 8 ) & 0xff; }
-  int    NHitsNoAmbig () const { return (fNDoublets >> 16) & 0xff; }
+  int    NOSDoublets  () const { return (fNDoublets      ) & 0xff;   }
+  int    NSSDoublets  () const { return (fNDoublets >> 8 ) & 0xff;   }
+  int    NDoublets    () const { return NOSDoublets()+NSSDoublets(); }
+  int    NHitsAmbZero () const { return (fNDoublets >> 16) & 0xff;   }
+  int    NDoubletsAct () const { return (fNDoublets >> 24) & 0xff;   }
   
   int    NClusters();
   int    NMcStrawHits() const { return fNMcStrawHits; }
@@ -286,6 +288,8 @@ public:
   float  C0         () const { return fC0;      }
   float  Phi0       () const { return fPhi0;    }
   float  DaveTrkQual() const { return fTrkQual; }
+
+  float  RMax       () const { return fabs(fD0+2/fC0); }
 //-----------------------------------------------------------------------------
 // setters
 //-----------------------------------------------------------------------------

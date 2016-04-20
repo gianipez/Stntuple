@@ -1791,7 +1791,7 @@ void TStnTrack::Print(Option_t* Option) const {
   if ((opt == "") || (opt.Index("data") >= 0)) {
     printf("%2i %3i %3i %2i %4i %4i %3i %3i 0x%08x",
 	   fNumber,t->NHits(), t->NActive(),t->NWrong(), 
-	   t->NOSDoublets(), t->NSSDoublets(), t->NHitsNoAmbig(),
+	   t->NOSDoublets(), t->NSSDoublets(), t->NHitsAmbZero(),
 	   t->NClusters(),
 	   t->AlgMask());
 
