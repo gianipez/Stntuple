@@ -49,33 +49,40 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
   else                          Evt->getByLabel(trkSeed_module_label, trkSeed_description, trackSeed_handle);
   list_of_trackSeeds = (mu2e::TrackSeedCollection*) &(*trackSeed_handle);
 
-  const mu2e::TrackSeed         *trkSeed;
-  int                           ntrkseeds;
+  const mu2e::TrackSeed         *trkSeed(0);
+  int                           ntrkseeds(0);
   
-  //  const mu2e::CaloCluster       *cluster;
+  const mu2e::CaloCluster       *cluster(0);
  
   ntrkseeds = list_of_trackSeeds->size();
   
-  //  const mu2e::TrackerHitTimeCluster *trackerHitTime;
+
   
   for (int i=0; i<ntrkseeds; i++) {
-    trackSeed               = cb->NewTrackSeed();
-    trkSeed                 = &list_of_trackSeeds->at(i);
-    //    cluster                 = trkSeed->_caloCluster;
-    //trackerHitTime = trkSeed->_relatedTimeCluster.operator ->();
-    trackSeed->fClusterTime    = trkSeed->t0();
-    trackSeed->fClusterEnergy  = 0;
-    trackSeed->fClusterX       = 0;
-    trackSeed->fClusterY       = 0;
-    trackSeed->fClusterZ       = trkSeed->errt0 (); 
-    
+    trackSeed                  = cb->NewTrackSeed();
+    trkSeed                    = &list_of_trackSeeds->at(i);
+    if (trkSeed->_caloCluster != 0){
+      cluster                    = trkSeed->_caloCluster.operator ->();
+    }
+    if (cluster != 0){
+      trackSeed->fClusterTime    = cluster->time();
+      trackSeed->fClusterEnergy  = cluster->energyDep();
+      trackSeed->fClusterX       = cluster->cog3Vector().x();
+      trackSeed->fClusterY       = cluster->cog3Vector().y();
+      trackSeed->fClusterZ       = cluster->cog3Vector().z();
+    }else {
+      trackSeed->fClusterTime    = 0; 
+      trackSeed->fClusterEnergy  = 0; 
+      trackSeed->fClusterX       = 0; 
+      trackSeed->fClusterY       = 0; 
+      trackSeed->fClusterZ       = 0; 
+    }
     
     trackSeed->fTrackSeed   = trkSeed;
-    //    trackSeed->fClusterCluster = trkSeed->CaloCluster();
     trackSeed->fNLoops      = trkSeed->nLoops();
     trackSeed->fNHits       = trkSeed->_selectedTrackerHits.size();
-    trackSeed->fT0          = 0;//trkSeed->t0    ();
-    trackSeed->fT0Err       = 0;//trkSeed->errt0 ();     
+    trackSeed->fT0          = trkSeed->t0    ();
+    trackSeed->fT0Err       = trkSeed->errt0 ();     
     trackSeed->fD0          = trkSeed->d0    ();
     trackSeed->fPhi0        = trkSeed->phi0  ();     
     trackSeed->fOmega       = trkSeed->omega ();
