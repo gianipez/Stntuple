@@ -2,6 +2,7 @@
 //
 // V6 : add fIntDepth to TStnTrack::InterData_t
 // V7 : introduce  curvature fC0, use one of the floats for that
+// 2016-04-21: add Dave's counting of material and bend sites, no version change
 ///////////////////////////////////////////////////////////////////////////////
 #include <iostream>
 
@@ -128,7 +129,8 @@ void TStnTrack::ReadV4(TBuffer &R__b) {
   fBestHyp[1]       = data.fBestHyp[1]  ;  // hypothesis with the best chi2/ndof
   fIDWord           = data.fIDWord      ;	    // now - for selection "C"
   fNActive          = data.fNActive     ;	    // total number of hits
-  fVaneID           = data.fVaneID      ;	    // 
+  //  fVaneID           = data.fVaneID      ;	    // 
+  fNMatSites         = 0;
   fDiskID           = data.fDiskID      ;	    // 
   fPdgCode          = data.fPdgCode     ;     // PDF code of the particle produced most hits
   fNGoodMcHits      = data.fNGoodMcHits ; // 
@@ -341,7 +343,8 @@ void TStnTrack::ReadV5(TBuffer &R__b) {
   fIDWord       = data.fIDWord      ;	
 		  	       
   fNActive      = data.fNActive     ;	
-  fVaneID       = data.fVaneID      ;	
+  //  fVaneID       = data.fVaneID      ;	
+  fNMatSites     = 0;
   fDiskID       = data.fDiskID      ;	
   fPdgCode      = data.fPdgCode     ;       
   fNGoodMcHits  = data.fNGoodMcHits ;   
@@ -564,7 +567,8 @@ void TStnTrack::ReadV6(TBuffer &R__b) {
   fIDWord       = data.fIDWord      ;	
 		  	       
   fNActive      = data.fNActive     ;	
-  fVaneID       = data.fVaneID      ;	
+  //  fVaneID       = data.fVaneID      ;	
+  fNMatSites     = 0;
   fDiskID       = data.fDiskID      ;	
   fPdgCode      = data.fPdgCode     ;       
   fNGoodMcHits  = data.fNGoodMcHits ;   
@@ -791,7 +795,8 @@ void TStnTrack::ReadV7(TBuffer &R__b) {
   fIDWord       = data.fIDWord      ;	
 		  	       
   fNActive      = data.fNActive     ;	
-  fVaneID       = data.fVaneID      ;	
+  //  fVaneID       = data.fVaneID      ;	
+  fNMatSites     = 0;
   fDiskID       = data.fDiskID      ;	
   fPdgCode      = data.fPdgCode     ;       
   fNGoodMcHits  = data.fNGoodMcHits ;   
@@ -1020,7 +1025,8 @@ void TStnTrack::ReadV8(TBuffer &R__b) {
   fIDWord       = data.fIDWord      ;	
 		  	       
   fNActive      = data.fNActive     ;	
-  fVaneID       = data.fVaneID      ;	
+  //  fVaneID       = data.fVaneID      ;	
+  fNMatSites     = 0;
   fDiskID       = data.fDiskID      ;	
   fPdgCode      = data.fPdgCode     ;       
   fNGoodMcHits  = data.fNGoodMcHits ;   
@@ -1252,7 +1258,8 @@ void TStnTrack::ReadV9(TBuffer &R__b) {
   fIDWord       = data.fIDWord      ;	
 		  	       
   fNActive      = data.fNActive     ;	
-  fVaneID       = data.fVaneID      ;	
+  //  fVaneID       = data.fVaneID      ;	
+  fNMatSites     = 0;
   fDiskID       = data.fDiskID      ;	
   fPdgCode      = data.fPdgCode     ;       
   fNGoodMcHits  = data.fNGoodMcHits ;   
@@ -1485,7 +1492,8 @@ void TStnTrack::ReadV10(TBuffer &R__b) {
   fIDWord       = data.fIDWord      ;	
 		  	       
   fNActive      = data.fNActive     ;	
-  fVaneID       = data.fVaneID      ;	
+  //  fVaneID       = data.fVaneID      ;	
+  fNMatSites    = 0;
   fDiskID       = data.fDiskID      ;	
   fPdgCode      = data.fPdgCode     ;       
   fNGoodMcHits  = data.fNGoodMcHits ;   

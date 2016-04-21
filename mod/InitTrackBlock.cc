@@ -445,18 +445,20 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
       for (auto it=krep_hits->begin(); it!=krep_hits->end(); it++) {
 	++ntrkhits;
 	hit   = (const mu2e::TrkStrawHit*) /* & */ (*it);
-	straw = &hit->straw();
-	s_hit = &hit->strawHit();
-	loc   = s_hit-s_hit0;
-	if ((loc >= 0) && (loc < n_straw_hits)) {
-	  sdmc = &list_of_mc_straw_hits->at(loc);
-	  stmc[0] = sdmc->stepPointMC(mu2e::StrawDigi::zero).get();
-	  stmc[1] = sdmc->stepPointMC(mu2e::StrawDigi::one ).get();
-	  //	  if (stmc[0] != stmc[1]) printf(" InitTrackBlock: WARNING: different StepPointMCs correspond to different times\n");
+//-----------------------------------------------------------------------------
+// the rest makes sense only for active hits
+//-----------------------------------------------------------------------------
+	if (hit->isActive()) {
+	  straw = &hit->straw();
+	  s_hit = &hit->strawHit();
+	  loc   = s_hit-s_hit0;
+	  if ((loc >= 0) && (loc < n_straw_hits)) {
+	    sdmc = &list_of_mc_straw_hits->at(loc);
+	    stmc[0] = sdmc->stepPointMC(mu2e::StrawDigi::zero).get();
+	    stmc[1] = sdmc->stepPointMC(mu2e::StrawDigi::one ).get();
 //-----------------------------------------------------------------------------
 // count number of active hits with R > 200 um and misassigned drift signs
 //-----------------------------------------------------------------------------
-	  if (hit->isActive()) {
 	    if (hit->driftRadius() > 0.2) {
 	      const CLHEP::Hep3Vector* v1 = &straw->getMidPoint();
 	      HepPoint p1(v1->x(),v1->y(),v1->z());
@@ -474,12 +476,9 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 // if mcdoca and hit->_iamb have different signs, the hit drift direction 
 // has wrong sign
 //-----------------------------------------------------------------------------
-	      if (hit->ambig()*mcdoca < 0) {
-		nwrong += 1;
-	      }
-	      if (hit->ambig()       == 0) {
-		++nhitsambig0;
-	      }
+	      if (hit->ambig()*mcdoca < 0) nwrong += 1;
+
+	      if (hit->ambig()       == 0) ++nhitsambig0;
 	    }
 	  }
 
@@ -524,9 +523,15 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
       }
     }
 //-----------------------------------------------------------------------------
-// number of total hits associated with the track
+// Dave's variables calculated by KalDiag
 //-----------------------------------------------------------------------------
-    track->fNHits     = ntrkhits;
+    _kalDiag->kalDiag(krep,false);
+//-----------------------------------------------------------------------------
+// total number of hits associated with the trackand the number of bend sites
+//-----------------------------------------------------------------------------
+    track->fNHits     = ntrkhits | (_kalDiag->_trkinfo._nbend << 16);
+    track->fNMatSites = _kalDiag->_trkinfo._nmat | (_kalDiag->_trkinfo._nmatactive << 16);
+    track->fTrkQual   = _kalDiag->_trkinfo._trkqual;
 //-----------------------------------------------------------------------------
 // defined bit-packed fNActive word
 //-----------------------------------------------------------------------------
@@ -927,12 +932,6 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
     }
 
     track->fEp = track->fClusterE/track->fP;
-//-----------------------------------------------------------------------------
-// Dave's track quality word
-//-----------------------------------------------------------------------------
-    _kalDiag->kalDiag(krep,false);
-
-    track->fTrkQual = _kalDiag->_trkinfo._trkqual;
   }
 					// on return set event and run numbers
 					// to mark block as initialized

@@ -144,14 +144,15 @@ public:
   int                       fIDWord;	      // now - for selection "C"
 
   int                       fNActive;	      // NWrong << 16 + NActive
-  int                       fVaneID;	      // 
+  //  int                       fVaneID;	      // (Nmat ) + (nmatactive << 16) 
+  int                       fNMatSites;	      // (Nmat ) + (nmatactive << 16) 
   int                       fDiskID;	      // 
-  int                       fPdgCode;         // PDF code of the particle produced most hits
-  int                       fNGoodMcHits;     // Nhits produced by the associated MC particle
+  int                       fPdgCode;         // PDG code of the particle produced most hits
+  int                       fNGoodMcHits;     // Nhits on the track produced by the associated MC particle
   int                       fPartID;          // MC particle ID (number in the list)
   int                       fNMcStrawHits;    // Nhits by associated particle in the straw tracker
   int                       fAlgorithmID;     // bit-packed : (alg_mask << 16 ) | best
-  int                       fNHits;           // undefined before V9: total number of hits associated with the track
+  int                       fNHits;           // undefined before V9: total number of hits associated with the track | (nbend << 16)
   int                       fNDoublets;       // undefined before V9: nd_os | (nd_ss << 8) | (nhitsambig0 << 16) | (nda << 24)
   int                       fInt[kNFreeInts]; // provision for future I/O expansion
   
@@ -225,7 +226,8 @@ public:
   TBitset*        ExpectedHitMask() { return &fExpectedHitMask; }
   
   int    Number   () const { return fNumber; }
-  int    NHits    () const { return fNHits;  }
+  int    NHits    () const { return (fNHits        ) & 0xffff; }
+  int    NBend    () const { return (fNHits   >> 16) & 0xffff; }
   int    NActive  () const { return (fNActive      ) & 0xffff; }
   int    NWrong   () const { return (fNActive >> 16) & 0xffff; }
 
@@ -234,6 +236,9 @@ public:
   int    NDoublets    () const { return NOSDoublets()+NSSDoublets(); }
   int    NHitsAmbZero () const { return (fNDoublets >> 16) & 0xff;   }
   int    NDoubletsAct () const { return (fNDoublets >> 24) & 0xff;   }
+
+  int    NMat         () const { return (fNMatSites      ) & 0xffff; }
+  int    NMatActive   () const { return (fNMatSites >> 16) & 0xffff; }
   
   int    NClusters();
   int    NMcStrawHits() const { return fNMcStrawHits; }
