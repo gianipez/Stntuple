@@ -545,6 +545,8 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 //-----------------------------------------------------------------------------
 // counting only 2+ hit doublets
 //-----------------------------------------------------------------------------
+    int nad(0);  // number of doublets with all hits active
+
     for (int i=0; i<nd; i++) {
       d  = &list_of_doublets.at(i);
       ns = d->fNStrawHits;
@@ -553,10 +555,22 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 	nd_tot += 1;
 	if (d->isSameSign()) nd_ss += 1;
 	else                 nd_os += 1;
+
+	int active = 1;
+	for (int is=0; is<ns; is++) {
+	  if (!d->fHit[is]->isActive()) {
+	    active = 0;
+	    break;
+	  }
+	}
+
+	if (active == 1) {
+	  nad += 1;
+	}
       }
     }
 
-    track->fNDoublets = nd_os | (nd_ss << 8) | (nhitsambig0 << 16);
+  track->fNDoublets = nd_os | (nd_ss << 8) | (nhitsambig0 << 16) | (nad << 24);
 //-----------------------------------------------------------------------------
 // given track parameters, build the expected hit mask
 //-----------------------------------------------------------------------------

@@ -51,11 +51,12 @@ public:
 //-----------------------------------------------------------------------------
 // initialization
 //-----------------------------------------------------------------------------
-					// versions: "v4_2_4", "v5_7_0"
+					// versions: "v4_2_4", "v5_7_0", "v5_7_2"
   int  Init(const char* Version);
 
   int  Init_v4_2_4();
   int  Init_v5_7_0();
+  int  Init_v5_7_2();
 
   void InitEleDtHist(const char* Fn);
   void InitMuoDtHist(const char* Fn);

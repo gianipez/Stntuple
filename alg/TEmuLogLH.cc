@@ -253,7 +253,7 @@ void TEmuLogLH::InitEleDtHist(const TH1F* Hist) {
 
   if (fEleDtHist) delete fEleDtHist;
 
-  fEleDtHist = (TH1F*) Hist->Clone();
+  fEleDtHist = (TH1F*) Hist->Clone("h_InitEleDtHist");
 
   hint = fEleDtHist->Integral();
   fEleDtHist->Scale(1./hint);
@@ -274,7 +274,7 @@ void TEmuLogLH::InitMuoDtHist(const TH1F* Hist) {
 
   if (fMuoDtHist) delete fMuoDtHist;
 
-  fMuoDtHist = (TH1F*) Hist->Clone();
+  fMuoDtHist = (TH1F*) Hist->Clone("h_InitMuoDtHist");
 
   hint = fMuoDtHist->Integral();
   fMuoDtHist->Scale(1./hint);
@@ -453,7 +453,7 @@ void TEmuLogLH::InitEleEpHist(const TH2F* Hist) {
   double     hint, x1;
 
   if (fEleEpVsPath) delete fEleEpVsPath;
-  fEleEpVsPath = (TH2F*) Hist->Clone();
+  fEleEpVsPath = (TH2F*) Hist->Clone("h_InitEleEpHist");
 
   nx                 = fEleEpVsPath->GetNbinsX();
 
@@ -526,7 +526,7 @@ void TEmuLogLH::InitMuoEpHist(const TH2F* Hist) {
   TH1D       *hpx;
 
   if (fMuoEpVsPath) delete fMuoEpVsPath;
-  fMuoEpVsPath = (TH2F*) Hist->Clone();
+  fMuoEpVsPath = (TH2F*) Hist->Clone("h_InitMuoEpHist");
 
   hpx                = fMuoEpVsPath->ProjectionX("hpx_MuoEpVsPath");
   nx                 = hpx->GetNbinsX();
@@ -614,20 +614,51 @@ int TEmuLogLH::Init_v5_7_0() {
 }
 
 //-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+int TEmuLogLH::Init_v5_7_2() {
+
+  char f_ele_ep_vs_path[256], f_ele_dt[256], f_ele_xs[256];
+  char f_muo_ep_vs_path[256], f_muo_dt[256], f_muo_xs[256];
+
+  const char* dir = getenv("MU2E_BASE_RELEASE");
+
+  sprintf(f_ele_ep_vs_path,"%s/ConditionsService/data/v5_7_2/pid_ele_ep_vs_path.tbl",dir);
+  sprintf(f_ele_dt        ,"%s/ConditionsService/data/v5_7_2/pid_ele_dt.tbl",dir);
+  sprintf(f_ele_xs        ,"%s/ConditionsService/data/v5_7_2/pid_ele_xdrds.tbl",dir);
+
+  sprintf(f_muo_ep_vs_path,"%s/ConditionsService/data/v5_7_2/pid_muo_ep_vs_path.tbl",dir);
+  sprintf(f_muo_dt        ,"%s/ConditionsService/data/v5_7_2/pid_muo_dt.tbl",dir);
+  sprintf(f_muo_xs        ,"%s/ConditionsService/data/v5_7_2/pid_muo_xdrds.tbl",dir);
+
+  InitEleEpHist(f_ele_ep_vs_path);
+  InitEleDtHist(f_ele_dt);
+  InitEleXsHist(f_ele_xs);
+
+  InitMuoEpHist(f_muo_ep_vs_path);
+  InitMuoDtHist(f_muo_dt);
+  InitMuoXsHist(f_muo_xs);
+
+  return 0;
+}
+
+//-----------------------------------------------------------------------------
 // initialization
 //-----------------------------------------------------------------------------
 int TEmuLogLH::Init(const char* Version) {
-  
+  int     rc(0);
   TString ver;
   
   ver = Version;
   ver.ToLower();
   
-  if (ver == "v4_2_4") Init_v4_2_4();
-  if (ver == "v5_7_0") Init_v5_7_0();
+  if      (ver == "v4_2_4") Init_v4_2_4();
+  else if (ver == "v5_7_0") Init_v5_7_0();
+  else if (ver == "v5_7_2") Init_v5_7_2();
   else {
     printf(" >>> ERROR in TEmuLogLH::Init: unknown version : %s, BAILING OUT\n",Version); 
+    rc = -1;
   }
   
-  return 0;
+  return rc;
 }
