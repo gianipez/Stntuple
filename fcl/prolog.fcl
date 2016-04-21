@@ -121,13 +121,13 @@ StntupleMakerDemDmm  : { @table::StntupleMaker
 # default (in prolog): just one track block "TrackBlock" with output of MergePatRec
 #------------------------------------------------------------------------------
 StntupleMaker3 : { @table::StntupleMaker
-    trackBlockName          : [ "TrackBlock"   , "TrkPatRec"           , "CalPatRec" ]
-    trkRecoModuleLabel      : [ "MergePatRec"  , "TRFDownstreameMinus" , "CalPatRec" ]
-    trkExtrapolModuleLabel  : [ "TrkExtrapol"  ,                    "" ,          "" ]
-    trkCaloMatchModuleLabel : [ "CaloMatching" ,                    "" ,          "" ]
-    pidModuleLabel          : [ "AvikPID"      ,                    "" ,          "" ]
-    fitParticle             : [              11,                     11,          11 ]
-    fitDirection            : [               0,                      0,           0 ]
+    trackBlockName          : [ "TrackBlock"   , "TrkPatRec"               , "CalPatRec"                ]
+    trkRecoModuleLabel      : [ "MergePatRec"  , "TRFDownstreameMinus"     , "CalPatRec"                ]
+    trkExtrapolModuleLabel  : [ "TrkExtrapol"  , "TrackCaloIntersectionTpr", "TrackCaloIntersectionCpr" ]
+    trkCaloMatchModuleLabel : [ "CaloMatching" , "TrackCaloMatchingTpr"    , "TrackCaloMatchingCpr"     ]
+    pidModuleLabel          : [ "AvikPID"      ,                        "" ,                         "" ]
+    fitParticle             : [              11,                         11,                         11 ]
+    fitDirection            : [               0,                          0,                          0 ]
 
     makePid                 : 0
 }
