@@ -16,16 +16,26 @@ namespace {
 ClassImp(TStnTrackSeed)
 
 void TStnTrackSeed::Streamer(TBuffer& R__b) {
- 
+  int   nwi, nwf;
+  
+  nwi      = ((int*  ) &fT0            ) - &fNLoops;
+  nwf      = ((float*) &fTrackSeed     ) - &fT0;
+
   if (R__b.IsReading()) {
     //    Version_t R__v = R__b.ReadVersion(); 
     R__b.ReadVersion(); 
 					// current version: V1
+    R__b.ReadFastArray(&fNLoops, nwi);
+    R__b.ReadFastArray(&fT0    , nwf);
    }
   else {
     R__b.WriteVersion(TStnTrackSeed::IsA());
 
-    }
+    R__b.WriteFastArray(&fNLoops, nwi);
+    R__b.WriteFastArray(&fT0    , nwf);
+    
+    
+  }
 }
 
 TStnTrackSeed::TStnTrackSeed(int i) {

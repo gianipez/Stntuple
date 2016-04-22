@@ -12,7 +12,7 @@ void TStnTrackSeedBlock::Streamer(TBuffer &R__b) {
 
   if (R__b.IsReading()) {
     Version_t R__v = R__b.ReadVersion(); if (R__v) { }
-    //    R__b >> fNTracks;
+    R__b >> fNTrackSeeds;
     fListOfTrackSeeds->Streamer(R__b);
     // for (int i=0; i<fNTracks; i++) {
     //   Track(i)->SetNumber(i);
@@ -20,7 +20,7 @@ void TStnTrackSeedBlock::Streamer(TBuffer &R__b) {
   } 
   else {
     R__b.WriteVersion(TStnTrackSeedBlock::IsA());
-    //    R__b << fNTracks;
+    R__b << fNTrackSeeds;
     fListOfTrackSeeds->Streamer(R__b);
   }
 }
