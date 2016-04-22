@@ -434,7 +434,6 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 
     n_straw_hits = list_of_straw_hits->size();
 
-
     if (n_straw_hits <= 0) {
       printf(">>> ERROR in StntupleInitMu2eTrackBlock: Straw hit collection by module %s is empty, NHITS = %i\n",
 	     strh_module_label,n_straw_hits);
@@ -444,12 +443,12 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 
       for (auto it=krep_hits->begin(); it!=krep_hits->end(); it++) {
 	++ntrkhits;
-	hit   = (const mu2e::TrkStrawHit*) /* & */ (*it);
+	hit   = (const mu2e::TrkStrawHit*) (*it);
+	straw = &hit->straw();
 //-----------------------------------------------------------------------------
 // the rest makes sense only for active hits
 //-----------------------------------------------------------------------------
 	if (hit->isActive()) {
-	  straw = &hit->straw();
 	  s_hit = &hit->strawHit();
 	  loc   = s_hit-s_hit0;
 	  if ((loc >= 0) && (loc < n_straw_hits)) {
@@ -480,46 +479,47 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 
 	      if (hit->ambig()       == 0) ++nhitsambig0;
 	    }
-	  }
+	    
+	    sim = &(*stmc[0]->simParticle());
+	    if (sim != NULL) id = sim->id().asInt();
+	    else {
+	      printf(">>> ERROR in %s : sim is NULL, set PDG_CODE to -1\n",oname);
+	      id = -1;
+	    }
 
-	  sim = &(*stmc[0]->simParticle());
-	  if (sim != NULL) id = sim->id().asInt();
-	  else {
-	    printf(">>> ERROR in %s : sim is NULL, set PDG_CODE to -1\n",oname);
-	    id = -1;
-	  }
-
-	  found = 0;
-	  for (int ip=0; ip<npart; ip++) {
-	    if (id == part_id[ip]) {
-	      found        = 1;
-	      part_nh[ip] += 1;
-	      break;
+	    found = 0;
+	    for (int ip=0; ip<npart; ip++) {
+	      if (id == part_id[ip]) {
+		found        = 1;
+		part_nh[ip] += 1;
+		break;
+	      }
+	    }
+	    
+	    if (found == 0) {
+	      part_id      [npart] = id;
+	      part_pdg_code[npart] = sim->pdgId();
+	      part_nh      [npart] = 1;
+	      npart               += 1;
 	    }
 	  }
-	  
-	  if (found == 0) {
-	    part_id      [npart] = id;
-	    part_pdg_code[npart] = sim->pdgId();
-	    part_nh      [npart] = 1;
-	    npart               += 1;
+	  else {
+	    printf(">>> ERROR in StntupleInitMu2eTrackBlock: wrong hit collection used, loc = %10i, n_straw_hits = %10i\n",
+		   loc,n_straw_hits);
 	  }
-	}
-	else {
-	  printf(">>> ERROR in StntupleInitMu2eTrackBlock: wrong hit collection used, loc = %i\n",loc);
-	}
 
-	const mu2e::StrawId& straw_id = straw->id();
+	  const mu2e::StrawId& straw_id = straw->id();
 	
-	int ist = straw_id.getStation();
+	  int ist = straw_id.getStation();
 	
-	track->fNHPerStation[ist] += 1;
+	  track->fNHPerStation[ist] += 1;
 	
-	int pan = straw_id.getPanel();
-	int lay = straw_id.getLayer();
-	int bit = zmap.fMap[ist][pan][lay];
+	  int pan = straw_id.getPanel();
+	  int lay = straw_id.getLayer();
+	  int bit = zmap.fMap[ist][pan][lay];
 
-	track->fHitMask.SetBit(bit,1);
+	  track->fHitMask.SetBit(bit,1);
+	}
       }
     }
 //-----------------------------------------------------------------------------

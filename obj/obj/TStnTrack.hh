@@ -135,7 +135,7 @@ public:
     
   TLorentzVector            fMomentum;        // this assumes DELE fit hypothesis
   
-  TBitset                   fHitMask;	      // bit #i: 1 if there is a hit 
+  TBitset                   fHitMask;	      // bit #i: 1 if there is an active hit 
   TBitset                   fExpectedHitMask; // bit #i: 1 if expect to have a hit at this Z
 
   int                       fNumber;          // track index in the list of reconstructed tracks
