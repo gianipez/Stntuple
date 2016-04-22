@@ -711,9 +711,9 @@ namespace mu2e {
       const char* charDirectionAndParticle = fDirectionAndParticle.c_str();
 
       if (_showTracks){
-	Evt->getByLabel("CalPatRec", charDirectionAndParticle, tpch);
+	Evt->getByLabel("CalTimePeakFinder", charDirectionAndParticle, tpch);
       } else {
-	Evt->getByLabel("CalPatRec", tpch);
+	Evt->getByLabel("CalTimePeakFinder", tpch);
       }
       if (tpch.isValid()) {
 	fCalTimePeakColl = tpch.product();

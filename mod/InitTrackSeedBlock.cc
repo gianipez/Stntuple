@@ -61,9 +61,8 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
   for (int i=0; i<ntrkseeds; i++) {
     trackSeed                  = cb->NewTrackSeed();
     trkSeed                    = &list_of_trackSeeds->at(i);
-    if (trkSeed->_caloCluster != 0){
-      cluster                    = trkSeed->_caloCluster.operator ->();
-    }
+    cluster                    = trkSeed->_caloCluster.get();
+
     if (cluster != 0){
       trackSeed->fClusterTime    = cluster->time();
       trackSeed->fClusterEnergy  = cluster->energyDep();

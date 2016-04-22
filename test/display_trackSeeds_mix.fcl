@@ -90,6 +90,8 @@ physics : { @table::physics
 	  EnoiseCut              : 2
 	}
 
+	CalTimePeakFinder : { @table::CalTimePeakFinder }
+
 	CalPatRecNew : { @table::CalPatRecNew
 	    diagLevel            : 1
 	}
@@ -102,6 +104,7 @@ physics : { @table::physics
 	     , @sequence::hitMakerSeq
 	     , @sequence::calRecoSeq
 	     , @sequence::cprPrepHitSeq
+	     , CalTimePeakFinder
 	     , CalPatRecNew
 #	     , @sequence::trkCaloMatchingSeq
 #	     , ParticleID
