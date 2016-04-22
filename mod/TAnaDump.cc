@@ -419,6 +419,12 @@ void TAnaDump::printTrackSeed(const mu2e::TrackSeed* TrkSeed,	const char* Opt, c
     printf("-----------------------------------------------------\n");
   }
  
+
+  art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandleStraw;
+  fEvent->getByLabel("makeSH","StrawHitMCPtr",mcptrHandleStraw);
+  mu2e::PtrStepPointMCVectorCollection const* hits_mcptrStraw = mcptrHandleStraw.product();
+  
+
   if ((opt == "") || (opt.Index("data") >= 0)) {
     int    nhits   = TrkSeed->_selectedTrackerHits.size();
 
@@ -445,6 +451,21 @@ void TAnaDump::printTrackSeed(const mu2e::TrackSeed* TrkSeed,	const char* Opt, c
 	   d0, z0, phi0, tandip, radius);
   }
 
+  if ((opt == "") || (opt.Index("hits") >= 0) ){
+    int nsh = TrkSeed->_selectedTrackerHits.size();
+
+    const mu2e::StrawHit* hit(0);
+
+    for (int i=0; i<nsh; ++i){
+      mu2e::PtrStepPointMCVector const& mcptr(hits_mcptrStraw->at(i ) );
+      const mu2e::StepPointMC* Step = mcptr[0].get();
+    
+      hit   = TrkSeed->_selectedTrackerHits.at(i).get(); 
+      printStrawHit(hit, Step, "", -1, 0);
+    }
+    
+    
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -505,6 +526,7 @@ void TAnaDump::printTrackSeedCollection(const char* ModuleLabel,
     }
     printTrackSeed(trkseed,"data");
     if(hitOpt>0) printTrackSeed(trkseed,"hits");
+
   }
 }
 
