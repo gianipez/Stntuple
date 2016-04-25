@@ -119,6 +119,12 @@ public:
 				const char* ProcessName = "",
 				int         hitOpt      = 0); 
 
+  void plotTrackSeed           (int Index                      , 
+				const char* ModuleLabelTrkSeeds,
+				const char* ModuleLabelHitPos   );
+
+
+
   void printKalRep(const KalRep* Krep, const char* Opt = "", const char* Prefix = "");
 
   void printKalRepCollection(const char* ModuleLabel     , 

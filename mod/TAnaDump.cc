@@ -531,6 +531,169 @@ void TAnaDump::printTrackSeedCollection(const char* ModuleLabel,
 
   }
 }
+//-----------------------------------------------------------------------------
+void TAnaDump::plotTrackSeed(int Index, const char* ModuleLabelTrkSeeds, const char* ModuleLabelHitPos){
+  
+  const char* ProductName = "";
+  const char* ProcessName = "";
+
+
+  art::Handle<mu2e::StrawHitPositionCollection> spcHandle;
+  const mu2e::StrawHitPositionCollection*       spc;
+
+  if (ProductName[0] != 0) {
+    art::Selector  selector(art::ProductInstanceNameSelector(ProductName) &&
+			    art::ProcessNameSelector(ProcessName)         && 
+			    art::ModuleLabelSelector(ModuleLabelHitPos)            );
+    fEvent->get(selector, spcHandle);
+  }
+  else {
+    art::Selector  selector(art::ProcessNameSelector(ProcessName)         && 
+			    art::ModuleLabelSelector(ModuleLabelHitPos)            );
+    fEvent->get(selector, spcHandle);
+  }
+
+  spc = spcHandle.product();
+  
+
+  art::Handle<mu2e::TrackSeedCollection> trkseedsHandle;
+  mu2e::TrackSeedCollection              *trkseeds(0);
+
+  if (ProductName[0] != 0) {
+    art::Selector  selector(art::ProductInstanceNameSelector(ProductName) &&
+			    art::ProcessNameSelector(ProcessName)         && 
+			    art::ModuleLabelSelector(ModuleLabel)            );
+    fEvent->get(selector,trkseedsHandle);
+  }
+  else {
+    art::Selector  selector(art::ProcessNameSelector(ProcessName)         && 
+			    art::ModuleLabelSelector(ModuleLabel)            );
+    fEvent->get(selector,trkseedsHandle);
+  }
+
+  if (trkseedsHandle.isValid())  trkseeds = trkseedsHandle.get();
+
+  if (trkseeds == 0) {
+    printf("no TrackSeedCollection FOUND\n");
+    return;
+  }
+  printf("---------------------------------------------------------------------------------");
+  printf("-----------------------------------------------------\n");
+  printf("%s",Prefix);
+  printf("  TrkID       Address    N      P      pT      T0     T0err  ");
+  printf("      D0       Z0      Phi0   TanDip    radius    clusterEnergy\n");
+  printf("---------------------------------------------------------------------------------");
+  printf("-----------------------------------------------------\n");
+  
+  const mu2e::TrackSeed* TrkSeed = trkseeds->at(Index);
+
+  int    nhits   = TrkSeed->_selectedTrackerHits.size();
+  
+  double t0     = TrkSeed->t0();
+  double t0err  = TrkSeed->errt0();
+  
+  double d0     = TrkSeed->d0();
+  double z0     = TrkSeed->z0();
+  double phi0   = TrkSeed->phi0();
+  double radius = 1./fabs(TrkSeed->omega());
+  double tandip = TrkSeed->tanDip();
+  
+  double mm2MeV = 3/10.;
+  double mom    = radius*mm2MeV/std::cos( std::atan(tandip));
+  double pt     = radius*mm2MeV;
+  
+  double dfdz   = 1./(radius*tandip);
+  
+  const mu2e::CaloCluster*cluster = TrkSeed->_caloCluster.get();
+  
+  printf("%5i %16p %3i %8.3f %8.5f %7.3f %7.3f",
+	 -1,
+	 TrkSeed,
+	 nhits,
+	 mom, pt, t0, t0err );
+  
+  printf(" %8.3f %8.3f %8.3f %8.4f %7.4f %5.3f\n",
+	 d0, z0, phi0, tandip, radius, cluster->energyDep());
+
+
+  //fill Z and Phi of the straw hits
+  const mu2e::StrawHitPosition   *pos(0);
+  mu2e::HelixVal                 *helix = &TrkSeed->_fullTrkSeed;
+  
+  int    hitIndex(0);
+  int    np = nhits + 1;
+  double x[np], y[np], z[np];
+  
+  for (int i=0; i<nhits; ++i){
+    hitIndex  = helix->_selectedTrackerHitsIdx.at(i);
+    
+    pos       = &shpcol->at(hitIndex);
+    x[i]      = pos->pos().y();  
+    y[i]      = pos->pos().y();  
+    z[i]      = pos->pos().z();  
+  }
+  
+  //fill calo-cluster position
+  y[nhits]    = cluster->cog3Vector().y();
+  z[nhits]    = cluster->cog3Vector().z();
+  
+  double x0   = -(radius + d0)*sin(phi0);
+  double y0   =  (radius + d0)*cos(phi0);
+
+  TGraph* gr_xy = new TGraph(np,x,y);
+  TGraph* gr_yz = new TGraph(np,z,y);
+
+  //  if (c_plot_hits_xy != 0) delete c_plot_hits_xy;
+
+  c_plot_hits_xy = new TCanvas("htrakseedview","htrakseedview",1200,600);
+
+  c_plot_hits_xy->Divide(2,1);
+
+  c_plot_hits_xy->cd(1);
+
+  TH2F* h2_xy = new TH2F("h2_xy","XY View",140,-700,700,140,-700,700);
+  h2_xy->SetStats(0);
+  h2_xy->Draw();
+
+  TMarker* m;
+
+  int color;
+
+  for (int i=0; i<np; i++) {
+    m = new TMarker(x[i],y[i],2);
+    if (i < np - 1) color = kBlack;
+    else            color = kRed;
+    m->SetMarkerSize(0.7);
+    m->SetMarkerColor(color);
+    m->Draw();
+  }
+
+  TEllipse* e = new TEllipse(x0, y0, radius);
+
+  e->SetFillStyle(0);
+  e->Draw();
+
+
+  c_plot_hits_xy->cd(2);
+
+  TH2F* h2_yz = new TH2F("h2_yz","YZ VIEW",1600,-1600,1600,140,-700,700);
+  h2_yz->SetStats(0);
+  h2_yz->Draw();
+
+
+  for (int i=0; i<np; i++) {
+    m = new TMarker(z[i],y[i],2);
+    if (i < np - 1) color = kBlack;
+    else            color = kRed;
+    m->SetMarkerColor(color);
+    m->SetMarkerSize(0.7);
+    m->Draw();
+  }
+
+  TF1 *yf = new TF1("yf","[0]*TMath::Sin([1]+x*[2]) + [3]",-1600., 2600.);
+  yf->SetParameters(radius, phi0, dfdz, y0);
+  yf->Draw("same");
+}
 
 //-----------------------------------------------------------------------------
 void TAnaDump::printCalTimePeak(const mu2e::CalTimePeak* TPeak, const char* Opt) {
