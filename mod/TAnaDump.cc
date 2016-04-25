@@ -2,13 +2,7 @@
 
 #include "mod/TAnaDump.hh"
 #include "TROOT.h"
-#include "TGraph.h"
-#include "TMarker.h"
-#include "TCanvas.h"
-#include "TEllipse.h"
-#include "TH1F.h"
-#include "TH2F.h"
-#include "TF1.h"
+
 
 #include "art/Framework/Principal/Handle.h"
 #include "art/Framework/Principal/Run.h"
@@ -93,6 +87,11 @@ TAnaDump::TAnaDump() {
   pset.put("inputs", VS);
   fgTimeOffsets = new mu2e::SimParticleTimeOffset(pset);
 
+  c_plot_hits_xy = 0;
+  h2_xy          = 0;
+  h2_yz          = 0;
+  e              = 0;
+  yf             = 0;    
 }
 
 //------------------------------------------------------------------------------
@@ -421,7 +420,7 @@ void TAnaDump::printTrackSeed(const mu2e::TrackSeed* TrkSeed,	const char* Opt, c
     printf("-----------------------------------------------------\n");
     printf("%s",Prefix);
     printf("  TrkID       Address    N      P      pT      T0     T0err  ");
-    printf("      D0       Z0      Phi0   TanDip    radius    clusterEnergy\n");
+    printf("      D0       Z0      Phi0   TanDip    radius    caloEnergy     chi2XY    chi2ZPhi\n");
     printf("---------------------------------------------------------------------------------");
     printf("-----------------------------------------------------\n");
   }
@@ -456,8 +455,8 @@ void TAnaDump::printTrackSeed(const mu2e::TrackSeed* TrkSeed,	const char* Opt, c
 	   nhits,
 	   mom, pt, t0, t0err );
 
-    printf(" %8.3f %8.3f %8.3f %8.4f %7.4f %5.3f\n",
-	   d0, z0, phi0, tandip, radius, cluster->energyDep());
+    printf(" %8.3f %8.3f %8.3f %8.4f %10.4f %10.3f %8.3f %8.3f\n",
+	   d0, z0, phi0, tandip, radius, cluster->energyDep(), TrkSeed->chi2XY(), TrkSeed->chi2ZPhi());
   }
 
   if ((opt == "") || (opt.Index("hits") >= 0) ){
@@ -585,11 +584,11 @@ void TAnaDump::plotTrackSeed(int Index, const char* ModuleLabelTrkSeeds, const c
     return;
   }
   printf("---------------------------------------------------------------------------------");
-  printf("-----------------------------------------------------\n");
+  printf("---------------------------------------------------------------------------------\n");
   printf("  TrkID       Address    N      P      pT      T0     T0err  ");
-  printf("      D0       Z0      Phi0   TanDip    radius    clusterEnergy\n");
+  printf("      D0       Z0      Phi0   TanDip      DfDz     X0       Y0      radius    caloEnergy     chi2XY     chi2ZPhi\n");
   printf("---------------------------------------------------------------------------------");
-  printf("-----------------------------------------------------\n");
+  printf("---------------------------------------------------------------------------------\n");
   
   const mu2e::TrackSeed* TrkSeed = &trkseeds->at(Index);
 
@@ -612,14 +611,33 @@ void TAnaDump::plotTrackSeed(int Index, const char* ModuleLabelTrkSeeds, const c
   
   const mu2e::CaloCluster*cluster = TrkSeed->_caloCluster.get();
   
+  const mu2e::DiskCalorimeter* cal;
+  art::ServiceHandle<mu2e::GeometryService> geom;
+    
+  if (geom->hasElement<mu2e::DiskCalorimeter>() ) {
+    mu2e::GeomHandle<mu2e::DiskCalorimeter> dc;
+    cal = dc.operator->();
+  }
+  else {
+    printf(">>> ERROR: disk calorimeter not found.\n");
+    return;
+  }
+ 
+  int               idisk   = cluster->sectionId();
+  CLHEP::Hep3Vector cp_mu2e = cal->fromSectionFrame(idisk, cluster->cog3Vector());
+  CLHEP::Hep3Vector cp_st   = cal->toTrackerFrame(cp_mu2e);
+
+  double x0   = -(radius + d0)*sin(phi0);
+  double y0   =  (radius + d0)*cos(phi0);
+
   printf("%5i %16p %3i %8.3f %8.5f %7.3f %7.3f",
 	 -1,
 	 TrkSeed,
 	 nhits,
 	 mom, pt, t0, t0err );
   
-  printf(" %8.3f %8.3f %8.3f %8.4f %7.4f %5.3f\n",
-	 d0, z0, phi0, tandip, radius, cluster->energyDep());
+  printf(" %8.3f %8.3f %8.3f %8.4f %10.4f  %10.4f %10.4f %10.4f %8.3f %10.3f %8.3f\n",
+	 d0, z0, phi0, tandip, dfdz, x0, y0, radius, cluster->energyDep(), TrkSeed->chi2XY(), TrkSeed->chi2ZPhi());
 
 
   //fill Z and Phi of the straw hits
@@ -634,29 +652,29 @@ void TAnaDump::plotTrackSeed(int Index, const char* ModuleLabelTrkSeeds, const c
     hitIndex  = helix->_selectedTrackerHitsIdx.at(i)._index;
     
     pos       = &shpcol->at(hitIndex);
-    x[i]      = pos->pos().y();  
+    x[i]      = pos->pos().x();  
     y[i]      = pos->pos().y();  
     z[i]      = pos->pos().z();  
-  }
-  
+  } 
+\
   //fill calo-cluster position
+  x[nhits]    = cluster->cog3Vector().x();
   y[nhits]    = cluster->cog3Vector().y();
-  z[nhits]    = cluster->cog3Vector().z();
+  z[nhits]    = cp_st.z();
   
-  double x0   = -(radius + d0)*sin(phi0);
-  double y0   =  (radius + d0)*cos(phi0);
 
   // TGraph* gr_xy = new TGraph(np,x,y);
   // TGraph* gr_yz = new TGraph(np,z,y);
 
-  //  if (c_plot_hits_xy != 0) delete c_plot_hits_xy;
-  TCanvas* c_plot_hits_xy = new TCanvas("htrakseedview","htrakseedview",1200,600);
+  if (c_plot_hits_xy != 0) delete c_plot_hits_xy;
+  c_plot_hits_xy = new TCanvas("htrakseedview","htrakseedview",1200,600);
 
   c_plot_hits_xy->Divide(2,1);
 
   c_plot_hits_xy->cd(1);
 
-  TH2F* h2_xy = new TH2F("h2_xy","XY View",140,-700,700,140,-700,700);
+  if (h2_xy != 0) delete h2_xy;
+  h2_xy = new TH2F("h2_xy","XY View",140,-700,700,140,-700,700);
   h2_xy->SetStats(0);
   h2_xy->Draw();
 
@@ -668,12 +686,13 @@ void TAnaDump::plotTrackSeed(int Index, const char* ModuleLabelTrkSeeds, const c
     m = new TMarker(x[i],y[i],2);
     if (i < np - 1) color = kBlack;
     else            color = kRed;
-    m->SetMarkerSize(0.7);
+    m->SetMarkerSize(1.5);
     m->SetMarkerColor(color);
     m->Draw();
   }
 
-  TEllipse* e = new TEllipse(x0, y0, radius);
+  if (e != 0) delete e;
+  e = new TEllipse(x0, y0, radius);
 
   e->SetFillStyle(0);
   e->Draw();
@@ -681,7 +700,8 @@ void TAnaDump::plotTrackSeed(int Index, const char* ModuleLabelTrkSeeds, const c
 
   c_plot_hits_xy->cd(2);
 
-  TH2F* h2_yz = new TH2F("h2_yz","YZ VIEW",1600,-1600,1600,140,-700,700);
+  if (h2_yz != 0) delete h2_yz;
+  h2_yz = new TH2F("h2_yz","YZ VIEW",2000,-2000, 2000, 140,-700,700);
   h2_yz->SetStats(0);
   h2_yz->Draw();
 
@@ -691,11 +711,16 @@ void TAnaDump::plotTrackSeed(int Index, const char* ModuleLabelTrkSeeds, const c
     if (i < np - 1) color = kBlack;
     else            color = kRed;
     m->SetMarkerColor(color);
-    m->SetMarkerSize(0.7);
+    m->SetMarkerSize(1.5);
     m->Draw();
   }
 
-  TF1 *yf = new TF1("yf","[0]*TMath::Sin([1]+x*[2]) + [3]",-1600., 2600.);
+  if (yf != 0) delete yf;
+  yf = new TF1("yf","[0]*TMath::Sin([1]+x*[2]) + [3]",-1600., 2600.);
+
+  //correct phi0...
+  phi0 += z0*dfdz;
+ 
   yf->SetParameters(radius, phi0, dfdz, y0);
   yf->Draw("same");
 }
