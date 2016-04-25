@@ -54,6 +54,8 @@ public:
   float                     fOmega; 
   float                     fZ0;    
   float                     fTanDip;
+  float                     fChi2XYNDof;
+  float                     fChi2PhiZNDof;
 
   float                     fClusterTime;   
   float			    fClusterEnergy; 

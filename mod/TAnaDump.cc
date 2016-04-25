@@ -413,8 +413,8 @@ void TAnaDump::printTrackSeed(const mu2e::TrackSeed* TrkSeed,	const char* Opt, c
     printf("---------------------------------------------------------------------------------");
     printf("-----------------------------------------------------\n");
     printf("%s",Prefix);
-    printf("  TrkID       Address    N      P      pT    T0    T0err");
-    printf("      D0       Z0      Phi0   TanDip    radius\n");
+    printf("  TrkID       Address    N      P      pT      T0     T0err  ");
+    printf("      D0       Z0      Phi0   TanDip    radius    clusterEnergy\n");
     printf("---------------------------------------------------------------------------------");
     printf("-----------------------------------------------------\n");
   }
@@ -427,7 +427,7 @@ void TAnaDump::printTrackSeed(const mu2e::TrackSeed* TrkSeed,	const char* Opt, c
 
   if ((opt == "") || (opt.Index("data") >= 0)) {
     int    nhits   = TrkSeed->_selectedTrackerHits.size();
-
+    
     double t0     = TrkSeed->t0();
     double t0err  = TrkSeed->errt0();
 
@@ -441,14 +441,16 @@ void TAnaDump::printTrackSeed(const mu2e::TrackSeed* TrkSeed,	const char* Opt, c
     double mom    = radius*mm2MeV/std::cos( std::atan(tandip));
     double pt     = radius*mm2MeV;
 
+    const mu2e::CaloCluster*cluster = TrkSeed->_caloCluster.get();
+    
     printf("%5i %16p %3i %8.3f %8.5f %7.3f %7.3f",
 	   -1,
 	   TrkSeed,
 	   nhits,
 	   mom, pt, t0, t0err );
 
-    printf(" %8.3f %8.3f %8.3f %8.4f %7.4f\n",
-	   d0, z0, phi0, tandip, radius);
+    printf(" %8.3f %8.3f %8.3f %8.4f %7.4f %5.3f\n",
+	   d0, z0, phi0, tandip, radius, cluster->energyDep());
   }
 
   if ((opt == "") || (opt.Index("hits") >= 0) ){
