@@ -2,6 +2,13 @@
 
 #include "mod/TAnaDump.hh"
 #include "TROOT.h"
+#include "TGraph.h"
+#include "TMarker.h"
+#include "TCanvas.h"
+#include "TEllipse.h"
+#include "TH1F.h"
+#include "TH2F.h"
+#include "TF1.h"
 
 #include "art/Framework/Principal/Handle.h"
 #include "art/Framework/Principal/Run.h"
@@ -539,7 +546,7 @@ void TAnaDump::plotTrackSeed(int Index, const char* ModuleLabelTrkSeeds, const c
 
 
   art::Handle<mu2e::StrawHitPositionCollection> spcHandle;
-  const mu2e::StrawHitPositionCollection*       spc;
+  const mu2e::StrawHitPositionCollection*       shpcol;
 
   if (ProductName[0] != 0) {
     art::Selector  selector(art::ProductInstanceNameSelector(ProductName) &&
@@ -553,25 +560,25 @@ void TAnaDump::plotTrackSeed(int Index, const char* ModuleLabelTrkSeeds, const c
     fEvent->get(selector, spcHandle);
   }
 
-  spc = spcHandle.product();
+  shpcol = spcHandle.product();
   
 
   art::Handle<mu2e::TrackSeedCollection> trkseedsHandle;
-  mu2e::TrackSeedCollection              *trkseeds(0);
+  const mu2e::TrackSeedCollection       *trkseeds(0);
 
   if (ProductName[0] != 0) {
     art::Selector  selector(art::ProductInstanceNameSelector(ProductName) &&
 			    art::ProcessNameSelector(ProcessName)         && 
-			    art::ModuleLabelSelector(ModuleLabel)            );
+			    art::ModuleLabelSelector(ModuleLabelTrkSeeds)            );
     fEvent->get(selector,trkseedsHandle);
   }
   else {
     art::Selector  selector(art::ProcessNameSelector(ProcessName)         && 
-			    art::ModuleLabelSelector(ModuleLabel)            );
+			    art::ModuleLabelSelector(ModuleLabelTrkSeeds)            );
     fEvent->get(selector,trkseedsHandle);
   }
 
-  if (trkseedsHandle.isValid())  trkseeds = trkseedsHandle.get();
+  if (trkseedsHandle.isValid())  trkseeds = trkseedsHandle.product();
 
   if (trkseeds == 0) {
     printf("no TrackSeedCollection FOUND\n");
@@ -579,13 +586,12 @@ void TAnaDump::plotTrackSeed(int Index, const char* ModuleLabelTrkSeeds, const c
   }
   printf("---------------------------------------------------------------------------------");
   printf("-----------------------------------------------------\n");
-  printf("%s",Prefix);
   printf("  TrkID       Address    N      P      pT      T0     T0err  ");
   printf("      D0       Z0      Phi0   TanDip    radius    clusterEnergy\n");
   printf("---------------------------------------------------------------------------------");
   printf("-----------------------------------------------------\n");
   
-  const mu2e::TrackSeed* TrkSeed = trkseeds->at(Index);
+  const mu2e::TrackSeed* TrkSeed = &trkseeds->at(Index);
 
   int    nhits   = TrkSeed->_selectedTrackerHits.size();
   
@@ -618,14 +624,14 @@ void TAnaDump::plotTrackSeed(int Index, const char* ModuleLabelTrkSeeds, const c
 
   //fill Z and Phi of the straw hits
   const mu2e::StrawHitPosition   *pos(0);
-  mu2e::HelixVal                 *helix = &TrkSeed->_fullTrkSeed;
+  const mu2e::HelixVal           *helix = &TrkSeed->_fullTrkSeed;
   
   int    hitIndex(0);
   int    np = nhits + 1;
   double x[np], y[np], z[np];
   
   for (int i=0; i<nhits; ++i){
-    hitIndex  = helix->_selectedTrackerHitsIdx.at(i);
+    hitIndex  = helix->_selectedTrackerHitsIdx.at(i)._index;
     
     pos       = &shpcol->at(hitIndex);
     x[i]      = pos->pos().y();  
@@ -640,12 +646,11 @@ void TAnaDump::plotTrackSeed(int Index, const char* ModuleLabelTrkSeeds, const c
   double x0   = -(radius + d0)*sin(phi0);
   double y0   =  (radius + d0)*cos(phi0);
 
-  TGraph* gr_xy = new TGraph(np,x,y);
-  TGraph* gr_yz = new TGraph(np,z,y);
+  // TGraph* gr_xy = new TGraph(np,x,y);
+  // TGraph* gr_yz = new TGraph(np,z,y);
 
   //  if (c_plot_hits_xy != 0) delete c_plot_hits_xy;
-
-  c_plot_hits_xy = new TCanvas("htrakseedview","htrakseedview",1200,600);
+  TCanvas* c_plot_hits_xy = new TCanvas("htrakseedview","htrakseedview",1200,600);
 
   c_plot_hits_xy->Divide(2,1);
 
@@ -761,7 +766,7 @@ void TAnaDump::printCalTimePeakCollection(const char* ModuleLabel,
     fEvent->get(selector, handle);
   }
 
-  if (handle.isValid()) coll = handle.product();
+  if (handle.isValid()) coll = (mu2e::CalTimePeakCollection* )handle.product();
   else {
     printf(">>> ERROR in TAnaDump::printSimParticleCollection: failed to locate collection");
     printf(". BAIL OUT. \n");
