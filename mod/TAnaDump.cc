@@ -630,7 +630,7 @@ void TAnaDump::plotTrackSeed(int Index, const char* ModuleLabelTrkSeeds, const c
   double x0   = -(radius + d0)*sin(phi0);
   double y0   =  (radius + d0)*cos(phi0);
 
-  phi0        = z0*dfdz + phi0 - M_PI/2.;
+  phi0        = -z0*dfdz + phi0 - M_PI/2.;
 
   printf("%5i %16p %3i %8.3f %8.5f %7.3f %7.3f",
 	 -1,
