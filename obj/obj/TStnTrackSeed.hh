@@ -88,6 +88,9 @@ public:
   float   Z0         () { return  fZ0;    }
   float   TanDip     () { return  fTanDip; }
 
+  float   Chi2XY     () { return  fChi2XYNDof;}
+  float   Chi2ZPhi   () { return  fChi2PhiZNDof;}
+
   float   ClusterTime   () { return fClusterTime; }
   float   ClusterEnergy () { return fClusterEnergy;}
   float   ClusterX      () { return fClusterX;     }

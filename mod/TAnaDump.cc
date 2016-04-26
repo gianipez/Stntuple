@@ -630,6 +630,8 @@ void TAnaDump::plotTrackSeed(int Index, const char* ModuleLabelTrkSeeds, const c
   double x0   = -(radius + d0)*sin(phi0);
   double y0   =  (radius + d0)*cos(phi0);
 
+  phi0        = z0*dfdz + phi0 - M_PI/2.;
+
   printf("%5i %16p %3i %8.3f %8.5f %7.3f %7.3f",
 	 -1,
 	 TrkSeed,
@@ -656,7 +658,7 @@ void TAnaDump::plotTrackSeed(int Index, const char* ModuleLabelTrkSeeds, const c
     y[i]      = pos->pos().y();  
     z[i]      = pos->pos().z();  
   } 
-\
+
   //fill calo-cluster position
   x[nhits]    = cluster->cog3Vector().x();
   y[nhits]    = cluster->cog3Vector().y();
@@ -701,7 +703,7 @@ void TAnaDump::plotTrackSeed(int Index, const char* ModuleLabelTrkSeeds, const c
   c_plot_hits_xy->cd(2);
 
   if (h2_yz != 0) delete h2_yz;
-  h2_yz = new TH2F("h2_yz","YZ VIEW",2000,-2000, 2000, 140,-700,700);
+  h2_yz = new TH2F("h2_yz","YZ VIEW",2500,-2500, 2500, 140,-700,700);
   h2_yz->SetStats(0);
   h2_yz->Draw();
 
@@ -716,10 +718,10 @@ void TAnaDump::plotTrackSeed(int Index, const char* ModuleLabelTrkSeeds, const c
   }
 
   if (yf != 0) delete yf;
-  yf = new TF1("yf","[0]*TMath::Sin([1]+x*[2]) + [3]",-1600., 2600.);
+  yf = new TF1("yf","[0]*TMath::Sin([1]+x*[2]) + [3]",-1600., 3000.);
 
   //correct phi0...
-  phi0 += z0*dfdz;
+
  
   yf->SetParameters(radius, phi0, dfdz, y0);
   yf->Draw("same");
