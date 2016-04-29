@@ -12,6 +12,7 @@
 # cdfopr/scripts/catalog_stntuples -h diskpool -d jbmmgh -b ewk/wtaunu -p jbmm
 #
 # if pattern is not defined, it is assumed to coinside with the dataset name
+# $nev_fileset: number of events per fileset, default:200000
 #------------------------------------------------------------------------------
 require 'find'
 require 'fileutils'
@@ -35,6 +36,7 @@ opts = GetoptLong.new(
   [ "--host"          , "-h",        GetoptLong::REQUIRED_ARGUMENT ],
   [ "--pattern"       , "-p",        GetoptLong::REQUIRED_ARGUMENT ],
   [ "--mode"          , "-m",        GetoptLong::REQUIRED_ARGUMENT ],
+  [ "--nev_fileset"   , "-n",        GetoptLong::REQUIRED_ARGUMENT ],
   [ "--user"          , "-u",        GetoptLong::REQUIRED_ARGUMENT ],
   [ "--verbose"       , "-v",        GetoptLong::NO_ARGUMENT       ]
 )
@@ -46,6 +48,7 @@ $directory      = ""
 $pattern        = ""
 $book           = "stntuple/dev_242"
 $mode           = "1"   # "11" for 
+$nev_fileset    = 200000
 $dataset        = ""
 $verbose        = 0
 $install_host   = ''
@@ -66,6 +69,7 @@ opts.each do |opt, arg|
   elsif (opt == "--install"       ) ; $install_host   = arg 
   elsif (opt == "--book"          ) ; $book           = arg 
   elsif (opt == "--mode"          ) ; $mode           = arg 
+  elsif (opt == "--nev_fileset"   ) ; $nev_fileset    = arg.to_i 
   elsif (opt == "--pattern"       ) ; $pattern        = arg 
   elsif (opt == "--user"          ) ; $user           = arg 
   elsif (opt == "--verbose"       ) ; $verbose        = 1   
@@ -269,7 +273,7 @@ a.each { |line|
      end
    end
 #-----------------------------------------------------------------------
-   if (nevents > 200000) then
+   if (nevents > $nev_fileset) then
 #-----------------------------------------------------------------------
 #  new fileset
 #-----------------------------------------------------------------------
