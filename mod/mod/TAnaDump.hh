@@ -5,6 +5,13 @@
 #include "TObject.h"
 #include "TObjArray.h"
 #include "TString.h"
+#include "TGraph.h"
+#include "TMarker.h"
+#include "TCanvas.h"
+#include "TEllipse.h"
+#include "TH1F.h"
+#include "TH2F.h"
+#include "TF1.h"
 
 #ifndef __CINT__
 
@@ -46,6 +53,12 @@ protected:
   TString    fFlagBgrHitsModuleLabel;
 
   double     fTmp[100];  // for testing
+
+  TCanvas*   c_plot_hits_xy;
+  TH2F*      h2_xy;
+  TH2F*      h2_yz;
+  TEllipse*  e;
+  TF1*       yf;       
 
 private:
 
@@ -118,6 +131,12 @@ public:
 				const char* ProductName = "", 
 				const char* ProcessName = "",
 				int         hitOpt      = 0); 
+
+  void plotTrackSeed           (int Index                      , 
+				const char* ModuleLabelTrkSeeds,
+				const char* ModuleLabelHitPos   );
+
+
 
   void printKalRep(const KalRep* Krep, const char* Opt = "", const char* Prefix = "");
 

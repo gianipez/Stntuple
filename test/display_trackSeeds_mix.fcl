@@ -22,19 +22,19 @@ source       : {
     module_type : RootInput 
 #    fileNames : ["/pnfs/mu2e/scratch/outstage/ehrlich/specialEvents/events_with_positrons_and_antimuons.art"]
 #    fileNames : ["/mu2e/data/users/murat/datasets/cd3-detmix-cut-local-v2/sim.mu2e.cd3-detmix-cut.v566.000003_00000000.art",
-    fileNames :[
-		"/mu2e/data/users/gianipez/data/sim.mu2e.cd3-detmix-cut.v566b.000004_00000000.art"
-		,"/mu2e/data/users/gianipez/data/sim.mu2e.cd3-detmix-cut.v566b.000004_00000002.art"
-		,"/mu2e/data/users/gianipez/data/sim.mu2e.cd3-detmix-cut.v566b.000004_00000003.art"
-		,"/mu2e/data/users/gianipez/data/sim.mu2e.cd3-detmix-cut.v566b.000004_00000004.art"
-		,"/mu2e/data/users/gianipez/data/sim.mu2e.cd3-detmix-cut.v566b.000004_00000005.art"
-		,"/mu2e/data/users/gianipez/data/sim.mu2e.cd3-detmix-cut.v566b.000004_00000006.art"
-		,"/mu2e/data/users/gianipez/data/sim.mu2e.cd3-detmix-cut.v566b.000004_00000007.art"
-		,"/mu2e/data/users/gianipez/data/sim.mu2e.cd3-detmix-cut.v566b.000004_00000008.art"
-		,"/mu2e/data/users/gianipez/data/sim.mu2e.cd3-detmix-cut.v566b.000004_00000009.art"
-		,"/mu2e/data/users/gianipez/data/sim.mu2e.cd3-detmix-cut.v566b.000004_00000010.art"
-		,"/mu2e/data/users/gianipez/data/sim.mu2e.cd3-detmix-cut.v566b.000004_00000011.art"
-	       ]
+    # fileNames :[
+    # 		"/mu2e/data/users/gianipez/data/sim.mu2e.cd3-detmix-cut.v566b.000004_00000000.art"
+    # 		,"/mu2e/data/users/gianipez/data/sim.mu2e.cd3-detmix-cut.v566b.000004_00000002.art"
+    # 		,"/mu2e/data/users/gianipez/data/sim.mu2e.cd3-detmix-cut.v566b.000004_00000003.art"
+    # 		,"/mu2e/data/users/gianipez/data/sim.mu2e.cd3-detmix-cut.v566b.000004_00000004.art"
+    # 		,"/mu2e/data/users/gianipez/data/sim.mu2e.cd3-detmix-cut.v566b.000004_00000005.art"
+    # 		,"/mu2e/data/users/gianipez/data/sim.mu2e.cd3-detmix-cut.v566b.000004_00000006.art"
+    # 		,"/mu2e/data/users/gianipez/data/sim.mu2e.cd3-detmix-cut.v566b.000004_00000007.art"
+    # 		,"/mu2e/data/users/gianipez/data/sim.mu2e.cd3-detmix-cut.v566b.000004_00000008.art"
+    # 		,"/mu2e/data/users/gianipez/data/sim.mu2e.cd3-detmix-cut.v566b.000004_00000009.art"
+    # 		,"/mu2e/data/users/gianipez/data/sim.mu2e.cd3-detmix-cut.v566b.000004_00000010.art"
+    # 		,"/mu2e/data/users/gianipez/data/sim.mu2e.cd3-detmix-cut.v566b.000004_00000011.art"
+    # 	       ]
     # fileNames : [
     # 		 "/pnfs/mu2e/tape/phy-sim/sim/mu2e/cd3-beam-g4s4-detconversion/v566/50/b6/sim.mu2e.cd3-beam-g4s4-detconversion.v566.004001_00000000.art"
     # 		 ,"/pnfs/mu2e/tape/phy-sim/sim/mu2e/cd3-beam-g4s4-detconversion/v566/82/93/sim.mu2e.cd3-beam-g4s4-detconversion.v566.004001_00000001.art"
@@ -100,16 +100,16 @@ physics : { @table::physics
     read  : [ 
 #		     @sequence::Tracking.DigiSim
 #	     @sequence::allPatRecSeq
-	     @sequence::EventMixing.TimeMaps
-	     , @sequence::hitMakerSeq
-	     , @sequence::calRecoSeq
-	     , @sequence::cprPrepHitSeq
-	     , CalTimePeakFinder
-	     , CalPatRecNew
+#	     @sequence::EventMixing.TimeMaps
+#	     , @sequence::hitMakerSeq
+#	     , @sequence::calRecoSeq
+#	     , @sequence::cprPrepHitSeq
+#	     , CalTimePeakFinder
+#	     , CalPatRecNew
 #	     , @sequence::trkCaloMatchingSeq
 #	     , ParticleID
-	     , @sequence::stnmaker_seq	     
-	     , MuHitDisplay
+#	     , @sequence::stnmaker_seq	     
+	     MuHitDisplay
 	    ]
 
     out  : [] 
