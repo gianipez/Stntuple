@@ -1075,11 +1075,10 @@ namespace mu2e {
 
       double  d0, om, r, phi0, x0, y0;
 
-      printf(" I  alg ");
-      TAnaDump::Instance()->printKalRep(0, "banner");
+      TAnaDump::Instance()->printKalRep(0, "banner"," I alg ");
       for (int i = 0; i<fNTracks[0]; i++) {
 	trk = _kalRepPtrColl->at(i).get();
-	printf(" %2i dem ", i);
+	printf("%2i dem ", i);
 	TAnaDump::Instance()->printKalRep(trk, opt);
 //-----------------------------------------------------------------------------
 // also display the reconstructed track, use s=0
