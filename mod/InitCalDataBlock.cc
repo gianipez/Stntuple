@@ -92,9 +92,10 @@ Int_t StntupleInitMu2eCalDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int 
   data->fNDisks = cal->nDisk();
   for (int i=0; i<data->fNDisks; i++) {
     disk = &cal->disk(i);
-    data->fRMin[i] = disk->innerRadius();
-    data->fRMax[i] = disk->outerRadius();
-    data->fZ0  [i] = disk->origin().z();
+    data->fNCrystals[i] = disk->nCrystals();
+    data->fRMin     [i] = disk->innerRadius();
+    data->fRMax     [i] = disk->outerRadius();
+    data->fZ0       [i] = disk->origin().z();
   }
   data->fCrystalSize = cal->caloGeomInfo().crystalHalfTrans();
 
