@@ -54,11 +54,11 @@ protected:
 
   double     fTmp[100];  // for testing
 
-  TCanvas*   c_plot_hits_xy;
-  TH2F*      h2_xy;
-  TH2F*      h2_yz;
-  TEllipse*  e;
-  TF1*       yf;       
+//   TCanvas*   c_plot_hits_xy;
+//   TH2F*      h2_xy;
+//   TH2F*      h2_yz;
+//   TEllipse*  e;
+//   TF1*       yf;       
 
 private:
 
@@ -132,9 +132,9 @@ public:
 				const char* ProcessName = "",
 				int         hitOpt      = 0); 
 
-  void plotTrackSeed           (int Index                      , 
-				const char* ModuleLabelTrkSeeds,
-				const char* ModuleLabelHitPos   );
+//   void plotTrackSeed           (int Index                      , 
+// 				const char* ModuleLabelTrkSeeds,
+// 				const char* ModuleLabelHitPos   );
 
 
 
