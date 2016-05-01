@@ -75,6 +75,7 @@ int TDiskCalorimeter::Init(GeomData_t* Geom) {
 			 dead_space,
 			 Geom->fMinFraction);
 
+    fDisk[i]->SetNCrystals(Geom->fNCrystals[i]);   // this is a kludge...
     fDisk[i]->SetChannelOffset(channel_offset);
     channel_offset += fDisk[i]->NCrystals();
   }

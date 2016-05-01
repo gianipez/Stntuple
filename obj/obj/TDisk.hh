@@ -73,13 +73,12 @@ public:
 //-----------------------------------------------------------------------------
   int            SectionID() { return fSectionID; }
   TObjArray*     ListOfCrystals() { return fListOfCrystals; }
-  int            NCrystals()      { return fListOfCrystals->GetEntriesFast(); }
+  int            NCrystals()      { return fNCrystals; }
   int            First    (int I) { return fFirst[I]; }
   TStnCrystal*   Crystal  (int I) { return (TStnCrystal*) fListOfCrystals->UncheckedAt(I); }
 
-
   void           GetHexIndex(int I, THexIndex* HexIndex);
-				// for crystal number I return its ring number
+					// for crystal number I return its ring number
   int            GetRing (int I);
   int            GetRing (THexIndex* Index);
 
@@ -89,13 +88,11 @@ public:
   int            GetNRings   () { return fNRings;    }
   int            GetNCrystals() { return fNCrystals; }
 
-  void           GetPosition(int I          , TVector2* Pos);
+  void           GetPosition(int I           , TVector2* Pos);
   void           GetPosition(THexIndex* Index, TVector2* Pos);
 
   int            GetNCrystalsPerRing(int Ring) { return fNCrystalsPerRing[Ring]; }
   int            GetNInside         (int Ring) { return fNInside         [Ring]; }
-
-  //  int       GetNInsideTot() { return fNInsideTot;    }
 
   double         GetActiveArea() { return GetCrystalArea()*fNCrystals; }
   double         GetTotalArea () { return (fRMax*fRMax-fRMin*fRMin)*TMath::Pi() ; }
@@ -109,11 +106,11 @@ public:
   int            IsInside(THexIndex* Index, double *Fraction);
 
   int            ChannelOffset() { return fChannelOffset; }
-
 //-----------------------------------------------------------------------------
 // setters
 //-----------------------------------------------------------------------------
   void           SetChannelOffset(int Offset) { fChannelOffset = Offset; }
+  void           SetNCrystals    (int N     ) { fNCrystals     = N;      }
 //-----------------------------------------------------------------------------
 // overloaded functions of TObject
 //-----------------------------------------------------------------------------
