@@ -43,7 +43,7 @@ StntupleMaker : {
     DoubletAmbigResolver : { @table::DoubletAmbigResolver }
 
     g4ModuleLabel        : "g4run"
-    caloCrystalHitsMaker : "CaloCrystalHitsMaker"
+    caloCrystalHitsMaker : "MakeCaloCrystalHits"
     caloClusterMaker     : "MakeCaloCluster"
 #------------------------------------------------------------------------------
 # sometimes may need to store multiple track blocks, thus - vectors
