@@ -43,7 +43,7 @@ TEvdCluster::TEvdCluster(const mu2e::CaloCluster* Cl): TObject() {
 
   fCluster  = Cl;
 
-  xl      = Cl->cog3Vector().x()+3904.1;
+  xl      = Cl->cog3Vector().x(); // +3904.1;
   yl      = Cl->cog3Vector().y();
   
   rtrk    = 50.*fCluster->energyDep()/105.; // radius od 
