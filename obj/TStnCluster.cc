@@ -136,8 +136,30 @@ void TStnCluster::Clear(Option_t* opt) {
 }
 
 //-----------------------------------------------------------------------------
-void TStnCluster::Print(Option_t* opt) const {
-  Error("Print", "Not implemented yet");
+void TStnCluster::Print(Option_t* Option) const {
+
+  TString opt(Option);
+
+  opt.ToLower();
+					// "non-const *this" for printing purposes
+  TStnCluster* cl = (TStnCluster*) this;
+
+  if ((opt == "") || (opt.Index("banner") >= 0)) {
+//-----------------------------------------------------------------------------
+// print banner
+//-----------------------------------------------------------------------------
+    printf("-------------------------------------------------------\n");
+    printf("  i  disk ncr energy    time    X    Y    Z    nX    nY\n");
+    printf("-------------------------------------------------------\n");
+  }
+
+  if ((opt == "") || (opt.Index("data") >= 0)) {
+    printf("%4i %3i %3i %8.3f %8.3f ",
+	   fNumber,cl->DiskID(), cl->fNCrystals, cl->fEnergy, cl->fTime);
+    printf(" %8.3f %8.3f %8.3f %8.3f %8.3f",
+	   cl->fX, cl->fY, cl->fZ, cl->fNx, cl->fNy);
+    printf("\n");
+  }
 }
 
 // } // end namespace
