@@ -6,6 +6,7 @@
 #include "TROOT.h"
 #include "TFolder.h"
 #include "TLorentzVector.h"
+#include <vector>
 
 #include "Stntuple/obj/TStnDataBlock.hh"
 
@@ -81,6 +82,19 @@ int  StntupleInitMu2eClusterBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode)
   else                          Evt->getByLabel(calo_module_label,calo_description,calo_cluster_handle);
   list_of_clusters = (mu2e::CaloClusterCollection*) &(*calo_cluster_handle);
 
+  std::vector<const mu2e::CaloCluster*> list_of_pcl;
+  const mu2e::CaloCluster    *cl;
+
+  for (auto it = list_of_clusters->begin(); it != list_of_clusters->end(); it++) {
+    cl = &(*it);
+    list_of_pcl.push_back(cl);
+  }
+//-----------------------------------------------------------------------------
+// sort list of pointers such that the most energetic cluster goes the first
+//-----------------------------------------------------------------------------
+  std::sort(list_of_pcl.begin(), list_of_pcl.end(), 
+	    [](const mu2e::CaloCluster*& lhs, const mu2e::CaloCluster*& rhs)
+	      { return lhs->energyDep() > rhs->energyDep(); } );
 
 //   art::Handle<mu2e::TrackClusterLink>  trk_cal_map;
 //   if (trcl_module_label[0] != 0) {
@@ -107,7 +121,6 @@ int  StntupleInitMu2eClusterBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode)
 //-----------------------------------------------------------------------------
 // tracks are supposed to be already initialized
 //-----------------------------------------------------------------------------
-  const mu2e::CaloCluster       *cl;
   const mu2e::Crystal           *cr;
   const mu2e::CaloCrystalHit    *hit;
   const CLHEP::Hep3Vector       *pos;
@@ -119,7 +132,8 @@ int  StntupleInitMu2eClusterBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode)
   ncl = list_of_clusters->size();
   for (int i=0; i<ncl; i++) {
     cluster               = cb->NewCluster();
-    cl                    = &list_of_clusters->at(i);
+    //    cl                    = &list_of_clusters->at(i);
+    cl                    = list_of_pcl.at(i);
     cluster->fCaloCluster = cl;
     cluster->fDiskID      = cl->sectionId();
     cluster->fEnergy      = cl->energyDep();
