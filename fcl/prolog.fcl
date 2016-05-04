@@ -132,6 +132,24 @@ StntupleMaker3 : { @table::StntupleMaker
     makePid                 : 0
 }
 
+#------------------------------------------------------------------------------
+# cosmics processing: 
+# make 4 track blocks, for the moment need to specify all other labels
+# may need 4 PID blocks...
+# default (in prolog): just one track block "TrackBlock" with output of MergePatRec
+#------------------------------------------------------------------------------
+StntupleMaker4 : { @table::StntupleMaker
+    trackBlockName          : [ "TrackBlockDem"           , "TrackBlockDmm"           , "TrackBlockUem"           , "TrackBlockUmm"            ]
+    trkRecoModuleLabel      : [ "MergePatRecDem"          , "MergePatRecDmm"          , "MergePatRecUem"          , "MergePatRecUmm"           ]
+    trkExtrapolModuleLabel  : [ "TrackCaloIntersectionDem", "TrackCaloIntersectionDmm", "TrackCaloIntersectionUem", "TrackCaloIntersectionUem" ]
+    trkCaloMatchModuleLabel : [ "TrackCaloMatchingDem"    , "TrackCaloMatchingDmm"    , "TrackCaloMatchingUem"    , "TrackCaloMatchingUmm"     ]
+    pidModuleLabel          : [ ""                        ,  ""                       , ""                        , ""                         ]
+    fitParticle             : [                         11,                         13,                         11,                          13]
+    fitDirection            : [                          0,                          0,                          1,                           1]
+
+    makePid                 : 0
+}
+
 FillStntuple : { 
     module_type       : FillStntuple
     module_name       : FillStntuple
@@ -142,6 +160,7 @@ FillStntuple : {
 	# bit51:1
     }
 }
+
 #------------------------------------------------------------------------------
 # 
 #------------------------------------------------------------------------------
@@ -207,6 +226,10 @@ EventFilter: {
     module_type                  : EventFilter
     printFreq                    : 1000000
     eventList                    : []  # [ run1, subrun1, event1, ...]
+}
+
+Stntuple : {
+    stnmaker4  : [ InitStntuple, StntupleMaker4     , FillStntuple ]
 }
 
 END_PROLOG

@@ -258,19 +258,19 @@ services.scheduler.wantSummary: true
 physics : {
     producers: {
         generate             : { @table::StoppedMuonConversionGun }
-	g4run                : @local::mu2eg4runDefaultSingleStage
+	g4run                : { @table::mu2eg4runDefaultSingleStage }
 #------------------------------------------------------------------------------
 # hit makers
 #------------------------------------------------------------------------------
-        protonTimeMap          : { @table::protonTimeMap }
-        muonTimeMap            : { @table::muonTimeMap }
-        makeSD                 : @local::makeSD
-        makeSH                 : @local::makeSHfromSD
-	MakeCaloCompressedHits : @local::MakeCaloCompressedHits
-	MakeCaloReadoutHits    : @local::MakeCaloReadoutHits
-	MakeCaloCrystalHits    : @local::MakeCaloCrystalHitsNew
+        protonTimeMap          : { @table::protonTimeMap          }
+        muonTimeMap            : { @table::muonTimeMap            }
+        makeSD                 : { @table::makeSD                 }
+        makeSH                 : { @table::makeSHfromSD           }
+	MakeCaloCompressedHits : { @table::MakeCaloCompressedHits }
+	MakeCaloReadoutHits    : { @table::MakeCaloReadoutHits    }
+	MakeCaloCrystalHits    : { @table::MakeCaloCrystalHitsNew }
 #------------------------------------------------------------------------------
-# caloriemter digi maker
+# calorimeter digi maker
 #------------------------------------------------------------------------------
 	CaloDigisFromStepPointMCs   :{ @table::CaloDigisFromStepPointMCs}
 	CaloHitsFromCaloDigis       :{ @table::CaloHitsFromCaloDigis}
@@ -406,7 +406,8 @@ physics : {
 #------------------------------------------------------------------------------
 # Stntuple maker sequence
 #------------------------------------------------------------------------------
-	InitStntuple   : @local::InitStntuple 
+	InitStntuple   : { @table::InitStntuple }
+	FillStntuple   : { @table::FillStntuple }
 #------------------------------------------------------------------------------
 # default version of StntupleMaker - one branch - electrons
 #------------------------------------------------------------------------------
@@ -415,15 +416,13 @@ physics : {
 	StntupleMakerDmm    : { @table::StntupleMakerDmm    }
 	StntupleMakerDemDmm : { @table::StntupleMakerDemDmm }
 	StntupleMaker3      : { @table::StntupleMaker3      }
-
-	FillStntuple        : @local::FillStntuple
 #------------------------------------------------------------------------------
 # Andrej's filter
 # Reject events with no hits from signal-like tracks in the detectors.  
 # The filter does not look at the background hits from mixed events.
 #------------------------------------------------------------------------------
-	detectorFilter : @local::FilterStepPointMomentum
-#	EventFilter    : @local::EventFilter
+	detectorFilter : { @table::FilterStepPointMomentum }
+	EventFilter    : { @table::EventFilter }
 #------------------------------------------------------------------------------
 # event display
 #------------------------------------------------------------------------------
