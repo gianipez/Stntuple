@@ -61,7 +61,7 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
   for (int i=0; i<ntrkseeds; i++) {
     trackSeed                  = cb->NewTrackSeed();
     trkSeed                    = &list_of_trackSeeds->at(i);
-    cluster                    = trkSeed->_caloCluster.get();
+    cluster                    = trkSeed->_timeCluster._caloCluster.get();
 
     if (cluster != 0){
       trackSeed->fClusterTime    = cluster->time();
@@ -78,8 +78,8 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
     }
     
     trackSeed->fTrackSeed    = trkSeed;
-    trackSeed->fNLoops       = trkSeed->nLoops();
-    trackSeed->fNHits        = trkSeed->_selectedTrackerHits.size();
+    trackSeed->fNLoops       = -1.; // trkSeed->nLoops();
+    trackSeed->fNHits        = -1.; // trkSeed->_selectedTrackerHits.size();
     trackSeed->fT0           = trkSeed->t0    ();
     trackSeed->fT0Err        = trkSeed->errt0 ();     
     trackSeed->fD0           = trkSeed->d0    ();
@@ -87,8 +87,8 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
     trackSeed->fOmega        = trkSeed->omega ();
     trackSeed->fZ0           = trkSeed->z0    ();     
     trackSeed->fTanDip       = trkSeed->tanDip();
-    trackSeed->fChi2XYNDof   = trkSeed->chi2XY();
-    trackSeed->fChi2PhiZNDof = trkSeed->chi2ZPhi();
+    trackSeed->fChi2XYNDof   = -1.; // trkSeed->chi2XY();
+    trackSeed->fChi2PhiZNDof = -1.; // trkSeed->chi2ZPhi();
     
   }
 

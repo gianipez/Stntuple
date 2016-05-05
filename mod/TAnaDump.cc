@@ -421,13 +421,13 @@ void TAnaDump::printTrackSeed(const mu2e::TrackSeed* TrkSeed,	const char* Opt, c
   }
  
 
-  art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandleStraw;
-  fEvent->getByLabel("makeSH","StrawHitMCPtr",mcptrHandleStraw);
-  mu2e::PtrStepPointMCVectorCollection const* hits_mcptrStraw = mcptrHandleStraw.product();
+//   art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandleStraw;
+//   fEvent->getByLabel("makeSH","StrawHitMCPtr",mcptrHandleStraw);
+//  mu2e::PtrStepPointMCVectorCollection const* hits_mcptrStraw = mcptrHandleStraw.product();
   
 
   if ((opt == "") || (opt.Index("data") >= 0)) {
-    int    nhits   = TrkSeed->_selectedTrackerHits.size();
+    int    nhits   = -1; // TrkSeed->_selectedTrackerHits.size();
     
     double t0     = TrkSeed->t0();
     double t0err  = TrkSeed->errt0();
@@ -442,7 +442,7 @@ void TAnaDump::printTrackSeed(const mu2e::TrackSeed* TrkSeed,	const char* Opt, c
     double mom    = radius*mm2MeV/std::cos( std::atan(tandip));
     double pt     = radius*mm2MeV;
 
-    const mu2e::CaloCluster*cluster = TrkSeed->_caloCluster.get();
+    const mu2e::CaloCluster*cluster = TrkSeed->_timeCluster._caloCluster.get();
     
     printf("%5i %16p %3i %8.3f %8.5f %7.3f %7.3f",
 	   -1,
@@ -450,22 +450,25 @@ void TAnaDump::printTrackSeed(const mu2e::TrackSeed* TrkSeed,	const char* Opt, c
 	   nhits,
 	   mom, pt, t0, t0err );
 
+    float chi2xy   = -1.;		// TrkSeed->chi2XY();
+    float chi2zphi = -1.;		// TrkSeed->chi2ZPhi();
+
     printf(" %8.3f %8.3f %8.3f %8.4f %10.4f %10.3f %8.3f %8.3f\n",
-	   d0, z0, phi0, tandip, radius, cluster->energyDep(), TrkSeed->chi2XY(), TrkSeed->chi2ZPhi());
+	   d0,z0,phi0,tandip,radius,cluster->energyDep(),chi2xy,chi2zphi);
   }
 
   if ((opt == "") || (opt.Index("hits") >= 0) ){
-    int nsh = TrkSeed->_selectedTrackerHits.size();
+    //    int nsh = TrkSeed->_selectedTrackerHits.size();
 
-    const mu2e::StrawHit* hit(0);
+    //    const mu2e::StrawHit* hit(0);
 
-    for (int i=0; i<nsh; ++i){
-      mu2e::PtrStepPointMCVector const& mcptr(hits_mcptrStraw->at(i ) );
-      const mu2e::StepPointMC* Step = mcptr[0].get();
+//     for (int i=0; i<nsh; ++i){
+//       mu2e::PtrStepPointMCVector const& mcptr(hits_mcptrStraw->at(i ) );
+//       const mu2e::StepPointMC* Step = mcptr[0].get();
     
-      hit   = TrkSeed->_selectedTrackerHits.at(i).get(); 
-      printStrawHit(hit, Step, "", -1, 0);
-    }
+//       hit   = TrkSeed->_selectedTrackerHits.at(i).get(); 
+//       printStrawHit(hit, Step, "", -1, 0);
+//     }
     
     
   }
