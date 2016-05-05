@@ -407,13 +407,13 @@ void TAnaDump::printCaloProtoClusterCollection(const char* ModuleLabel,
 }
 
 //-----------------------------------------------------------------------------
-void TAnaDump::printTrackSeed(const mu2e::TrackSeed* TrkSeed,	const char* Opt, const char* Prefix){
+void TAnaDump::printTrackSeed(const mu2e::TrackSeed* TrkSeed,	const char* Opt, 
+			      const char* ModuleLabelStrawHit){
   TString opt = Opt;
   
   if ((opt == "") || (opt == "banner")) {
     printf("---------------------------------------------------------------------------------");
     printf("-----------------------------------------------------\n");
-    printf("%s",Prefix);
     printf("  TrkID       Address    N      P      pT      T0     T0err  ");
     printf("      D0       Z0      Phi0   TanDip    radius    caloEnergy     chi2XY    chi2ZPhi\n");
     printf("---------------------------------------------------------------------------------");
@@ -421,13 +421,13 @@ void TAnaDump::printTrackSeed(const mu2e::TrackSeed* TrkSeed,	const char* Opt, c
   }
  
 
-//   art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandleStraw;
-//   fEvent->getByLabel("makeSH","StrawHitMCPtr",mcptrHandleStraw);
-//  mu2e::PtrStepPointMCVectorCollection const* hits_mcptrStraw = mcptrHandleStraw.product();
+  art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandleStraw;
+  fEvent->getByLabel("makeSH","StrawHitMCPtr",mcptrHandleStraw);
+  mu2e::PtrStepPointMCVectorCollection const* hits_mcptrStraw = mcptrHandleStraw.product();
   
 
   if ((opt == "") || (opt.Index("data") >= 0)) {
-    int    nhits   = -1; // TrkSeed->_selectedTrackerHits.size();
+    int    nhits   = TrkSeed->_timeCluster._strawHitIdxs.size();
     
     double t0     = TrkSeed->t0();
     double t0err  = TrkSeed->errt0();
@@ -469,6 +469,43 @@ void TAnaDump::printTrackSeed(const mu2e::TrackSeed* TrkSeed,	const char* Opt, c
 //       hit   = TrkSeed->_selectedTrackerHits.at(i).get(); 
 //       printStrawHit(hit, Step, "", -1, 0);
 //     }
+  }
+
+  if ((opt == "") || (opt.Index("hits") >= 0) ){
+    int nsh = TrkSeed->_timeCluster._strawHitIdxs.size();
+
+    const mu2e::StrawHit* hit(0);
+    art::Handle<mu2e::StrawHitCollection>         shcHandle;
+    const mu2e::StrawHitCollection*               shcol;
+
+    const char* ProductName = "";
+    const char* ProcessName = "";
+
+                           //now get the strawhitcollection
+    if (ProductName[0] != 0) {
+      art::Selector  selector(art::ProductInstanceNameSelector(ProductName) &&
+			      art::ProcessNameSelector(ProcessName)         && 
+			      art::ModuleLabelSelector(ModuleLabelStrawHit)           );
+      fEvent->get(selector, shcHandle);
+    }
+    else {
+      art::Selector  selector(art::ProcessNameSelector(ProcessName)         && 
+			      art::ModuleLabelSelector(ModuleLabelStrawHit)           );
+      fEvent->get(selector, shcHandle);
+    }
+    
+    shcol = shcHandle.product();
+    
+    
+    for (int i=0; i<nsh; ++i){
+      mu2e::PtrStepPointMCVector const& mcptr(hits_mcptrStraw->at(i ) );
+      int  hitIndex  = TrkSeed->_timeCluster._strawHitIdxs.at(i)._index;
+    
+      hit       = &shcol->at(hitIndex);
+      const mu2e::StepPointMC* Step = mcptr[0].get();
+    
+      printStrawHit(hit, Step, "", -1, 0);
+    }
     
     
   }
@@ -479,7 +516,8 @@ void TAnaDump::printTrackSeed(const mu2e::TrackSeed* TrkSeed,	const char* Opt, c
 void TAnaDump::printTrackSeedCollection(const char* ModuleLabel, 
 					const char* ProductName, 
 					const char* ProcessName,
-					int         hitOpt      ){
+					int         hitOpt     ,
+					const char* ModuleLabelStrawHit){
   
 
   art::Handle<mu2e::TrackSeedCollection> trkseedsHandle;
@@ -531,12 +569,15 @@ void TAnaDump::printTrackSeedCollection(const char* ModuleLabel,
       banner_printed = 1;
     }
     printTrackSeed(trkseed,"data");
-    if(hitOpt>0) printTrackSeed(trkseed,"hits");
+    if(hitOpt>0) printTrackSeed(trkseed,"hits", ModuleLabelStrawHit);
 
   }
 }
+
 // //-----------------------------------------------------------------------------
 // void TAnaDump::plotTrackSeed(int Index, const char* ModuleLabelTrkSeeds, const char* ModuleLabelHitPos){
+//-----------------------------------------------------------------------------
+
   
 //   const char* ProductName = "";
 //   const char* ProcessName = "";
@@ -557,11 +598,25 @@ void TAnaDump::printTrackSeedCollection(const char* ModuleLabel,
 //     fEvent->get(selector, spcHandle);
 //   }
 
+           //                 //now get the strawhitposcollection
+//   if (ProductName[0] != 0) {
+//     art::Selector  selector(art::ProductInstanceNameSelector(ProductName) &&
+// 			    art::ProcessNameSelector(ProcessName)         && 
+// 			    art::ModuleLabelSelector(ModuleLabelHitPos)            );
+//     fEvent->get(selector, spcHandle);
+//   }
+//   else {
+//     art::Selector  selector(art::ProcessNameSelector(ProcessName)         && 
+//// 			    art::ModuleLabelSelector(ModuleLabelHitPos)            );
+//     fEvent->get(selector, spcHandle);
+//}
+
 //   shpcol = spcHandle.product();
   
 
 //   art::Handle<mu2e::TrackSeedCollection> trkseedsHandle;
 //   const mu2e::TrackSeedCollection       *trkseeds(0);
+
 
 //   if (ProductName[0] != 0) {
 //     art::Selector  selector(art::ProductInstanceNameSelector(ProductName) &&
@@ -591,6 +646,7 @@ void TAnaDump::printTrackSeedCollection(const char* ModuleLabel,
 //   const mu2e::TrackSeed* TrkSeed = &trkseeds->at(Index);
 
 //   int    nhits   = TrkSeed->_selectedTrackerHits.size();
+
   
 //   double t0     = TrkSeed->t0();
 //   double t0err  = TrkSeed->errt0();
@@ -643,6 +699,9 @@ void TAnaDump::printTrackSeedCollection(const char* ModuleLabel,
 //   //fill Z and Phi of the straw hits
 //   const mu2e::StrawHitPosition   *pos(0);
 //   const mu2e::HelixVal           *helix = &TrkSeed->_fullTrkSeed;
+
+  //fill Z and Phi of the straw hits
+  //  const mu2e::HelixVal           *helix = &TrkSeed->_helix;
   
 //   int    hitIndex(0);
 //   int    np = nhits + 1;

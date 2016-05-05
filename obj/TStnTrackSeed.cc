@@ -18,20 +18,20 @@ ClassImp(TStnTrackSeed)
 void TStnTrackSeed::Streamer(TBuffer& R__b) {
   int   nwi, nwf;
   
-  nwi      = ((int*  ) &fT0            ) - &fNLoops;
+  nwi      = ((int*  ) &fT0            ) - &fNHits;
   nwf      = ((float*) &fTrackSeed     ) - &fT0;
 
   if (R__b.IsReading()) {
     //    Version_t R__v = R__b.ReadVersion(); 
     R__b.ReadVersion(); 
 					// current version: V1
-    R__b.ReadFastArray(&fNLoops, nwi);
+    R__b.ReadFastArray(&fNHits, nwi);
     R__b.ReadFastArray(&fT0    , nwf);
    }
   else {
     R__b.WriteVersion(TStnTrackSeed::IsA());
 
-    R__b.WriteFastArray(&fNLoops, nwi);
+    R__b.WriteFastArray(&fNHits, nwi);
     R__b.WriteFastArray(&fT0    , nwf);
     
     
@@ -40,7 +40,6 @@ void TStnTrackSeed::Streamer(TBuffer& R__b) {
 
 TStnTrackSeed::TStnTrackSeed(int i) {
 
-  fNLoops = 0;
   fNHits  = 0;
   fT0     = 0;    
   fT0Err  = 0; 

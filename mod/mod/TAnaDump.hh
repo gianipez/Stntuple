@@ -125,12 +125,13 @@ public:
   
   void printTrackSeed          (const mu2e::TrackSeed* TrkSeed, 
 				const char* Opt = ""    ,
-				const char* Prefix = "");
+				const char* ModuleLabelStrawHit="");
 
-  void printTrackSeedCollection(const char* ModuleLabel     , 
-				const char* ProductName = "", 
-				const char* ProcessName = "",
-				int         hitOpt      = 0); 
+  void printTrackSeedCollection(const char* ModuleLabel             , 
+				const char* ProductName         = "", 
+				const char* ProcessName         = "",
+				int         hitOpt              = 0,
+				const char* ModuleLabelStrawHit =""); 
 
 //   void plotTrackSeed           (int Index                      , 
 // 				const char* ModuleLabelTrkSeeds,

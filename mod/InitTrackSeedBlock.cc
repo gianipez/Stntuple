@@ -24,7 +24,7 @@
 #include "RecoDataProducts/inc/TrackSeed.hh"
 #include "RecoDataProducts/inc/TrackSeedCollection.hh"
 
-//#include "RecoDataProducts/inc/TrackSeed.hh"
+#include "CalPatRec/inc/THackData.hh"
 
 //-----------------------------------------------------------------------------
 // assume that the collection name is set, so we could grab it from the event
@@ -78,8 +78,7 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
     }
     
     trackSeed->fTrackSeed    = trkSeed;
-    trackSeed->fNLoops       = -1.; // trkSeed->nLoops();
-    trackSeed->fNHits        = -1.; // trkSeed->_selectedTrackerHits.size();
+    trackSeed->fNHits        = trkSeed->_timeCluster._strawHitIdxs.size();
     trackSeed->fT0           = trkSeed->t0    ();
     trackSeed->fT0Err        = trkSeed->errt0 ();     
     trackSeed->fD0           = trkSeed->d0    ();
@@ -87,8 +86,17 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
     trackSeed->fOmega        = trkSeed->omega ();
     trackSeed->fZ0           = trkSeed->z0    ();     
     trackSeed->fTanDip       = trkSeed->tanDip();
-    trackSeed->fChi2XYNDof   = -1.; // trkSeed->chi2XY();
-    trackSeed->fChi2PhiZNDof = -1.; // trkSeed->chi2ZPhi();
+
+    THackData* hack(0);
+    hack = (THackData*) gROOT->GetRootFolder()->FindObject("HackData");
+    if (hack != 0){
+      trackSeed->fChi2XYNDof   = hack->trkSeedChi2XY  (i);
+      trackSeed->fChi2PhiZNDof = hack->trkSeedChi2ZPhi(i);
+    }else {
+      trackSeed->fChi2XYNDof   = -1;
+      trackSeed->fChi2PhiZNDof = -1;
+    }
+
     
   }
 
