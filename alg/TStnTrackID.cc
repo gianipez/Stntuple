@@ -54,7 +54,7 @@ TStnTrackID::TStnTrackID(const char* Name): TNamed(Name,Name) {
   fMinNActive      = 25;
   fMaxNActive      = 200;
   fMaxT0Err        = 0.9;  		// in ns
-  fMaxFitMomErr    = 0.25;  		// in MeV
+  fMaxMomErr       = 0.25;  		// in MeV
   fMinTanDip       = tan(M_PI/6.);	// 0.5773
   fMaxTanDip       = 1.0;  
   fMinD0           = -80.;		// in mm
@@ -81,14 +81,14 @@ TStnTrackID::~TStnTrackID() {
 int TStnTrackID::IDWord(TStnTrack* Track) {
 
   int              id_word(0), nactive;
-  double           fcons, d0, t0, t0_err, fitmom_err, tan_dip, rmax, trk_qual;
+  double           fcons, d0, t0, t0_err, mom_err, tan_dip, rmax, trk_qual;
   
   fcons          = Track->fFitCons;
   t0             = Track->fT0;
   t0_err         = Track->fT0Err;
   nactive        = Track->NActive();
   tan_dip        = Track->fTanDip;
-  fitmom_err     = Track->fFitMomErr;
+  mom_err        = Track->fFitMomErr;
   d0             = Track->fD0;              // signed impact parameter, convention: mu2e-781
   rmax           = fabs(d0+2./Track->C0()); // 2/c0 - signed diameter
   trk_qual       = Track->DaveTrkQual();
@@ -98,7 +98,7 @@ int TStnTrackID::IDWord(TStnTrack* Track) {
   if (t0_err           >  fMaxT0Err    ) id_word |= kT0ErrBit ;
   if (nactive          <  fMinNActive  ) id_word |= kNActiveBit ;
   if (nactive          >= fMaxNActive  ) id_word |= kNActiveBit ;
-  if (fitmom_err       >  fMaxFitMomErr) id_word |= kFitMomErrBit ;
+  if (mom_err          >  fMaxMomErr   ) id_word |= kMomErrBit ;
   if (tan_dip          <  fMinTanDip   ) id_word |= kTanDipBit ;
   if (tan_dip          >  fMaxTanDip   ) id_word |= kTanDipBit ;
 
@@ -107,7 +107,7 @@ int TStnTrackID::IDWord(TStnTrack* Track) {
 
   if (rmax             <  fMinRMax     ) id_word |= kRMaxBit ;
   if (rmax             >  fMaxRMax     ) id_word |= kRMaxBit ;
-  if (trk_qual         <  fMinTrkQual  ) id_word |= kTrkQualBit ;
+  if (trk_qual         <  fMinTrkQual  ) id_word |= kDtQualBit ;
 
   return  (id_word & fUseMask);
 }
@@ -129,7 +129,7 @@ int TStnTrackID::LooseIDWord(TStnTrack* Track) {
 
 
 //_____________________________________________________________________________
-void TStnTrackID::FillHistograms(Hist_t& Hist, TStnTrack* Track, Int_t Mode) {
+void TStnTrackID::FillHistograms(Hist_t* Hist, TStnTrack* Track, Int_t Mode) {
 //-----------------------------------------------------------------------------
 // distributions for ID variables (with n-1 ID cuts applied). 
 // Plot 3 sets of histograms:
@@ -144,171 +144,106 @@ void TStnTrackID::FillHistograms(Hist_t& Hist, TStnTrack* Track, Int_t Mode) {
  
   if      (Mode == 1) id_word = IDWord     (Track);
   else if (Mode == 2) id_word = LooseIDWord(Track);
+
+  float nactive = Track->NActive();
+  float fcons   = Track->FitCons();
+  float t0      = Track->T0();
+  float t0err   = Track->T0Err();
+  //  float mom     = Track->P();
+  float momerr  = Track->FitMomErr();
+  float tandip  = Track->TanDip();
+  float d0      = Track->D0();
+  float rmax    = Track->RMax();
+  float dtqual  = Track->DaveTrkQual();
 //-----------------------------------------------------------------------------
 //  1. number of points
 //-----------------------------------------------------------------------------
-  Hist.fNActive[0]->Fill(Track->NActive());
-  if ((id_word & ~kNActiveBit) == 0) Hist.fNActive[1]->Fill(Track->NActive());
-  if (id_word == 0) Hist.fNActive[4]->Fill(Track->NActive());
+  Hist->fNActive[0]->Fill(nactive);
+  if ((id_word & ~kNActiveBit) == 0) Hist->fNActive[1]->Fill(nactive);
+  if (id_word == 0) Hist->fNActive[4]->Fill(nactive);
 
-  Hist.fFitCons[0]->Fill(Track->FitCons());
-  if ((id_word & ~kFitConsBit) == 0) Hist.fFitCons[1]->Fill(Track->FitCons());
-  if (id_word == 0) Hist.fFitCons[4]->Fill(Track->FitCons());
+  Hist->fFitCons[0]->Fill(fcons);
+  if ((id_word & ~kFitConsBit) == 0) Hist->fFitCons[1]->Fill(fcons);
+  if (id_word == 0) Hist->fFitCons[4]->Fill(fcons);
 
-//    Hist.fIso1[0]->Fill(iso1);
-//    if ((id_word & ~kIso1Bit) == 0) Hist.fIso1[1]->Fill(iso1);
-//    if (id_word == 0) Hist.fIso1[4]->Fill(iso1);
-//  //-----------------------------------------------------------------------------
-//  //  2. calorimetry
-//  //-----------------------------------------------------------------------------
-//    Hist.fHadEnergy[0]->Fill(Muo->HadEnergy());
-//    if ((id_word & ~kEHadBit) == 0) Hist.fHadEnergy[1]->Fill(Muo->HadEnergy());
-//    if (id_word == 0) Hist.fHadEnergy[4]->Fill(Muo->HadEnergy());
-//  
-//    Hist.fEmEnergy[0]->Fill(Muo->EmEnergy());
-//    if ((id_word & ~kEEmBit) == 0) Hist.fEmEnergy[1]->Fill(Muo->EmEnergy());
-//    if (id_word == 0) Hist.fEmEnergy[4]->Fill(Muo->EmEnergy());
-//  //-----------------------------------------------------------------------------
-//  //  7. CMU residuals
-//  //-----------------------------------------------------------------------------
-//    if (Muo->HasCmuStub()) {
-//      Hist.fCmuDelX[0]->Fill(Muo->CmuDelX());
-//      if ((id_word & ~kCmuDelXBit) == 0) Hist.fCmuDelX[1]->Fill(Muo->CmuDelX());
-//      if (id_word == 0) Hist.fCmuDelX[4]->Fill(Muo->CmuDelX());
-//  
-//      Hist.fCmuDelZ[0]->Fill(Muo->CmuDelZ());
-//      if ((id_word & ~kCmuDelZBit) == 0) Hist.fCmuDelZ[1]->Fill(Muo->CmuDelZ());
-//      if (id_word == 0) Hist.fCmuDelZ[4]->Fill(Muo->CmuDelZ());
-//    }
-//  //-----------------------------------------------------------------------------
-//  //  8. CMP residuals
-//  //-----------------------------------------------------------------------------
-//    if (Muo->HasCmpStub()) {
-//      Hist.fCmpDelX[0]->Fill(Muo->CmpDelX());
-//      if ((id_word & ~kCmpDelXBit) == 0) Hist.fCmpDelX[1]->Fill(Muo->CmpDelX());
-//      if (id_word == 0) Hist.fCmpDelX[4]->Fill(Muo->CmpDelX());
-//    }
-//  //-----------------------------------------------------------------------------
-//  //  9. CMX residuals
-//  //-----------------------------------------------------------------------------
-//    if (Muo->HasCmxStub()) {
-//      Hist.fCmxDelX[0]->Fill(Muo->CmxDelX());
-//      if ((id_word & ~kCmxDelXBit) == 0) Hist.fCmxDelX[1]->Fill(Muo->CmxDelX());
-//      if (id_word == 0) Hist.fCmxDelX[4]->Fill(Muo->CmxDelX());
-//    }
-//  //-----------------------------------------------------------------------------
-//  // 10. fill track histograms - cut on corrected D0
-//  //-----------------------------------------------------------------------------
-//    Hist.fTIso[0]->Fill(Muo->TIso());
-//    if ((id_word & ~kTIsoBit) == 0) Hist.fTIso[1]->Fill(Muo->TIso());
-//    if (id_word == 0) Hist.fTIso[4]->Fill(Muo->TIso());
-//  
-//    double d0_corr;
-//    int    n_ax_hits, n_st_hits;
-//  
-//    int it = Muo->TrackNumber(); 
-//    if (it < 0) {
-//  //-----------------------------------------------------------------------------
-//  // muon track is not defined
-//  //-----------------------------------------------------------------------------
-//      d0_corr   = 1.e6;
-//      n_ax_hits = -1;
-//      n_st_hits = -1;
-//    }
-//    else {
-//  //-----------------------------------------------------------------------------
-//  // muon has a track
-//  //-----------------------------------------------------------------------------
-//      trk       = Muo->Track();
-//      d0_corr   = TStntuple::CorrectedD0(trk);
-//      n_ax_hits = trk->NCotHitsAx();
-//      n_st_hits = trk->NCotHitsSt();
-//    }
-//  
-//    Hist.fTrackD0[0]->Fill(d0_corr);
-//    if ((id_word & ~kTrackD0Bit) == 0) Hist.fTrackD0[1]->Fill(d0_corr);
-//    if (id_word == 0) Hist.fTrackD0[4]->Fill(d0_corr);
-//  
-//    Hist.fTrackZ0[0]->Fill(Muo->Z0());
-//    if ((id_word & ~kTrackZ0Bit) == 0) Hist.fTrackZ0[1]->Fill(Muo->Z0());
-//    if (id_word == 0) Hist.fTrackZ0[4]->Fill(Muo->Z0());
-//  
-//    Hist.fCotNAxHits[0]->Fill(n_ax_hits);
-//    if ((id_word & ~kCotNAxBit) == 0) Hist.fCotNAxHits[1]->Fill(n_ax_hits);
-//    if (id_word == 0) Hist.fCotNAxHits[4]->Fill(n_ax_hits);
-//  
-//    Hist.fCotNStHits[0]->Fill(n_st_hits);
-//    if ((id_word & ~kCotNStBit) == 0) Hist.fCotNStHits[1]->Fill(n_st_hits);
-//    if (id_word == 0) Hist.fCotNStHits[4]->Fill(n_st_hits);
-//  //-----------------------------------------------------------------------------
-//  //  single histogram showing how often every particular cut failed
-//  //-----------------------------------------------------------------------------
-//    for (int bit=0; bit<32; bit++) {
-//      if (((id_word >> bit) & 0x1) == 1) {
-//        Hist.fFailedBits->Fill(bit);
-//      }
-//    }
-//    Hist.fPassed->Fill(id_word == 0);
-//  //-----------------------------------------------------------------------------
-//  //  ***** now histogram effect of cuts in the order they are applied
-//  //-----------------------------------------------------------------------------
-//    Hist.fDetector[2]->Fill(Muo->Detector());
-//    Hist.fDetEta  [2]->Fill(dteta);
-//    if ((id_word & kDetectorBit) != 0)                        goto END;
-//    Hist.fDetector[3]->Fill(Muo->Detector());
-//    Hist.fDetEta  [3]->Fill(dteta);
-//  
-//    Hist.fTrackPt[2]->Fill(pt);
-//    if ((id_word & kTrackPtBit) != 0)                         goto END;
-//    Hist.fTrackPt[3]->Fill(pt);
-//  
-//    Hist.fEIso[2]->Fill(Muo->Iso());
-//    if ((id_word & kIsoBit) != 0)                             goto END;
-//    Hist.fEIso[3]->Fill(Muo->Iso());
-//  
-//    Hist.fIso1[2]->Fill(Muo->TIso());
-//    if ((id_word & kIso1Bit) != 0)                            goto END;
-//    Hist.fIso1[3]->Fill(Muo->TIso());
-//  
-//    Hist.fHadEnergy[2]->Fill(Muo->HadEnergy());
-//    if ((id_word & kEHadBit) != 0)                            goto END;
-//    Hist.fHadEnergy[3]->Fill(Muo->HadEnergy());
-//  
-//    Hist.fEmEnergy[2]->Fill(Muo->EmEnergy());
-//    if ((id_word & kEEmBit) != 0)                             goto END;
-//    Hist.fEmEnergy[3]->Fill(Muo->EmEnergy());
-//  
-//    if (Muo->HasCmuStub()) {
-//      Hist.fCmuDelX[2]->Fill(Muo->CmuDelX());
-//      if ((id_word & kCmuDelXBit) != 0)                       goto END;
-//      Hist.fCmuDelX[3]->Fill(Muo->CmuDelX());
-//  
-//      Hist.fCmuDelZ[2]->Fill(Muo->CmuDelZ());
-//      if ((id_word & kCmuDelZBit) != 0)                       goto END;
-//      Hist.fCmuDelZ[3]->Fill(Muo->CmuDelZ());
-//    }
-//  
-//    Hist.fTrackD0[2]->Fill(d0_corr);
-//    if ((id_word & kTrackD0Bit) != 0)                         goto END;
-//    Hist.fTrackD0[3]->Fill(d0_corr);
-//  
-//    Hist.fTrackZ0[2]->Fill(Muo->Z0());
-//    if ((id_word & kTrackZ0Bit) != 0)                         goto END;
-//    Hist.fTrackZ0[3]->Fill(Muo->Z0());
-//  
-//    Hist.fCotNAxHits[2]->Fill(n_ax_hits);
-//    if ((id_word & kCotNAxBit) != 0)                          goto END;
-//    Hist.fCotNAxHits[3]->Fill(n_ax_hits);
-//  
-//    Hist.fCotNStHits[2]->Fill(n_st_hits);
-//    if ((id_word & kCotNStBit) != 0)                          goto END;
-//    Hist.fCotNStHits[3]->Fill(n_st_hits);
-//  
-//    Hist.fTrackBcPt[2]->Fill(bcpt);
-//    if ((id_word & kTrackBcPtBit) != 0)                       goto END;
-//    Hist.fTrackBcPt[3]->Fill(bcpt);
-//  
-//   END:;
+  Hist->fT0[0]->Fill(t0);
+  if ((id_word & ~kT0Bit) == 0) Hist->fT0[1]->Fill(t0);
+  if (id_word == 0) Hist->fT0[4]->Fill(t0);
+
+  Hist->fT0Err[0]->Fill(t0err);
+  if ((id_word & ~kT0ErrBit) == 0) Hist->fT0Err[1]->Fill(t0err);
+  if (id_word == 0) Hist->fT0Err[4]->Fill(t0err);
+
+  Hist->fMomErr[0]->Fill(momerr);
+  if ((id_word & ~kMomErrBit) == 0) Hist->fMomErr[1]->Fill(momerr);
+  if (id_word == 0) Hist->fMomErr[4]->Fill(momerr);
+
+  Hist->fTanDip[0]->Fill(tandip);
+  if ((id_word & ~kTanDipBit) == 0) Hist->fTanDip[1]->Fill(tandip);
+  if (id_word == 0) Hist->fTanDip[4]->Fill(tandip);
+
+  Hist->fD0[0]->Fill(d0);
+  if ((id_word & ~kD0Bit) == 0) Hist->fD0[1]->Fill(d0);
+  if (id_word == 0) Hist->fD0[4]->Fill(d0);
+
+  Hist->fRMax[0]->Fill(rmax);
+  if ((id_word & ~kRMaxBit) == 0) Hist->fRMax[1]->Fill(rmax);
+  if (id_word == 0) Hist->fRMax[4]->Fill(rmax);
+
+  Hist->fDtQual[0]->Fill(dtqual);
+  if ((id_word & ~kRMaxBit) == 0) Hist->fDtQual[1]->Fill(dtqual);
+  if (id_word == 0) Hist->fDtQual[4]->Fill(dtqual);
+
+//-----------------------------------------------------------------------------
+//  single histogram showing how often every particular cut failed
+//-----------------------------------------------------------------------------
+  for (int bit=0; bit<32; bit++) {
+    if (((id_word >> bit) & 0x1) == 1) {
+      Hist->fFailedBits->Fill(bit);
+    }
+  }
+  Hist->fPassed->Fill(id_word == 0);
+//-----------------------------------------------------------------------------
+//  ***** now histogram effect of cuts in the order they are applied
+//-----------------------------------------------------------------------------
+  Hist->fNActive[2]->Fill(nactive);
+  if ((id_word & kNActiveBit) != 0)                         goto END;
+  Hist->fNActive[3]->Fill(nactive);
+  
+  Hist->fFitCons[2]->Fill(fcons);
+  if ((id_word & kFitConsBit) != 0)                         goto END;
+  Hist->fFitCons[3]->Fill(fcons);
+  
+  Hist->fT0[2]->Fill(t0);
+  if ((id_word & kT0Bit) != 0)                              goto END;
+  Hist->fT0[3]->Fill(t0);
+  
+  Hist->fT0Err[2]->Fill(t0err);
+  if ((id_word & kT0ErrBit) != 0)                           goto END;
+  Hist->fT0Err[3]->Fill(t0err);
+  
+  Hist->fMomErr[2]->Fill(momerr);
+  if ((id_word & kMomErrBit) != 0)                          goto END;
+  Hist->fMomErr[3]->Fill(momerr);
+  
+  Hist->fTanDip[2]->Fill(tandip);
+  if ((id_word & kTanDipBit) != 0)                          goto END;
+  Hist->fTanDip[3]->Fill(tandip);
+  
+  Hist->fD0[2]->Fill(d0);
+  if ((id_word & kD0Bit) != 0)                             goto END;
+  Hist->fD0[3]->Fill(d0);
+  
+  Hist->fRMax[2]->Fill(rmax);
+  if ((id_word & kRMaxBit) != 0)                           goto END;
+  Hist->fRMax[3]->Fill(rmax);
+  
+  Hist->fDtQual[2]->Fill(dtqual);
+  if ((id_word & kDtQualBit) != 0)                         goto END;
+  Hist->fDtQual[3]->Fill(dtqual);
+  
+  
+ END:;
 }
 
 
@@ -317,14 +252,14 @@ void TStnTrackID::Print(const char* Opt) const {
   printf("-----------------------------------------------------\n");
   printf("      track ID cuts                                  \n");
   printf("-----------------------------------------------------\n");
-  printf(" bit  0: fMinFitCons     = %12.4f\n",fMinFitCons   );
-  printf(" bit  1: fMinT0          = %12.4f\n",fMinT0        );
-  printf(" bit  2: fNMinActive     = %12i  fNMaxNActive = %12i\n",fMinNActive,fMaxNActive);
-  printf(" bit  3: fMaxT0Err       = %12.4f\n",fMaxT0Err     );
-  printf(" bit  4: fMaxFitMomErr   = %12.4f\n",fMaxFitMomErr );
-  printf(" bit  5: fTanDip         = %12.4f < tan(dip)   < %12.4f\n",fMinTanDip,fMaxTanDip);
-  printf(" bit  6: fD0             = %12.4f < D0         < %12.4f\n",fMinD0    ,fMaxD0    );
-  printf(" bit  7: fRMax           = %12.4f < D0+2/omega < %12.4f\n",fMinRMax  ,fMaxRMax  );
+  printf(" bit  0: fMinFitCons   = %12.4f\n",fMinFitCons   );
+  printf(" bit  1: fMinT0        = %12.4f\n",fMinT0        );
+  printf(" bit  2: fNMinActive   = %12i  fNMaxNActive = %12i\n",fMinNActive,fMaxNActive);
+  printf(" bit  3: fMaxT0Err     = %12.4f\n",fMaxT0Err     );
+  printf(" bit  4: fMaxMomErr    = %12.4f\n",fMaxMomErr );
+  printf(" bit  5: fTanDip       = %12.4f < tan(dip)   < %12.4f\n",fMinTanDip,fMaxTanDip);
+  printf(" bit  6: fD0           = %12.4f < D0         < %12.4f\n",fMinD0    ,fMaxD0    );
+  printf(" bit  7: fRMax         = %12.4f < D0+2/omega < %12.4f\n",fMinRMax  ,fMaxRMax  );
 }
 
 

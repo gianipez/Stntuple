@@ -24,11 +24,11 @@ public:
     kFitConsBit        = 0x1 <<  1,     // 0x00000002
     kT0Bit             = 0x1 <<  2,     // 0x00000004
     kT0ErrBit          = 0x1 <<  3,     // 0x00000008
-    kFitMomErrBit      = 0x1 <<  4,     // 0x00000010
+    kMomErrBit         = 0x1 <<  4,     // 0x00000010
     kTanDipBit         = 0x1 <<  5,     // 0x00000020
     kD0Bit             = 0x1 <<  6,     // 0x00000040
     kRMaxBit           = 0x1 <<  7,     // 0x00000080
-    kTrkQualBit        = 0x1 <<  8      // 0x00000100
+    kDtQualBit         = 0x1 <<  8      // 0x00000100
   };
 
   enum { 
@@ -42,11 +42,11 @@ public:
     TH1F*    fFitCons     [5];
     TH1F*    fT0          [5];
     TH1F*    fT0Err       [5];
-    TH1F*    fFitMomErr   [5];
+    TH1F*    fMomErr      [5];
     TH1F*    fTanDip      [5];
     TH1F*    fD0          [5];
     TH1F*    fRMax        [5];
-    TH1F*    fTrkQual     [5];
+    TH1F*    fDtQual      [5];
 					// summary histogram
     TH1F*    fFailedBits;
     TH1F*    fPassed;
@@ -62,7 +62,7 @@ protected:
   Float_t    fMinT0;
   Float_t    fMaxT0Err;
 
-  Float_t    fMaxFitMomErr;
+  Float_t    fMaxMomErr;
   Float_t    fMinTanDip;
   Float_t    fMaxTanDip;
 
@@ -93,7 +93,7 @@ public:
   Int_t   MinNActive   () const { return fMinNActive;   }
   Int_t   MaxNActive   () const { return fMaxNActive;   }
   Float_t MaxT0Err     () const { return fMaxT0Err;     }
-  Float_t MaxFitMomErr () const { return fMaxFitMomErr; }
+  Float_t MaxMomErr    () const { return fMaxMomErr;    }
   Float_t MinTanDip    () const { return fMinTanDip;    }
   Float_t MaxTanDip    () const { return fMaxTanDip;    }
   Float_t MaxTrkQual   () const { return fMaxTanDip;    }
@@ -105,7 +105,7 @@ public:
   void    SetMinNActive  (Int_t   N      ) { fMinNActive    = N;       }
   void    SetMaxNActive  (Int_t   N      ) { fMaxNActive    = N;       }
   void    SetMaxT0Err    (Float_t T0Err  ) { fMaxT0Err      = T0Err;   }
-  void    SetMaxFitMomErr(Float_t MomErr ) { fMaxFitMomErr  = MomErr;  }
+  void    SetMaxMomErr   (Float_t MomErr ) { fMaxMomErr     = MomErr;  }
   void    SetMinD0       (float   D0     ) { fMinD0         = D0    ;  }
   void    SetMaxD0       (float   D0     ) { fMaxD0         = D0    ;  }
   void    SetMinRMax     (float   R      ) { fMinRMax       = R     ;  }
@@ -123,7 +123,7 @@ public:
 
                                         // Mode=1: tight ID, =2: loose ID
 
-  void FillHistograms(Hist_t& Hist, TStnTrack* Track, Int_t Mode=1);
+  void FillHistograms(Hist_t* Hist, TStnTrack* Track, Int_t Mode=1);
 //-----------------------------------------------------------------------------
 //  overloaded methods of TObject
 //-----------------------------------------------------------------------------

@@ -111,7 +111,7 @@ StntupleMakerDemDmm  : { @table::StntupleMaker
     trkRecoModuleLabel      : [ "MergePatRecDem" , "MergePatRecDmm"  ]
     trkExtrapolModuleLabel  : [ "TrkExtrapolDem" , "TrkExtrapolDmm"  ]
     trkCaloMatchModuleLabel : [ "CaloMatchingDem", "CaloMatchingDmm" ]
-    pidModuleLabel          : [         "AvikPID",         "AvikPID" ]
+    pidModuleLabel          : [   "ParticleIDDem",   "ParticleIDDmm" ]
     fitParticle             : [                11,                13 ]
     fitDirection            : [                 0,                 0 ]
 }

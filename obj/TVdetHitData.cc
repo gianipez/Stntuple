@@ -135,14 +135,17 @@ void TVdetHitData::Print(Option_t* Option) const {
   opt.ToLower();
 
   if ((opt == "") || (opt.Index("banner") >= 0)) {
-    printf("-----------------------------------------------------------------------------------\n");
-    printf("  Index  Time   Mass   EnergyKin    Energy  PdgCode   GenCode   McMom   McMomX   McMomY   McMomZ   McPosX   McPosY   McPosZ     \n");
-    printf("-----------------------------------------------------------------------------------\n");
+    printf("-----------------------------------------------------------------------------------");
+    printf("-------------------------------------------------------\n");
+    printf("  Index    Time       Mass    EKin   Energy     Pdg   GenCode   McMom        McMomX");
+    printf("McMomY     McMomZ     McPosX     McPosY     McPosZ     \n");
+    printf("-----------------------------------------------------------------------------------");
+    printf("-------------------------------------------------------\n");
   }
 
   if (opt == "banner") return;
   
-  printf("%6i %10.3f %10.5f %10.5f %10.5f %8i  %8i %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f\n",
+  printf("%6i %10.3f %8.3f %8.3f %8.3f %8i  %8i %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f\n",
 	 fIndex, 
 	 fTime,
 	 fMass,

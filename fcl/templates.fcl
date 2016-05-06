@@ -346,9 +346,9 @@ physics : {
 	    trkToCaloExtrapolModuleLabel : TrkExtrapolDmm
 	}
 
-	ParticleID           : { @table::ParticleID        fitterModuleLabel : MergePatRec }
-
-	ParticleIDDem        : { @table::ParticleID        fitterModuleLabel : MergePatRecDem }
+	ParticleID           : { @table::ParticleID fitterModuleLabel:MergePatRec    }
+	ParticleIDDem        : { @table::ParticleID fitterModuleLabel:MergePatRecDem }
+	ParticleIDDmm        : { @table::ParticleID fitterModuleLabel:MergePatRecDmm }
 
 	AvikPID              : { @table::AvikPID           
 	    trkPatRecDemModuleLabel : MergePatRecDem 
