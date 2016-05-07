@@ -40,7 +40,7 @@ StntupleMaker : {
     TimeOffsets          : { inputs : [ "protonTimeMap", "muonTimeMap" ] }
 
     KalDiag              : { @table::TrkPatRec.KalDiag    }
-    DoubletAmbigResolver : { @table::DoubletAmbigResolver }
+    DoubletAmbigResolver : { @table::TrkReco.DoubletAmbigResolver }
 
     g4ModuleLabel        : "g4run"
     caloCrystalHitsMaker : "MakeCaloCrystalHits"
@@ -111,7 +111,7 @@ StntupleMakerDemDmm  : { @table::StntupleMaker
     trkRecoModuleLabel      : [ "MergePatRecDem" , "MergePatRecDmm"  ]
     trkExtrapolModuleLabel  : [ "TrkExtrapolDem" , "TrkExtrapolDmm"  ]
     trkCaloMatchModuleLabel : [ "CaloMatchingDem", "CaloMatchingDmm" ]
-    pidModuleLabel          : [   "ParticleIDDem",   "ParticleIDDmm" ]
+    pidModuleLabel          : [         "AvikPID",         "AvikPID" ]
     fitParticle             : [                11,                13 ]
     fitDirection            : [                 0,                 0 ]
 }
@@ -209,7 +209,7 @@ MuHitDisplay: {
 # kalDiag and Doublet Resolver
 #------------------------------------------------------------------------------
     KalDiag                 : { @table::TrkPatRec.KalDiag    }
-    DoubletAmbigResolver    : { @table::DoubletAmbigResolver }
+    DoubletAmbigResolver    : { @table::TrkReco.DoubletAmbigResolver }
 #------------------------------------------------------------------------------
 # configuration of the underlying visualization manager 
 #------------------------------------------------------------------------------
