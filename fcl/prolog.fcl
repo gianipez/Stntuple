@@ -134,13 +134,13 @@ Stntuple : {
 # default (in prolog): just one track block "TrackBlock" with output of MergePatRec
 #------------------------------------------------------------------------------
 	StntupleMaker3 : { @table::StntupleMaker
-	    trackBlockName          : [ "TrackBlock"   , "TrkPatRec"               , "CalPatRec"                ]
-	    trkRecoModuleLabel      : [ "MergePatRec"  , "TRFDownstreameMinus"     , "CalPatRec"                ]
-	    trkExtrapolModuleLabel  : [ "TrkExtrapol"  , "TrackCaloIntersectionTpr", "TrackCaloIntersectionCpr" ]
-	    trkCaloMatchModuleLabel : [ "CaloMatching" , "TrackCaloMatchingTpr"    , "TrackCaloMatchingCpr"     ]
-	    pidModuleLabel          : [ "AvikPID"      ,                        "" ,                         "" ]
-	    fitParticle             : [              11,                         11,                         11 ]
-	    fitDirection            : [               0,                          0,                          0 ]
+	    trackBlockName          : [ "TrackBlock"  , "TrkPatRec"               , "CalPatRec"                ]
+	    trkRecoModuleLabel      : [ "MergePatRec" , "TRFDownstreameMinus"     , "CalPatRec"                ]
+	    trkExtrapolModuleLabel  : [ "TrkExtrapol" , "TrackCaloIntersectionTpr", "TrackCaloIntersectionCpr" ]
+	    trkCaloMatchModuleLabel : [ "CaloMatching", "TrackCaloMatchingTpr"    , "TrackCaloMatchingCpr"     ]
+	    pidModuleLabel          : [ "AvikPID"     ,                        "" ,                         "" ]
+	    fitParticle             : [             11,                         11,                         11 ]
+	    fitDirection            : [              0,                          0,                          0 ]
 
 	    makePid                 : 0
 	}
@@ -244,6 +244,7 @@ Stntuple : {
 
 Stntuple.stnmaker     : [ InitStntuple, StntupleMaker    , FillStntuple ]
 Stntuple.stnmaker_dem : [ InitStntuple, StntupleMakerDem , FillStntuple ]
+Stntuple.stnmaker3    : [ InitStntuple, StntupleMaker3   , FillStntuple ]
 Stntuple.stnmaker4    : [ InitStntuple, StntupleMaker4   , FillStntuple ]
 Stntuple.stnmaker6    : [ InitStntuple, StntupleMaker6   , FillStntuple ]
 
