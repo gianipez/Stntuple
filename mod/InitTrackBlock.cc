@@ -17,6 +17,7 @@
 #include "GeometryService/inc/GeometryService.hh"
 #include "GeometryService/inc/GeomHandle.hh"
 #include "GeometryService/inc/VirtualDetector.hh"
+#include "GeometryService/inc/DetectorSystem.hh"
 
 #include "TTrackerGeom/inc/TTracker.hh"
 #include "CalorimeterGeom/inc/Calorimeter.hh"
@@ -130,7 +131,6 @@ namespace {
 
 //-----------------------------------------------------------------------------
 Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_t Mode) {
-
   const char*               oname = {"InitMu2eTrackBlock"};
 //-----------------------------------------------------------------------------
 // cached pointers, owned by the StntupleMaker_module
@@ -140,7 +140,6 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
   static mu2e::KalDiag*              _kalDiag;
   
   int                       ntrk, ev_number, rn_number;
-  double                    h1_fltlen, hn_fltlen, entlen, fitmom_err;
   TStnTrack*                track;
   TStnTrackBlock            *data(0);   
 
@@ -245,7 +244,7 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
   if (krep_module_label[0] != 0) {
     if (krep_description[0] == 0) AnEvent->getByLabel(krep_module_label,krepsHandle);
     else                          AnEvent->getByLabel(krep_module_label,krep_description, krepsHandle);
-    if (krepsHandle.isValid()) list_of_kreps = (mu2e::KalRepPtrCollection*) krepsHandle.product();
+    if (krepsHandle.isValid())    list_of_kreps = (mu2e::KalRepPtrCollection*) krepsHandle.product();
   }
 
   art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandle;
@@ -287,6 +286,8 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
   }
 
   art::ServiceHandle<mu2e::GeometryService> geom;
+  mu2e::GeomHandle<mu2e::DetectorSystem>          ds;
+  mu2e::GeomHandle<mu2e::VirtualDetector>         vdet;
 
   const mu2e::AlgorithmID*  alg_id;
   int                       mask;
@@ -299,18 +300,19 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
   }
 
   ntrk = list_of_kreps->size();
+  
+  int xxx(0);
 
   for (int itrk=0; itrk<ntrk; itrk++) {
-    const KalRep* krep;
-    //    const KalRep* krep1;
-
     track          = data->NewTrack();
-    //    const art::Ptr<KalRep> krep_ptr = list_of_kreps->at(itrk);
-    krep           = list_of_kreps->at(itrk).get();
-    //    krep1           = krep_ptr.get();
-
-//     krep1 = &(*krep_ptr);
-//     if (krep) printf("krep, krep1 = %p %p\n", krep, krep1);
+    const art::Ptr<KalRep>& krep_ptr = list_of_kreps->at(itrk);
+    const KalRep* krep        = krep_ptr.get();
+    AnEvent->get(krep_ptr.id(), krepsHandle);
+    fhicl::ParameterSet const& pset = krepsHandle.provenance()->parameterSet();
+    string module_type = pset.get<std::string>("module_type");
+    if      (module_type == "CalPatRec") xxx = 1;
+    else if (module_type == "TrkRecFit") xxx = 0;
+    else                                 xxx = -1;
 //-----------------------------------------------------------------------------
 // track-only-based particle ID, initialization ahs already happened in the constructor
 //-----------------------------------------------------------------------------
@@ -328,50 +330,29 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
     if (list_of_algs) {
       alg_id = &list_of_algs->at(itrk);
       mask   = alg_id->BestID() | (alg_id->AlgMask() << 16);
+
+      if (xxx != alg_id->BestID()) { 
+	printf (" **** alg_id: we are in trouble: xxx = %2i best = %i\n",xxx,alg_id->BestID());
+      }
     }
 
     track->fAlgorithmID = mask;
 //-----------------------------------------------------------------------------
 // in all cases define momentum at lowest Z - ideally, at the tracker entrance
+// 'entlen' - trajectory length, corresponding to the first point in Z (?) 
 //-----------------------------------------------------------------------------
+    double  h1_fltlen, hn_fltlen, entlen;
+
     h1_fltlen      = krep->firstHit()->kalHit()->hit()->fltLen();
     hn_fltlen      = krep->lastHit ()->kalHit()->hit()->fltLen();
     entlen         = std::min(h1_fltlen,hn_fltlen);
 
-//-----------------------------------------------------------------------------
-// determine, approximately, 's0' - flight length corresponding to Z=0
-//-----------------------------------------------------------------------------
-    double   z1    = krep->position(h1_fltlen).z();
-    double   z2    = krep->position(hn_fltlen).z();
-    double   dzds  = (z2-z1)/(hn_fltlen-h1_fltlen);
-    
-    double   s0    = h1_fltlen+(0-z1)/dzds;
-    
     CLHEP::Hep3Vector fitmom = krep->momentum(entlen);
-    HepPoint   pos    = krep->position(entlen);
+    HepPoint   pos           = krep->position(entlen);
 
     track->fX1 = pos.x();
     track->fY1 = pos.y();
     track->fZ1 = pos.z();
-//-----------------------------------------------------------------------------
-// fP2 - track momentum value at Z=-1540 (cross check)
-//-----------------------------------------------------------------------------
-    z2 = -1540.;
-    double s2 = h1_fltlen+(z2-z1)/dzds;
-
-    CLHEP::Hep3Vector fitmom2 = krep->momentum(s2);
-
-    track->fP2 = fitmom2.mag();
-
-    CLHEP::Hep3Vector momdir = fitmom.unit();
-    BbrVectorErr      momerr = krep->momentumErr(entlen);
-    
-    CLHEP::HepVector momvec(3);
-    for (int i=0; i<3; i++) momvec[i] = momdir[i];
-    
-    fitmom_err = sqrt(momerr.covMatrix().similarity(momvec));
-    
-    //  assuming electron mass, all - in MeV
 
     double px, py, pz;
     px = fitmom.x();
@@ -381,35 +362,66 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 // parameters used in Dave's selections
 //-----------------------------------------------------------------------------
     track->Momentum()->SetXYZM(px,py,pz,0.511);
+    track->fP         = track->Momentum()->P ();
+    track->fPt        = track->Momentum()->Pt();
     track->fChi2      = krep->chisq();
     track->fFitCons   = krep->chisqConsistency().consistency();
     track->fT0        = krep->t0().t0();
     track->fT0Err     = krep->t0().t0Err();
+//-----------------------------------------------------------------------------
+// momentum error in the first point
+//-----------------------------------------------------------------------------
+    CLHEP::Hep3Vector momdir = fitmom.unit();
+    BbrVectorErr      momerr = krep->momentumErr(entlen);
+    
+    CLHEP::HepVector momvec(3);
+    for (int i=0; i<3; i++) momvec[i] = momdir[i];
 
-    track->fFitMomErr = fitmom_err;
-    track->fP         = track->Momentum()->P ();
-    track->fPt        = track->Momentum()->Pt();
+    track->fFitMomErr = sqrt(momerr.covMatrix().similarity(momvec));
 //-----------------------------------------------------------------------------
-// want track parameters at Z=0
-// fC0 - curvature at s=0 ... would be better to define helix just once
+// determine, approximately, 'sz0' - flight length corresponding to the 
+// virtual detector at the tracker entrance
 //-----------------------------------------------------------------------------
-    track->fC0        = krep->helix(0).omega(); // old
-    track->fD0        = krep->helix(0).d0();
-    track->fZ0        = krep->helix(0).z0();
-    track->fPhi0      = krep->helix(0).phi0();
-    track->fTanDip    = krep->helix(0).tanDip(); // old
+    Hep3Vector entpos = ds->toDetector(vdet->getGlobal(mu2e::VirtualDetectorId::TT_FrontPA));
+    double  zfront, z0, z1, z2, dzds, sz0, z01;
+
+    zfront = entpos.z();
+    z1     = krep->position(h1_fltlen).z();
+    z2     = krep->position(hn_fltlen).z();
+    dzds   = (z2-z1)/(hn_fltlen-h1_fltlen);
+    sz0    = h1_fltlen+(zfront-z1)/dzds;
+//-----------------------------------------------------------------------------
+// iterate once
+//-----------------------------------------------------------------------------
+    double   ds(10.);
+
+    z0     = krep->position(sz0).z();     // z0 has to be close to Z(TT_FrontPA)
+    z01    = krep->position(sz0+ds).z();
+
+    dzds   = (z01-z0)/ds;
+    sz0    = sz0+(zfront-z0)/dzds;	          // should be good enough
+//-----------------------------------------------------------------------------
+// fP2 - track momentum value at TT_FrontPA (cross check)
+//-----------------------------------------------------------------------------
+    CLHEP::Hep3Vector fitmom2 = krep->momentum(sz0);
+
+    track->fP2 = fitmom2.mag();
+//-----------------------------------------------------------------------------
+// helical parameters at Z( TT_FrontPA)
+//-----------------------------------------------------------------------------
+    HelixParams helx  = krep->helix(sz0);
+    track->fC0        = helx.omega(); // old
+    track->fD0        = helx.d0();
+    track->fZ0        = helx.z0();
+    track->fPhi0      = helx.phi0();
+    track->fTanDip    = helx.tanDip(); // old
 
     if (track->fC0 > 0) track->fCharge =  1.;
     else                track->fCharge = -1.;
 //-----------------------------------------------------------------------------
-// fP0 : track momentum at Z0
+// fP0 : track momentum at Z0, just for fun,should not be used for anything
 //-----------------------------------------------------------------------------
-    double px0, py0, pz0;
-    px0 = krep->momentum(0).x();
-    py0 = krep->momentum(0).y();
-    pz0 = krep->momentum(0).z();
-
-    track->fP0 = sqrt(px0*px0+py0*py0+pz0*pz0);
+    track->fP0 = krep->momentum(0).mag();
 //-----------------------------------------------------------------------------
     const mu2e::TrkStrawHit  *hit, *closest_hit(NULL);
     const TrkHitVector*       krep_hits = &krep->hitVector();
@@ -579,7 +591,7 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 //-----------------------------------------------------------------------------
 // given track parameters, build the expected hit mask
 //-----------------------------------------------------------------------------
-    double z, closest_z(-1.e6), dz, zw, dz_min, s;
+  double z, closest_z(-1.e6), dz, zw, dz_min, s, s0;
     int    iplane, offset;
     int    nz(88);
 
@@ -608,7 +620,6 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 // found closest hit and the extrapolation length, then extrapolate track
 //-----------------------------------------------------------------------------
       s0  = closest_hit->fltLen();
-
       s   = (z-track->fZ0)/(closest_z-track->fZ0)*s0;
 
       HepPoint    pz    = krep->position(s);
