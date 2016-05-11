@@ -1801,7 +1801,7 @@ void TStnTrack::Print(Option_t* Option) const {
 	   fNumber,t->NHits(), t->NActive(),t->NWrong(), 
 	   t->NOSDoublets(), t->NSSDoublets(), t->NHitsAmbZero(),
 	   t->NClusters(),
-	   t->AlgMask());
+	   t->AlgorithmID());
 
     printf(" 0x%08x %1.0f %8.3f %7.3f  %8.3f %6.3f  %8.3f %8.3f %7.4f  %8.3f %8.3e",
 	   t->fIDWord,
