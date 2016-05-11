@@ -276,36 +276,11 @@ physics : {
 	CaloHitsFromCaloDigis       :{ @table::CaloHitsFromCaloDigis}
 	CaloCrystalHitsFromCaloHits :{ @table::CaloCrystalHitsFromCaloHits}
 #------------------------------------------------------------------------------
-#  default tracking
+# TrkPatRec and CalPatRec modules
 #------------------------------------------------------------------------------
-	FSHPreStereo         : @local::FSHPreStereo
-	MakeStereoHits       : @local::MakeStereoHits
-	FlagStrawHits        : @local::FlagStrawHits
-	FlagBkgHits          : @local::FlagBkgHits
-
-	TimePeakFinder       : @local::TimePeakFinder
-	PosHelixFinder       : @local::PosHelixFinder
-
-	TRFDownstreameMinus : { @table::TrkRecFitDownstreameMinus  }
-	TRFDownstreammuMinus: { @table::TrkRecFitDownstreammuMinus }
-#------------------------------------------------------------------------------
-# CalPatRec modules
-#------------------------------------------------------------------------------
-	MakeCaloProtoCluster            : @local::MakeCaloProtoCluster
-	MakeCaloCluster                 : @local::MakeCaloCluster
-
-	CalPatRecFSHP                   : @local::CalPatRecFSHP
-	CalPatRecMakeStrawHitPositions  : @local::CalPatRecMakeStrawHitPositions
-	CalPatRecMakeStereoHits         : @local::CalPatRecMakeStereoHits
-	CalPatRecFlagStrawHits          : @local::CalPatRecFlagStrawHits
-	CalPatRecFlagBkgHits            : @local::CalPatRecFlagBkgHits
-	CalPatRec                       : { @table::CalPatRec }
-	CalPatRecDem                    : { @table::CalPatRecDem }
-	CalPatRecDmm                    : { @table::CalPatRecDmm }
-
-	MergePatRec                     : @local::MergePatRec
-	MergePatRecDem                  : @local::MergePatRecDem
-	MergePatRecDmm                  : @local::MergePatRecDmm
+	@table::Tracking.producers      # defined in TrkPatRec
+	@table::CaloCluster.producers   # defined in CaloCluster
+	@table::CalPatRecNS.producers
 #------------------------------------------------------------------------------
 # higher-level reconstruction
 # ParticleID, AvikPID - tracker-only particle ID
@@ -401,29 +376,15 @@ physics : {
 	    }
 	}
 #------------------------------------------------------------------------------
-# Stntuple maker sequence
+# Stntuple modules
 #------------------------------------------------------------------------------
-	InitStntuple   : { @table::InitStntuple }
-	FillStntuple   : { @table::FillStntuple }
-#------------------------------------------------------------------------------
-# default version of StntupleMaker - one branch - electrons
-#------------------------------------------------------------------------------
-	StntupleMaker       : { @table::StntupleMaker       }
-	StntupleMakerDem    : { @table::StntupleMakerDem    }
-	StntupleMakerDmm    : { @table::StntupleMakerDmm    }
-	StntupleMakerDemDmm : { @table::StntupleMakerDemDmm }
-	StntupleMaker3      : { @table::StntupleMaker3      }
+	@table::Stntuple.filters
 #------------------------------------------------------------------------------
 # Andrej's filter
 # Reject events with no hits from signal-like tracks in the detectors.  
 # The filter does not look at the background hits from mixed events.
 #------------------------------------------------------------------------------
 	detectorFilter : { @table::FilterStepPointMomentum }
-	EventFilter    : { @table::EventFilter }
-#------------------------------------------------------------------------------
-# event display
-#------------------------------------------------------------------------------
-	MuHitDisplay   : { @table::MuHitDisplay }
     }
 #------------------------------------------------------------------------------
 # paths
@@ -431,7 +392,7 @@ physics : {
 # MakeStereoHits also produces the StrawHitPosition collection
 #	   , dioMixer, protonMixer, neutronMixer, photonMixer, ootMixer, flashMixer
 #------------------------------------------------------------------------------
-#    event_filter   : [ EventFilter ]
+    event_filter   : [ EventFilter ]
 
     gen_hits       : [ @sequence::gen_hits_seq ]
 

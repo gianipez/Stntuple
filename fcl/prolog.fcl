@@ -3,24 +3,14 @@ BEGIN_PROLOG
 #------------------------------------------------------------------------------
 # Stntuple maker sequence
 #------------------------------------------------------------------------------
-InitStntuple : { 
-    module_type       : InitStntuple
-    module_name       : InitStntuple
-	    
-    histFileName      : "default.stn"
-    splitLevel        : 0
-	    
-    debugBits         : { 
-	# bit0:1  
-	# bit1:1 
-	# bit51:1
-    }
-}
+#------------------------------------------------------------------------------
+# event list contains 3 numbers per event : run, subrun, event
+# if the event list is empty, all events are passed through
+#------------------------------------------------------------------------------
 #------------------------------------------------------------------------------
 # default configuration of StntupleMaker
 #------------------------------------------------------------------------------
-StntupleMaker : { 
-    module_type         : StntupleMaker
+StntupleMaker : { module_type:StntupleMaker
     module_name         : StntupleMaker
     processName         : undefined
 #------------------------------------------------------------------------------
@@ -36,7 +26,7 @@ StntupleMaker : {
     makeTrigger         : 0
     makeTrackSeeds      : 0
     makeVirtualHits     : 1
-	    
+    
     TimeOffsets          : { inputs : [ "protonTimeMap", "muonTimeMap" ] }
 
     KalDiag              : { @table::TrkPatRec.KalDiag    }
@@ -59,7 +49,7 @@ StntupleMaker : {
     trkExtrapolModuleLabel  : [ "TrkExtrapol"  ]
     trkCaloMatchModuleLabel : [ "CaloMatching" ]
     pidModuleLabel          : [ "ParticleID"   ]
-#    pidModuleLabel          : [ "AvikPID"      ]
+    #    pidModuleLabel          : [ "AvikPID"      ]
     fitParticle             : [             11 ] # 11:electron  , 13:muon etc
     fitDirection            : [              0 ] #  0:downstream,  1:upstream
 
@@ -77,159 +67,186 @@ StntupleMaker : {
     }
 }
 #------------------------------------------------------------------------------
+# namespace
+#------------------------------------------------------------------------------
+Stntuple : {
+
+    filters : {
+	InitStntuple : { module_type:InitStntuple
+	    module_name       : InitStntuple
+	    histFileName      : "default.stn"
+	    splitLevel        : 0
+	    debugBits         : { 
+		# bit0:1  # bit1:1 # bit51:1
+	    }
+	}
+
+	FillStntuple : { module_type:FillStntuple
+	    module_name       : FillStntuple
+	    debugBits         : { 
+		# bit0:1  # bit1:1 # bit51:1
+	    }
+	}
+#------------------------------------------------------------------------------
 # downstream electrons - explicitly - the same as default
 #------------------------------------------------------------------------------
-StntupleMakerDem  : { @table::StntupleMaker
-    makePid                 : 0
-    trackBlockName          : [ "TrackBlock"      ] 
-    trkRecoModuleLabel      : [ "MergePatRecDem"  ]
-    trkExtrapolModuleLabel  : [ "TrkExtrapolDem"  ]
-    trkCaloMatchModuleLabel : [ "CaloMatchingDem" ]
-    pidModuleLabel          : [         "AvikPID" ]
-    fitParticle             : [                11 ]
-    fitDirection            : [                 0 ]
-}
+	StntupleMaker     : { @table::StntupleMaker }
+
+	StntupleMakerDem  : { @table::StntupleMaker
+	    makePid                 : 0
+	    trackBlockName          : [ "TrackBlock"      ] 
+	    trkRecoModuleLabel      : [ "MergePatRecDem"  ]
+	    trkExtrapolModuleLabel  : [ "TrkExtrapolDem"  ]
+	    trkCaloMatchModuleLabel : [ "CaloMatchingDem" ]
+	    pidModuleLabel          : [         "AvikPID" ]
+	    fitParticle             : [                11 ]
+	    fitDirection            : [                 0 ]
+	}
 #------------------------------------------------------------------------------
 # downstream muons - explicitly 
 #------------------------------------------------------------------------------
-StntupleMakerDmm  : { @table::StntupleMaker
-    makePid                 : 0
-    trackBlockName          : [ "TrackBlock"      ] 
-    trkRecoModuleLabel      : [ "MergePatRecDmm"  ]
-    trkExtrapolModuleLabel  : [ "TrkExtrapolDmm"  ]
-    trkCaloMatchModuleLabel : [ "CaloMatchingDmm" ]
-    pidModuleLabel          : [         "AvikPID" ]
-    fitParticle             : [                13 ]
-    fitDirection            : [                 0 ]
-}
+	StntupleMakerDmm  : { @table::StntupleMaker
+	    makePid                 : 0
+	    trackBlockName          : [ "TrackBlock"      ] 
+	    trkRecoModuleLabel      : [ "MergePatRecDmm"  ]
+	    trkExtrapolModuleLabel  : [ "TrkExtrapolDmm"  ]
+	    trkCaloMatchModuleLabel : [ "CaloMatchingDmm" ]
+	    pidModuleLabel          : [         "AvikPID" ]
+	    fitParticle             : [                13 ]
+	    fitDirection            : [                 0 ]
+	}
 #------------------------------------------------------------------------------
 # explicitly store 2 versions of track reco - downstream electrons and muons
 #------------------------------------------------------------------------------
-StntupleMakerDemDmm  : { @table::StntupleMaker
-    makePid                 : 1
-    trackBlockName          : [ "TrackBlock"     , "TrackBlockDmm"   ] 
-    trkRecoModuleLabel      : [ "MergePatRecDem" , "MergePatRecDmm"  ]
-    trkExtrapolModuleLabel  : [ "TrkExtrapolDem" , "TrkExtrapolDmm"  ]
-    trkCaloMatchModuleLabel : [ "CaloMatchingDem", "CaloMatchingDmm" ]
-    pidModuleLabel          : [         "AvikPID",         "AvikPID" ]
-    fitParticle             : [                11,                13 ]
-    fitDirection            : [                 0,                 0 ]
-}
+	StntupleMakerDemDmm  : { @table::StntupleMaker
+	    makePid                 : 1
+	    trackBlockName          : [ "TrackBlock"     , "TrackBlockDmm"   ] 
+	    trkRecoModuleLabel      : [ "MergePatRecDem" , "MergePatRecDmm"  ]
+	    trkExtrapolModuleLabel  : [ "TrkExtrapolDem" , "TrkExtrapolDmm"  ]
+	    trkCaloMatchModuleLabel : [ "CaloMatchingDem", "CaloMatchingDmm" ]
+	    pidModuleLabel          : [         "AvikPID",         "AvikPID" ]
+	    fitParticle             : [                11,                13 ]
+	    fitDirection            : [                 0,                 0 ]
+	}
 #------------------------------------------------------------------------------
 # track reconstruction studies: 
 # make 3 track blocks, for the moment need to specify all other labels
 # default (in prolog): just one track block "TrackBlock" with output of MergePatRec
 #------------------------------------------------------------------------------
-StntupleMaker3 : { @table::StntupleMaker
-    trackBlockName          : [ "TrackBlock"   , "TrkPatRec"               , "CalPatRec"                ]
-    trkRecoModuleLabel      : [ "MergePatRec"  , "TRFDownstreameMinus"     , "CalPatRec"                ]
-    trkExtrapolModuleLabel  : [ "TrkExtrapol"  , "TrackCaloIntersectionTpr", "TrackCaloIntersectionCpr" ]
-    trkCaloMatchModuleLabel : [ "CaloMatching" , "TrackCaloMatchingTpr"    , "TrackCaloMatchingCpr"     ]
-    pidModuleLabel          : [ "AvikPID"      ,                        "" ,                         "" ]
-    fitParticle             : [              11,                         11,                         11 ]
-    fitDirection            : [               0,                          0,                          0 ]
+	StntupleMaker3 : { @table::StntupleMaker
+	    trackBlockName          : [ "TrackBlock"   , "TrkPatRec"               , "CalPatRec"                ]
+	    trkRecoModuleLabel      : [ "MergePatRec"  , "TRFDownstreameMinus"     , "CalPatRec"                ]
+	    trkExtrapolModuleLabel  : [ "TrkExtrapol"  , "TrackCaloIntersectionTpr", "TrackCaloIntersectionCpr" ]
+	    trkCaloMatchModuleLabel : [ "CaloMatching" , "TrackCaloMatchingTpr"    , "TrackCaloMatchingCpr"     ]
+	    pidModuleLabel          : [ "AvikPID"      ,                        "" ,                         "" ]
+	    fitParticle             : [              11,                         11,                         11 ]
+	    fitDirection            : [               0,                          0,                          0 ]
 
-    makePid                 : 0
-}
-
+	    makePid                 : 0
+	}
 #------------------------------------------------------------------------------
-# cosmics processing: 
-# make 4 track blocks, for the moment need to specify all other labels
-# may need 4 PID blocks...
-# default (in prolog): just one track block "TrackBlock" with output of MergePatRec
+# make 4 track blocks: train PID
 #------------------------------------------------------------------------------
-StntupleMaker4 : { @table::StntupleMaker
-    trackBlockName          : [ "TrackBlockDem"           , "TrackBlockDmm"           , "TrackBlockUem"           , "TrackBlockUmm"            ]
-    trkRecoModuleLabel      : [ "MergePatRecDem"          , "MergePatRecDmm"          , "MergePatRecUem"          , "MergePatRecUmm"           ]
-    trkExtrapolModuleLabel  : [ "TrackCaloIntersectionDem", "TrackCaloIntersectionDmm", "TrackCaloIntersectionUem", "TrackCaloIntersectionUem" ]
-    trkCaloMatchModuleLabel : [ "TrackCaloMatchingDem"    , "TrackCaloMatchingDmm"    , "TrackCaloMatchingUem"    , "TrackCaloMatchingUmm"     ]
-    pidModuleLabel          : [ ""                        ,  ""                       , ""                        , ""                         ]
-    fitParticle             : [                         11,                         13,                         11,                          13]
-    fitDirection            : [                          0,                          0,                          1,                           1]
+	StntupleMaker4 : { @table::StntupleMaker
+	    trackBlockName          : [ "TrackBlockDem"           , "TrackBlockDmm"           , "TrackBlockUep"           , "TrackBlockUmp"            ]
+	    trkRecoModuleLabel      : [ "MergePatRecDem"          , "MergePatRecDmm"          , "MergePatRecUep"          , "MergePatRecUmp"           ]
+	    trkExtrapolModuleLabel  : [ "TrackCaloIntersectionDem", "TrackCaloIntersectionDmm", "TrackCaloIntersectionUep", "TrackCaloIntersectionUmp" ]
+	    trkCaloMatchModuleLabel : [ "TrackCaloMatchingDem"    , "TrackCaloMatchingDmm"    , "TrackCaloMatchingUep"    , "TrackCaloMatchingUmp"     ]
+	    pidModuleLabel          : [ ""                        ,  ""                       , ""                        , ""                         ]
+	    fitParticle             : [                         11,                         13,                        -11,                         -13]
+	    fitDirection            : [                          0,                          0,                          1,                           1]
 
-    makePid                 : 0
-}
+	    makePid                 : 0
+	}
+#------------------------------------------------------------------------------
+# for cosmics, need 6 blocks - upstream e-/mu- tracks need to be reconstructed as well
+# in principle, full-blown reco would need 8 passes - downstream positive particles 
+# are also of interest
+#------------------------------------------------------------------------------
+	StntupleMaker6 : { @table::StntupleMaker
+	    trackBlockName          : [ "TrackBlockDem"           , "TrackBlockDmm"           , "TrackBlockUem"           , "TrackBlockUmm"            , "TrackBlockUep"           , "TrackBlockUmp"            ]
+	    trkRecoModuleLabel      : [ "MergePatRecDem"          , "MergePatRecDmm"          , "MergePatRecUem"          , "MergePatRecUmm"           , "MergePatRecUep"          , "MergePatRecUmp"           ]
+	    trkExtrapolModuleLabel  : [ "TrackCaloIntersectionDem", "TrackCaloIntersectionDmm", "TrackCaloIntersectionUem", "TrackCaloIntersectionUmm" , "TrackCaloIntersectionUep", "TrackCaloIntersectionUmp" ]
+	    trkCaloMatchModuleLabel : [ "TrackCaloMatchingDem"    , "TrackCaloMatchingDmm"    , "TrackCaloMatchingUem"    , "TrackCaloMatchingUmm"     , "TrackCaloMatchingUep"    , "TrackCaloMatchingUmp"     ]
+	    pidModuleLabel          : [ ""                        ,  ""                       , ""                        , ""                         , ""                        , ""                         ]
+	    fitParticle             : [                         11,                         13,                         11,                          13,                        -11,                         -13]
+	    fitDirection            : [                          0,                          0,                          1,                           1,                          1,                           1]
 
-FillStntuple : { 
-    module_type       : FillStntuple
-    module_name       : FillStntuple
-    
-    debugBits         : { 
-	# bit0:1  
-	# bit1:1 
-	# bit51:1
-    }
-}
-
+	    makePid                 : 0
+	}
 #------------------------------------------------------------------------------
 # 
 #------------------------------------------------------------------------------
-MuHitDisplay: {
-    module_type                  : MuHitDisplay # the class name
-    debugBits                    : { }          # need for TAnaModule
-    interactiveMode              : 1
+	EventFilter : { module_type:EventFilter
+	    printFreq    : 1000000
+	    eventList    : []          # [ run1, subrun1, event1, ...]
+	}
+#------------------------------------------------------------------------------
+# 
+#------------------------------------------------------------------------------
+	MuHitDisplay: { module_type:MuHitDisplay        # the class name
+	    debugBits                    : { }          # need for TAnaModule
+	    interactiveMode              : 1
+	    
+	    crvRecoPulsesModuleLabel     : CrvRecoPulses
+	    showCRVOnly 		 : false
+	    showTracks                   : true
+	    
+	    generatorModuleLabel         : generate
+	    g4ModuleLabel                : g4run
+	    strawHitMakerModuleLabel     : makeSH
+	    strawHitPosMakerModuleLabel  : CalPatRecMakeStrawHitPositions
+	    strawHitFlagMakerModuleLabel : CalPatRecFlagStrawHits
+	    
+	    caloCrystalHitsMaker         : MakeCaloCrystalHits
+	    caloClusterModuleLabel       : MakeCaloCluster
+	    trkRecoModuleLabel           : MergePatRec
+	    trkExtrapol                  : TrkExtrapol
+	    trkCalMatch                  : CaloMatching
 
-    crvRecoPulsesModuleLabel     : CrvRecoPulses
-    showCRVOnly 		 : false
-    showTracks                   : true
+	    fitParticle                  : 11  # 11:electron
+	    fitDirection                 : 0   # 0:downstream, 1:upstream
 
-    generatorModuleLabel         : generate
-    g4ModuleLabel                : g4run
-    strawHitMakerModuleLabel     : makeSH
-    strawHitPosMakerModuleLabel  : CalPatRecMakeStrawHitPositions
-    strawHitFlagMakerModuleLabel : CalPatRecFlagStrawHits
-    
-    caloCrystalHitsMaker         : MakeCaloCrystalHits
-    caloClusterModuleLabel       : MakeCaloCluster
-    trkRecoModuleLabel           : MergePatRec
-    trkExtrapol                  : TrkExtrapol
-    trkCalMatch                  : CaloMatching
-
-    fitParticle                  : 11  # 11:electron
-    fitDirection                 : 0   # 0:downstream, 1:upstream
-
-    pidModuleLabel               : ParticleID
+	    pidModuleLabel               : ParticleID
 	
-    # if set to true, all hits will be displayed unconditionally
-    # otherwise, display only hits with right flags
-    displayBackgroundHits        : true
-    useStereoHits                : false
+	# if set to true, all hits will be displayed unconditionally
+	# otherwise, display only hits with right flags
+	    displayBackgroundHits        : true
+	    useStereoHits                : false
 
-    #      goodHitMask                 : ["EnergySelection","RadiusSelection","TimeSelection"]
-    goodHitMask                  : ["EnergySelection", "RadiusSelection"]
-    badHitMask                   : ["DeltaRay", "Isolated"]
+	#      goodHitMask                 : ["EnergySelection","RadiusSelection","TimeSelection"]
+	    goodHitMask                  : ["EnergySelection", "RadiusSelection"]
+	    badHitMask                   : ["DeltaRay", "Isolated"]
 	
-    trackerStepPoints            : tracker
-    minHits                      : 5
-    clickToAdvance               : true
-    printHits                    : false
-    timeWindow                   : 100000.
-    #      timeWindow           : 50.
+	    trackerStepPoints            : tracker
+	    minHits                      : 5
+	    clickToAdvance               : true
+	    printHits                    : false
+	    timeWindow                   : 100000.
+	#      timeWindow           : 50.
 #------------------------------------------------------------------------------
 # kalDiag and Doublet Resolver
 #------------------------------------------------------------------------------
-    KalDiag                 : { @table::TrkPatRec.KalDiag    }
-    DoubletAmbigResolver    : { @table::TrkReco.DoubletAmbigResolver }
+	    KalDiag                 : { @table::TrkPatRec.KalDiag    }
+	    DoubletAmbigResolver    : { @table::TrkReco.DoubletAmbigResolver }
 #------------------------------------------------------------------------------
 # configuration of the underlying visualization manager 
 #------------------------------------------------------------------------------
-    visManager: {
-	debugLevel         : 0
-	displayStrawDigiMC : 1
+	    visManager: {
+		debugLevel         : 0
+		displayStrawDigiMC : 1
+	    }
+	}
+
     }
-}
-#------------------------------------------------------------------------------
-# event list contains 3 numbers per event : run, subrun, event
-# if the event list is empty, all events are passed through
-#------------------------------------------------------------------------------
-EventFilter: {
-    module_type                  : EventFilter
-    printFreq                    : 1000000
-    eventList                    : []  # [ run1, subrun1, event1, ...]
+
 }
 
-Stntuple : {
-    stnmaker4  : [ InitStntuple, StntupleMaker4     , FillStntuple ]
-}
+Stntuple.stnmaker     : [ InitStntuple, StntupleMaker    , FillStntuple ]
+Stntuple.stnmaker_dem : [ InitStntuple, StntupleMakerDem , FillStntuple ]
+Stntuple.stnmaker4    : [ InitStntuple, StntupleMaker4   , FillStntuple ]
+Stntuple.stnmaker6    : [ InitStntuple, StntupleMaker6   , FillStntuple ]
+
+EventFilter: { @table::Stntuple.filters.EventFilter }
 
 END_PROLOG
