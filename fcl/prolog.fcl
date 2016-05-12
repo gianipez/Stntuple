@@ -135,7 +135,7 @@ Stntuple : {
 #------------------------------------------------------------------------------
 	StntupleMaker3 : { @table::StntupleMaker
 	    trackBlockName          : [ "TrackBlock"  , "TrkPatRec"               , "CalPatRec"                ]
-	    trkRecoModuleLabel      : [ "MergePatRec" , "TRFDownstreameMinus"     , "CalPatRec"                ]
+	    trkRecoModuleLabel      : [ "MergePatRec" , "MergePatRecTpr"          , "MergePatRecCpr"           ]
 	    trkExtrapolModuleLabel  : [ "TrkExtrapol" , "TrackCaloIntersectionTpr", "TrackCaloIntersectionCpr" ]
 	    trkCaloMatchModuleLabel : [ "CaloMatching", "TrackCaloMatchingTpr"    , "TrackCaloMatchingCpr"     ]
 	    pidModuleLabel          : [ "AvikPID"     ,                        "" ,                         "" ]

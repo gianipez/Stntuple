@@ -359,10 +359,10 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
     py = fitmom.y();
     pz = fitmom.z();
 //-----------------------------------------------------------------------------
-// parameters used in Dave's selections
+// track parameters in the first point
 //-----------------------------------------------------------------------------
     track->Momentum()->SetXYZM(px,py,pz,0.511);
-    track->fP         = track->Momentum()->P ();
+    track->fP         = fitmom.mag();
     track->fPt        = track->Momentum()->Pt();
     track->fChi2      = krep->chisq();
     track->fFitCons   = krep->chisqConsistency().consistency();
@@ -401,7 +401,7 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
     dzds   = (z01-z0)/ds;
     sz0    = sz0+(zfront-z0)/dzds;	          // should be good enough
 //-----------------------------------------------------------------------------
-// fP2 - track momentum value at TT_FrontPA (cross check)
+// fP2 - track momentum value at TT_FrontPA
 //-----------------------------------------------------------------------------
     CLHEP::Hep3Vector fitmom2 = krep->momentum(sz0);
 
@@ -942,7 +942,7 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
       }
     }
 
-    track->fEp = track->fClusterE/track->fP;
+    track->fEp = track->fClusterE/track->fP2;
   }
 					// on return set event and run numbers
 					// to mark block as initialized
