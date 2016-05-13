@@ -153,36 +153,36 @@ Stntuple : {
 
 	StntupleMakerDem  : { @table::StntupleMaker
 	    makePid                 : 0
-	    trackBlockName          : [ "TrackBlock"      ] 
-	    trkRecoModuleLabel      : [ "MergePatRecDem"  ]
-	    trkExtrapolModuleLabel  : [ "TrkExtrapolDem"  ]
-	    trkCaloMatchModuleLabel : [ "CaloMatchingDem" ]
-	    pidModuleLabel          : [         "AvikPID" ]
-	    fitParticle             : [                11 ]
-	    fitDirection            : [                 0 ]
+	    trackBlockName          : [ "TrackBlock"               ] 
+	    trkRecoModuleLabel      : [ "MergePatRecDem"           ]
+	    trkExtrapolModuleLabel  : [ "TrackCaloIntersectinDem"  ]
+	    trkCaloMatchModuleLabel : [ "TrackCaloMatchingDem"     ]
+	    pidModuleLabel          : [                  "AvikPID" ]
+	    fitParticle             : [                         11 ]
+	    fitDirection            : [                          0 ]
 	}
 #------------------------------------------------------------------------------
 # downstream muons - explicitly 
 #------------------------------------------------------------------------------
 	StntupleMakerDmm  : { @table::StntupleMaker
 	    makePid                 : 0
-	    trackBlockName          : [ "TrackBlock"      ] 
-	    trkRecoModuleLabel      : [ "MergePatRecDmm"  ]
-	    trkExtrapolModuleLabel  : [ "TrkExtrapolDmm"  ]
-	    trkCaloMatchModuleLabel : [ "CaloMatchingDmm" ]
-	    pidModuleLabel          : [         "AvikPID" ]
-	    fitParticle             : [                13 ]
-	    fitDirection            : [                 0 ]
+	    trackBlockName          : [ "TrackBlock"                ] 
+	    trkRecoModuleLabel      : [ "MergePatRecDmm"            ]
+	    trkExtrapolModuleLabel  : [ "TrackCaloIntersectionDmm"  ]
+	    trkCaloMatchModuleLabel : [ "TrackCaloMatchingDmm"      ]
+	    pidModuleLabel          : [                   "AvikPID" ]
+	    fitParticle             : [                          13 ]
+	    fitDirection            : [                           0 ]
 	}
 #------------------------------------------------------------------------------
 # explicitly store 2 versions of track reco - downstream electrons and muons
 #------------------------------------------------------------------------------
 	StntupleMakerDemDmm  : { @table::StntupleMaker
 	    makePid                 : 1
-	    trackBlockName          : [ "TrackBlock"     , "TrackBlockDmm"   ] 
-	    trkRecoModuleLabel      : [ "MergePatRecDem" , "MergePatRecDmm"  ]
-	    trkExtrapolModuleLabel  : [ "TrkExtrapolDem" , "TrkExtrapolDmm"  ]
-	    trkCaloMatchModuleLabel : [ "CaloMatchingDem", "CaloMatchingDmm" ]
+	    trackBlockName          : [ "TrackBlock"               , "TrackBlockDmm"   ] 
+	    trkRecoModuleLabel      : [ "MergePatRecDem"           , "MergePatRecDmm"  ]
+	    trkExtrapolModuleLabel  : [ "TrackCaloIntersectionDem" , "TrackCaloIntersectionDmm"  ]
+	    trkCaloMatchModuleLabel : [ "TrackCaloMatchingDem"     , "TrackCaloMatchingDmm"      ]
 	    pidModuleLabel          : [         "AvikPID",         "AvikPID" ]
 	    fitParticle             : [                11,                13 ]
 	    fitDirection            : [                 0,                 0 ]
@@ -193,13 +193,13 @@ Stntuple : {
 # default (in prolog): just one track block "TrackBlock" with output of MergePatRec
 #------------------------------------------------------------------------------
 	StntupleMaker3 : { @table::StntupleMaker
-	    trackBlockName          : [ "TrackBlock"  , "TrkPatRec"               , "CalPatRec"                ]
-	    trkRecoModuleLabel      : [ "MergePatRec" , "MergePatRecTpr"          , "MergePatRecCpr"           ]
-	    trkExtrapolModuleLabel  : [ "TrkExtrapol" , "TrackCaloIntersectionTpr", "TrackCaloIntersectionCpr" ]
-	    trkCaloMatchModuleLabel : [ "CaloMatching", "TrackCaloMatchingTpr"    , "TrackCaloMatchingCpr"     ]
-	    pidModuleLabel          : [ "AvikPID"     ,                        "" ,                         "" ]
-	    fitParticle             : [             11,                         11,                         11 ]
-	    fitDirection            : [              0,                          0,                          0 ]
+	    trackBlockName          : [ "TrackBlock"            , "TrkPatRec"               , "CalPatRec"                ]
+	    trkRecoModuleLabel      : [ "MergePatRec"           , "MergePatRecTpr"          , "MergePatRecCpr"           ]
+	    trkExtrapolModuleLabel  : [ "TrackCaloIntersection" , "TrackCaloIntersectionTpr", "TrackCaloIntersectionCpr" ]
+	    trkCaloMatchModuleLabel : [ "TrackCaloMatching"     , "TrackCaloMatchingTpr"    , "TrackCaloMatchingCpr"     ]
+	    pidModuleLabel          : [ "AvikPID"               ,                        "" ,                         "" ]
+	    fitParticle             : [                       11,                         11,                         11 ]
+	    fitDirection            : [                        0,                          0,                          0 ]
 
 	    makePid                 : 0
 	}
@@ -261,11 +261,13 @@ Stntuple : {
     }
 }
 
-Stntuple.stnmaker     : [ InitStntuple, StntupleMaker    , FillStntuple ]
-Stntuple.stnmaker_dem : [ InitStntuple, StntupleMakerDem , FillStntuple ]
-Stntuple.stnmaker3    : [ InitStntuple, StntupleMaker3   , FillStntuple ]
-Stntuple.stnmaker4    : [ InitStntuple, StntupleMaker4   , FillStntuple ]
-Stntuple.stnmaker6    : [ InitStntuple, StntupleMaker6   , FillStntuple ]
+Stntuple.stnmaker         : [ InitStntuple, StntupleMaker       , FillStntuple ]
+Stntuple.stnmaker_dem     : [ InitStntuple, StntupleMakerDem    , FillStntuple ]
+Stntuple.stnmaker_dmm     : [ InitStntuple, StntupleMakerDmm    , FillStntuple ]
+Stntuple.stnmaker_dem_dmm : [ InitStntuple, StntupleMakerDemDmm , FillStntuple ]
+Stntuple.stnmaker3        : [ InitStntuple, StntupleMaker3      , FillStntuple ]
+Stntuple.stnmaker4        : [ InitStntuple, StntupleMaker4      , FillStntuple ]
+Stntuple.stnmaker6        : [ InitStntuple, StntupleMaker6      , FillStntuple ]
 
 # EventFilter: { @table::Stntuple.filters.EventFilter }
 
