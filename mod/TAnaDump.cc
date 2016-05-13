@@ -939,6 +939,12 @@ void TAnaDump::printKalRep(const KalRep* Krep, const char* Opt, const char* Pref
     double pt     = trk_mom.perp();
     double costh  = trk_mom.cosTheta();
 
+    char form[100];
+    int nc = strlen(Prefix);
+    for (int i=0; i<nc; i++) form[i]=' ';
+    form[nc] = 0;
+    printf("%s",form);
+
     printf("  %-16p %3i   %3i %3i %8.3f %8.3f %8.4f %7.4f %7.3f %8.4f",
 	   Krep,
 	   -1,
@@ -1135,12 +1141,17 @@ void TAnaDump::printKalRepCollection(const char* ModuleLabel,
 
   int banner_printed = 0;
   for (int i=0; i<ntrk; i++) {
-    trk = /*(KalRep*)*/ krepsHandle->at(i).get();
+    art::Ptr<KalRep> kptr = krepsHandle->at(i);
+    fEvent->get(kptr.id(), krepsHandle);
+    fhicl::ParameterSet const& pset = krepsHandle.provenance()->parameterSet();
+    string module_type = pset.get<std::string>("module_type");
+ 
+    trk = kptr.get();
     if (banner_printed == 0) {
-      printKalRep(trk,"banner");
+      printKalRep(trk,"banner",module_type.data());
       banner_printed = 1;
     }
-    printKalRep(trk,"data");
+    printKalRep(trk,"data",module_type.data());
     if(hitOpt>0) printKalRep(trk,"hits");
   }
  
@@ -1579,7 +1590,7 @@ void TAnaDump::printStrawHit(const mu2e::StrawHit* Hit, const mu2e::StepPointMC*
       printf("-----------------------------------------------------------------------------------");
       printf("-------------------------------------------------\n");
       printf("   I   SHID  Flags      Plane   Panel  Layer Straw     Time          dt       eDep ");
-      printf("     PDG PDG(M)       GENID       ID         p   \n");
+      printf("     PDG    PDG(M)    GENID       ID         p   \n");
       printf("-----------------------------------------------------------------------------------");
       printf("-------------------------------------------------\n");
     }
@@ -1735,9 +1746,12 @@ void TAnaDump::printSimParticle(const mu2e::SimParticle* P, const char* Opt) {
     TString opt = Opt;
 
     if ((opt == "") || (opt == "banner")) {
-      printf("----------------------------------------------------------------------------------\n");
-      printf("Index  Primary     ID Parent   PDG      X      Y       Z      T      Px      Py     Pz      E \n");
-      printf("----------------------------------------------------------------------------------\n");
+      printf("---------------------------------------------------------------------------");
+      printf("------------------------------------------------\n");
+      printf("Index    Primary       ID  Parent        PDG        X          Y          Z");
+      printf("T          Px          Py         Pz         E  \n");
+      printf("-------------------------------------------------------------------------\n");
+      printf("------------------------------------------------\n");
     }
  
     if ((opt == "") || (opt == "data")) {
@@ -1751,7 +1765,7 @@ void TAnaDump::printSimParticle(const mu2e::SimParticle* P, const char* Opt) {
       int  pdg_id    = P->pdgId();
       int  primary   = P->isPrimary();
 
-      printf("%5i %10i %8i %5i %10i  %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f \n",
+      printf("%5i %10i %8i %7i %10i  %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f \n",
 	     -1, primary, id, parent_id, pdg_id, 
 	     P->startPosition().x(),
 	     P->startPosition().y(),
@@ -1814,15 +1828,15 @@ void TAnaDump::printStepPointMC(const mu2e::StepPointMC* Step, const char* Opt) 
     TString opt = Opt;
 
     if ((opt == "") || (opt.Index("banner") >= 0)) {
-      printf("------------------------------------------------------------------------------------------");
-      printf("-------------------------------");
-      printf("-------------------------------------------------------------------------------------------------------------\n");
-      printf("  Vol          PDG    ID GenIndex PPdg ParID     X          Y         Z            T      ");
+      printf("---------------------------------------------------------------------------------------------");
+      printf("----------------------------");
+      printf("-------------------------------------------------------------------------------------------------------------------\n");
+      printf("  Vol          PDG    ID GenIndex PPdg ParentID      X          Y          Z          T      ");
       printf("  X0          Y0         Z0 ");
-      printf("  Edep(Tot) Edep(NI) Edep(I)  Step   EndCode  Energy      EKin     Mom      Pt    doca  Creation      StopProc\n");
-      printf("------------------------------------------------------------------------------------------");
-      printf("-------------------------------");
-      printf("-------------------------------------------------------------------------------------------------------------\n");
+      printf("  Edep(Tot) Edep(NI)  Edep(I)    Step  EndCode  Energy    EKin     Mom       Pt    doca  Creation      StopProc    \n");
+      printf("---------------------------------------------------------------------------------------------");
+      printf("----------------------------");
+      printf("-------------------------------------------------------------------------------------------------------------------\n");
     }
 
     mu2e::GeomHandle<mu2e::TTracker> ttHandle;
@@ -2143,9 +2157,9 @@ void TAnaDump::printTrackClusterMatch(const mu2e::TrackClusterMatch* Tcm, const 
   TString opt = Opt;
   
   if ((opt == "") || (opt == "banner")) {
-    printf("------------------------------------------------------------------------------------------\n");
-    printf("  Disk   Track    Cluster   chi2                                                         \n");
-    printf("------------------------------------------------------------------------------------------\n");
+    printf("--------------------------------------------------------------------------------------\n");
+    printf("  Disk         Cluster          Track         chi2     du        dv       dt       E/P\n");
+    printf("--------------------------------------------------------------------------------------\n");
   }
 
   if ((opt == "") || (opt == "data")) {
@@ -2156,8 +2170,8 @@ void TAnaDump::printTrackClusterMatch(const mu2e::TrackClusterMatch* Tcm, const 
     int disk     = cl->sectionId();
     double chi2  = Tcm->chi2();
 
-    printf("%5i %16p  %16p  %10.3f\n",
-	   disk,  cl,  tex,  chi2);
+    printf("%5i %16p  %16p  %8.3f %8.3f %8.3f %8.3f %8.3f\n",
+	   disk,  cl,  tex,  chi2,Tcm->du(),Tcm->dv(),Tcm->dt(),Tcm->ep());
   }
 }
 
@@ -2181,7 +2195,16 @@ void TAnaDump::printTrackClusterMatchCollection(const char* ModuleLabel,
 
   if (handle.isValid()) coll = handle.product();
   else {
-    printf(">>> ERROR in TAnaDump::printTrackClusterMatchCollection: failed to locate collection");
+    printf(">>> ERROR in TAnaDump::printTrackClusterMatchCollection: failed to locate requested collection. Available:");
+
+    std::vector<art::Handle<mu2e::TrackClusterMatchCollection>> list_of_handles;
+
+    fEvent->getManyByType(list_of_handles);
+
+    for (auto ih=list_of_handles.begin(); ih<list_of_handles.end(); ih++) {
+      printf("%s\n", ih->provenance()->moduleLabel().data());
+    }
+
     printf(". BAIL OUT. \n");
     return;
   }

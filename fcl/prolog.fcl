@@ -66,6 +66,65 @@ StntupleMaker : { module_type:StntupleMaker
 	# bit51:1
     }
 }
+
+#------------------------------------------------------------------------------
+# 
+#------------------------------------------------------------------------------
+MuHitDisplay: { module_type:MuHitDisplay        # the class name;
+    debugBits                    : { }          # need for TAnaModule
+    interactiveMode              : 1
+    
+    crvRecoPulsesModuleLabel     : CrvRecoPulses
+    showCRVOnly 		 : false
+    showTracks                   : true
+    
+    generatorModuleLabel         : generate
+    g4ModuleLabel                : g4run
+    strawHitMakerModuleLabel     : makeSH
+    strawHitPosMakerModuleLabel  : CalPatRecMakeStrawHitPositions
+    strawHitFlagMakerModuleLabel : CalPatRecFlagStrawHits
+    
+    caloCrystalHitsMaker         : MakeCaloCrystalHits
+    caloClusterModuleLabel       : MakeCaloCluster
+
+    trkRecoModuleLabel           : MergePatRec
+    trkExtrapol                  : TrackCaloIntersection
+    trkCalMatch                  : TrackCaloMatching
+
+    fitParticle                  : 11  # 11:electron
+    fitDirection                 : 0   # 0:downstream, 1:upstream
+
+    pidModuleLabel               : ParticleID
+    
+    # if set to true, all hits will be displayed unconditionally
+    # otherwise, display only hits with right flags
+    displayBackgroundHits        : true
+    useStereoHits                : false
+
+    #      goodHitMask                 : ["EnergySelection","RadiusSelection","TimeSelection"]
+    goodHitMask                  : ["EnergySelection", "RadiusSelection"]
+    badHitMask                   : ["DeltaRay", "Isolated"]
+    
+    trackerStepPoints            : tracker
+    minHits                      : 5
+    clickToAdvance               : true
+    printHits                    : false
+    timeWindow                   : 100000.
+    #      timeWindow           : 50.
+    #------------------------------------------------------------------------------
+    # kalDiag and Doublet Resolver
+    #------------------------------------------------------------------------------
+    KalDiag                 : { @table::TrkPatRec.KalDiag    }
+    DoubletAmbigResolver    : { @table::TrkReco.DoubletAmbigResolver }
+    #------------------------------------------------------------------------------
+    # configuration of the underlying visualization manager 
+    #------------------------------------------------------------------------------
+    visManager: {
+	debugLevel         : 0
+	displayStrawDigiMC : 1
+    }
+}
+
 #------------------------------------------------------------------------------
 # namespace
 #------------------------------------------------------------------------------
@@ -181,65 +240,25 @@ Stntuple : {
 	    printFreq    : 1000000
 	    eventList    : []          # [ run1, subrun1, event1, ...]
 	}
-#------------------------------------------------------------------------------
-# 
-#------------------------------------------------------------------------------
-	MuHitDisplay: { module_type:MuHitDisplay        # the class name
-	    debugBits                    : { }          # need for TAnaModule
-	    interactiveMode              : 1
-	    
-	    crvRecoPulsesModuleLabel     : CrvRecoPulses
-	    showCRVOnly 		 : false
-	    showTracks                   : true
-	    
-	    generatorModuleLabel         : generate
-	    g4ModuleLabel                : g4run
-	    strawHitMakerModuleLabel     : makeSH
-	    strawHitPosMakerModuleLabel  : CalPatRecMakeStrawHitPositions
-	    strawHitFlagMakerModuleLabel : CalPatRecFlagStrawHits
-	    
-	    caloCrystalHitsMaker         : MakeCaloCrystalHits
-	    caloClusterModuleLabel       : MakeCaloCluster
-	    trkRecoModuleLabel           : MergePatRec
-	    trkExtrapol                  : TrkExtrapol
-	    trkCalMatch                  : CaloMatching
 
-	    fitParticle                  : 11  # 11:electron
-	    fitDirection                 : 0   # 0:downstream, 1:upstream
+	MuHitDisplay    : { @table::MuHitDisplay }
 
-	    pidModuleLabel               : ParticleID
-	
-	# if set to true, all hits will be displayed unconditionally
-	# otherwise, display only hits with right flags
-	    displayBackgroundHits        : true
-	    useStereoHits                : false
-
-	#      goodHitMask                 : ["EnergySelection","RadiusSelection","TimeSelection"]
-	    goodHitMask                  : ["EnergySelection", "RadiusSelection"]
-	    badHitMask                   : ["DeltaRay", "Isolated"]
-	
-	    trackerStepPoints            : tracker
-	    minHits                      : 5
-	    clickToAdvance               : true
-	    printHits                    : false
-	    timeWindow                   : 100000.
-	#      timeWindow           : 50.
-#------------------------------------------------------------------------------
-# kalDiag and Doublet Resolver
-#------------------------------------------------------------------------------
-	    KalDiag                 : { @table::TrkPatRec.KalDiag    }
-	    DoubletAmbigResolver    : { @table::TrkReco.DoubletAmbigResolver }
-#------------------------------------------------------------------------------
-# configuration of the underlying visualization manager 
-#------------------------------------------------------------------------------
-	    visManager: {
-		debugLevel         : 0
-		displayStrawDigiMC : 1
-	    }
+	MuHitDisplayDem : { @table::MuHitDisplay 
+	    trkRecoModuleLabel           : MergePatRecDem
+	    trkExtrapol                  : TrackCaloIntersectionDem
+	    trkCalMatch                  : TrackCaloMatchingDem
+	    fitParticle                  : @local::CalPatRec.producers.MergePatRecDem.fitparticle
+	    fitDirection                 : @local::CalPatRec.producers.MergePatRecDem.fitdirection
 	}
 
+	MuHitDisplayDmm : { @table::MuHitDisplay 
+	    trkRecoModuleLabel           : MergePatRecDmm
+	    trkExtrapol                  : TrackCaloIntersectionDmm
+	    trkCalMatch                  : TrackCaloMatchingDmm
+	    fitParticle                  : @local::CalPatRec.producers.MergePatRecDmm.fitparticle
+	    fitDirection                 : @local::CalPatRec.producers.MergePatRecDmm.fitdirection
+	}
     }
-
 }
 
 Stntuple.stnmaker     : [ InitStntuple, StntupleMaker    , FillStntuple ]
@@ -248,6 +267,6 @@ Stntuple.stnmaker3    : [ InitStntuple, StntupleMaker3   , FillStntuple ]
 Stntuple.stnmaker4    : [ InitStntuple, StntupleMaker4   , FillStntuple ]
 Stntuple.stnmaker6    : [ InitStntuple, StntupleMaker6   , FillStntuple ]
 
-EventFilter: { @table::Stntuple.filters.EventFilter }
+# EventFilter: { @table::Stntuple.filters.EventFilter }
 
 END_PROLOG
