@@ -155,7 +155,7 @@ Stntuple : {
 	    makePid                 : 0
 	    trackBlockName          : [ "TrackBlock"               ] 
 	    trkRecoModuleLabel      : [ "MergePatRecDem"           ]
-	    trkExtrapolModuleLabel  : [ "TrackCaloIntersectinDem"  ]
+	    trkExtrapolModuleLabel  : [ "TrackCaloIntersectionDem" ]
 	    trkCaloMatchModuleLabel : [ "TrackCaloMatchingDem"     ]
 	    pidModuleLabel          : [                  "AvikPID" ]
 	    fitParticle             : [                         11 ]
