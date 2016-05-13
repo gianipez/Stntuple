@@ -192,7 +192,7 @@ Stntuple : {
 # make 3 track blocks, for the moment need to specify all other labels
 # default (in prolog): just one track block "TrackBlock" with output of MergePatRec
 #------------------------------------------------------------------------------
-	StntupleMaker3 : { @table::StntupleMaker
+	StntupleMakerTcm : { @table::StntupleMaker
 	    trackBlockName          : [ "TrackBlock"            , "TrkPatRec"               , "CalPatRec"                ]
 	    trkRecoModuleLabel      : [ "MergePatRec"           , "MergePatRecTpr"          , "MergePatRecCpr"           ]
 	    trkExtrapolModuleLabel  : [ "TrackCaloIntersection" , "TrackCaloIntersectionTpr", "TrackCaloIntersectionCpr" ]
@@ -265,7 +265,7 @@ Stntuple.stnmaker         : [ InitStntuple, StntupleMaker       , FillStntuple ]
 Stntuple.stnmaker_dem     : [ InitStntuple, StntupleMakerDem    , FillStntuple ]
 Stntuple.stnmaker_dmm     : [ InitStntuple, StntupleMakerDmm    , FillStntuple ]
 Stntuple.stnmaker_dem_dmm : [ InitStntuple, StntupleMakerDemDmm , FillStntuple ]
-Stntuple.stnmaker3        : [ InitStntuple, StntupleMaker3      , FillStntuple ]
+Stntuple.stnmaker_tcm     : [ InitStntuple, StntupleMakerTcm    , FillStntuple ]
 Stntuple.stnmaker4        : [ InitStntuple, StntupleMaker4      , FillStntuple ]
 Stntuple.stnmaker6        : [ InitStntuple, StntupleMaker6      , FillStntuple ]
 
