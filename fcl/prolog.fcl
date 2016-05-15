@@ -10,7 +10,7 @@ BEGIN_PROLOG
 #------------------------------------------------------------------------------
 # default configuration of StntupleMaker
 #------------------------------------------------------------------------------
-StntupleMaker : { module_type:StntupleMaker
+StntupleMakerTemplate : { module_type:StntupleMaker
     module_name         : StntupleMaker
     processName         : undefined
 #------------------------------------------------------------------------------
@@ -149,9 +149,9 @@ Stntuple : {
 #------------------------------------------------------------------------------
 # downstream electrons - explicitly - the same as default
 #------------------------------------------------------------------------------
-	StntupleMaker     : { @table::StntupleMaker }
+	StntupleMaker     : { @table::StntupleMakerTemplate }
 
-	StntupleMakerDem  : { @table::StntupleMaker
+	StntupleMakerDem  : { @table::StntupleMakerTemplate 
 	    makePid                 : 0
 	    trackBlockName          : [ "TrackBlock"               ] 
 	    trkRecoModuleLabel      : [ "MergePatRecDem"           ]
@@ -164,7 +164,7 @@ Stntuple : {
 #------------------------------------------------------------------------------
 # downstream muons - explicitly 
 #------------------------------------------------------------------------------
-	StntupleMakerDmm  : { @table::StntupleMaker
+	StntupleMakerDmm  : { @table::StntupleMakerTemplate 
 	    makePid                 : 0
 	    trackBlockName          : [ "TrackBlock"                ] 
 	    trkRecoModuleLabel      : [ "MergePatRecDmm"            ]
@@ -177,7 +177,7 @@ Stntuple : {
 #------------------------------------------------------------------------------
 # explicitly store 2 versions of track reco - downstream electrons and muons
 #------------------------------------------------------------------------------
-	StntupleMakerDemDmm  : { @table::StntupleMaker
+	StntupleMakerDemDmm  : { @table::StntupleMakerTemplate 
 	    makePid                 : 1
 	    trackBlockName          : [ "TrackBlock"               , "TrackBlockDmm"   ] 
 	    trkRecoModuleLabel      : [ "MergePatRecDem"           , "MergePatRecDmm"  ]
@@ -188,11 +188,50 @@ Stntuple : {
 	    fitDirection            : [                 0,                 0 ]
 	}
 #------------------------------------------------------------------------------
+# generate upstream mu+ 
+#------------------------------------------------------------------------------
+	StntupleMakerDemUmp  : { @table::StntupleMakerTemplate 
+	    makePid                 : 0
+	    trackBlockName          : [ "TrackBlock"               , "TrackBlockUmp"   ] 
+	    trkRecoModuleLabel      : [ "MergePatRecDem"           , "MergePatRecUmp"  ]
+	    trkExtrapolModuleLabel  : [ "TrackCaloIntersectionDem" , "TrackCaloIntersectionUmp"  ]
+	    trkCaloMatchModuleLabel : [ "TrackCaloMatchingDem"     , "TrackCaloMatchingUmp"      ]
+	    pidModuleLabel          : [         "AvikPID"          ,         "AvikPID" ]
+	    fitParticle             : [                          11,               -13 ]
+	    fitDirection            : [                           0,                 1 ]
+	}
+#------------------------------------------------------------------------------
+# generate upstream mu-  
+#------------------------------------------------------------------------------
+	StntupleMakerDemUmm  : { @table::StntupleMakerTemplate 
+	    makePid                 : 0
+	    trackBlockName          : [ "TrackBlock"               , "TrackBlockUmm"   ] 
+	    trkRecoModuleLabel      : [ "MergePatRecDem"           , "MergePatRecUmm"  ]
+	    trkExtrapolModuleLabel  : [ "TrackCaloIntersectionDem" , "TrackCaloIntersectionUmm"  ]
+	    trkCaloMatchModuleLabel : [ "TrackCaloMatchingDem"     , "TrackCaloMatchingUmm"      ]
+	    pidModuleLabel          : [         "AvikPID"          ,         "AvikPID" ]
+	    fitParticle             : [                          11,                13 ]
+	    fitDirection            : [                           0,                 1 ]
+	}
+#------------------------------------------------------------------------------
+# generate upstream mu+  and reconstruct  as dem (upstream leg), dmm(upstream leg) , mu+ (downstream leg)
+#------------------------------------------------------------------------------
+	StntupleMakerDemDmmUmp  : { @table::StntupleMakerTemplate 
+	    makePid                 : 0
+	    trackBlockName          : [ "TrackBlock"               , "TrackBlockDmm"           , "TrackBlockUmp"             ] 
+	    trkRecoModuleLabel      : [ "MergePatRecDem"           , "MergePatRecDmm"          , "MergePatRecUmp"            ]
+	    trkExtrapolModuleLabel  : [ "TrackCaloIntersectionDem" , "TrackCaloIntersectionDmm", "TrackCaloIntersectionUmp"  ]
+	    trkCaloMatchModuleLabel : [ "TrackCaloMatchingDem"     , "TrackCaloMatchingDmm"    , "TrackCaloMatchingUmp"      ]
+	    pidModuleLabel          : [         "AvikPID"          ,         "AvikPID"         ,         "AvikPID"           ]
+	    fitParticle             : [                          11,                13         ,               -13           ]
+	    fitDirection            : [                           0,                 0         ,                 1           ]
+	}
+#------------------------------------------------------------------------------
 # track reconstruction studies: 
 # make 3 track blocks, for the moment need to specify all other labels
 # default (in prolog): just one track block "TrackBlock" with output of MergePatRec
 #------------------------------------------------------------------------------
-	StntupleMakerTcm : { @table::StntupleMaker
+	StntupleMakerTcm : { @table::StntupleMakerTemplate 
 	    trackBlockName          : [ "TrackBlock"            , "TrkPatRec"               , "CalPatRec"                ]
 	    trkRecoModuleLabel      : [ "MergePatRec"           , "MergePatRecTpr"          , "MergePatRecCpr"           ]
 	    trkExtrapolModuleLabel  : [ "TrackCaloIntersection" , "TrackCaloIntersectionTpr", "TrackCaloIntersectionCpr" ]
@@ -206,7 +245,7 @@ Stntuple : {
 #------------------------------------------------------------------------------
 # make 4 track blocks: train PID
 #------------------------------------------------------------------------------
-	StntupleMaker4 : { @table::StntupleMaker
+	StntupleMaker4 : { @table::StntupleMakerTemplate 
 	    trackBlockName          : [ "TrackBlockDem"           , "TrackBlockDmm"           , "TrackBlockUep"           , "TrackBlockUmp"            ]
 	    trkRecoModuleLabel      : [ "MergePatRecDem"          , "MergePatRecDmm"          , "MergePatRecUep"          , "MergePatRecUmp"           ]
 	    trkExtrapolModuleLabel  : [ "TrackCaloIntersectionDem", "TrackCaloIntersectionDmm", "TrackCaloIntersectionUep", "TrackCaloIntersectionUmp" ]
@@ -222,7 +261,7 @@ Stntuple : {
 # in principle, full-blown reco would need 8 passes - downstream positive particles 
 # are also of interest
 #------------------------------------------------------------------------------
-	StntupleMaker6 : { @table::StntupleMaker
+	StntupleMaker6 : { @table::StntupleMakerTemplate 
 	    trackBlockName          : [ "TrackBlockDem"           , "TrackBlockDmm"           , "TrackBlockUem"           , "TrackBlockUmm"            , "TrackBlockUep"           , "TrackBlockUmp"            ]
 	    trkRecoModuleLabel      : [ "MergePatRecDem"          , "MergePatRecDmm"          , "MergePatRecUem"          , "MergePatRecUmm"           , "MergePatRecUep"          , "MergePatRecUmp"           ]
 	    trkExtrapolModuleLabel  : [ "TrackCaloIntersectionDem", "TrackCaloIntersectionDmm", "TrackCaloIntersectionUem", "TrackCaloIntersectionUmm" , "TrackCaloIntersectionUep", "TrackCaloIntersectionUmp" ]
@@ -230,6 +269,27 @@ Stntuple : {
 	    pidModuleLabel          : [ ""                        ,  ""                       , ""                        , ""                         , ""                        , ""                         ]
 	    fitParticle             : [                         11,                         13,                         11,                          13,                        -11,                         -13]
 	    fitDirection            : [                          0,                          0,                          1,                           1,                          1,                           1]
+
+	    makePid                 : 0
+	}
+#------------------------------------------------------------------------------
+# ultimately, will have to run all 8 versions of the reconstruction code 
+#------------------------------------------------------------------------------
+	StntupleMakerAll : { @table::StntupleMakerTemplate 
+
+	    trackBlockName          : [ "TrackBlockDem","TrackBlockDmm", "TrackBlockDep","TrackBlockDmp", "TrackBlockUem", "TrackBlockUmm", "TrackBlockUep", "TrackBlockUmp"]
+
+	    trkRecoModuleLabel      : [ "MergePatRecDem","MergePatRecDmm", "MergePatRecDep", "MergePatRecDmp", "MergePatRecUem", "MergePatRecUmm", "MergePatRecUep", "MergePatRecUmp" ]
+
+	    trkExtrapolModuleLabel  : [ "TrackCaloIntersectionDem", "TrackCaloIntersectionDmm", "TrackCaloIntersectionDem", "TrackCaloIntersectionDmm", 
+					"TrackCaloIntersectionUem", "TrackCaloIntersectionUmm" , "TrackCaloIntersectionUep", "TrackCaloIntersectionUmp" ]
+
+	    trkCaloMatchModuleLabel : [ "TrackCaloMatchingDem"    , "TrackCaloMatchingDmm"    , "TrackCaloMatchingDep"    , "TrackCaloMatchingDmp"    , 
+					"TrackCaloMatchingUem"    , "TrackCaloMatchingUmm"     , "TrackCaloMatchingUep"    , "TrackCaloMatchingUmp"     ]
+
+	    pidModuleLabel          : [ "", "",  "",  "", "",  "",  "",  "" ]
+	    fitParticle             : [ 11, 13, -11, -13, 11,  13, -11, -13 ]
+	    fitDirection            : [  0,  0,   0,   0,  1,   1,   1,   1 ]
 
 	    makePid                 : 0
 	}
@@ -265,9 +325,11 @@ Stntuple.stnmaker         : [ InitStntuple, StntupleMaker       , FillStntuple ]
 Stntuple.stnmaker_dem     : [ InitStntuple, StntupleMakerDem    , FillStntuple ]
 Stntuple.stnmaker_dmm     : [ InitStntuple, StntupleMakerDmm    , FillStntuple ]
 Stntuple.stnmaker_dem_dmm : [ InitStntuple, StntupleMakerDemDmm , FillStntuple ]
+Stntuple.stnmaker_dem_ump : [ InitStntuple, StntupleMakerDemUmp , FillStntuple ]
 Stntuple.stnmaker_tcm     : [ InitStntuple, StntupleMakerTcm    , FillStntuple ]
 Stntuple.stnmaker4        : [ InitStntuple, StntupleMaker4      , FillStntuple ]
 Stntuple.stnmaker6        : [ InitStntuple, StntupleMaker6      , FillStntuple ]
+Stntuple.stnmaker_all     : [ InitStntuple, StntupleMakerAll    , FillStntuple ]
 
 # EventFilter: { @table::Stntuple.filters.EventFilter }
 
