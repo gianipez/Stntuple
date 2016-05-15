@@ -226,6 +226,19 @@ Stntuple : {
 	    fitParticle             : [                          11,                13         ,               -13           ]
 	    fitDirection            : [                           0,                 0         ,                 1           ]
 	}
+#--------------------------------------------------------------------------------------------------------------------------
+# generate upstream mu-  and reconstruct  as dem (downstream leg, if any), dmm(downstream leg, if any) , umm (upstream leg)
+#--------------------------------------------------------------------------------------------------------------------------
+	StntupleMakerDemDmmUmm  : { @table::StntupleMakerTemplate 
+	    makePid                 : 0
+	    trackBlockName          : [ "TrackBlock"               , "TrackBlockDmm"           , "TrackBlockUmm"             ] 
+	    trkRecoModuleLabel      : [ "MergePatRecDem"           , "MergePatRecDmm"          , "MergePatRecUmm"            ]
+	    trkExtrapolModuleLabel  : [ "TrackCaloIntersectionDem" , "TrackCaloIntersectionDmm", "TrackCaloIntersectionUmm"  ]
+	    trkCaloMatchModuleLabel : [ "TrackCaloMatchingDem"     , "TrackCaloMatchingDmm"    , "TrackCaloMatchingUmm"      ]
+	    pidModuleLabel          : [         "AvikPID"          ,         "AvikPID"         ,         "AvikPID"           ]
+	    fitParticle             : [                          11,                13         ,                13           ]
+	    fitDirection            : [                           0,                 0         ,                 1           ]
+	}
 #------------------------------------------------------------------------------
 # track reconstruction studies: 
 # make 3 track blocks, for the moment need to specify all other labels
