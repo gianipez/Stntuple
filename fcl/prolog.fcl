@@ -216,18 +216,18 @@ Stntuple : {
 #------------------------------------------------------------------------------
 # generate upstream mu+  and reconstruct  as dem (upstream leg), dmm(upstream leg) , mu+ (downstream leg)
 #------------------------------------------------------------------------------
-	StntupleMakerDemDmmUmp  : { @table::StntupleMakerTemplate 
+	StntupleMakerDemDmpUmp  : { @table::StntupleMakerTemplate 
 	    makePid                 : 0
-	    trackBlockName          : [ "TrackBlockDem"            , "TrackBlockDmm"           , "TrackBlockUmp"             ] 
-	    trkRecoModuleLabel      : [ "MergePatRecDem"           , "MergePatRecDmm"          , "MergePatRecUmp"            ]
-	    trkExtrapolModuleLabel  : [ "TrackCaloIntersectionDem" , "TrackCaloIntersectionDmm", "TrackCaloIntersectionUmp"  ]
-	    trkCaloMatchModuleLabel : [ "TrackCaloMatchingDem"     , "TrackCaloMatchingDmm"    , "TrackCaloMatchingUmp"      ]
+	    trackBlockName          : [ "TrackBlockDem"            , "TrackBlockDmp"           , "TrackBlockUmp"             ] 
+	    trkRecoModuleLabel      : [ "MergePatRecDem"           , "MergePatRecDmp"          , "MergePatRecUmp"            ]
+	    trkExtrapolModuleLabel  : [ "TrackCaloIntersectionDem" , "TrackCaloIntersectionDmp", "TrackCaloIntersectionUmp"  ]
+	    trkCaloMatchModuleLabel : [ "TrackCaloMatchingDem"     , "TrackCaloMatchingDmp"    , "TrackCaloMatchingUmp"      ]
 	    pidModuleLabel          : [         "AvikPID"          ,         "AvikPID"         ,         "AvikPID"           ]
-	    fitParticle             : [                          11,                13         ,               -13           ]
+	    fitParticle             : [                          11,               -13         ,               -13           ]
 	    fitDirection            : [                           0,                 0         ,                 1           ]
 	}
 #--------------------------------------------------------------------------------------------------------------------------
-# generate upstream mu-  and reconstruct  as dem (downstream leg, if any), dmm(downstream leg, if any) , umm (upstream leg)
+# generate upstream mu-  and reconstruct  as dem (downstream leg, true, if any), dmm(downstream leg, if any) , umm (upstream leg)
 #--------------------------------------------------------------------------------------------------------------------------
 	StntupleMakerDemDmmUmm  : { @table::StntupleMakerTemplate 
 	    makePid                 : 0
