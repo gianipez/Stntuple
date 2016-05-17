@@ -416,8 +416,7 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
     track->fPhi0      = helx.phi0();
     track->fTanDip    = helx.tanDip(); // old
 
-    if (track->fC0 > 0) track->fCharge =  1.;
-    else                track->fCharge = -1.;
+    track->fCharge    = krep->charge();
 //-----------------------------------------------------------------------------
 // fP0 : track momentum at Z0, just for fun,should not be used for anything
 //-----------------------------------------------------------------------------
