@@ -324,6 +324,14 @@ Stntuple : {
 	    fitDirection                 : @local::CalPatRec.producers.MergePatRecDem.fitdirection
 	}
 
+	MuHitDisplayDep : { @table::MuHitDisplay 
+	    trkRecoModuleLabel           : MergePatRecDep
+	    trkExtrapol                  : TrackCaloIntersectionDep
+	    trkCalMatch                  : TrackCaloMatchingDep
+	    fitParticle                  : @local::CalPatRec.producers.MergePatRecDep.fitparticle
+	    fitDirection                 : @local::CalPatRec.producers.MergePatRecDep.fitdirection
+	}
+
 	MuHitDisplayDmm : { @table::MuHitDisplay 
 	    trkRecoModuleLabel           : MergePatRecDmm
 	    trkExtrapol                  : TrackCaloIntersectionDmm
