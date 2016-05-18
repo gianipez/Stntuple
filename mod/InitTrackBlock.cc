@@ -126,6 +126,43 @@ namespace {
     *Offset  = iface % 2;
   }
 
+
+//-----------------------------------------------------------------------------
+// extrapolate track to a given Z
+//-----------------------------------------------------------------------------
+  double s_at_given_z(const KalRep* Krep, double Z) {
+
+    double  ds(10.), s0, s1, s2, z0, z1, z2, dzds, sz, sz1, z01;
+
+    s1     = Krep->firstHit()->kalHit()->hit()->fltLen();
+    s2     = Krep->lastHit ()->kalHit()->hit()->fltLen();
+    z1     = Krep->position(s1).z();
+    z2     = Krep->position(s2).z();
+
+    dzds   = (z2-z1)/(s2-s1);
+//-----------------------------------------------------------------------------
+// iterate once, choose the closest point
+//-----------------------------------------------------------------------------
+    if (fabs(Z-z1) > fabs(Z-z2)) {
+      z0 = z2;
+      s0 = s2;
+    }
+    else {
+      z0 = z1;
+      s0 = s1;
+    }
+
+    sz    = s0+(Z-z0)/dzds;
+
+    z0     = Krep->position(sz).z();     // z0 has to be close to Z(TT_FrontPA)
+    z01    = Krep->position(sz+ds).z();
+
+    dzds   = (z01-z0)/ds;
+    sz1    = sz+(Z-z0)/dzds;	          // should be good enough
+
+    return sz1;
+  }
+
 };
 
 
@@ -382,24 +419,9 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 // determine, approximately, 'sz0' - flight length corresponding to the 
 // virtual detector at the tracker entrance
 //-----------------------------------------------------------------------------
-    Hep3Vector entpos = ds->toDetector(vdet->getGlobal(mu2e::VirtualDetectorId::TT_FrontPA));
-    double  zfront, z0, z1, z2, dzds, sz0, z01;
-
-    zfront = entpos.z();
-    z1     = krep->position(h1_fltlen).z();
-    z2     = krep->position(hn_fltlen).z();
-    dzds   = (z2-z1)/(hn_fltlen-h1_fltlen);
-    sz0    = h1_fltlen+(zfront-z1)/dzds;
-//-----------------------------------------------------------------------------
-// iterate once
-//-----------------------------------------------------------------------------
-    double   ds(10.);
-
-    z0     = krep->position(sz0).z();     // z0 has to be close to Z(TT_FrontPA)
-    z01    = krep->position(sz0+ds).z();
-
-    dzds   = (z01-z0)/ds;
-    sz0    = sz0+(zfront-z0)/dzds;	          // should be good enough
+    Hep3Vector tfront = ds->toDetector(vdet->getGlobal(mu2e::VirtualDetectorId::TT_FrontPA));
+    double     zfront = tfront.z();
+    double     sz0    = s_at_given_z(krep,zfront);
 //-----------------------------------------------------------------------------
 // fP2 - track momentum value at TT_FrontPA
 //-----------------------------------------------------------------------------
@@ -418,6 +440,15 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 
     track->fCharge    = krep->charge();
 //-----------------------------------------------------------------------------
+// virtual detector at the tracker exit: Time at Z(TT_Back)
+//-----------------------------------------------------------------------------
+    Hep3Vector vd_tt_back = ds->toDetector(vdet->getGlobal(mu2e::VirtualDetectorId::TT_Back));
+    double     zback      = vd_tt_back.z();
+    double     szb        = s_at_given_z(krep,zback);
+    double     tback      = krep->arrivalTime(szb);
+					// rename later
+    track->fChi2C         = tback;
+//-----------------------------------------------------------------------------
 // fP0 : track momentum at Z0, just for fun,should not be used for anything
 //-----------------------------------------------------------------------------
     track->fP0 = krep->momentum(0).mag();
@@ -425,7 +456,7 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
     const mu2e::TrkStrawHit  *hit, *closest_hit(NULL);
     const TrkHitVector*       krep_hits = &krep->hitVector();
     
-    track->fChi2C = -1.;   // unused
+    //    track->fChi2C = -1.;   // unused
 
     for (int j=0; j<40; j++) {
       track->fNHPerStation[j] = 0;

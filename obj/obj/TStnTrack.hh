@@ -157,7 +157,7 @@ public:
   int                       fInt[kNFreeInts]; // provision for future I/O expansion
   
   float                     fChi2;
-  float                     fChi2C;           // *NOT USED* 
+  float                     fChi2C;           // T at Z(TT_Back)
   float                     fFitCons;
   float                     fT0;
   float                     fT0Err;
@@ -262,6 +262,8 @@ public:
   float  Dz       () const { return fDz; }
   float  Chi2Dof  () const { return fChi2/(NActive()-5+1.e-12) ; }
   float  ClusterE () const { return fClusterE;    }
+
+  float  TBack    () const { return fChi2C; }
 
   float  EleLogLHCal() const { return fEleLogLHCal; }
   float  MuoLogLHCal() const { return fMuoLogLHCal; }
