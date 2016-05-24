@@ -99,8 +99,8 @@ int TStnTrackID::IDWord(TStnTrack* Track) {
   if (nactive          <  fMinNActive  ) id_word |= kNActiveBit ;
   if (nactive          >= fMaxNActive  ) id_word |= kNActiveBit ;
   if (mom_err          >  fMaxMomErr   ) id_word |= kMomErrBit ;
-  if (tan_dip          <  fMinTanDip   ) id_word |= kTanDipBit ;
-  if (tan_dip          >  fMaxTanDip   ) id_word |= kTanDipBit ;
+  if (fabs(tan_dip)    <  fMinTanDip   ) id_word |= kTanDipBit ;
+  if (fabs(tan_dip)    >  fMaxTanDip   ) id_word |= kTanDipBit ;
 
   if (d0               <  fMinD0       ) id_word |= kD0Bit ;
   if (d0               >  fMaxD0       ) id_word |= kD0Bit ;
