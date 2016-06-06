@@ -23,6 +23,7 @@ StntupleMakerTemplate : { module_type:StntupleMaker
     makeSimp            : 1
     makeStrawData       : 0
     makeTracks          : 1
+    makeTrackStrawHits  : 0
     makeTrigger         : 0
     makeTrackSeeds      : 0
     makeVirtualHits     : 1
@@ -51,7 +52,8 @@ StntupleMakerTemplate : { module_type:StntupleMaker
     pidModuleLabel          : [ "ParticleID"   ]
     #    pidModuleLabel          : [ "AvikPID"      ]
     fitParticle             : [             11 ] # 11:electron  , 13:muon etc
-    fitDirection            : [              0 ] #  0:downstream,  1:upstream
+    fitDirection            : [              0 ] #  0:downstream,  1:upstrea
+    trackStrawHitBlockName  : [ "TrackHitBlock"] 
 
     trkExtrapol          : TrkExtrapol
     trkCalMatch          : CaloMatching
@@ -153,6 +155,7 @@ Stntuple : {
 
 	StntupleMakerDem  : { @table::StntupleMakerTemplate 
 	    makePid                 : 0
+	    trackStrawHitBlockName  : [ "TrackHitBlockDem"         ] 
 	    trackBlockName          : [ "TrackBlockDem"            ] 
 	    trkRecoModuleLabel      : [ "MergePatRecDem"           ]
 	    trkExtrapolModuleLabel  : [ "TrackCaloIntersectionDem" ]
@@ -160,19 +163,21 @@ Stntuple : {
 	    pidModuleLabel          : [                  "AvikPID" ]
 	    fitParticle             : [                         11 ]
 	    fitDirection            : [                          0 ]
+	    trackStrawHitBlockName  : [ "TrackHitBlockDem"         ] 
 	}
 #------------------------------------------------------------------------------
 # downstream mu- reco
 #------------------------------------------------------------------------------
 	StntupleMakerDmm  : { @table::StntupleMakerTemplate 
 	    makePid                 : 0
-	    trackBlockName          : [ "TrackBlockDem"             ] 
+	    trackBlockName          : [ "TrackBlockDmm"             ] 
 	    trkRecoModuleLabel      : [ "MergePatRecDmm"            ]
 	    trkExtrapolModuleLabel  : [ "TrackCaloIntersectionDmm"  ]
 	    trkCaloMatchModuleLabel : [ "TrackCaloMatchingDmm"      ]
 	    pidModuleLabel          : [                   "AvikPID" ]
 	    fitParticle             : [                          13 ]
 	    fitDirection            : [                           0 ]
+	    trackStrawHitBlockName  : [ "TrackHitBlockDmm"         ] 
 	}
 #------------------------------------------------------------------------------
 # upstream mu+ reco - explicitly 
@@ -186,6 +191,7 @@ Stntuple : {
 	    pidModuleLabel          : [                   "AvikPID" ]
 	    fitParticle             : [                         -13 ]
 	    fitDirection            : [                           1 ]
+	    trackStrawHitBlockName  : [ "TrackHitBlockUmp"          ] 
 	}
 #------------------------------------------------------------------------------
 # explicitly store 2 versions of track reco - downstream e- and mu- reco
@@ -199,6 +205,7 @@ Stntuple : {
 	    pidModuleLabel          : [         "AvikPID",         "AvikPID" ]
 	    fitParticle             : [                11,                13 ]
 	    fitDirection            : [                 0,                 0 ]
+	    trackStrawHitBlockName  : [ "TrackHitBlockDem"         , "TrackHitBlockDmm"] 
 	}
 #------------------------------------------------------------------------------
 # generate upstream mu+ 
@@ -212,6 +219,7 @@ Stntuple : {
 	    pidModuleLabel          : [         "AvikPID"          ,         "AvikPID" ]
 	    fitParticle             : [                          11,               -13 ]
 	    fitDirection            : [                           0,                 1 ]
+	    trackStrawHitBlockName  : [ "TrackHitBlockDem"         , "TrackHitBlockUmp"] 
 	}
 #------------------------------------------------------------------------------
 # generate upstream mu-  
@@ -225,6 +233,7 @@ Stntuple : {
 	    pidModuleLabel          : [         "AvikPID"          ,         "AvikPID" ]
 	    fitParticle             : [                          11,                13 ]
 	    fitDirection            : [                           0,                 1 ]
+	    trackStrawHitBlockName  : [ "TrackHitBlockDem"         , "TrackHitBlockUmm"] 
 	}
 #------------------------------------------------------------------------------
 # generate upstream mu+  and reconstruct  as dem (upstream leg), dmm(upstream leg) , mu+ (downstream leg)
@@ -238,6 +247,7 @@ Stntuple : {
 	    pidModuleLabel          : [         "AvikPID"          ,         "AvikPID"         ,         "AvikPID"           ]
 	    fitParticle             : [                          11,               -13         ,               -13           ]
 	    fitDirection            : [                           0,                 0         ,                 1           ]
+	    trackStrawHitBlockName  : [ "TrackHitBlockDem"         , "TrackHitBlockDmp"        , "TrackHitBlockUmp"          ] 
 	}
 #--------------------------------------------------------------------------------------------------------------------------
 # generate upstream mu-  and reconstruct  as dem (downstream leg, true, if any), dmm(downstream leg, if any) , umm (upstream leg)
@@ -251,6 +261,7 @@ Stntuple : {
 	    pidModuleLabel          : [         "AvikPID"          ,         "AvikPID"         ,         "AvikPID"           ]
 	    fitParticle             : [                          11,                13         ,                13           ]
 	    fitDirection            : [                           0,                 0         ,                 1           ]
+	    trackStrawHitBlockName  : [ "TrackHitBlockDem"         , "TrackHitBlockDmm"        , "TrackHitBlockUmm"          ] 
 	}
 #------------------------------------------------------------------------------
 # track reconstruction studies: 
@@ -265,6 +276,7 @@ Stntuple : {
 	    pidModuleLabel          : [ "AvikPID"               ,                        "" ,                         "" ]
 	    fitParticle             : [                       11,                         11,                         11 ]
 	    fitDirection            : [                        0,                          0,                          0 ]
+	    trackStrawHitBlockName  : [ "TrackHitBlock"         , "TrackHitBlockTpr"        , "TrackHitBlockCpt"         ] 
 
 	    makePid                 : 0
 	}
@@ -279,6 +291,7 @@ Stntuple : {
 	    pidModuleLabel          : [ ""                        ,  ""                       , ""                        , ""                         ]
 	    fitParticle             : [                         11,                         13,                        -11,                         -13]
 	    fitDirection            : [                          0,                          0,                          1,                           1]
+	    trackStrawHitBlockName  : [ "TrackHitBlockDem"        , "TrackHitBlockDmm"        , "TrackHitBlockUep"        , "TrackHitBlockUmp"         ] 
 
 	    makePid                 : 0
 	}
@@ -302,6 +315,9 @@ Stntuple : {
 	    pidModuleLabel          : [ "", "",  "",  "", "",  "",  "",  "" ]
 	    fitParticle             : [ 11, 13, -11, -13, 11,  13, -11, -13 ]
 	    fitDirection            : [  0,  0,   0,   0,  1,   1,   1,   1 ]
+
+	    trackStrawHitBlockName  : [ "TrackHitBlockDem"        , "TrackHitBlockDmm"        , "TrackHitBlockDep"        , "TrackHitBlockDmp",
+				        "TrackHitBlockUem"        , "TrackHitBlockUmm"        , "TrackHitBlockUep"        , "TrackHitBlockUmp"] 
 
 	    makePid                 : 0
 	}

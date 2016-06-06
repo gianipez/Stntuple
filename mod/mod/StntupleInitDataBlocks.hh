@@ -10,7 +10,8 @@
 class TAnaTrackBlock;
 class TStnDataBlock;
 
-Int_t InitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* Evt, Int_t Mode);
-Int_t InitMu2eClusterBlock(TStnDataBlock* Block, AbsEvent* Evt, Int_t Mode);
+Int_t InitMu2eTrackBlock        (TStnDataBlock* Block, AbsEvent* Evt, Int_t Mode);
+Int_t InitMu2eClusterBlock      (TStnDataBlock* Block, AbsEvent* Evt, Int_t Mode);
+Int_t InitMu2eTrackStrawHitBlock(TStnDataBlock* Block, AbsEvent* Evt, Int_t Mode);
 
 #endif

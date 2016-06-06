@@ -7,16 +7,17 @@
 
 class TStnDataBlock;
 
-Int_t StntupleInitMu2eStrawDataBlock  (TStnDataBlock* blk, AbsEvent* evt, int mode);
-Int_t StntupleInitMu2eCalDataBlock    (TStnDataBlock* blk, AbsEvent* evt, int mode);
-Int_t StntupleInitMu2eClusterBlock    (TStnDataBlock* blk, AbsEvent* evt, int mode);
-Int_t StntupleInitMu2eHeaderBlock     (TStnDataBlock* blk, AbsEvent* evt, int mode);
-Int_t StntupleInitMu2eTrackBlock      (TStnDataBlock* blk, AbsEvent* evt, int mode);
-Int_t StntupleInitMu2ePidBlock        (TStnDataBlock* blk, AbsEvent* evt, int mode);
-Int_t StntupleInitMu2eGenpBlock       (TStnDataBlock* blk, AbsEvent* evt, int mode);
-Int_t StntupleInitMu2eSimpBlock       (TStnDataBlock* blk, AbsEvent* evt, int mode);
-Int_t StntupleInitMu2eVirtualDataBlock(TStnDataBlock* blk, AbsEvent* evt, int mode);
-Int_t StntupleInitMu2eTrackSeedBlock  (TStnDataBlock* blk, AbsEvent* evt, int mode);
+Int_t StntupleInitMu2eStrawDataBlock     (TStnDataBlock* blk, AbsEvent* evt, int mode);
+Int_t StntupleInitMu2eCalDataBlock       (TStnDataBlock* blk, AbsEvent* evt, int mode);
+Int_t StntupleInitMu2eClusterBlock       (TStnDataBlock* blk, AbsEvent* evt, int mode);
+Int_t StntupleInitMu2eHeaderBlock        (TStnDataBlock* blk, AbsEvent* evt, int mode);
+Int_t StntupleInitMu2eTrackBlock         (TStnDataBlock* blk, AbsEvent* evt, int mode);
+Int_t StntupleInitMu2ePidBlock           (TStnDataBlock* blk, AbsEvent* evt, int mode);
+Int_t StntupleInitMu2eGenpBlock          (TStnDataBlock* blk, AbsEvent* evt, int mode);
+Int_t StntupleInitMu2eSimpBlock          (TStnDataBlock* blk, AbsEvent* evt, int mode);
+Int_t StntupleInitMu2eVirtualDataBlock   (TStnDataBlock* blk, AbsEvent* evt, int mode);
+Int_t StntupleInitMu2eTrackSeedBlock     (TStnDataBlock* blk, AbsEvent* evt, int mode);
+Int_t StntupleInitMu2eTrackStrawHitBlock (TStnDataBlock* blk, AbsEvent* evt, int mode);
 
 					// block-to-block link resolution
 
@@ -25,6 +26,5 @@ Int_t StntupleInitMu2eTrackBlockLinks    (TStnDataBlock* blk  , AbsEvent* evt   
 Int_t StntupleInitMu2eClusterBlockLinks  (TStnDataBlock* blk  , AbsEvent* evt    , int mode);
 Int_t StntupleInitMu2ePidBlockLinks      (TStnDataBlock* blk  , AbsEvent* evt    , int mode);
 Int_t StntupleInitMu2eTrackSeedBlockLinks(TStnDataBlock* blk  , AbsEvent* evt    , int mode);
-
 
 #endif

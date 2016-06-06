@@ -172,7 +172,7 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 //-----------------------------------------------------------------------------
 // cached pointers, owned by the StntupleMaker_module
 //-----------------------------------------------------------------------------
-  static int                         initialized(0);
+  static int                          initialized(0);
   static mu2e::DoubletAmbigResolver* _dar;
   static mu2e::KalDiag*              _kalDiag;
   
@@ -322,9 +322,9 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
     if (pidpHandle.isValid()) list_of_pidp = pidpHandle.product();
   }
 
-  art::ServiceHandle<mu2e::GeometryService> geom;
-  mu2e::GeomHandle<mu2e::DetectorSystem>          ds;
-  mu2e::GeomHandle<mu2e::VirtualDetector>         vdet;
+  art::ServiceHandle<mu2e::GeometryService>   geom;
+  mu2e::GeomHandle<mu2e::DetectorSystem>      ds;
+  mu2e::GeomHandle<mu2e::VirtualDetector>     vdet;
 
   const mu2e::AlgorithmID*  alg_id;
   int                       mask;

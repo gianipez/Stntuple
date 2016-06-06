@@ -78,6 +78,7 @@ protected:
   int              fMakeSimp;
   int              fMakeStrawData;
   int              fMakeTracks;
+  int              fMakeTrackStrawHits;
   int              fMakeTrackSeeds;
   int              fMakeTrigger;
   int              fMakeVirtualHits;
@@ -94,6 +95,7 @@ protected:
   std::vector<std::string> fTrkExtrapolModuleLabel;
   std::vector<std::string> fTrkCaloMatchModuleLabel;
   std::vector<std::string> fPidModuleLabel;
+  std::vector<std::string> fTrackStrawHitBlockName;
 
   std::vector<int>         fFitParticle;
   std::vector<int>         fFitDirection;
@@ -154,6 +156,7 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
   , fMakeSimp           (PSet.get<int>         ("makeSimp"       ))
   , fMakeStrawData      (PSet.get<int>         ("makeStrawData"  ))
   , fMakeTracks         (PSet.get<int>         ("makeTracks"     ))
+  , fMakeTrackStrawHits (PSet.get<int>         ("makeTrackStrawHits"))
   , fMakeTrackSeeds     (PSet.get<int>         ("makeTrackSeeds" ))
   , fMakeTrigger        (PSet.get<int>         ("makeTrigger"    ))
   , fMakeVirtualHits    (PSet.get<int>         ("makeVirtualHits"))
@@ -167,6 +170,7 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
   , fTrkExtrapolModuleLabel (PSet.get<vector<string>>("trkExtrapolModuleLabel" ))
   , fTrkCaloMatchModuleLabel(PSet.get<vector<string>>("trkCaloMatchModuleLabel"))
   , fPidModuleLabel         (PSet.get<vector<string>>("pidModuleLabel"         ))
+  , fTrackStrawHitBlockName (PSet.get<vector<string>>("trackStrawHitBlockName" ))
   
   , fFitParticle            (PSet.get<vector<int>>        ("fitParticle"       ))
   , fFitDirection           (PSet.get<vector<int>>        ("fitDirection"      ))
@@ -302,24 +306,38 @@ void StntupleMaker::beginJob() {
       straw_data->AddCollName("mu2e::StrawHitCollection",fMakeStrawHitModuleLabel.data(),"");
     }
   }
+//-----------------------------------------------------------------------------
+// track straw hits
+//-----------------------------------------------------------------------------
+  if (fMakeTrackStrawHits) {
+    TStnDataBlock  *track_straw_hit_data;
+    const char     *block_name;
+    string          iname;
 
-//--------------------------------------------------------------------------------
-// trackSeed data
-//--------------------------------------------------------------------------------
-  if (fMakeTrackSeeds) {
-    TStnDataBlock* trackSeed_data;
+    int nblocks = fTrackStrawHitBlockName.size();
 
-    trackSeed_data = AddDataBlock("TrackSeedBlock",
-				  "TStnTrackSeedBlock",
-				  StntupleInitMu2eTrackSeedBlock,
-				  buffer_size,
-				  split_mode,
-				  compression_level);
+    for (int i=0; i<nblocks; i++) {
+					// always store defTracks for the 
+					// default process in the "TrackBlock"
 
-    SetResolveLinksMethod("TrackSeedBlock",StntupleInitMu2eTrackSeedBlockLinks);
+      block_name = fTrackStrawHitBlockName[i].data();
+      track_straw_hit_data = AddDataBlock(block_name,
+					  "TTrackStrawHitBlock",
+					  StntupleInitMu2eTrackStrawHitBlock,
+					  buffer_size,
+					  split_mode,
+					  compression_level);
 
-    if (trackSeed_data) {
-      trackSeed_data->AddCollName("mu2e::TrackSeedCollection",fTrackSeedMaker.data(),"");
+      if (track_straw_hit_data) {
+	TrkFitDirection fit_dir = TrkFitDirection((TrkFitDirection::FitDirection)fFitDirection[i]);
+	TrkParticle     part    = TrkParticle    ((TrkParticle::type            )fFitParticle [i]);
+	iname                   = fit_dir.name() + part.name();
+
+	track_straw_hit_data->AddCollName("mu2e::KalRepCollection"   ,fTrkRecoModuleLabel[i].data()  ,iname.data());
+	track_straw_hit_data->AddCollName("mu2e::StrawHitCollection" ,fMakeStrawHitModuleLabel.data(), "");
+	
+	//      SetResolveLinksMethod(block_name,StntupleInitMu2eTrackBlockLinks);
+      }
     }
   }
 //-----------------------------------------------------------------------------
@@ -339,12 +357,12 @@ void StntupleMaker::beginJob() {
 //-----------------------------------------------------------------------------
 // track branches: for ROOT v3 to use streamers one has to specify split=-1
 //-----------------------------------------------------------------------------
-  TStnDataBlock *track_data;
-  const char    *block_name;
-  int            nblocks;
-  string         iname;
-
   if (fMakeTracks) {
+    TStnDataBlock *track_data;
+    const char    *block_name;
+    int            nblocks;
+    string         iname;
+    
     nblocks = fTrackBlockName.size();
 
     for (int i=0; i<nblocks; i++) {
