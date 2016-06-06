@@ -76,10 +76,10 @@ BEGIN_PROLOG
 #------------------------------------------------------------------------------
 # extrapolation and matching
 #------------------------------------------------------------------------------
-  trkCaloMatchingSeq       : [ TrkExtrapol   , CaloMatching    ]
-  trkCaloMatchingDemSeq    : [ TrkExtrapolDem, CaloMatchingDem ]
-  trkCaloMatchingDmmSeq    : [ TrkExtrapolDmm, CaloMatchingDmm ]
-  trkCaloMatchingDemDmmSeq : [ TrkExtrapolDem, CaloMatchingDem, TrkExtrapolDmm, CaloMatchingDmm ]
+  trkCaloMatchingSeq       : [ TrkExtrapol   , TrackCaloMatching    ]
+  trkCaloMatchingDemSeq    : [ TrkExtrapolDem, TrackCaloMatchingDem ]
+  trkCaloMatchingDmmSeq    : [ TrkExtrapolDmm, TrackCaloMatchingDmm ]
+  trkCaloMatchingDemDmmSeq : [ TrkExtrapolDem, TrackCaloMatchingDem, TrkExtrapolDmm, TrackCaloMatchingDmm ]
 
   trkCaloMatchingTprSeq    : [ TrackCaloIntersectionTpr, TrackCaloMatchingTpr ]
   trkCaloMatchingCprSeq    : [ TrackCaloIntersectionCpr, TrackCaloMatchingCpr ]
@@ -88,9 +88,9 @@ BEGIN_PROLOG
 # particle identification
 # AvikPID on input takes MergePatRecDem and MergePatRecDmm
 #------------------------------------------------------------------------------
-  vadimPidSeq   : [ TrkExtrapol, CaloMatching, ParticleID ]
+  vadimPidSeq   : [ TrkExtrapol, TrackCaloMatching, ParticleID ]
 
-  avikPidSeq    : [ TrkExtrapolDem, TrkExtrapolDmm, CaloMatchingDem, CaloMatchingDmm, AvikPID ]
+  avikPidSeq    : [ TrkExtrapolDem, TrkExtrapolDmm, TrackCaloMatchingDem, TrackCaloMatchingDmm, AvikPID ]
 
   pidSeq        : [ @sequence::avikPidSeq ]
 
@@ -287,45 +287,8 @@ physics : {
 # TrackCaloMatching doesn't explicitly know anything about the particle mass, 
 # it is just using the extrapolation results 
 #------------------------------------------------------------------------------
-	TrkExtrapol          : { @table::TrackCaloIntersection  
-	    fitterModuleLabel : MergePatRec 
-	}
-
-	TrkExtrapolDem       : { @table::TrackCaloIntersection
-	    fitparticle       : 11
-	    fitterModuleLabel : MergePatRecDem 
-	}
-
-	TrkExtrapolDmm       : { @table::TrackCaloIntersection
-	    fitparticle       : 13
-	    fitterModuleLabel : MergePatRecDmm 
-	}
-
-	CaloMatching         : { @table::TrackCaloMatching 
-	    fitterModuleLabel            : MergePatRec 
-	    trkToCaloExtrapolModuleLabel : TrkExtrapol
-	}
-
-	CaloMatchingDem      : { @table::TrackCaloMatching 
-	    fitparticle                  : 11
-	    fitdirection                 : 0
-	    fitterModuleLabel            : MergePatRecDem	    
-
-	    trkToCaloExtrapolModuleLabel : TrkExtrapolDem
-	}
-
-	CaloMatchingDmm      : { @table::TrackCaloMatching 
-	    fitparticle                  : 13
-	    fitdirection                 : 0
-	    fitterModuleLabel            : MergePatRecDmm 
-	    trkToCaloExtrapolModuleLabel : TrkExtrapolDmm
-	}
-
-	ParticleID           : { @table::ParticleID    }
-	ParticleIDDem        : { @table::ParticleIDDem }
-	ParticleIDDmm        : { @table::ParticleIDDmm }
-
-	AvikPID              : { @table::AvikPID }
+	@table::TrackCaloMatching.producers
+	@table::ParticleID.producers
     }
 
     filters: {
