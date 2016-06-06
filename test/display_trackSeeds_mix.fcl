@@ -83,7 +83,7 @@ physics : { @table::physics
 
     }
 
-    producers: {@table::physics.producers
+    producers: { @table::physics.producers
 	MakeCaloProtoCluster : { @table::MakeCaloProtoCluster 
 	  EminSeed               : 10
 	  ExpandCut              : 2
