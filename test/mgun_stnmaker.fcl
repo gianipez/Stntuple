@@ -5,16 +5,16 @@
 # for 105 MeV/c electron : E = 105.00124           MeV
 # for 105 MeV/c muon     : E = 148.9584269653785   MeV
 #------------------------------------------------------------------------------
-# muStops must be commented out for grid production.
-BEGIN_PROLOG
-#  muStops    : [ @local::mergedMuonStops ]
-  pdgCode    : 13
-  bgHitFiles : @nil
-END_PROLOG
-
 #include "minimalMessageService.fcl"
 #include "standardProducers.fcl"
 #include "standardServices.fcl"
+
+#include "Stntuple/fcl/prolog.fcl"
+
+BEGIN_PROLOG
+  pdgCode    : 13
+  bgHitFiles : @nil
+END_PROLOG
 
 #include "Stntuple/fcl/templates.fcl"
 

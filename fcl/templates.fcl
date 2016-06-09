@@ -76,10 +76,10 @@ BEGIN_PROLOG
 #------------------------------------------------------------------------------
 # extrapolation and matching
 #------------------------------------------------------------------------------
-  trkCaloMatchingSeq       : [ TrkExtrapol   , TrackCaloMatching    ]
-  trkCaloMatchingDemSeq    : [ TrkExtrapolDem, TrackCaloMatchingDem ]
-  trkCaloMatchingDmmSeq    : [ TrkExtrapolDmm, TrackCaloMatchingDmm ]
-  trkCaloMatchingDemDmmSeq : [ TrkExtrapolDem, TrackCaloMatchingDem, TrkExtrapolDmm, TrackCaloMatchingDmm ]
+  trkCaloMatchingSeq       : [ TrackCaloIntersection   , TrackCaloMatching    ]
+  trkCaloMatchingDemSeq    : [ TrackCaloIntersectionDem, TrackCaloMatchingDem ]
+  trkCaloMatchingDmmSeq    : [ TrackCaloIntersectionDmm, TrackCaloMatchingDmm ]
+  trkCaloMatchingDemDmmSeq : [ TrackCaloIntersectionDem, TrackCaloMatchingDem, TrackCaloIntersectionDmm, TrackCaloMatchingDmm ]
 
   trkCaloMatchingTprSeq    : [ TrackCaloIntersectionTpr, TrackCaloMatchingTpr ]
   trkCaloMatchingCprSeq    : [ TrackCaloIntersectionCpr, TrackCaloMatchingCpr ]
@@ -88,9 +88,9 @@ BEGIN_PROLOG
 # particle identification
 # AvikPID on input takes MergePatRecDem and MergePatRecDmm
 #------------------------------------------------------------------------------
-  vadimPidSeq   : [ TrkExtrapol, TrackCaloMatching, ParticleID ]
+  vadimPidSeq   : [ TrackCaloIntersection, TrackCaloMatching, ParticleID ]
 
-  avikPidSeq    : [ TrkExtrapolDem, TrkExtrapolDmm, TrackCaloMatchingDem, TrackCaloMatchingDmm, AvikPID ]
+  avikPidSeq    : [ TrackCaloIntersectionDem, TrackCaloIntersectionDmm, TrackCaloMatchingDem, TrackCaloMatchingDmm, AvikPID ]
 
   pidSeq        : [ @sequence::avikPidSeq ]
 
@@ -280,7 +280,7 @@ physics : {
 #------------------------------------------------------------------------------
 	@table::Tracking.producers      # defined in TrkPatRec
 	@table::CaloCluster.producers   # defined in CaloCluster
-	@table::CalPatRecNS.producers
+	@table::CalPatRec.producers
 #------------------------------------------------------------------------------
 # higher-level reconstruction
 # ParticleID, AvikPID - tracker-only particle ID
