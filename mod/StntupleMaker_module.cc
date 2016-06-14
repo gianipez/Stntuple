@@ -433,7 +433,7 @@ void StntupleMaker::beginJob() {
     SetResolveLinksMethod("PidBlock",StntupleInitMu2ePidBlockLinks);
 
     if (pid_data) {
-      pid_data->AddCollName("mu2e::AvikPIDProductCollection",fPidModuleLabel[0].data(),"");
+      pid_data->AddCollName("mu2e::AvikPIDNewProductCollection",fPidModuleLabel[0].data(),"");
     }
   }
 //-----------------------------------------------------------------------------

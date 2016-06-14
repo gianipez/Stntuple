@@ -5,7 +5,7 @@
 
 #include "Stntuple/base/TStnArrayI.hh"
 #include "Stntuple/obj/TStnDataBlock.hh"
-#include "Stntuple/obj/TStrawHitData.hh"
+#include "Stntuple/obj/TTrackStrawHitData.hh"
 
 #include "Stntuple/mod/InitStntupleDataBlocks.hh"
 
@@ -32,10 +32,10 @@ public:
   Int_t          NTrackHits   (int i) { return fNTrackHits->At(i); }
   Int_t          First    (int i) { return fFirst->At(i); } 
 
-  TStrawHitData* Hit (int i) { return (TStrawHitData*) fListOfHits->UncheckedAt(i); }
+  TTrackStrawHitData* Hit (int i) { return (TTrackStrawHitData*) fListOfHits->UncheckedAt(i); }
 
-  TStrawHitData* Hit (int ITrack, int I) { 
-    return (TStrawHitData*) fListOfHits->UncheckedAt(fFirst->At(ITrack)+I); 
+  TTrackStrawHitData* Hit (int ITrack, int I) { 
+    return (TTrackStrawHitData*) fListOfHits->UncheckedAt(fFirst->At(ITrack)+I); 
   }
   
   TClonesArray* GetListOfHits () { return fListOfHits; }
@@ -44,7 +44,7 @@ public:
 //-----------------------------------------------------------------------------
                                         // create hit, increse number of hits
 
-  TStrawHitData* NewHit() { return new ((*fListOfHits)[fNStrawHits++]) TStrawHitData(); } 
+  TTrackStrawHitData* NewHit() { return new ((*fListOfHits)[fNStrawHits++]) TTrackStrawHitData(); } 
 //-----------------------------------------------------------------------------
 // overloaded methods of TObject
 //-----------------------------------------------------------------------------

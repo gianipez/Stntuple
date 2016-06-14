@@ -25,6 +25,7 @@
 #include "CalorimeterGeom/inc/VaneCalorimeter.hh"
 
 #include "RecoDataProducts/inc/KalRepPtrCollection.hh"
+#include "RecoDataProducts/inc/KalRepCollection.hh"
 #include "BTrkData/inc/TrkStrawHit.hh"
 #include "RecoDataProducts/inc/Doublet.hh"
 #include "TrkReco/inc/DoubletAmbigResolver.hh"
@@ -185,7 +186,7 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
   const mu2e::TTracker*     tracker;
 
   mu2e::AlgorithmIDCollection*             list_of_algs               (0);
-  mu2e::KalRepPtrCollection*               list_of_kreps              (0);
+  const mu2e::KalRepPtrCollection*         list_of_kreps              (0);
   const mu2e::StrawDigiMCCollection*       list_of_mc_straw_hits      (0);
   const mu2e::StrawHitCollection*          list_of_straw_hits         (0);
   const mu2e::TrkCaloIntersectCollection*  list_of_extrapolated_tracks(0);
@@ -281,7 +282,7 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
   if (krep_module_label[0] != 0) {
     if (krep_description[0] == 0) AnEvent->getByLabel(krep_module_label,krepsHandle);
     else                          AnEvent->getByLabel(krep_module_label,krep_description, krepsHandle);
-    if (krepsHandle.isValid())    list_of_kreps = (mu2e::KalRepPtrCollection*) krepsHandle.product();
+    if (krepsHandle.isValid())    list_of_kreps = krepsHandle.product();
   }
 
   art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandle;
@@ -342,13 +343,13 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 
   for (int itrk=0; itrk<ntrk; itrk++) {
     track          = data->NewTrack();
-    const art::Ptr<KalRep>& krep_ptr = list_of_kreps->at(itrk);
-    const KalRep* krep        = krep_ptr.get();
-    AnEvent->get(krep_ptr.id(), krepsHandle);
-    fhicl::ParameterSet const& pset = krepsHandle.provenance()->parameterSet();
+    art::Handle<mu2e::KalRepCollection> handle;
+    art::Ptr<KalRep> const& ptr = list_of_kreps->at(itrk);
+    AnEvent->get(ptr.id(), handle);
+    fhicl::ParameterSet const& pset = handle.provenance()->parameterSet();
     string module_type = pset.get<std::string>("module_type");
-    if      (module_type == "CalPatRec") xxx = 1;
-    else if (module_type == "TrkRecFit") xxx = 0;
+    if      (module_type == "CalPatRec") xxx =  1;
+    else if (module_type == "TrkRecFit") xxx =  0;
     else                                 xxx = -1;
 //-----------------------------------------------------------------------------
 // track-only-based particle ID, initialization ahs already happened in the constructor
@@ -361,6 +362,7 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
       track->fRSlopeErr    = pidp->GetResidualsSlopeError();
     }
 
+    const KalRep* krep = ptr.get();
     track->fKalRep[0] = (KalRep*) krep;
     mask = (0x0001 << 16) | 0x0000;
 

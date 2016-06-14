@@ -23,7 +23,7 @@
 class TStnTrack;
 
 namespace mu2e {
-  class AvikPIDProduct;
+  class AvikPIDNewProduct;
 }
 
 class TStnPid : public TObject {
@@ -37,16 +37,12 @@ public:
 //-----------------------------------------------------------------------------
 // integers
 //-----------------------------------------------------------------------------
-  int                       fEleTrkNumber;     // track number
-  int                       fMuoTrkNumber;     // track number
+  int                       fTrkNumber;     // track number
   int                       fNMatched;
   int                       fNMatchedAll;
-  int                       fNUsedOsEleH;      // for fDrdsSsEle
-  int                       fNUsedOsMuoH;
-  int                       fNUsedOsEleD;      // for fSumAvikOsEle
-  int                       fNUsedOsMuoD;
-  int                       fNUsedSsEleH;      // for fDrdsSsEle
-  int                       fNUsedSsMuoH;
+  int                       fNUsedOsH;      // for fDrdsSsEle
+  int                       fNUsedSsH;      // for fDrdsSsEle
+  int                       fNUsedOsD;      // for fSumAvikOsEle
   int                       fInt[kNFreeInts];
 //-----------------------------------------------------------------------------
 // floats
@@ -54,34 +50,22 @@ public:
   float                     fLogDedxProbEle;
   float                     fLogDedxProbMuo;
 
-  float                     fDrdsVadimEle;
-  float                     fDrdsVadimEleErr;
-  float                     fDrdsVadimMuo;
-  float                     fDrdsVadimMuoErr;
+  float                     fDrdsVadim;
+  float                     fDrdsVadimErr;
+  float                     fDrdsOs;
+  float                     fDrdsOsErr;
+  float                     fDrdsSs;
+  float                     fDrdsSsErr;
   
-  float                     fSumAvikEle;
-  float                     fSumAvikMuo;
+  float                     fSumAvik;
+  float                     fSq2Avik;
+  float                     fSumAvikOs;
 
-  float                     fSq2AvikEle;
-  float                     fSq2AvikMuo;
-
-  float                     fDrdsOsEle;
-  float                     fDrdsOsEleErr;
-  float                     fDrdsOsMuo;
-  float                     fDrdsOsMuoErr;
-  
-  float                     fSumAvikOsEle;
-  float                     fSumAvikOsMuo;
-
-  float                     fDrdsSsEle;
-  float                     fDrdsSsEleErr;
-  float                     fDrdsSsMuo;
-  float                     fDrdsSsMuoErr;
   float                     fFloat[kNFreeFloats];
 //-----------------------------------------------------------------------------
 // transients
 //-----------------------------------------------------------------------------
-  const mu2e::AvikPIDProduct*  fAvikPid;  //!
+  const mu2e::AvikPIDNewProduct*  fAvikPid;  //!
 //-----------------------------------------------------------------------------
 // methods
 //-----------------------------------------------------------------------------
@@ -90,13 +74,10 @@ public:
 //-----------------------------------------------------------------------------
 // accessors
 //-----------------------------------------------------------------------------
-  int     EleTrkNumber()    { return fEleTrkNumber; }
-  int     MuoTrkNumber()    { return fMuoTrkNumber; }
+  int     TrkNumber()    { return fTrkNumber; }
 
-  float   DrdsVadimEle   () { return fDrdsVadimEle;    }
-  float   DrdsVadimEleErr() { return fDrdsVadimEleErr; }
-  float   DrdsVadimMuo   () { return fDrdsVadimMuo;    }
-  float   DrdsVadimEleMuo() { return fDrdsVadimMuoErr; }
+  float   DrdsVadim   () { return fDrdsVadim;    }
+  float   DrdsVadimErr() { return fDrdsVadimErr; }
 
 					// the rest accessors - to come
 //-----------------------------------------------------------------------------

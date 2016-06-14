@@ -192,7 +192,7 @@ BEGIN_PROLOG
 
   allpatrec_dem_reco_stnmaker_seq : [ @sequence::calRecoSeq, @sequence::allPatRecDemSeq,
 				      @sequence::trkCaloMatchingDemSeq,
-				      ParticleIDDem,
+#				      ParticleIDDem,
 #				      AvikPID,
 				      @sequence::stnmaker_dem_seq ]
 #------------------------------------------------------------------------------
@@ -203,7 +203,8 @@ BEGIN_PROLOG
 					  @sequence::avikPidSeq, @sequence::stnmaker_dem_dmm_seq ]
 
   allpatrec_dem_dmm_reco_stnmaker_seq : [ @sequence::calRecoSeq, @sequence::allPatRecDemDmmSeq,
-					  @sequence::avikPidSeq, @sequence::stnmaker_dem_dmm_seq ]
+#					  @sequence::avikPidSeq, 
+					  @sequence::stnmaker_dem_dmm_seq ]
 #------------------------------------------------------------------------------
   gen_allpatrec_dem_dmm_reco_stnmaker_seq : [ @sequence::generatorSeq, @sequence::hitMakerSeq       ,
 					      @sequence::allpatrec_dem_dmm_reco_stnmaker_seq ]

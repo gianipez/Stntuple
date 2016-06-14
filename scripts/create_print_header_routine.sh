@@ -5,9 +5,10 @@
 
 file=$1
 
-tag=dev_572
-minor_tag=01
-release=`echo $MU2ESOFT`
+ offline_version=v5_7_6
+         release=`echo $MU2E_BASE_RELEASE`
+ offline_git_tag=`cat $MU2E_BASE_RELEASE/.git/ORIG_HEAD`
+stntuple_git_tag=`cat $MU2E_BASE_RELEASE/Stntuple/.git/ORIG_HEAD`
 #-----------------------------------------------------------------------
 # first check if what is being built is different from dev_243
 #-----------------------------------------------------------------------
@@ -22,20 +23,20 @@ echo  "#include <cstdlib>"                                                   >> 
 echo  "#include <cstring>"                                                   >> $file
 echo  ""
 echo  "void stntuple_print_header() {"                                       >> $file
-echo  "  printf(\"stnmaker.exe built on `date` by $USER@`hostname` \n\");"   >> $file
-echo  "  printf(\" using CDFSOFT release: $release \");"                     >> $file
-echo  "  printf(\"and working directory $2 \n\");"                           >> $file
-echo  "  printf(\"differences with ${tag}_$minor_tag: $ndiff bytes\n\");"    >> $file
+echo  "  printf(\"stnmaker.exe built on `date` by $USER@`hostname`\n\");"    >> $file
+echo  "  printf(\"MU2E_BASE_RELEASE: $release, \");"                         >> $file
+echo  "  printf(\"OFFLINE GIT tag: $offline_git_tag , \");"                  >> $file
+echo  "  printf(\"STNTUPLE GIT tag: $stntuple_git_tag\n\");"                 >> $file
 echo  "}"                                                                    >> $file
 echo  ""
 echo  "void stntuple_get_version(char* Version, char* Text) {"               >> $file
 echo  "  static char  txt[200];"                                             >> $file
-echo  "  strcpy(Version,\"${tag}_${minor_tag}\");"                           >> $file
-echo  "  strcpy(txt,\"stnmaker.exe ${tag}_${minor_tag} \");"                 >> $file
+echo  "  strcpy(Version,\"$offline_version\");"                              >> $file
+echo  "  strcpy(txt,\"stnmaker.exe \");"                                     >> $file
 echo  "  strcat(txt,\"built on `date` by $USER@`hostname`\");"               >> $file
-echo  "  strcat(txt,\" using CDFSOFT release: $release \");"                 >> $file
-echo  "  strcat(txt,\"and working directory $2 \");"                         >> $file
-echo  "  Text = txt;"                                                        >> $file
+echo  "  strcat(txt,\" MU2E_BASE_RELEASE $release, \");"                     >> $file
+echo  "  strcat(txt,\" OFFLINE GIT tag $offline_git_tag , \");"              >> $file
+echo  "  strcat(txt,\" STNTUPLE GIT tag $stntuple_git_tag \");"              >> $file
+echo  "  strcpy(Text,txt);"                                                  >> $file
 echo  "}"                                                                    >> $file
-
 
