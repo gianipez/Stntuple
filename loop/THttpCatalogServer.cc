@@ -795,6 +795,24 @@ int THttpCatalogServer::InitDataset(TStnDataset*     Dataset,
 
 	    GetDCacheFileName(srv->GetHost(),path.Data(),0,fn,full_name);
 	  }
+	  else if (strcmp(srv->GetProtocol(),"bluearc") == 0) {
+//-----------------------------------------------------------------------------
+// BLUEARC: mount local root file - need a local host name
+//-----------------------------------------------------------------------------
+	    TString s    = srv->GetFile();
+	    TString path = s(0,s.Length());
+
+	    cmd = "hostname";
+	    pipe = gSystem->OpenPipe(cmd.Data(),"r");
+	
+	    char hostname[1000];
+	    fgets(hostname,1000,pipe);
+	    gSystem->ClosePipe(pipe);
+	    int len = strlen(hostname);
+	    hostname[len-1] = 0;
+
+	    sprintf(full_name,"root://%s//%s/%s",hostname,path.Data(),fn);
+	  }
 	  else {
 //-----------------------------------------------------------------------------
 // anything else, so far: ROOTD
