@@ -51,8 +51,37 @@ void TStnPid::Clear(Option_t* opt) {
 }
 
 //-----------------------------------------------------------------------------
-void TStnPid::Print(Option_t* opt) const {
-  Error("Print", "Not implemented yet");
+void TStnPid::Print(Option_t* Option) const {
+
+  TString opt(Option);
+
+  opt.ToLower();
+					// "non-const *this" for printing purposes
+  //  TStnPid* pid = (TStnPid*) this;
+
+  if ((opt == "") || (opt.Index("banner") >= 0)) {
+//-----------------------------------------------------------------------------
+// print banner
+//-----------------------------------------------------------------------------
+    printf("---------------------------------------------------------------------------------------------------");
+    printf("-----------------------------------\n");
+    printf(" i  nm nma nuosh nussh nuosd  llhr_dedx(e/m)     drds        err_drds      drds_os  err_drds_os    ");
+    printf("sum_avik     sq2_avik   sum_avik_os\n");
+    printf("---------------------------------------------------------------------------------------------------");
+    printf("-----------------------------------\n");
+  }
+
+  double llhr_dedx = (fLogDedxProbEle-fLogDedxProbMuo);
+  if ((opt == "") || (opt.Index("data") >= 0)) {
+    printf("%2i %3i %3i %5i %5i %5i", fTrkNumber, fNMatched, fNMatchedAll, fNUsedOsH, fNUsedSsH, fNUsedOsD);
+    printf("   %12.5e %12.5e %12.5e %12.5e %12.5e %12.5e %12.5e %12.5e",
+	   llhr_dedx, 
+	   fDrdsVadim, fDrdsVadimErr,
+	   fDrdsOs, fDrdsOsErr,
+	   fSumAvik, fSq2Avik, fSumAvikOs);
+    printf("\n");
+  }
+  
 }
 
 // } // end namespace

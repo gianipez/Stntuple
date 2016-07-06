@@ -94,6 +94,7 @@ protected:
   std::vector<std::string> fTrkRecoModuleLabel;
   std::vector<std::string> fTrkExtrapolModuleLabel;
   std::vector<std::string> fTrkCaloMatchModuleLabel;
+  std::vector<std::string> fPidBlockName;
   std::vector<std::string> fPidModuleLabel;
   std::vector<std::string> fTrackStrawHitBlockName;
 
@@ -169,6 +170,7 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
   , fTrkRecoModuleLabel     (PSet.get<vector<string>>("trkRecoModuleLabel"     ))
   , fTrkExtrapolModuleLabel (PSet.get<vector<string>>("trkExtrapolModuleLabel" ))
   , fTrkCaloMatchModuleLabel(PSet.get<vector<string>>("trkCaloMatchModuleLabel"))
+  , fPidBlockName           (PSet.get<vector<string>>("pidBlockName"           ))
   , fPidModuleLabel         (PSet.get<vector<string>>("pidModuleLabel"         ))
   , fTrackStrawHitBlockName (PSet.get<vector<string>>("trackStrawHitBlockName" ))
   
@@ -418,22 +420,30 @@ void StntupleMaker::beginJob() {
     }
   }
 //-----------------------------------------------------------------------------
-// PID
+// PID - one PID block per track block
 //-----------------------------------------------------------------------------
   if (fMakePid) {
-    TStnDataBlock* pid_data;
+    TStnDataBlock *pid_data;
+    const char    *block_name;
+    int            nblocks;
+    string         iname;
+    
+    nblocks = fTrackBlockName.size();
 
-    pid_data = AddDataBlock("PidBlock",
-			    "TStnPidBlock",
-			    StntupleInitMu2ePidBlock,
-			    buffer_size,
-			    split_mode,
-			    compression_level);
+    for (int i=0; i<nblocks; i++) {
+      block_name = fPidBlockName[i].data();
+      pid_data   = AddDataBlock(block_name,
+				"TStnPidBlock",
+				StntupleInitMu2ePidBlock,
+				buffer_size,
+				split_mode,
+				compression_level);
 
-    SetResolveLinksMethod("PidBlock",StntupleInitMu2ePidBlockLinks);
+      SetResolveLinksMethod(block_name,StntupleInitMu2ePidBlockLinks);
 
-    if (pid_data) {
-      pid_data->AddCollName("mu2e::AvikPIDNewProductCollection",fPidModuleLabel[0].data(),"");
+      if (pid_data) {
+	pid_data->AddCollName("mu2e::AvikPIDNewProductCollection",fPidModuleLabel[i].data(),"");
+      }
     }
   }
 //-----------------------------------------------------------------------------
