@@ -117,6 +117,11 @@ TCalDataBlock::TCalDataBlock() {
   fListOfCalHitData->BypassStreamer(kFALSE);
   //  fAdcThreshold = 0;
   Clear();
+  fNDisks           = 0;
+  fCrystalSize      = 0;
+  fMinFraction      = 0;
+  fWrapperThickness = 0;
+  fShellThickness   = 0;
 }
 
 //_____________________________________________________________________________
