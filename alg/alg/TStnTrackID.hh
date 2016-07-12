@@ -28,7 +28,7 @@ public:
     kTanDipBit         = 0x1 <<  5,     // 0x00000020
     kD0Bit             = 0x1 <<  6,     // 0x00000040
     kRMaxBit           = 0x1 <<  7,     // 0x00000080
-    kDtQualBit         = 0x1 <<  8      // 0x00000100
+    kTrkQualBit        = 0x1 <<  8      // 0x00000100
   };
 
   enum { 
@@ -46,7 +46,7 @@ public:
     TH1F*    fTanDip      [5];
     TH1F*    fD0          [5];
     TH1F*    fRMax        [5];
-    TH1F*    fDtQual      [5];
+    TH1F*    fTrkQual     [5];
 					// summary histogram
     TH1F*    fFailedBits;
     TH1F*    fPassed;
@@ -96,7 +96,7 @@ public:
   Float_t MaxMomErr    () const { return fMaxMomErr;    }
   Float_t MinTanDip    () const { return fMinTanDip;    }
   Float_t MaxTanDip    () const { return fMaxTanDip;    }
-  Float_t MaxTrkQual   () const { return fMaxTanDip;    }
+  Float_t MinTrkQual   () const { return fMinTrkQual;   }
 //-----------------------------------------------------------------------------
 // modifiers
 //-----------------------------------------------------------------------------
@@ -113,6 +113,7 @@ public:
 
   void    SetMinTanDip   (Float_t TanDip ) { fMinTanDip     = TanDip;  }
   void    SetMaxTanDip   (Float_t TanDip ) { fMaxTanDip     = TanDip;  }
+
   void    SetMinTrkQual  (Float_t TrkQual) { fMinTrkQual    = TrkQual; }
 //-----------------------------------------------------------------------------
 // other methods

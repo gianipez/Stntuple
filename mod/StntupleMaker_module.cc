@@ -190,7 +190,7 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
   fVersion      = new TNamed(ver,text);
   TModule::fFolder->Add(fVersion);
 
-  fgTimeOffsets  = new SimParticleTimeOffset(PSet.get<fhicl::ParameterSet>("TimeOffsets"));
+  if (fgTimeOffsets == NULL) fgTimeOffsets  = new SimParticleTimeOffset(PSet.get<fhicl::ParameterSet>("TimeOffsets"));
 
   fDar           = new DoubletAmbigResolver (PSet.get<fhicl::ParameterSet>("DoubletAmbigResolver"),0.,0,0);
   fDarHandle     = new TNamedHandle("DarHandle",fDar);
@@ -205,7 +205,10 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
 
 //------------------------------------------------------------------------------
 StntupleMaker::~StntupleMaker() {
-  delete fgTimeOffsets;
+  if (fgTimeOffsets) {
+    delete fgTimeOffsets;
+    fgTimeOffsets = NULL;
+  }
   delete fDar;
   delete fDarHandle;
   delete fVersion;

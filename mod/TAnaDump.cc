@@ -51,6 +51,9 @@
 #include "CalPatRec/inc/CalTimePeak.hh"
 
 #include "Stntuple/base/TNamedHandle.hh"
+
+// #include "Stntuple/mod/StntupleGlobals.hh"
+
 #include "Mu2eUtilities/inc/SimParticleTimeOffset.hh"
 
 
@@ -66,8 +69,9 @@ ClassImp(TAnaDump)
 
 TAnaDump* TAnaDump::fgInstance = 0;
 
+mu2e::SimParticleTimeOffset           *fgTimeOffsets(NULL);
+
 namespace {
-  mu2e::SimParticleTimeOffset           *fgTimeOffsets(NULL);
   mu2e::PtrStepPointMCVectorCollection  *fgListOfMCStrawHits;
 }
 //______________________________________________________________________________
@@ -85,8 +89,9 @@ TAnaDump::TAnaDump() {
   
   fhicl::ParameterSet  pset;
   pset.put("inputs", VS);
-  fgTimeOffsets = new mu2e::SimParticleTimeOffset(pset);
-
+  if (fgTimeOffsets == NULL) {
+    fgTimeOffsets = new mu2e::SimParticleTimeOffset(pset);
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -103,6 +108,10 @@ TAnaDump* TAnaDump::Instance() {
 TAnaDump::~TAnaDump() {
   fListOfObjects->Delete();
   delete fListOfObjects;
+  if (fgTimeOffsets) {
+    delete fgTimeOffsets;
+    fgTimeOffsets = NULL;
+  }
 }
 
 //------------------------------------------------------------------------------

@@ -18,7 +18,7 @@
 #include "Mu2eUtilities/inc/SimParticleTimeOffset.hh"
 #include "Stntuple/mod/StntupleGlobals.hh"
 
-mu2e::SimParticleTimeOffset* fgTimeOffsets;
+// mu2e::SimParticleTimeOffset* fgTimeOffsets;
 
 //-----------------------------------------------------------------------------
 Int_t StntupleInitMu2eVirtualDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int Mode) 

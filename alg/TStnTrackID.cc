@@ -107,7 +107,7 @@ int TStnTrackID::IDWord(TStnTrack* Track) {
 
   if (rmax             <  fMinRMax     ) id_word |= kRMaxBit ;
   if (rmax             >  fMaxRMax     ) id_word |= kRMaxBit ;
-  if (trk_qual         <  fMinTrkQual  ) id_word |= kDtQualBit ;
+  if (trk_qual         <  fMinTrkQual  ) id_word |= kTrkQualBit ;
 
   return  (id_word & fUseMask);
 }
@@ -154,7 +154,7 @@ void TStnTrackID::FillHistograms(Hist_t* Hist, TStnTrack* Track, Int_t Mode) {
   float tandip  = Track->TanDip();
   float d0      = Track->D0();
   float rmax    = Track->RMax();
-  float dtqual  = Track->DaveTrkQual();
+  float trkqual = Track->DaveTrkQual();
 //-----------------------------------------------------------------------------
 //  1. number of points
 //-----------------------------------------------------------------------------
@@ -190,9 +190,9 @@ void TStnTrackID::FillHistograms(Hist_t* Hist, TStnTrack* Track, Int_t Mode) {
   if ((id_word & ~kRMaxBit) == 0) Hist->fRMax[1]->Fill(rmax);
   if (id_word == 0) Hist->fRMax[4]->Fill(rmax);
 
-  Hist->fDtQual[0]->Fill(dtqual);
-  if ((id_word & ~kRMaxBit) == 0) Hist->fDtQual[1]->Fill(dtqual);
-  if (id_word == 0) Hist->fDtQual[4]->Fill(dtqual);
+  Hist->fTrkQual[0]->Fill(trkqual);
+  if ((id_word & ~kRMaxBit) == 0) Hist->fTrkQual[1]->Fill(trkqual);
+  if (id_word == 0) Hist->fTrkQual[4]->Fill(trkqual);
 
 //-----------------------------------------------------------------------------
 //  single histogram showing how often every particular cut failed
@@ -238,9 +238,9 @@ void TStnTrackID::FillHistograms(Hist_t* Hist, TStnTrack* Track, Int_t Mode) {
   if ((id_word & kRMaxBit) != 0)                           goto END;
   Hist->fRMax[3]->Fill(rmax);
   
-  Hist->fDtQual[2]->Fill(dtqual);
-  if ((id_word & kDtQualBit) != 0)                         goto END;
-  Hist->fDtQual[3]->Fill(dtqual);
+  Hist->fTrkQual[2]->Fill(trkqual);
+  if ((id_word & kTrkQualBit) != 0)                        goto END;
+  Hist->fTrkQual[3]->Fill(trkqual);
   
   
  END:;

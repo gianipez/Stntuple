@@ -192,7 +192,7 @@ Stntuple : {
 	    trkRecoModuleLabel      : [ "MergePatRecUmp"           ]
 	    trkExtrapolModuleLabel  : [ "TrackCaloIntersectionUmp" ]
 	    trkCaloMatchModuleLabel : [ "TrackCaloMatchingUmp"     ]
-	    pidModuleLabel          : [                  "AvikPID" ]
+	    pidModuleLabel          : [ "AvikPIDNewUmp"            ]
 	    fitParticle             : [                        -13 ]
 	    fitDirection            : [                          1 ]
 	    trackStrawHitBlockName  : [ "TrackHitBlockUmp"         ] 
@@ -381,18 +381,18 @@ Stntuple : {
 	}
     }
 }
-
-Stntuple.stnmaker         : [ InitStntuple, StntupleMaker       , FillStntuple ]
-Stntuple.stnmaker_dem     : [ InitStntuple, StntupleMakerDem    , FillStntuple ]
-Stntuple.stnmaker_dmm     : [ InitStntuple, StntupleMakerDmm    , FillStntuple ]
-Stntuple.stnmaker_ump     : [ InitStntuple, StntupleMakerUmp    , FillStntuple ]
-Stntuple.stnmaker_dem_dmm : [ InitStntuple, StntupleMakerDemDmm , FillStntuple ]
-Stntuple.stnmaker_dem_umm : [ InitStntuple, StntupleMakerDemUmm , FillStntuple ]
-Stntuple.stnmaker_dem_ump : [ InitStntuple, StntupleMakerDemUmp , FillStntuple ]
-Stntuple.stnmaker_tcm     : [ InitStntuple, StntupleMakerTcm    , FillStntuple ]
-Stntuple.stnmaker4        : [ InitStntuple, StntupleMaker4      , FillStntuple ]
-Stntuple.stnmaker_all     : [ InitStntuple, StntupleMakerAll    , FillStntuple ]
-
-# EventFilter: { @table::Stntuple.filters.EventFilter }
+#------------------------------------------------------------------------------
+# sequences
+#------------------------------------------------------------------------------
+Stntuple.stnmaker         : [ InitStntuple, StntupleMaker   ,                   FillStntuple ]
+Stntuple.stnmaker_dem     : [ InitStntuple, StntupleMakerDem,                   FillStntuple ]
+Stntuple.stnmaker_dmm     : [ InitStntuple, StntupleMakerDmm,                   FillStntuple ]
+Stntuple.stnmaker_ump     : [ InitStntuple, StntupleMakerUmp,                   FillStntuple ]
+Stntuple.stnmaker_dem_dmm : [ InitStntuple, StntupleMakerDem, StntupleMakerDmm, FillStntuple ]
+Stntuple.stnmaker_dem_umm : [ InitStntuple, StntupleMakerDem, StntupleMakerUmm, FillStntuple ]
+Stntuple.stnmaker_dem_ump : [ InitStntuple, StntupleMakerDem, StntupleMakerUmp, FillStntuple ]
+Stntuple.stnmaker_tcm     : [ InitStntuple, StntupleMakerTcm,                   FillStntuple ]
+Stntuple.stnmaker4        : [ InitStntuple, StntupleMaker4  ,                   FillStntuple ]
+Stntuple.stnmaker_all     : [ InitStntuple, StntupleMakerAll,                   FillStntuple ]
 
 END_PROLOG

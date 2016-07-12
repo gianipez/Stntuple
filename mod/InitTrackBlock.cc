@@ -371,7 +371,7 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
       mask   = alg_id->BestID() | (alg_id->AlgMask() << 16);
 
       if (xxx != alg_id->BestID()) { 
-	printf (" **** alg_id: we are in trouble: xxx = %2i best = %i\n",xxx,alg_id->BestID());
+	printf (" *** InitTrackBlock ERROR: we are in alg_id trouble: xxx = %2i best = %i\n",xxx,alg_id->BestID());
       }
     }
 
