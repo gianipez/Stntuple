@@ -284,10 +284,10 @@ Stntuple : {
 # default (in prolog): just one track block "TrackBlock" with output of MergePatRec
 #------------------------------------------------------------------------------
 	StntupleMakerTcm : { @table::StntupleMakerTemplate 
-	    makePid                 : 1
+	    makePid                 : 0
 	    trackBlockName          : [ "TrackBlock"            , "TrkPatRec"               , "CalPatRec"                ]
 	    trackStrawHitBlockName  : [ "TrackHitBlock"         , "TrackHitBlockTpr"        , "TrackHitBlockCpr"         ] 
-	    trkRecoModuleLabel      : [ "MergePatRec"           , "MergePatRecTpr"          , "MergePatRecCpr"           ]
+	    trkRecoModuleLabel      : [ "MergePatRec"           , "TRFDownstreameMinus"     , "CalPatRec"                ]
 	    trkExtrapolModuleLabel  : [ "TrackCaloIntersection" , "TrackCaloIntersectionTpr", "TrackCaloIntersectionCpr" ]
 	    trkCaloMatchModuleLabel : [ "TrackCaloMatching"     , "TrackCaloMatchingTpr"    , "TrackCaloMatchingCpr"     ]
 	    pidBlockName            : [ "PidBlock"              , ""                        , ""                         ] 
