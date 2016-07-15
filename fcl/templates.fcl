@@ -117,6 +117,13 @@ BEGIN_PROLOG
 				    #				      AvikPID, 
 				    @sequence::stnmaker_dem_seq ]
 #------------------------------------------------------------------------------
+# run full reconstruction on the data coming from the input file
+#------------------------------------------------------------------------------
+  path_calo_apr_vpid_stnm :       [ @sequence::calRecoSeq  , @sequence::allPatRecSeq,
+				    @sequence::trkCaloMatchingSeq,
+				    ParticleID, 
+				    @sequence::stnmaker_seq ]
+#------------------------------------------------------------------------------
 # generate signal, run full reconstruction
 #------------------------------------------------------------------------------
   path_gen_hits_calo_apr_vpid_stnm : [ @sequence::generatorSeq, @sequence::hitMakerSeq ,
@@ -124,7 +131,6 @@ BEGIN_PROLOG
 				       @sequence::trkCaloMatchingSeq,
 				       ParticleID, 
 				       @sequence::stnmaker_seq ]
-
 #------------------------------------------------------------------------------
 # do track-to-calo matching for each branch separately
 #------------------------------------------------------------------------------

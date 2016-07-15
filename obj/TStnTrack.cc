@@ -141,7 +141,7 @@ void TStnTrack::ReadV4(TBuffer &R__b) {
   fNDoublets        = -1                ;   // added in V9
 					      // floats
   fChi2             = data.fChi2        ;
-  fChi2C            = data.fChi2C       ;      // calculated...
+  fTBack            = data.fChi2C       ;      // calculated...
   fFitCons          = data.fFitCons     ;
   fT0               = data.fT0          ;
   fT0Err            = data.fT0Err       ;
@@ -355,7 +355,7 @@ void TStnTrack::ReadV5(TBuffer &R__b) {
   fNDoublets    = -1                ;   // added in V9
 					// floats
   fChi2         = data.fChi2        ;
-  fChi2C        = data.fChi2C       ;         
+  fTBack        = data.fChi2C       ;         
   fFitCons      = data.fFitCons     ;
   fT0           = data.fT0          ;
   fT0Err        = data.fT0Err       ;
@@ -579,7 +579,7 @@ void TStnTrack::ReadV6(TBuffer &R__b) {
   fNDoublets    = -1                ;   // added in V9
 					// floats
   fChi2         = data.fChi2        ;
-  fChi2C        = data.fChi2C       ;         
+  fTBack        = data.fChi2C       ;         
   fFitCons      = data.fFitCons     ;
   fT0           = data.fT0          ;
   fT0Err        = data.fT0Err       ;
@@ -807,7 +807,7 @@ void TStnTrack::ReadV7(TBuffer &R__b) {
   fNDoublets    = -1                ;   // added in V9
 					// floats
   fChi2         = data.fChi2        ;
-  fChi2C        = data.fChi2C       ;         
+  fTBack        = data.fChi2C       ;         
   fFitCons      = data.fFitCons     ;
   fT0           = data.fT0          ;
   fT0Err        = data.fT0Err       ;
@@ -1038,7 +1038,7 @@ void TStnTrack::ReadV8(TBuffer &R__b) {
 
 					// floats
   fChi2         = data.fChi2        ;
-  fChi2C        = data.fChi2C       ;         
+  fTBack        = data.fChi2C       ;         
   fFitCons      = data.fFitCons     ;
   fT0           = data.fT0          ;
   fT0Err        = data.fT0Err       ;
@@ -1271,7 +1271,7 @@ void TStnTrack::ReadV9(TBuffer &R__b) {
 
 					// floats
   fChi2         = data.fChi2        ;
-  fChi2C        = data.fChi2C       ;         
+  fTBack        = data.fChi2C       ;         
   fFitCons      = data.fFitCons     ;
   fT0           = data.fT0          ;
   fT0Err        = data.fT0Err       ;
@@ -1505,7 +1505,7 @@ void TStnTrack::ReadV10(TBuffer &R__b) {
 
 					// floats
   fChi2         = data.fChi2        ;
-  fChi2C        = data.fChi2C       ;         
+  fTBack        = data.fChi2C       ;         
   fFitCons      = data.fFitCons     ;
   fT0           = data.fT0          ;
   fT0Err        = data.fT0Err       ;
@@ -1625,7 +1625,8 @@ void TStnTrack::Streamer(TBuffer& R__b) {
     else if (R__v == 10) ReadV10 (R__b);
     else {
 //-----------------------------------------------------------------------------
-// current version: v11
+// current version: V12, is different from V11 only by renaming Chi2C -> TBack
+// the memory layout is the same
 //-----------------------------------------------------------------------------
       fMomentum.Streamer(R__b);
       fHitMask.Streamer(R__b);

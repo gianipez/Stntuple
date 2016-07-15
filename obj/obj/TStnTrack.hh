@@ -133,7 +133,7 @@ public:
     const mu2e::TrkToCaloExtrapol* fExtrk;
   };
     
-  TLorentzVector            fMomentum;        // this assumes DELE fit hypothesis
+  TLorentzVector            fMomentum;        // this assumes DEM fit hypothesis
   
   TBitset                   fHitMask;	      // bit #i: 1 if there is an active hit 
   TBitset                   fExpectedHitMask; // bit #i: 1 if expect to have a hit at this Z
@@ -157,15 +157,15 @@ public:
   int                       fInt[kNFreeInts]; // provision for future I/O expansion
   
   float                     fChi2;
-  float                     fChi2C;           // T at Z(TT_Back)
+  float                     fTBack;           // T at Z(TT_Back)
   float                     fFitCons;
   float                     fT0;
   float                     fT0Err;
   float                     fFitMomErr;
   float                     fTanDip;	      // at Z=Z0
-  float                     fP;		      // total momentum in the first point
+  float                     fP;		      // total momentum in the first point (Z=Z1)
   float                     fCharge;
-  float                     fPt;	      // transverse momentum in the first point
+  float                     fPt;	      // transverse momentum in the first point (Z=Z1)
   float                     fD0;	      // at Z=Z0
   float                     fZ0;
 
@@ -189,11 +189,11 @@ public:
 
   float                     fEleLogLHDeDx;        // dE/dX LH calculated by Vadim based 
   float                     fMuoLogLHDeDx;        // 
-  float                     fX1;	          // momentum defined at Z1
+  float                     fX1;	          // X1,Y1,Z1: track coordinates at Z of the first hit
   float                     fY1;
   float                     fZ1;
   float                     fP0;                  // momentum defined at Z0
-  float                     fP2;                  // momentum defined at Z0
+  float                     fP2;                  // momentum defined at Z=Z(TT_FrontPA) - tracker front
   float                     fC0;	          // curvature at Z0
   float                     fPhi0;	          // phi0 at Z0 **specify in V8 , no I/O changes***
   float                     fTrkQual;             // ** added in V11
@@ -263,7 +263,7 @@ public:
   float  Chi2Dof  () const { return fChi2/(NActive()-5+1.e-12) ; }
   float  ClusterE () const { return fClusterE;    }
 
-  float  TBack    () const { return fChi2C; }
+  float  TBack    () const { return fTBack; }
 
   float  EleLogLHCal() const { return fEleLogLHCal; }
   float  MuoLogLHCal() const { return fMuoLogLHCal; }
@@ -319,7 +319,7 @@ public:
   void ReadV9 (TBuffer& R__b);
   void ReadV10(TBuffer& R__b);
 
-  ClassDef(TStnTrack,11)
+  ClassDef(TStnTrack,12)
 
 };
 

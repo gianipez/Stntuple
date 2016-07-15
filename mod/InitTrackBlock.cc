@@ -449,7 +449,7 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
     double     szb        = s_at_given_z(krep,zback);
     double     tback      = krep->arrivalTime(szb);
 					// rename later
-    track->fChi2C         = tback;
+    track->fTBack         = tback;
 //-----------------------------------------------------------------------------
 // fP0 : track momentum at Z0, just for fun,should not be used for anything
 //-----------------------------------------------------------------------------
@@ -458,8 +458,6 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
     const mu2e::TrkStrawHit  *hit, *closest_hit(NULL);
     const TrkHitVector*       krep_hits = &krep->hitVector();
     
-    //    track->fChi2C = -1.;   // unused
-
     for (int j=0; j<40; j++) {
       track->fNHPerStation[j] = 0;
     }
