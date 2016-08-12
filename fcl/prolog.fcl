@@ -131,6 +131,7 @@ MuHitDisplay: { module_type:MuHitDisplay        # the class name;
 # namespace
 #------------------------------------------------------------------------------
 Stntuple : {
+    producers : {}  # empty table
 
     filters : {
 	InitStntuple : { module_type:InitStntuple
