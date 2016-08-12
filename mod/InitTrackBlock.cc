@@ -425,11 +425,10 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
     double     zfront = tfront.z();
     double     sz0    = s_at_given_z(krep,zfront);
 //-----------------------------------------------------------------------------
-// fP2 - track momentum value at TT_FrontPA
+// fP0 - track momentum value at TT_FrontPA
 //-----------------------------------------------------------------------------
     CLHEP::Hep3Vector fitmom2 = krep->momentum(sz0);
-
-    track->fP2 = fitmom2.mag();
+    track->fP0 = fitmom2.mag();
 //-----------------------------------------------------------------------------
 // helical parameters at Z( TT_FrontPA)
 //-----------------------------------------------------------------------------
@@ -451,9 +450,9 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 					// rename later
     track->fTBack         = tback;
 //-----------------------------------------------------------------------------
-// fP0 : track momentum at Z0, just for fun,should not be used for anything
+// fP2 : track momentum at Z0, just for fun,should not be used for anything
 //-----------------------------------------------------------------------------
-    track->fP0 = krep->momentum(0).mag();
+    track->fP2 = krep->momentum(szb).mag();
 //-----------------------------------------------------------------------------
     const mu2e::TrkStrawHit  *hit, *closest_hit(NULL);
     const TrkHitVector*       krep_hits = &krep->hitVector();

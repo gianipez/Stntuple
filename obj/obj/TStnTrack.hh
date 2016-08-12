@@ -192,8 +192,8 @@ public:
   float                     fX1;	          // X1,Y1,Z1: track coordinates at Z of the first hit
   float                     fY1;
   float                     fZ1;
-  float                     fP0;                  // momentum defined at Z0
-  float                     fP2;                  // momentum defined at Z=Z(TT_FrontPA) - tracker front
+  float                     fP0;                  // momentum defined at Z=Z(TT_FrontPA) - tracker front
+  float                     fP2;                  // momentum defined at Z=Z(TT_BACK)    - tracker back
   float                     fC0;	          // curvature at Z0
   float                     fPhi0;	          // phi0 at Z0 **specify in V8 , no I/O changes***
   float                     fTrkQual;             // ** added in V11
