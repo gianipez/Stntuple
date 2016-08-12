@@ -1,0 +1,44 @@
+#!/bin/bash
+#------------------------------------------------------------------------------
+# creates catalog of a given book 
+# example: . ./update_book_catalog bluearc 
+# explicitly account for the presence of <b> and </b> tags in the dataset name in 
+# the dataset description string
+# 
+#------------------------------------------------------------------------------
+book=$1
+top_dir=/web/sites/mu2e.fnal.gov/htdocs/atwork/computing/Stntuple/cafdfc
+dir=$top_dir/$book
+HTML_CATALOG=$dir/index.shtml
+
+echo "<!--#set var=\"pagetitle\" value=\"STNTUPLE datasets\" -->" >| $HTML_CATALOG
+echo "<!--#include virtual=\"/includes/mu2e_top.shtml\" -->"            >> $HTML_CATALOG
+
+echo "<!-- End of header:  Put your html below this comment. -->"       >> $HTML_CATALOG
+echo "<p>"                                                              >> $HTML_CATALOG
+echo "<ul>"                                                             >> $HTML_CATALOG
+
+echo "STNTUPLE datasets , book = <b>$book</b> <br> <br>"                >> $HTML_CATALOG
+
+
+text=" see more details in the fileset catalog"
+
+echo "<body style=\"font-family:monospace;\">"                          >> $HTML_CATALOG
+for f in `ls $dir | grep -v AAA_DA | grep -v index.shtml` ; do 
+    catalog=$dir/$f/AAA_CATALOG.html
+    description=`cat $catalog | grep "# DESCRIPTION:" | sed 's/# DESCRIPTION://'`
+    len0=${#description}
+    des1=`echo $description | sed 's#<b>##' |  sed 's#</b>##'`
+    len1=${#des1}
+    description=$description"................................................................................"
+    ldesc=$((79+$len0-$len1))
+    echo "<li> <a href=$f/AAA_CATALOG.html> $f </a> | <a href=$f/AAA_FILES.txt> files </a> : ${description:0:$ldesc} : $text" >> $HTML_CATALOG ; 
+done
+
+echo "</ul>"                                                            >> $HTML_CATALOG
+echo "<body style=\"\" >"                                               >> $HTML_CATALOG
+echo " <a href=../index.shtml>back to the top catalog page</a>"         >> $HTML_CATALOG
+
+echo "<!-- Start of footer:  End your html before this comment. -->"    >> $HTML_CATALOG
+echo "<!--#set var=\"contact\" value=\"kutschke@fnal.gov\" -->"         >> $HTML_CATALOG
+echo "<!--#include virtual=\"/includes/mu2e_footer.shtml\" -->"         >> $HTML_CATALOG
