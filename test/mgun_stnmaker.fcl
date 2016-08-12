@@ -18,32 +18,37 @@ END_PROLOG
 
 #include "Stntuple/fcl/templates.fcl"
 
-process_name : MgunMergePatRecStnmaker
+process_name : MgunDigiRecoStnDemDmm
 
 source       : { module_type : EmptyEvent }
 
-physics.producers.generate : { @table::StoppedParticleReactionGun 
-    physics : {
-	pdgId            : @local::pdgCode
-	elow             : 148.9577         # 105.0010
- 	ehi              : 148.9597         # 105.0015
- 	spectrumVariable : "totalEnergy"
- 	spectrumShape    : "flat"
+physics : {
+    producers: { @table::Stntuple.producers 
+	generate : { @table::Stntuple.producers.mgun }
     }
+    filters  : { @table::Stntuple.filters 
+	InitStntuple : { @table::Stntuple.filters.InitStntuple
+	    histFileName : "mgun_digi_reco_stn_dem_dmm.stn" 
+	}
+    }
+
+    @table::Stntuple.paths
+
+    trigger_paths : [ path_gen_digi_reco_stn_dem_dmm ]
+    #    out : [detectorOutput]  # detectorOutput is defined in Stntuple/fcl/templates.fcl
+    out           : []
+    end_paths     : [ out ]
+
 }
 #
 # can use path names specified in 'physics.' context w/o prefixing
 #
-physics.trigger_paths : [ gen_allpatrec_dem_dmm_reco_stnmaker ]
-physics.end_paths     : [ out ]
-
 services.TFileService.fileName            : "mgun_stnmaker.hist"
-physics.filters.InitStntuple.histFileName : "mgun_stnmaker.stn" 
 #------------------------------------------------------------------------------
 # uncomment the next 2 lines if you want the DST file to be written out
 #-----------------------------------------------------------------------------
 # physics.out                               : [ detectorOutput ]
-# outputs.detectorOutput.fileName           : "mgun_stnmaker.root"
+# outputs.detectorOutput.fileName           : "mgun_digi_reco_stn_dem_dmm.root"
 #------------------------------------------------------------------------------
 # debugging
 #------------------------------------------------------------------------------

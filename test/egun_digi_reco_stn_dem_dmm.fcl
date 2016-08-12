@@ -18,7 +18,7 @@ END_PROLOG
 
 #include "Stntuple/fcl/templates.fcl"
 
-process_name : EgunMergePatRecStnmaker
+process_name : EgunDigiRecoStnDemDmm
 
 source       : { module_type : EmptyEvent }
 
@@ -43,14 +43,14 @@ physics : {
 #
 # can use path names specified in 'physics.' context w/o prefixing
 #
-services.TFileService.fileName            : "egun_stnmaker.hist"
+services.TFileService.fileName            : "egun_digi_reco_stn_dem_dmm.hist"
 # physics.filters.InitStntuple.histFileName : "egun_stnmaker.stn" 
 #------------------------------------------------------------------------------
 # uncomment the next 2 lines if you want the DST file to be written out
 #-----------------------------------------------------------------------------
 # physics.out                               : [ detectorOutput ]
 # outputs.detectorOutput.SelectEvents       : { SelectEvents : [ path_gen_digi_reco_stn_dem_dmm ] }
-outputs.detectorOutput.fileName           : "egun_stnmaker.root"
+outputs.detectorOutput.fileName           : "egun_digi_reco_stn_dem_dmm.root"
 #------------------------------------------------------------------------------
 # debugging
 #------------------------------------------------------------------------------

@@ -18,7 +18,7 @@ END_PROLOG
 
 #include "Stntuple/fcl/templates.fcl"
 
-process_name : EgunMergePatRecStnmaker
+process_name : EgunDigiRecoStnDem
 
 source       : { module_type : EmptyEvent }
 
@@ -28,13 +28,13 @@ physics : {
     }
     filters  : { @table::Stntuple.filters 
 	InitStntuple : { @table::Stntuple.filters.InitStntuple
-	    histFileName : "egun_stnmaker.stn" 
+	    histFileName : "egun_digi_reco_stn_dem.stn" 
 	}
     }
 
     @table::Stntuple.paths
 
-    trigger_paths : [ path_gen_digi_reco_stn_dem_dmm ]
+    trigger_paths : [ path_gen_digi_reco_stn_dem ]
     #    out : [detectorOutput]  # detectorOutput is defined in Stntuple/fcl/templates.fcl
     out           : []
     end_paths     : [ out ]
@@ -43,14 +43,14 @@ physics : {
 #
 # can use path names specified in 'physics.' context w/o prefixing
 #
-services.TFileService.fileName            : "egun_stnmaker.hist"
+services.TFileService.fileName            : "egun_digi_reco_stn_dem.hist"
 # physics.filters.InitStntuple.histFileName : "egun_stnmaker.stn" 
 #------------------------------------------------------------------------------
 # uncomment the next 2 lines if you want the DST file to be written out
 #-----------------------------------------------------------------------------
 # physics.out                               : [ detectorOutput ]
-# outputs.detectorOutput.SelectEvents       : { SelectEvents : [ path_gen_digi_reco_stn_dem_dmm ] }
-outputs.detectorOutput.fileName           : "egun_stnmaker.root"
+# outputs.detectorOutput.SelectEvents       : { SelectEvents : [ path_gen_digi_reco_stn_dem ] }
+outputs.detectorOutput.fileName           : "egun_digi_reco_stn_dem.root"
 #------------------------------------------------------------------------------
 # debugging
 #------------------------------------------------------------------------------
