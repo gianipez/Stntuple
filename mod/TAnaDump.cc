@@ -452,7 +452,8 @@ void TAnaDump::printTrackSeed(const mu2e::TrackSeed* TrkSeed,	const char* Opt,
     double pt     = radius*mm2MeV;
 
     const mu2e::CaloCluster*cluster = TrkSeed->_timeCluster._caloCluster.get();
-    
+    double clusterEnergy(-1);
+    if (cluster != 0) clusterEnergy = cluster->energyDep();
     printf("%5i %16p %3i %8.3f %8.5f %7.3f %7.3f",
 	   -1,
 	   TrkSeed,
@@ -463,7 +464,7 @@ void TAnaDump::printTrackSeed(const mu2e::TrackSeed* TrkSeed,	const char* Opt,
     float chi2zphi = -1.;		// TrkSeed->chi2ZPhi();
 
     printf(" %8.3f %8.3f %8.3f %8.4f %10.4f %10.3f %8.3f %8.3f\n",
-	   d0,z0,phi0,tandip,radius,cluster->energyDep(),chi2xy,chi2zphi);
+	   d0,z0,phi0,tandip,radius,clusterEnergy,chi2xy,chi2zphi);
   }
 
   if ((opt == "") || (opt.Index("hits") >= 0) ){
@@ -505,7 +506,7 @@ void TAnaDump::printTrackSeed(const mu2e::TrackSeed* TrkSeed,	const char* Opt,
     
     shcol = shcHandle.product();
     
-    
+    int banner_printed(0);
     for (int i=0; i<nsh; ++i){
       mu2e::PtrStepPointMCVector const& mcptr(hits_mcptrStraw->at(i ) );
       int  hitIndex  = TrkSeed->_timeCluster._strawHitIdxs.at(i)._index;
@@ -513,7 +514,12 @@ void TAnaDump::printTrackSeed(const mu2e::TrackSeed* TrkSeed,	const char* Opt,
       hit       = &shcol->at(hitIndex);
       const mu2e::StepPointMC* Step = mcptr[0].get();
     
-      printStrawHit(hit, Step, "", -1, 0);
+      if (banner_printed == 0){
+	printStrawHit(hit, Step, "banner", -1, 0);
+	banner_printed = 1;
+      } else {
+	printStrawHit(hit, Step, "data", -1, 0);
+      }
     }
     
     
@@ -792,7 +798,6 @@ void TAnaDump::printTrackSeedCollection(const char* ModuleLabel,
 //   yf->SetParameters(radius, phi0, dfdz, y0);
 //   yf->Draw("same");
 // }
-
 //-----------------------------------------------------------------------------
 void TAnaDump::printCalTimePeak(const mu2e::CalTimePeak* TPeak, const char* Opt) {
 
@@ -835,6 +840,8 @@ void TAnaDump::printCalTimePeak(const mu2e::CalTimePeak* TPeak, const char* Opt)
     }
   }
 }
+
+
 
 
 
