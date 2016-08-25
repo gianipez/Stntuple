@@ -311,6 +311,26 @@ void StntupleMaker::beginJob() {
       straw_data->AddCollName("mu2e::StrawHitCollection",fMakeStrawHitModuleLabel.data(),"");
     }
   }
+//--------------------------------------------------------------------------------
+// trackSeed data
+//--------------------------------------------------------------------------------
+  if (fMakeTrackSeeds) {
+    TStnDataBlock* trackSeed_data;
+
+    trackSeed_data = AddDataBlock("TrackSeedBlock",
+				  "TStnTrackSeedBlock",
+				  StntupleInitMu2eTrackSeedBlock,
+				  buffer_size,
+				  split_mode,
+				  compression_level);
+
+    SetResolveLinksMethod("TrackSeedBlock",StntupleInitMu2eTrackSeedBlockLinks);
+
+    if (trackSeed_data) {
+      trackSeed_data->AddCollName("mu2e::TrackSeedCollection",fTrackSeedMaker.data(),"");
+    }
+  }
+
 //-----------------------------------------------------------------------------
 // track straw hits
 //-----------------------------------------------------------------------------
