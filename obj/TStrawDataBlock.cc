@@ -7,9 +7,12 @@
 ClassImp(TStrawDataBlock)
 
 //-----------------------------------------------------------------------------
+// R_v is so far unused
+//-----------------------------------------------------------------------------
   void TStrawDataBlock::Streamer(TBuffer &R__b) {
   if(R__b.IsReading()) {
     //    Version_t R__v = R__b.ReadVersion();
+    R__b.ReadVersion();
     R__b >> fNHits;
     fListOfHits->Streamer(R__b);
   }
