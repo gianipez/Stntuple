@@ -43,7 +43,8 @@ StntupleMakerTemplate : { module_type:StntupleMaker
 #------------------------------------------------------------------------------
     makeStrawHitModuleLabel : "makeSH"
     generatorModuleLabel    : "generate"
-    trackSeedMaker          : "CalPatRecNew"
+    trackSeedBlockName      : ["TrackSeedBlock"]
+    trackSeedModuleLabel    : ["CalPatRecNew"  ]
 
     trackBlockName          : [ "TrackBlock"   ]
     trkRecoModuleLabel      : [ "MergePatRec"  ]

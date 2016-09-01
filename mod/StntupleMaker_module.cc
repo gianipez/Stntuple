@@ -89,7 +89,8 @@ protected:
   std::string              fG4ModuleLabel;
   std::string              fGeneratorModuleLabel;   // defines collection to save, default: "" (all)
   std::string              fMakeStrawHitModuleLabel;
-  std::string              fTrackSeedMaker;
+  std::vector<std::string> fTrackSeedBlockName;
+  std::vector<std::string> fTrackSeedModuleLabel;
   std::vector<std::string> fTrackBlockName;
   std::vector<std::string> fTrkRecoModuleLabel;
   std::vector<std::string> fTrkExtrapolModuleLabel;
@@ -165,7 +166,8 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
   , fG4ModuleLabel          (PSet.get<string>        ("g4ModuleLabel"          ))
   , fGeneratorModuleLabel   (PSet.get<string>        ("generatorModuleLabel"   ))
   , fMakeStrawHitModuleLabel(PSet.get<string>        ("makeStrawHitModuleLabel"))
-  , fTrackSeedMaker         (PSet.get<string>        ("trackSeedMaker"         ))
+  , fTrackSeedBlockName     (PSet.get<vector<string>>("trackSeedBlockName"     ))
+  , fTrackSeedModuleLabel   (PSet.get<vector<string>>("trackSeedModuleLabel"   ))
   , fTrackBlockName         (PSet.get<vector<string>>("trackBlockName"         ))
   , fTrkRecoModuleLabel     (PSet.get<vector<string>>("trkRecoModuleLabel"     ))
   , fTrkExtrapolModuleLabel (PSet.get<vector<string>>("trkExtrapolModuleLabel" ))
@@ -316,18 +318,27 @@ void StntupleMaker::beginJob() {
 //--------------------------------------------------------------------------------
   if (fMakeTrackSeeds) {
     TStnDataBlock* trackSeed_data;
+    const char    *block_name;
+    int            nblocks;
+    
+    nblocks = fTrackSeedBlockName.size();
 
-    trackSeed_data = AddDataBlock("TrackSeedBlock",
-				  "TStnTrackSeedBlock",
-				  StntupleInitMu2eTrackSeedBlock,
-				  buffer_size,
-				  split_mode,
-				  compression_level);
+    for (int i=0; i<nblocks; i++) {
+      
+      block_name = fTrackSeedBlockName[i].data();
 
-    SetResolveLinksMethod("TrackSeedBlock",StntupleInitMu2eTrackSeedBlockLinks);
-
-    if (trackSeed_data) {
-      trackSeed_data->AddCollName("mu2e::TrackSeedCollection",fTrackSeedMaker.data(),"");
+      trackSeed_data = AddDataBlock(block_name, 
+				    "TStnTrackSeedBlock",
+				    StntupleInitMu2eTrackSeedBlock,
+				    buffer_size,
+				    split_mode,
+				    compression_level);
+      
+      SetResolveLinksMethod(block_name,StntupleInitMu2eTrackSeedBlockLinks);
+      
+      if (trackSeed_data) {
+	trackSeed_data->AddCollName("mu2e::TrackSeedCollection",fTrackSeedModuleLabel[i].data(),"");
+      }
     }
   }
 
