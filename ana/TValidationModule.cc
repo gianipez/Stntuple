@@ -72,6 +72,23 @@ TValidationModule::TValidationModule(const char* name, const char* title):
 TValidationModule::~TValidationModule() {
 }
 
+//-----------------------------------------------------------------------------
+void TValidationModule::BookTrackSeedHistograms   (TrackSeedHist_t*   Hist, const char* Folder){
+  
+    HBook1F(Hist->fNHits       ,"nhits"      ,Form("%s: # of straw hits"              ,Folder), 150,   0,   150,Folder);
+    HBook1F(Hist->fClusterTime ,"clusterTime",Form("%s: cluster time; t_{cluster} [ns]",Folder), 800, 400,  1700,Folder);
+    HBook1F(Hist->fClusterEnergy ,"clusterE"   ,Form("%s: cluster energy; E [MeV]      ",Folder), 400,   0,  200,Folder);
+    HBook1F(Hist->fRadius      ,"radius"     ,Form("%s: curvature radius; r [mm]"     ,Folder), 500,   0,   500,Folder);
+    HBook1F(Hist->fMom         ,"p"          ,Form("%s: momentum; p [MeV/c]"          ,Folder), 300,   50,   200,Folder);
+    HBook1F(Hist->fPt         ,"pT"          ,Form("%s: pT; pT [MeV/c]"               ,Folder), 600,   0,   150,Folder);
+    HBook1F(Hist->fTanDip      ,"tanDip"     ,Form("%s: tanDip; tanDip"               ,Folder), 300,   0,     3,Folder);
+    HBook1F(Hist->fChi2XY      ,"chi2XY"     ,Form("%s: #chi^{2}-XY; #chi^{2}/ndof"   ,Folder), 100,   0,    10,Folder);
+    HBook1F(Hist->fChi2ZPhi    ,"chi2ZPhi"   ,Form("%s: #chi^{2}-ZPhi; #chi^{2}/ndof" ,Folder), 100,   0,    10,Folder);
+    HBook1F(Hist->fD0          ,"d0"         ,Form("%s: D0; #chi^{2}/ndof"            ,Folder), 1600,   -400,    400,Folder);
+
+  
+}
+
 
 //-----------------------------------------------------------------------------
 void TValidationModule::BookCaloHistograms(CaloHist_t* Hist, const char* Folder) {
@@ -316,6 +333,53 @@ void TValidationModule::BookHistograms() {
 //-----------------------------------------------------------------------------
   HBook1F(fHist.fCrystalR[0],"rc_0"     ,Form("disk [0] crystal radius"),100,0,1000,"Hist");
   HBook1F(fHist.fCrystalR[1],"rc_1"     ,Form("disk [1] crystal radius"),100,0,1000,"Hist");
+
+//--------------------------------------------------------------------------------
+// book timePeak histograms
+//--------------------------------------------------------------------------------
+  int book_timepeak_histset[kNTrackSeedHistSets];
+  for (int i=0; i<kNTrackSeedHistSets; ++i)  book_timepeak_histset[i] = 0;
+
+  book_timepeak_histset[0] = 1;   // all events
+  book_timepeak_histset[1] = 1;   // timePeaks with NHits>10
+  book_timepeak_histset[2] = 1;   // timePeaks with NHits>15
+
+   for (int i=0; i<kNTrackSeedHistSets; i++) {
+    if (book_timepeak_histset[i] != 0) {
+      sprintf(folder_name,"timepeak_%i",i);
+      fol = (TFolder*) hist_folder->FindObject(folder_name);
+      if (! fol) fol = hist_folder->AddFolder(folder_name,folder_name);
+      fHist.fTimePeak[i] = new TrackSeedHist_t;
+      BookTrackSeedHistograms(fHist.fTimePeak[i],Form("Hist/%s",folder_name));
+    }
+  }
+
+
+//--------------------------------------------------------------------------------
+// book trackSeed histograms
+//--------------------------------------------------------------------------------
+  int book_trackSeed_histset[kNTrackSeedHistSets];
+  for (int i=0; i<kNTrackSeedHistSets; ++i)  book_trackSeed_histset[i] = 0;
+
+  book_trackSeed_histset[0] = 1;   // events with at least one trackSeed
+  book_trackSeed_histset[1] = 1;   // events with at least one trackSeed with p > 80 MeV/c
+  book_trackSeed_histset[2] = 1;   // events with at least one trackSeed with p > 90 MeV/c
+  book_trackSeed_histset[3] = 1;   // events with at least one trackSeed with p > 100 MeV/c
+  book_trackSeed_histset[4] = 1;   // events with at least one trackSeed with 10 < nhits < 15
+  book_trackSeed_histset[5] = 1;   // events with at least one trackSeed with nhits >= 15
+  book_trackSeed_histset[6] = 1;   // events with at least one trackSeed with nhits >= 15 and chi2XY(ZPhi)<4
+
+   for (int i=0; i<kNTrackSeedHistSets; i++) {
+    if (book_trackSeed_histset[i] != 0) {
+      sprintf(folder_name,"trkseed_%i",i);
+      fol = (TFolder*) hist_folder->FindObject(folder_name);
+      if (! fol) fol = hist_folder->AddFolder(folder_name,folder_name);
+      fHist.fTrackSeed[i] = new TrackSeedHist_t;
+      BookTrackSeedHistograms(fHist.fTrackSeed[i],Form("Hist/%s",folder_name));
+    }
+  }
+  
+
 //-----------------------------------------------------------------------------
 // book event histograms
 //-----------------------------------------------------------------------------
@@ -751,6 +815,38 @@ void TValidationModule::FillEventHistograms(EventHist_t* Hist) {
   }
 }
 
+//--------------------------------------------------------------------------------
+// function to fill TrasckSeedHit block
+//--------------------------------------------------------------------------------
+void TValidationModule::FillTrackSeedHistograms(TrackSeedHist_t*   Hist, TStnTrackSeed*    TrkSeed){
+  
+  int         nhits    = TrkSeed->NHits      ();
+  double      clusterT = TrkSeed->ClusterTime();
+  double      clusterE = TrkSeed->ClusterEnergy();
+  
+  double      radius   = 1./fabs(TrkSeed->Omega());
+
+  double      tanDip   = TrkSeed->TanDip();  
+  double      mm2MeV   = 3/10.;
+  double      pT       = radius*mm2MeV;
+  double      p        = pT/std::cos( std::atan(tanDip));
+  
+
+  Hist->fNHits      ->Fill(nhits);	 
+  Hist->fClusterTime->Fill(clusterT);
+  Hist->fClusterEnergy->Fill(clusterE);
+  
+  Hist->fRadius     ->Fill(radius);    
+  Hist->fMom        ->Fill(p);	 
+  Hist->fPt         ->Fill(pT);	 
+  Hist->fTanDip     ->Fill(tanDip);    
+  
+  Hist->fChi2XY     ->Fill(TrkSeed->Chi2XY());
+  Hist->fChi2ZPhi   ->Fill(TrkSeed->Chi2ZPhi());
+  Hist->fD0         ->Fill(TrkSeed->D0());
+
+}
+
 //-----------------------------------------------------------------------------
 void TValidationModule::FillCaloHistograms(CaloHist_t* Hist, TStnCrystal* Cr) {
 
@@ -1093,6 +1189,8 @@ int TValidationModule::BeginJob() {
 //-----------------------------------------------------------------------------
 // register data blocks
 //-----------------------------------------------------------------------------
+  RegisterDataBlock("TimePeakBlock" ,"TStnTrackSeedBlock",&fTimePeakBlock);
+  RegisterDataBlock("TrackSeedBlock","TStnTrackSeedBlock",&fTrackSeedBlock);
   RegisterDataBlock("TrackBlock"    ,"TStnTrackBlock"   ,&fTrackBlock  );
   RegisterDataBlock("ClusterBlock"  ,"TStnClusterBlock" ,&fClusterBlock);
   RegisterDataBlock("CalDataBlock"  ,"TCalDataBlock"    ,&fCalDataBlock);
@@ -1271,6 +1369,68 @@ void TValidationModule::FillHistograms() {
 //-----------------------------------------------------------------------------
   if (fSimp) {
     FillSimpHistograms(fHist.fSimp[0],fSimp);
+  }
+
+//--------------------------------------------------------------------------------
+// TimePeak histograms
+//--------------------------------------------------------------------------------
+  TStnTrackSeed* trkSeed;
+  for (int i=0; i<fNTimePeaks[0]; ++i){
+    
+    trkSeed = fTimePeakBlock->TrackSeed(i);
+    
+    FillTrackSeedHistograms(fHist.fTimePeak[0], trkSeed);
+    
+    int         nhits    = trkSeed->NHits();
+    if (nhits >= 10 ) FillTrackSeedHistograms(fHist.fTimePeak[1], trkSeed);
+
+    if (nhits >= 15 ) FillTrackSeedHistograms(fHist.fTimePeak[2], trkSeed);
+  }  
+
+//--------------------------------------------------------------------------------
+// trackseed histograms
+//--------------------------------------------------------------------------------
+  for (int i=0; i<fNTrackSeeds[0]; ++i){
+    
+    trkSeed = fTrackSeedBlock->TrackSeed(i);
+    
+    FillTrackSeedHistograms(fHist.fTrackSeed[0], trkSeed);
+    
+    int         nhits    = trkSeed->NHits();
+    double      radius   = trkSeed->ClusterTime();
+    
+    double      tanDip   = trkSeed->TanDip();  
+    double      mm2MeV   = 3/10.;
+    double      p        = radius*mm2MeV/std::cos( std::atan(tanDip));
+    
+    double      chi2xy   = trkSeed->Chi2XY();
+    double      chi2zphi = trkSeed->Chi2ZPhi();
+    
+   
+    if (p > 80.) {
+      FillTrackSeedHistograms(fHist.fTrackSeed[1], trkSeed);
+    }
+    
+    if (p > 90) {
+      FillTrackSeedHistograms(fHist.fTrackSeed[2], trkSeed);
+    }
+
+    if (p > 100) {
+      FillTrackSeedHistograms(fHist.fTrackSeed[3], trkSeed);
+    }
+    
+    if ( (nhits>10) && (nhits<15)) {
+      FillTrackSeedHistograms(fHist.fTrackSeed[4], trkSeed);
+    }
+
+    if ( nhits>=15) {
+      FillTrackSeedHistograms(fHist.fTrackSeed[5], trkSeed);
+    }
+    
+    if ( (chi2xy < 4) && (chi2zphi < 4) && (nhits>=15)){
+      FillTrackSeedHistograms(fHist.fTrackSeed[6], trkSeed);
+    }
+  
   }
 //-----------------------------------------------------------------------------
 // track histograms, fill them only for the downstream e- hypothesis

@@ -99,7 +99,7 @@ BEGIN_PROLOG
   stnmaker_dmm_seq       : [ InitStntuple, StntupleMakerDmm   , FillStntuple ]
   stnmaker_dem_dmm_seq   : [ InitStntuple, StntupleMakerDemDmm, FillStntuple ]
 
-  stnmaker3_seq          : [ InitStntuple, StntupleMaker3     , FillStntuple ]
+  stnmaker3_seq          : [ InitStntuple, StntupleMakerTcm     , FillStntuple ]
 #------------------------------------------------------------------------------
 # *** path sequences
 #------------------------------------------------------------------------------
@@ -136,6 +136,8 @@ BEGIN_PROLOG
 #------------------------------------------------------------------------------
   path_gen_hits_calo_apr_vpid_stnm3 : [ @sequence::generatorSeq, @sequence::hitMakerSeq ,
 					@sequence::calRecoSeq  , @sequence::allPatRecSeq,
+					MergePatRecTpr,
+					MergePatRecCpr,
 					@sequence::trkCaloMatchingSeq,
 					@sequence::trkCaloMatchingTprSeq,
 					@sequence::trkCaloMatchingCprSeq,
