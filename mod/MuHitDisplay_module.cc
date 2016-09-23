@@ -203,7 +203,7 @@ namespace mu2e {
 
     const mu2e::Calorimeter*                    fCal;              //
 
-    const mu2e::GenParticleCollection*          fGenParticleColl;         // 
+    const mu2e::GenParticleCollection*          _genParticleColl;         // 
 
     const mu2e::StrawHitCollection*             fStrawHitColl;     // 
 
@@ -517,7 +517,7 @@ namespace mu2e {
       mctr_node->SetListOfHitsMcPtr(&hits_mcptr);
       mctr_node->SetStepPointMCCollection(&_stepPointMCColl);
       mctr_node->SetSimParticlesWithHits(&fSimParticlesWithHits);
-      mctr_node->SetGenpColl(&fGenParticleColl);
+      mctr_node->SetGenpColl(&_genParticleColl);
       fVisManager->AddNode(mctr_node);
     }
   }
@@ -598,9 +598,9 @@ namespace mu2e {
       art::Handle<GenParticleCollection> gensHandle;
       Evt->getByLabel(_generatorModuleLabel, gensHandle);
 
-      if (gensHandle.isValid()) fGenParticleColl = gensHandle.product();
+      if (gensHandle.isValid()) _genParticleColl = gensHandle.product();
       else {
-	fGenParticleColl = 0;
+	_genParticleColl = 0;
 	printf(">>> [%s] WARNING: GenParticleCollection by %s is missing. CONTINUE\n",
 	       oname, _generatorModuleLabel.data());
       }
@@ -787,7 +787,7 @@ namespace mu2e {
 
     art::Selector  selector(art::ProductInstanceNameSelector("virtualdetector") &&
 			    art::ProcessNameSelector("") &&
-			    art::ModuleLabelSelector("g4run"));
+			    art::ModuleLabelSelector(_g4ModuleLabel.data()));
     Evt->get(selector, handle);
 
     if (handle.isValid()) coll = handle.product();
@@ -1019,9 +1019,9 @@ namespace mu2e {
 //-----------------------------------------------------------------------------
       // this is not necessarily correct (for mixed events) !
 
-      if (fGenParticleColl) {
+      if (_genParticleColl) {
 
-	gen_signal = &fGenParticleColl->at(0);
+	gen_signal = &_genParticleColl->at(0);
 	pdg_id = gen_signal->pdgId();
 	// ROOT returns charge in units of dbar-quark charge
 
@@ -1298,7 +1298,7 @@ namespace mu2e {
     arrow->SetLineColor(kRed);
     arrow->DrawArrow(xf1, yf1, xf2, yf2, 0.01, ">");
 
-    if (_stepPointMCColl != NULL) {
+    if (_genParticleColl && (_stepPointMCColl != NULL)) {
       double d0x = tt->d0x();
       double d0y = tt->d0y();
       double d0x2 = tt->d0x() + arrowLength*tt->u0();

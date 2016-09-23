@@ -1158,7 +1158,7 @@ void TAnaDump::printKalRepCollection(const char* ModuleLabel,
   int banner_printed = 0;
   for (int i=0; i<ntrk; i++) {
     art::Ptr<KalRep> kptr = krepsHandle->at(i);
-    fEvent->get(kptr.id(), krepsHandle);
+    //    fEvent->get(kptr.id(), krepsHandle);
     fhicl::ParameterSet const& pset = krepsHandle.provenance()->parameterSet();
     string module_type = pset.get<std::string>("module_type");
  
@@ -1764,7 +1764,7 @@ void TAnaDump::printSimParticle(const mu2e::SimParticle* P, const char* Opt) {
     if ((opt == "") || (opt == "banner")) {
       printf("---------------------------------------------------------------------------");
       printf("------------------------------------------------\n");
-      printf("Index    Primary       ID  Parent        PDG        X          Y          Z");
+      printf("Index    Primary       ID  Parent        GenpID     PDG        X          Y          Z");
       printf("T          Px          Py         Pz         E  \n");
       printf("-------------------------------------------------------------------------\n");
       printf("------------------------------------------------\n");
@@ -1781,8 +1781,9 @@ void TAnaDump::printSimParticle(const mu2e::SimParticle* P, const char* Opt) {
       int  pdg_id    = P->pdgId();
       int  primary   = P->isPrimary();
 
-      printf("%5i %10i %8i %7i %10i  %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f \n",
-	     -1, primary, id, parent_id, pdg_id, 
+      printf("%5i %10i %8i %7i %10i %10i  %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f \n",
+	     -1, primary, id, parent_id, 
+	     P->generatorIndex(), pdg_id, 
 	     P->startPosition().x(),
 	     P->startPosition().y(),
 	     P->startPosition().z(),
