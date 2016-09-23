@@ -528,8 +528,17 @@ Stntuple.paths : {
 }
 
 
+producers: { 
+    @table::CalPatRec.producers 
+    @table::Stntuple.producers 
+}
+
 physics : {
-    producers: { @table::Stntuple.producers }
+    producers: { 
+	@table::CalPatRec.producers 
+	@table::Stntuple.producers 
+    }
+
     filters  : { @table::Stntuple.filters   }
 #------------------------------------------------------------------------------
 # paths
@@ -618,7 +627,9 @@ physics : {
 #
     gen_allpatrec_reco_display  : [ @sequence::generatorSeq, @sequence::hitMakerSeq ,
 				    @sequence::calRecoSeq  , @sequence::allPatRecSeq, @sequence::vadimPidSeq, 
-				    @sequence::stnmaker_seq , MuHitDisplay ]
+#				    @sequence::stnmaker_seq , 
+				    MuHitDisplay ]
+
     gen_allpatrec_digi_display  : [ @sequence::generatorSeq, @sequence::digiMakerSeq ,
 				    @sequence::calRecoSeq  , @sequence::allPatRecSeq, @sequence::vadimPidSeq, 
 				    @sequence::stnmaker_seq , MuHitDisplay ]

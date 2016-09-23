@@ -19,7 +19,7 @@ StntupleMakerTemplate : { module_type:StntupleMaker
     makeCalData         : 0
     makeClusters        : 1
     makeGenp            : 1
-    makePid             : 0
+    makePid             : 1
     makeSimp            : 1
     makeStrawData       : 0
     makeTracks          : 1
@@ -50,6 +50,7 @@ StntupleMakerTemplate : { module_type:StntupleMaker
     trkRecoModuleLabel      : [ "MergePatRec"  ]
     trkExtrapolModuleLabel  : [ "TrkExtrapol"  ]
     trkCaloMatchModuleLabel : [ "CaloMatching" ]
+    pidBlockName            : [ "PidBlock"     ]
     pidModuleLabel          : [ "ParticleID"   ]
     #    pidModuleLabel          : [ "AvikPID"      ]
     fitParticle             : [             11 ] # 11:electron  , 13:muon etc

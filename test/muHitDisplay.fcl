@@ -13,6 +13,7 @@ END_PROLOG
 #include "standardProducers.fcl"
 #include "standardServices.fcl"
 
+#include "Stntuple/fcl/prolog.fcl"
 #include "Stntuple/fcl/templates.fcl"
 
 process_name : MuHitDisplay
