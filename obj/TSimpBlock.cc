@@ -54,6 +54,7 @@ TSimParticle*
 TSimpBlock::NewParticle(Int_t ID, Int_t ParentID, Int_t PdgCode, 
 			int CreationCode, int TerminationCode,
 			int StartVolumeIndex, int EndVolumeIndex,
+			int GenpID,
 			Float_t px, Float_t py, Float_t pz, Float_t e,
 			Float_t vx, Float_t vy, Float_t vz, Float_t t)
 {
@@ -67,6 +68,7 @@ TSimpBlock::NewParticle(Int_t ID, Int_t ParentID, Int_t PdgCode,
 
   p->Init(ID,ParentID, PdgCode,CreationCode,TerminationCode,
 	  StartVolumeIndex,EndVolumeIndex,
+	  GenpID,
 	  px,py,pz,e,vx,vy,vz,t);
 
   fNParticles += 1;

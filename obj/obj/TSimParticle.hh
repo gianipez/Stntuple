@@ -18,6 +18,7 @@ public:
   int             fTerminationCode;
   int             fEndVolumeIndex;
   int             fNStrawHits;
+  int             fGenpID;                      // ** added in V2
 
   float           fMomTargetEnd;
   float           fMomTrackerFront;		// entrance to ST
@@ -35,6 +36,7 @@ public:
   TSimParticle(Int_t ID, Int_t ParentID, Int_t PdgCode, 
 	       int CreationCode, int TerminationCode,
 	       int StartVolumeIndex, int EndVolumeIndex,
+	       int GenpID,
 	       Float_t px, Float_t py, Float_t pz, Float_t e,
 	       Float_t vx, Float_t vy, Float_t vz, Float_t t);
 
@@ -44,7 +46,8 @@ public:
 //-----------------------------------------------------------------------------
   int Init(Int_t id, Int_t ParentID, Int_t PdgCode, 
 	   int CreationCode, int TerminationCode,
-	   int StartVolumeIndex, int EndVolumeIndex,
+	   int StartVolumeIndex, int EndVolumeIndex, 
+	   int GenpID,
 	   Float_t px, Float_t py, Float_t pz, Float_t e,
 	   Float_t vx, Float_t vy, Float_t vz, Float_t t);
 //-----------------------------------------------------------------------------
@@ -63,8 +66,12 @@ public:
 // overloaded methods of TObject
 //-----------------------------------------------------------------------------
   void     Print(Option_t* opt = "") const;
+//-----------------------------------------------------------------------------
+// schema evolution
+//-----------------------------------------------------------------------------
+  void     ReadV1(TBuffer &R__b);
 
-  ClassDef(TSimParticle,1)
+  ClassDef(TSimParticle,2)
 };
 
 #endif

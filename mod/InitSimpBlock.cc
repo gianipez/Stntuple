@@ -43,7 +43,7 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
   mu2e::StrawHitCollection*                list_of_straw_hits(0);
 
   double        px, py, pz, mass, energy;
-  int           id, parent_id, n_straw_hits(0), nhits;
+  int           id, parent_id, genp_id, n_straw_hits(0), nhits;
   int           pdg_code, start_vol_id, end_vol_id, creation_code, termination_code;
   TParticlePDG* part;
   TDatabasePDG* pdg_db = TDatabasePDG::Instance();
@@ -104,6 +104,7 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
       if (sim->parent()) parent_id = sim->parent()->id().asInt();
 
       pdg_code         = (int) sim->pdgId();
+      genp_id          = sim->generatorIndex();
       creation_code    = sim->creationCode();
       termination_code = sim->stoppingCode();
 
@@ -120,6 +121,7 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
 
       simp   = simp_block->NewParticle(id, parent_id, pdg_code, 
 				       creation_code, termination_code,
+				       genp_id,
 				       start_vol_id, end_vol_id,
 				       px, py, pz, energy,
 				       sim->startPosition().x(),
