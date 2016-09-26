@@ -1604,11 +1604,11 @@ void TAnaDump::printStrawHit(const mu2e::StrawHit* Hit, const mu2e::StepPointMC*
 
     if ((opt == "") || (opt.Index("banner") >= 0)) {
       printf("-----------------------------------------------------------------------------------");
-      printf("-------------------------------------------------\n");
+      printf("-------------------------------------------------------------\n");
       printf("   I   SHID  Flags      Plane   Panel  Layer Straw     Time          dt       eDep ");
-      printf("     PDG    PDG(M)    GENID       ID         p   \n");
+      printf("           PDG       PDG(M)   Generator         ID       p   \n");
       printf("-----------------------------------------------------------------------------------");
-      printf("-------------------------------------------------\n");
+      printf("-------------------------------------------------------------\n");
     }
 
     if (opt == "banner") return;
@@ -1626,7 +1626,7 @@ void TAnaDump::printStrawHit(const mu2e::StrawHit* Hit, const mu2e::StepPointMC*
 
     const mu2e::SimParticle * sim (0);
     
-    int      pdg_id(-1), mother_pdg_id(-1), gen_index(-1), sim_id(-1);
+    int      pdg_id(-1), mother_pdg_id(-1), generator_id(-1), sim_id(-1);
     double   mc_mom(-1.);
 
     mu2e::GenId gen_id;
@@ -1642,8 +1642,8 @@ void TAnaDump::printStrawHit(const mu2e::StrawHit* Hit, const mu2e::StepPointMC*
       pdg_id        = simptr->pdgId();
       mother_pdg_id = sim->pdgId();
 
-      if (simptr->fromGenerator()) gen_index = simptr->genParticle()->generatorId().id();
-      else                         gen_index = -1;
+      if (simptr->fromGenerator()) generator_id = simptr->genParticle()->generatorId().id();
+      else                         generator_id = -1;
 
       sim_id        = simptr->id().asInt();
       mc_mom        = Step->momentum().mag();
@@ -1657,7 +1657,7 @@ void TAnaDump::printStrawHit(const mu2e::StrawHit* Hit, const mu2e::StepPointMC*
 
       if (Flags >= 0) printf(" %08x",Flags);
       else            printf("        ");
-      printf("  %5i  %5i   %5i   %5i   %8.3f   %8.3f   %9.6f   %4i   %4i  %10i  %10i %8.3f\n",
+      printf("  %5i  %5i   %5i   %5i   %8.3f   %8.3f   %9.6f   %10i   %10i  %10i  %10i %8.3f\n",
 	     straw->id().getPlane(),
 	     straw->id().getPanel(),
 	     straw->id().getLayer(),
@@ -1667,7 +1667,7 @@ void TAnaDump::printStrawHit(const mu2e::StrawHit* Hit, const mu2e::StepPointMC*
 	     Hit->energyDep(),
 	     pdg_id,
 	     mother_pdg_id,
-	     gen_index,
+	     generator_id,
 	     sim_id,
 	     mc_mom);
     }
