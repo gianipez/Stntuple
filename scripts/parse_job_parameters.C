@@ -188,7 +188,8 @@ int parse_job_parameters(TString& Parameters, StnAnaGlobals_t& Glob) {
 // use GRL only for non-MC jobs
 // finally allow to redefine GRL from the command line
 //-----------------------------------------------------------------------------
-  const char    *env, good_run_list[200];
+  const char    *env; 
+  char          good_run_list[200];
   TString       s("none,1,999999999");
   env = gSystem->Getenv("STNTUPLE_GRL");
   if (env != 0) s = env;

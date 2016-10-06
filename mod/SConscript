@@ -45,8 +45,13 @@ def gen_rootcint(source, target, env, for_signature):
 #    print "[gen_rootcint] class_include = %s"%class_include
 #    print "[gen_rootcint] linkdef       = %s"%linkdef
     
+    includes =   "-Iinclude -I"+os.environ['ART_INC'];
+    includes = includes + " -I"+os.environ['CETLIB_INC'];
+    includes = includes + " -I"+os.environ['CANVAS_INC'];
+    includes = includes + " -I"+os.environ['FHICLCPP_INC'];
+
     cmd = 'if [ ! -d '+tmpdir+' ] ; then mkdir -p '+tmpdir+'; fi ;';
-    cmd = cmd+"rootcint -f "+str(target[0])+" -c -DMU2E -Iinclude $CINT_INCLUDE_DIRS "+class_include+" "+linkdef+"; ";
+    cmd = cmd+"rootcint -f "+str(target[0])+" -c -DMU2E "+includes+" "+class_include+" "+linkdef+"; ";
 
 #    print ">>> cmd = %s"%cmd
     return cmd
@@ -127,8 +132,11 @@ libs     = [ 'Stntuple_val',
              'art_Persistency_Common',
              'art_Utilities',
              rootlibs, 'Physics', 'EG', 
-             'Reflex',
+#             'Reflex',
              'fhiclcpp',
+             'canvas_Persistency_Common',
+             'canvas_Persistency_Provenance',
+             'canvas_Utilities',
              'cetlib',
              'xerces-c',
              'boost_filesystem',

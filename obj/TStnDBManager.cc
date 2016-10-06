@@ -106,6 +106,18 @@ Int_t TStnDBManager::Write(const char* Name, Int_t Option, Int_t BufSize)
 }
 
 //_____________________________________________________________________________
+Int_t TStnDBManager::Write(const char* Name, Int_t Option, Int_t BufSize) const 
+{
+  int rc = 0;
+  TIter it(fListOfDbObjects);
+  while (TObject* obj = it.Next()) {
+    if (! obj->TestBit(kInvalidObject))
+      rc += obj->Write();
+  }
+  return rc;
+}
+
+//_____________________________________________________________________________
 Int_t TStnDBManager::Read(const char* Name) 
 {
   int nb = 0;

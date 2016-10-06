@@ -227,12 +227,8 @@ void TEvdCrvBar::Clear(Option_t* Opt) {
 	//fEnergy = 0.;
 }
 
-const mu2e::CrvRecoPulses::CrvSingleRecoPulse* TEvdCrvBar::lastPulseInWindow(int SiPM, float threshold, float timeLow, float timeHigh)
+const mu2e::CrvRecoPulses::CrvSingleRecoPulse* TEvdCrvBar::lastPulseInWindow(int SiPM) const 
 {
-	fthreshold = threshold;
-	ftimeLow = timeLow;
-	ftimeHigh = timeHigh;
-	
 	const mu2e::CrvRecoPulses::CrvSingleRecoPulse* tempPulse = 0; //Create a pointer to a 'null' pulse
 
 	for (unsigned int i = 0; i < sipmPulses[SiPM].size(); i++)
@@ -241,10 +237,10 @@ const mu2e::CrvRecoPulses::CrvSingleRecoPulse* TEvdCrvBar::lastPulseInWindow(int
 		//					And they are...
 
 		//Skip until we get to a pulse in the time window
-		if (sipmPulses[SiPM][i]->_leadingEdge < timeLow || sipmPulses[SiPM][i]->_PEs < threshold)
+		if (sipmPulses[SiPM][i]->_leadingEdge < ftimeLow || sipmPulses[SiPM][i]->_PEs < fthreshold)
 			continue;
 		//if the pulse occurs beyond the time window then break and return the previous pulse, if not then set the buffer (lastpulse)
-		if (sipmPulses[SiPM][i]->_leadingEdge > timeHigh)
+		if (sipmPulses[SiPM][i]->_leadingEdge > ftimeHigh)
 			break;
 
 		tempPulse = sipmPulses[SiPM][i];		
@@ -255,7 +251,7 @@ const mu2e::CrvRecoPulses::CrvSingleRecoPulse* TEvdCrvBar::lastPulseInWindow(int
 
 
 //_____________________________________________________________________________
-void TEvdCrvBar::Print(Option_t* Opt) {
+void TEvdCrvBar::Print(Option_t* Opt) const {
 	const mu2e::CrvRecoPulses::CrvSingleRecoPulse* tempPulse = 0;
 
 	printf("----------------------------------------------------------------\n");
@@ -267,7 +263,7 @@ void TEvdCrvBar::Print(Option_t* Opt) {
 		if (fSectionID == 4 && (SiPM == 1 || SiPM == 3)) // Or if it is Top TS, but I will need to figure out how to determine this
 			continue;
 
-		tempPulse = lastPulseInWindow(SiPM, fthreshold, ftimeLow, ftimeHigh);
+		tempPulse = lastPulseInWindow(SiPM);
 		if (tempPulse)
 		{
 			printf("thresh %f , tL %f , tH %f , %p \n", fthreshold, ftimeLow, ftimeHigh, tempPulse);

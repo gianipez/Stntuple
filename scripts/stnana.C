@@ -11,6 +11,18 @@
 // last run before the Sept'2003 shutdown: 168899
 //-----------------------------------------------------------------------------
 #include "Stntuple/scripts/global_vars.h"
+#include "Stntuple/ana/scripts/modules.hh"
+
+#include "Stntuple/loop/TStnInputModule.hh"
+#include "Stntuple/loop/TStnOutputModule.hh"
+#include "Stntuple/loop/TStnCatalog.hh"
+#include "Stntuple/loop/TStnAna.hh"
+
+#include "Stntuple/obj/TStnGoodRunList.hh"
+
+#include "Stntuple/scripts/init_geometry.C"
+#include "Stntuple/scripts/setup_trigger_path.C" //    (const char* TriggerPath);
+#include "Stntuple/scripts/parse_job_parameters.C" //  (TString& Parameters, StnAnaGlobals_t& Glob);
 
 StnAnaGlobals_t         g;
 
@@ -29,28 +41,32 @@ void stnana (TString     Book   ,
 // - a package 'pkg' has an ana/scripts/load_stnana_scripts_pkg.C script
 //   which loads the jobs...
 //-----------------------------------------------------------------------------
-  char        macro[200], load_script[200], line[200];
+  char        macro[200], load_script[200], line[200], cmd[200];
   const char* pkg;
   const char* test_release_dir = gSystem->Getenv("MU2E_BASE_RELEASE");
 
-  const char* script[] = { 
+  const char* script[] = { // loaded explicitly
     "init_geometry.C",
     "parse_job_parameters.C",
     "setup_trigger_path.C",
     0 
   };
 
+  TInterpreter::EErrorCode rc;
+
   TInterpreter* cint = gROOT->GetInterpreter();
   
   for (int i=0; script[i] != 0; i++) {
     sprintf(macro,"%s/Stntuple/scripts/%s",test_release_dir,script[i]);
     if (! cint->IsLoaded(macro)) {
-      cint->LoadMacro(macro);
+      printf("STNANA: locating %s\n",macro);
+      cint->LoadMacro(macro,&rc);
+      if (rc != 0) printf("stnana ERROR : failed to load %s\n",macro);
     }
   }
 
-  if (! gInterpreter->IsLoaded(macro)) {
-    gInterpreter->LoadMacro(macro);
+  if (! cint->IsLoaded(macro)) {
+    cint->LoadMacro(macro);
   }
 
   TString stnana_packages = gEnv->GetValue("Stnana.Package","");
@@ -62,7 +78,7 @@ void stnana (TString     Book   ,
 
     sprintf(macro,"%s/%s/ana/scripts/load_stnana_scripts_%s.C",test_release_dir,pkg,pkg);
 
-    printf("[stnana.C] loading: %s\n",macro);
+    //    printf("[stnana.C] loading: %s\n",macro);
 
     if (! gInterpreter->IsLoaded(macro)) {
       gInterpreter->LoadMacro(macro);
@@ -106,12 +122,12 @@ void stnana (TString     Book   ,
 // generator-level MC study - use Pythia, this approach can be extended  
 // to work with other generators
 //-----------------------------------------------------------------------------
-      printf(">>> STNANA: initializing PYTHIA\n");
-      g.x = new TStnAna();
-      py  = TG3Pythia6::Instance();
-      m_gen = new TStnGeneratorModule();
-      m_gen->AddGenerator(py);
-      g.x->SetInputModule(m_gen);
+      printf(">>> STNANA: PYTHIA initialization temporarily turned OFF\n");
+      // g.x = new TStnAna();
+      // py  = TG3Pythia6::Instance();
+      // m_gen = new TStnGeneratorModule();
+      // m_gen->AddGenerator(py);
+      // g.x->SetInputModule(m_gen);
     }
     else if (Book == "script") {
       g.x = new TStnAna();
@@ -138,8 +154,8 @@ void stnana (TString     Book   ,
 //-----------------------------------------------------------------------------
 //  no matter what command line prevails
 //-----------------------------------------------------------------------------
-      if      (g.DoMc               != -1) g.dataset->SetMcFlag(g.DoMc);
-      else if (dataset->GetMcFlag() != -1) g.DoMc = g.dataset->GetMcFlag();
+      if      (g.DoMc                 != -1) g.dataset->SetMcFlag(g.DoMc);
+      else if (g.dataset->GetMcFlag() != -1) g.DoMc = g.dataset->GetMcFlag();
       else {
 	g.DoMc = 0;
 	g.dataset->SetMcFlag(0);
@@ -168,9 +184,9 @@ void stnana (TString     Book   ,
     const char* init_geometry = gEnv->GetValue("Stnana.InitGeometry",
 					       "stntuple_init_geometry");
     sprintf(line,"%s();",init_geometry);
-    printf(" [stnana.C]: executing:  %s\n",line);
+    printf("[stnana.C]: executing:  %s\n",line);
     gInterpreter->ProcessLine(line);
-    printf(" [stnana.C]: done with executing:  %s\n",line);
+    printf("[stnana.C]: done with executing:  %s\n",line);
   }
   //  /* DEBUG */      return;
 //-----------------------------------------------------------------------------
@@ -179,7 +195,9 @@ void stnana (TString     Book   ,
 // emulation to work
 //-----------------------------------------------------------------------------
 // /* DEBUG */     printf("[stnana.C]: before setup_trigger_path\n");    
-  setup_trigger_path(g.L3TrigPath);
+
+  setup_trigger_path(g.L3TrigPath.Data());
+
   // /* DEBUG */     printf("[stnana.C]: after setup_trigger_path\n");    
 //-----------------------------------------------------------------------------
 //  analyse definition of the requested job, handle debug mode
@@ -187,16 +205,15 @@ void stnana (TString     Book   ,
   printf(" --- job_name = .%s. task = %s\n",g.JobName.Data(), g.Task.Data());
   
   int ind       = g.Task.Index("(");
-  int rc;
+
   TString task  = g.Task(0,ind);
   TObjString* s = (TObjString*) g.ListOfTasks->FindObject(task.Data());
   if (s) {
-    char cmd[100];
     sprintf(cmd,"%s;",g.Task.Data());
     printf("cmd=%s\n",cmd);
-    rc = gInterpreter->ProcessLine(cmd);
+    gInterpreter->ProcessLine(cmd,&rc);
     if (rc < 0) {
-      printf(" [stnana.C] called script returned -1, %s, bailing out ****** \n",task.Data());
+      printf("[stnana.C] called script returned -1, %s, bailing out ****** \n",task.Data());
       return;
     }
   }
@@ -206,7 +223,7 @@ void stnana (TString     Book   ,
     return;
   }
   
-  if (g.Debug != 0) debug(m_dbg);
+  //  if (g.Debug != 0) debug(m_dbg);
 //-----------------------------------------------------------------------------
 //  output module if requested
 //-----------------------------------------------------------------------------
@@ -223,9 +240,9 @@ void stnana (TString     Book   ,
 //-----------------------------------------------------------------------------
   TStopwatch t;
   t.Start();
-  if     (g.JobType == 0) g.x->Run(NEvents,g.MinRun,g.MaxRun);
-  elseif (g.JobType == 1) g.x->ProcessEventList(g.EventList);
-  elseif (g.JobType == 2) g.x->ProcessEventList(g.RunEventList);
+  if      (g.JobType == 0) g.x->Run(NEvents,g.MinRun,g.MaxRun);
+  else if (g.JobType == 1) g.x->ProcessEventList(g.EventList);
+  else if (g.JobType == 2) g.x->ProcessEventList(g.RunEventList);
   t.Stop();
   t.Print();
 //-----------------------------------------------------------------------------

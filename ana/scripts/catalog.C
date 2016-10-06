@@ -14,4 +14,5 @@ int catalog(int Level=2, int ReportFreq=1000) {
   stntuple::m_dfc = (TDFCModule*) g.x->AddModule("TDFCModule",0,"dfc","dfc");
   stntuple::m_dfc->SetPrintLevel(Level);
   g.x->SetNEventsToReport(ReportFreq);
+  return 0;
 }

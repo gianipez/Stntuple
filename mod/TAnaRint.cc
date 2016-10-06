@@ -60,7 +60,7 @@ TAnaRint* TAnaRint::Instance(int argc, char** argv) {
 
 
 //------------------------------------------------------------------------------
-void TAnaRint::Delete() {
+void TAnaRint::DeleteAll() {
   if (fgInstance) {
     // ***********************************    delete fgInstance;
     fgInstance = 0;
@@ -73,7 +73,7 @@ TAnaRint::Cleaner::Cleaner() {
 
 //------------------------------------------------------------------------------
 TAnaRint::Cleaner::~Cleaner() {
-  TAnaRint::Delete();
+  TAnaRint::DeleteAll();
 }
 
 

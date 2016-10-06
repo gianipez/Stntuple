@@ -5,7 +5,7 @@
 
 file=$1
 
- offline_version=v5_7_6
+ offline_version=v6_0_0
          release=`echo $MU2E_BASE_RELEASE`
  offline_git_tag=`cat $MU2E_BASE_RELEASE/.git/ORIG_HEAD`
 stntuple_git_tag=`cat $MU2E_BASE_RELEASE/Stntuple/.git/ORIG_HEAD`

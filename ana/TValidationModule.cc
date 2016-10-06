@@ -1952,7 +1952,7 @@ int TValidationModule::Event(int ientry) {
     }
 
     if ((tp->fEp > 0) && (track->fEp > 0) && (fabs(tp->fEp-track->fEp) > 1.e-6)) {
-      GetHeaderBlock()->Print(Form(" TValidationModule ERROR: tp->fEp = %10.5f  track->fEp = %10.5f\n ",tp->fEp,track->fEp));
+      GetHeaderBlock()->Print(Form(" TValidationModule ERROR: tp->fEp = %10.5f  track->fEp = %10.5f",tp->fEp,track->fEp));
     }
 //-----------------------------------------------------------------------------
 // PID likelihoods

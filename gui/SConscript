@@ -41,8 +41,15 @@ def gen_rootcint(source, target, env, for_signature):
 #    print "[gen_rootcint] class_include = %s"%class_include
 #    print "[gen_rootcint] linkdef       = %s"%linkdef
     
-    cmd = 'if [ ! -d '+tmpdir+' ] ; then mkdir -p '+tmpdir+'; fi ;';
-    cmd = cmd+"rootcint -f "+str(target[0])+" -c -DMU2E -Iinclude $CINT_INCLUDE_DIRS "+class_include+" "+linkdef+"; ";
+    includes =   "-Iinclude -I"+os.environ['CLHEP_INC'];
+    includes = includes + " -I"+os.environ['ART_INC'];
+    includes = includes + " -I"+os.environ['CANVAS_INC'];
+    includes = includes + " -I"+os.environ['CETLIB_INC'];
+    includes = includes + " -I"+os.environ['FHICLCPP_INC'];
+    includes = includes + " -I"+os.environ['BTRK_INC'];
+
+    cmd      = 'if [ ! -d '+tmpdir+' ] ; then mkdir -p '+tmpdir+'; fi ;';
+    cmd      = cmd+"rootcint -f "+str(target[0])+" -c -DMU2E "+includes+" "+class_include+" "+linkdef+"; ";
 
 #    print ">>> cmd = %s"%cmd
     return cmd
@@ -110,10 +117,11 @@ for dict in list_of_dict_files:
 #------------------------------------------------------------------------------
 # done, build shared libs
 #------------------------------------------------------------------------------
-rootlibs = [ 'Core', 'Cint', 'RIO', 'Net', 'Hist', 'Spectrum', 'MLP', 'Graf', 'Graf3d', 'Gpad', 'Tree',
+rootlibs = [ 'Core', 'RIO', 'Net', 'Hist', 'Spectrum', 'MLP', 'Graf', 'Graf3d', 'Gpad', 'Tree',
              'Rint', 'Postscript', 'Matrix', 'Physics', 'MathCore', 'Thread', 'Gui', 'm', 'dl' ]
 
-libs     = [ 'Stntuple_obj', 'Stntuple_base',
+libs     = [ 'Stntuple_obj', 
+             'Stntuple_base',
              'mu2e_RecoDataProducts' ,
              'mu2e_MCDataProducts' ,
              'mu2e_CalorimeterGeom',
@@ -127,7 +135,11 @@ libs     = [ 'Stntuple_obj', 'Stntuple_base',
              'art_Persistency_Common',
              'art_Persistency_Provenance',
              'art_Utilities',
-             'Reflex',
+#             'Reflex',
+             'canvas_Persistency_Common',
+             'canvas_Persistency_Provenance',
+             'canvas_Utilities',
+#             'canvas_Version',
              'cetlib',
              'boost_system'
              ]

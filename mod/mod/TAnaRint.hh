@@ -29,7 +29,7 @@ public:
 
   static TAnaRint* Instance(int argc=0, char** argv=0);
 
-  static void      Delete ();
+  static void      DeleteAll ();
 
   static TRint*    Rint() { return fgRint; }
 

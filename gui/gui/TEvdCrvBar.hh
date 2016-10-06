@@ -59,7 +59,12 @@ public:
 	double		Y0()	const	{ return yDispLoc; } //Y Center of box?
 	TBox*	Box()	const	{ return fBox; }
 	mu2e::CRSScintillatorBarIndex	Bar()	const	{ return barIndex; }
-	const mu2e::CrvRecoPulses::CrvSingleRecoPulse* lastPulseInWindow(int SiPM, float threshold, float timeLow, float timeHigh);
+
+	const mu2e::CrvRecoPulses::CrvSingleRecoPulse* lastPulseInWindow(int SiPM) const;
+
+  void SetThreshold(float Threshold) { fthreshold = Threshold; }
+  void SetTimeLow  (float Time     ) { ftimeLow   = Time; }
+  void SetTimeHigh (float Time     ) { ftimeHigh  = Time; }
 
 	//const mu2e::CRSScintillatorBar Bar() const { return fBar; }
 	//-----------------------------------------------------------------------------
@@ -87,7 +92,7 @@ public:
 	// Overloaded methods of TObject
 	//-----------------------------------------------------------------------------
 	virtual void   Clear(const char* Opt = "");
-	virtual void   Print(const char* Opt = "");  // **MENU**
+	virtual void   Print(const char* Opt = "") const;  // **MENU**
 
 protected:
 	//const mu2e::CRSScintillatorBar& fBar;

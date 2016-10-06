@@ -60,13 +60,13 @@ public:
   int              GetLastRun         () { return fLastRun;       }
   int              GetDebugBit   (int I) { return fDebugBit[I];   }
 
-  TObjArray*       GetListOfHistograms() { 
-    Warning("GetListOfHistograms",Form(" from %s\n",GetName()));
-    Warning("GetListOfHistograms",
- 	    "2003.02.13: obsolete, use TStnModule::DeleteHistograms(). Thanks, Pasha");
-    DeleteHistograms(fFolder);
-    return new TObjArray;
-  }
+  // TObjArray*       GetListOfHistograms() { 
+  //   Warning("GetListOfHistograms",Form(" from %s\n",GetName()));
+  //   Warning("GetListOfHistograms",
+  // 	    "2003.02.13: obsolete, use TStnModule::DeleteHistograms(). Thanks, Pasha");
+  //   DeleteHistograms(fFolder);
+  //   return new TObjArray;
+  // }
 
   TObjArray*       GetListOfL3TrigNames() { return fListOfL3TrigNames; }
   TObjArray*       GetListOfL3Triggers () { return fListOfL3Triggers;  }

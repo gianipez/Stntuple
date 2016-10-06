@@ -10,6 +10,11 @@
 import os, re, string
 Import('env')
 #------------------------------------------------------------------------------
+# STNTUPLE link: add ROOT 'EG' library after 'Physics' library
+#------------------------------------------------------------------------------
+rootlibs = env['ROOTLIBS']
+rootlibs.insert(rootlibs.index("Physics")+1,"EG");
+#------------------------------------------------------------------------------
 # last two components of the path. Ex: /not/this/but/THIS/AND_THIS
 #                                      "AND_THIS" is usually "src"
 #------------------------------------------------------------------------------
@@ -40,8 +45,13 @@ def gen_rootcint(source, target, env, for_signature):
 #    print "[gen_rootcint] class_include = %s"%class_include
 #    print "[gen_rootcint] linkdef       = %s"%linkdef
     
+    includes =   "-Iinclude -I"+os.environ['ART_INC'];
+    includes = includes + " -I"+os.environ['CETLIB_INC'];
+    includes = includes + " -I"+os.environ['CANVAS_INC'];
+    includes = includes + " -I"+os.environ['FHICLCPP_INC'];
+
     cmd = 'if [ ! -d '+tmpdir+' ] ; then mkdir -p '+tmpdir+'; fi ;';
-    cmd = cmd+"rootcint -f "+str(target[0])+" -c -DMU2E -Iinclude $CINT_INCLUDE_DIRS "+class_include+" "+linkdef+"; ";
+    cmd = cmd+"rootcint -f "+str(target[0])+" -c -DMU2E "+includes+" "+class_include+" "+linkdef+"; ";
 
 #    print ">>> cmd = %s"%cmd
     return cmd
@@ -69,7 +79,7 @@ for f in list_of_linkdef_files:
 #    print "linkdef = ",linkdef
 #    print "include = ",include
 
-    env.RootCint(dict,[f,include]) 
+    env.RootCint(dict,[f,include])
 #------------------------------------------------------------------------------
 # Step3 : compile local .cc files
 #------------------------------------------------------------------------------
@@ -109,9 +119,6 @@ for dict in list_of_dict_files:
 #------------------------------------------------------------------------------
 # done, build shared libs
 #------------------------------------------------------------------------------
-rootlibs = [ 'Core', 'Cint', 'RIO', 'Net', 'Hist', 'Spectrum', 'MLP', 'Graf', 'Graf3d', 'Gpad', 'Tree',
-             'Rint', 'Postscript', 'Matrix', 'Physics', 'EG', 'MathCore', 'Thread', 'Gui', 'm', 'dl' ]
-
 libs     = [ 'Stntuple_base' ]
 #------------------------------------------------------------------------------
 # build the shared library with non-module code

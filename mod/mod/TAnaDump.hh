@@ -83,8 +83,8 @@ public:
   static TAnaDump*  Instance();
 
 
-  void   AddObject (const char* Name, void* Object);
-  void*  FindObject(const char* Name);
+  void   AddObject      (const char* Name, void* Object);
+  void*  FindNamedObject(const char* Name);
 
   void SetEvent(art::Event& Evt) { fEvent = &Evt; }
   void SetFlagBgrHitsModuleLabel(const char* Label) { fFlagBgrHitsModuleLabel = Label; }

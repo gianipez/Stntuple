@@ -5,5 +5,6 @@
 
 int debug(TDebugModule* Module) {
   Module = (TDebugModule*) g.x->AddModule("TDebugModule",0);
+  return 0;
 }
 

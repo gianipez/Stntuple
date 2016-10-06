@@ -134,7 +134,7 @@ void TAnaDump::AddObject(const char* Name, void* Object) {
 }
 
 //-----------------------------------------------------------------------------
-void* TAnaDump::FindObject(const char* Name) {
+void* TAnaDump::FindNamedObject(const char* Name) {
   void* o(NULL);
 
   TNamedHandle* h = (TNamedHandle*) fListOfObjects->FindObject(Name);
