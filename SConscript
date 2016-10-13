@@ -65,7 +65,7 @@ def stntuple_gen_rootcint(source, target, env, for_signature):
     lib_dir = os.environ['MU2E_BASE_RELEASE']+"/lib";
     cmd = 'if [ ! -d '+tmp_lib_dir+' ] ; then mkdir -p '+tmp_lib_dir+'; fi ;';
     cmd = cmd+"rootcint -f "+dict+" -c -DMU2E "+includes+" "+class_include+" "+linkdef+"; ";
-    cmd = cmd+'if [ ! -d '+lib_dir+' ] ; then mkdir '+lib_dir+' ;';
+    cmd = cmd+'if [ ! -d '+lib_dir+' ] ; then mkdir '+lib_dir+' ; fi ; ';
     cmd = cmd+"mv "+pcm_file+" "+lib_dir+'/.'; 
 #    print ">>> cmd = %s"%cmd
     return cmd
