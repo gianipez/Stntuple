@@ -29,6 +29,7 @@ usage if ARGV.length < 1
 
 opts = GetoptLong.new(
   [ "--book"          , "-b",        GetoptLong::REQUIRED_ARGUMENT ],
+  [ "--cleanup"       , "-c",        GetoptLong::REQUIRED_ARGUMENT ],
   [ "--dataset"       , "-d",        GetoptLong::REQUIRED_ARGUMENT ],
   [ "--Directory"     , "-D",        GetoptLong::REQUIRED_ARGUMENT ],
   [ "--help"          , "-?",        GetoptLong::NO_ARGUMENT       ],
@@ -42,6 +43,7 @@ opts = GetoptLong.new(
 )
 
 #----------------------------- defaults
+$cleanup        = 'yes'
 $user           = ENV["USER"]
 $host           = `hostname -f`.strip
 $directory      = ""
@@ -60,14 +62,15 @@ $diskpool       = nil;
 
 #----------------------------- process the parsed options
 opts.each do |opt, arg|
-  if    (opt == "--dataset"       ) then
+  if    (opt == "--book"          ) ; $book           = arg 
+  elsif (opt == "--cleanup"       ) ; $cleanup        = arg 
+  elsif (opt == "--dataset"       ) then # dataset name defines the default filename pattern
      $dataset        = arg 
-     if ($pattern == "") ; then $pattern = arg ; end
+    if ($pattern == "") ; then $pattern = arg ; end
   elsif (opt == "--Directory"     ) ; $directory      = arg 
   elsif (opt == "--help"          ) ; usage()    
   elsif (opt == "--host"          ) ; $host           = arg 
   elsif (opt == "--install"       ) ; $install_host   = arg 
-  elsif (opt == "--book"          ) ; $book           = arg 
   elsif (opt == "--mode"          ) ; $mode           = arg 
   elsif (opt == "--nev_fileset"   ) ; $nev_fileset    = arg.to_i 
   elsif (opt == "--pattern"       ) ; $pattern        = arg 
@@ -190,8 +193,8 @@ $logfile   = 'catalog_stntuples.'+Process.pid.to_s()+'.log'
 
 f1 = File.new($tmp_script,'w');
 f1.puts('{');
-f1.puts('  gInterpreter->LoadMacro("Stntuple/ana/scripts/dh.C");');
-f1.puts("  dh::catalog_list_of_files(\"#{$request_file}\",#{$mode});");
+f1.puts('  gInterpreter->LoadMacro("Stntuple/ana/scripts/dh_catalog.C");');
+f1.puts("  gInterpreter->ProcessLine(\"dh::catalog_list_of_files(\\\"#{$request_file}\\\",#{$mode})\");");
 f1.puts('}');
 f1.close();
 #------------------------------------------------------------------------------
@@ -343,6 +346,8 @@ end
 #-----------------------------------------------------------------------
 # final step: cleanup
 #-----------------------------------------------------------------------
-rc = `rm #{$logfile} #{$tmp_script} #{$request_file}`
+if ($cleanup != 'no') then
+  rc = `rm #{$logfile} #{$tmp_script} #{$request_file}`
+end
 
 exit(rc.to_i)
