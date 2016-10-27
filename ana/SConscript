@@ -18,7 +18,7 @@ stn_helper.handle_dictionaries();
 
 list_of_cc_files =  Glob('*.cc', strings=True);
 skip_list        = []
-libs             = ['Stntuple_alg', 'Stntuple_obj', 'Stntuple_loop', 'Stntuple_base', rootlibs];
+libs             = ['Stntuple_alg', 'Stntuple_obj', 'Stntuple_loop', 'Stntuple_geom', 'Stntuple_base', rootlibs];
 
 stn_helper.build_libs(list_of_cc_files, skip_list,libs);
 

@@ -22,6 +22,7 @@ stn_helper.handle_dictionaries();
 list_of_cc_files =  Glob('*.cc', strings=True);
 skip_list        = []
 libs             = [ 'Stntuple_obj',
+                     'Stntuple_geom',
                      'Stntuple_base',
                      'mu2e_RecoDataProducts' ,
                      'mu2e_MCDataProducts' ,

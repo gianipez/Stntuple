@@ -33,7 +33,7 @@
 #include "Stntuple/gui/TEvdCrystal.hh"
 #include "Stntuple/gui/TStnVisManager.hh"
 
-#include "Stntuple/obj/TDisk.hh"
+#include "Stntuple/geom/TDisk.hh"
 
 // #include "CalorimeterGeom/inc/VaneCalorimeter.hh"
 #include "CalorimeterGeom/inc/Crystal.hh"

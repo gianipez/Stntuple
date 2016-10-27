@@ -4,7 +4,6 @@
 #include "TClonesArray.h"
 
 #include "Stntuple/obj/TStnDataBlock.hh"
-#include "Stntuple/obj/TStnCrystal.hh"
 #include "Stntuple/mod/InitStntupleDataBlocks.hh"
 #include "TCalHitData.hh"
 
