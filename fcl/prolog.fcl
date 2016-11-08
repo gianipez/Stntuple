@@ -3,6 +3,12 @@ BEGIN_PROLOG
 #------------------------------------------------------------------------------
 # Stntuple maker sequence
 #------------------------------------------------------------------------------
+StntupleEventDump : { module_type:StntupleEventDump
+    module_name       : StntupleEventDump
+    interactiveMode   : 1
+    useTimeOffsets    : 0
+    debugBits         : { } # bit0:1  # bit1:1 # bit51:1
+}
 #------------------------------------------------------------------------------
 # event list contains 3 numbers per event : run, subrun, event
 # if the event list is empty, all events are passed through
@@ -136,6 +142,8 @@ Stntuple : {
     producers : {}  # empty table
 
     filters : {
+	StntupleEventDump : { @table::StntupleEventDump }
+
 	InitStntuple : { module_type:InitStntuple
 	    module_name       : InitStntuple
 	    histFileName      : "default.stn"

@@ -75,7 +75,7 @@ namespace {
   mu2e::PtrStepPointMCVectorCollection  *fgListOfMCStrawHits;
 }
 //______________________________________________________________________________
-TAnaDump::TAnaDump() {
+TAnaDump::TAnaDump(int UseTimeOffsets) {
 //   if (! TROOT::Initialized()) {
 //     static TROOT a ("ROOT@Mu2e","hmm",initfuncs);
 //   }
@@ -83,22 +83,25 @@ TAnaDump::TAnaDump() {
   fListOfObjects          = new TObjArray();
   fFlagBgrHitsModuleLabel = "FlagBkgHits";
 
-  std::vector<std::string> VS;
-  VS.push_back(std::string("protonTimeMap"));
-  VS.push_back(std::string("muonTimeMap"));
+
+  if (UseTimeOffsets) {
+    std::vector<std::string> VS;
+    VS.push_back(std::string("protonTimeMap"));
+    VS.push_back(std::string("muonTimeMap"));
   
-  fhicl::ParameterSet  pset;
-  pset.put("inputs", VS);
-  if (fgTimeOffsets == NULL) {
-    fgTimeOffsets = new mu2e::SimParticleTimeOffset(pset);
+    fhicl::ParameterSet  pset;
+    pset.put("inputs", VS);
+    if (fgTimeOffsets == NULL) {
+      fgTimeOffsets = new mu2e::SimParticleTimeOffset(pset);
+    }
   }
 }
 
 //------------------------------------------------------------------------------
-TAnaDump* TAnaDump::Instance() {
+TAnaDump* TAnaDump::Instance(int UseTimeOffsets) {
   static TAnaDump::Cleaner cleaner;
 
-  if  (!  fgInstance) fgInstance  = new TAnaDump();
+  if  (! fgInstance) fgInstance  = new TAnaDump(UseTimeOffsets);
   return fgInstance;
 }
 
@@ -1875,24 +1878,27 @@ void TAnaDump::printStepPointMC(const mu2e::StepPointMC* Step, const char* Opt) 
       parent_id     = (int) par->id().asInt();
     }
 
-    const mu2e::Straw* straw = &tracker->getStraw(mu2e::StrawIndex(Step->volumeId()));
+    double doca = -9999.;
+    if (tracker) {
+      const mu2e::Straw* straw = &tracker->getStraw(mu2e::StrawIndex(Step->volumeId()));
 
-    const Hep3Vector* v1 = &straw->getMidPoint();
-    HepPoint p1(v1->x(),v1->y(),v1->z());
+      const Hep3Vector* v1 = &straw->getMidPoint();
+      HepPoint p1(v1->x(),v1->y(),v1->z());
 
-    const Hep3Vector* v2 = &Step->position();
-    HepPoint    p2(v2->x(),v2->y(),v2->z());
-
-    TrkLineTraj trstraw(p1,straw->getDirection()  ,0.,0.);
-    TrkLineTraj trstep (p2,Step->momentum().unit(),0.,0.);
+      const Hep3Vector* v2 = &Step->position();
+      HepPoint    p2(v2->x(),v2->y(),v2->z());
+      
+      TrkLineTraj trstraw(p1,straw->getDirection()  ,0.,0.);
+      TrkLineTraj trstep (p2,Step->momentum().unit(),0.,0.);
 
     // 2015-02-16 G. Pezzu and Murat change in the print out to be finished
     // 2015-02-25 P.Murat: fix sign - trajectory is the first !
     //  however, the sign of the disptance of closest approach is invariant
     // wrt the order
-    TrkPoca poca(trstep, 0., trstraw, 0.);
+      TrkPoca poca(trstep, 0., trstraw, 0.);
     
-    double doca = poca.doca();
+      doca = poca.doca();
+    }
     
     //    art::Ptr<mu2e::GenParticle> const& apgen = sim->genParticle();
     //    mu2e::GenParticle* gen = (mu2e::GenParticle*) &(*sim->genParticle());
@@ -1910,9 +1916,16 @@ void TAnaDump::printStepPointMC(const mu2e::StepPointMC* Step, const char* Opt) 
     fEvent->getRun().getByLabel("g4run", volumes);
 
 //2014-26-11 gianipez added the timeoffsets to the steppoints time
-    fgTimeOffsets->updateMap(*fEvent);
-    
-    double stepTime = fgTimeOffsets->timeWithOffsetsApplied(*Step);
+
+    double stepTime(-9999.);
+    if (fgTimeOffsets) {
+      fgTimeOffsets->updateMap(*fEvent);
+      stepTime = fgTimeOffsets->timeWithOffsetsApplied(*Step);
+    }
+    else {
+      stepTime = Step->time();
+    }
+
     //    const mu2e::PhysicalVolumeInfo& pvinfo = volumes->at(sim->startVolumeIndex());
     //    const mu2e::PhysicalVolumeInfo& pvinfo = volumes->at(Step->volumeId()); - sometimes crashes..
 

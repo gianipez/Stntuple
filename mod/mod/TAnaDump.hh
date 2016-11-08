@@ -62,7 +62,7 @@ protected:
 
 private:
 
-  TAnaDump();
+  TAnaDump(int TimeOffsets = 1);
   ~TAnaDump();
   
   class  Cleaner {
@@ -80,7 +80,7 @@ public:
 //-----------------------------------------------------------------------------
 // methods
 //-----------------------------------------------------------------------------
-  static TAnaDump*  Instance();
+  static TAnaDump*  Instance(int UseTimeOffsets = 1);
 
 
   void   AddObject      (const char* Name, void* Object);
