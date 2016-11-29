@@ -1,8 +1,11 @@
 #ifndef stntuple_ana_scripts_modules_hh
 #define stntuple_ana_scripts_modules_hh
 
+// #include "Stntuple/ana/TDFCModule.hh"
+
 class TClcAnaModule;
 class TDebugModule;
+class TDFCModule;
 class TLumiMonModule;
 class TCalAnaModule;
 class TCesAnaModule;
