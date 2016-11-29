@@ -54,7 +54,7 @@ def stntuple_gen_rootcint(source, target, env, for_signature):
     includes = includes + " -I"+os.environ['CANVAS_INC'  ];
     includes = includes + " -I"+os.environ['FHICLCPP_INC'];
     includes = includes + " -I"+os.environ['CLHEP_INC'   ];
-    includes = includes + " -I"+os.environ['CLHEP_INC'   ];
+    includes = includes + " -I"+os.environ['BOOST_INC'   ];
 
     dict     = str(target[0]);
     tmp_lib_dir = os.path.dirname(dict);
@@ -116,7 +116,9 @@ class stntuple_helper:
 # generate dictionaries
 #------------------------------------------------------------------------------
         list_of_linkdef_files = Glob(self.subdir+'/dict/*_linkdef.h', strings=True)
-#        print "[Stntuple/obj] list_of_linkdef_files = \n",list_of_linkdef_files
+        if (self._debug):
+            print "[Stntuple."+self.subdir+"] handle_dictionaries: list_of_linkdef_files = \n",list_of_linkdef_files
+            
         list_of_dict_files    = []
 
         for f in list_of_linkdef_files:
@@ -127,8 +129,9 @@ class stntuple_helper:
             dict          = '#/tmp/src/'+self.d1+'/'+clname+'_dict.cxx';
             list_of_dict_files.append(dict);
 
-            #    print "linkdef = ",linkdef
-            #    print "include = ",include
+            if (self._debug):
+                print "linkdef = ",linkdef
+                print "include = ",include
 
             env.StntupleRootCint(dict,[f,include])
 #------------------------------------------------------------------------------
@@ -151,7 +154,9 @@ class stntuple_helper:
 
         for cc in list_of_cc_files:
             if (not cc in skip_list):
-                #    print ".cc file: "+cc
+                if (self._debug):
+                    print ".cc file: "+cc
+                    
                 o = '#/tmp/src/'+self.d1+'/'+string.split(cc,'.')[0]+'.o'
                 self._list_of_object_files.append(o);
                 env.SharedObject(o,cc)
@@ -160,10 +165,11 @@ class stntuple_helper:
 
         lib_name = os.environ['MU2E_BASE_RELEASE']+'/lib/'+self.libname+'.so';
 
-        # print "Stntuple/obj list_of_obj_files:",list_of_obj_files
+        if (self._debug):
+            print "Stntuple/obj list_of_object_files:",self._list_of_object_files
 
         env.SharedLibrary(lib_name,self._list_of_object_files,LIBS = [libs])
-        # print ">>>>> EXIT Stntuple/obj"
+
 
     def build_modules(self,list_of_module_files, skip_list, libs = []):
         if (self._debug):
@@ -171,13 +177,17 @@ class stntuple_helper:
 
         for module in list_of_module_files:
             if (not module in skip_list):
-                #    print ".cc file: "+cc
+                if (self._debug):
+                    print "module file: "+module
+                    
                 o = '#/tmp/src/'+self.d1+'/'+string.split(module,'.')[0]+'.o'
                 env.SharedObject(o,module)
 
                 mname = string.split(os.path.basename(module),'.')[0];
                 lib   = '#/lib/libmu2e_'+self.dirname+'_'+mname+'.so';
-                #    print "o: "+o, "lib:"+lib
+                if (self._debug):
+                    print "o: "+o, "lib:"+lib
+                    
                 env.SharedLibrary(lib,o,LIBS = ['libStntuple_mod.so',libs]);
 
 # Export the class so that it can be used in the SConscript files
