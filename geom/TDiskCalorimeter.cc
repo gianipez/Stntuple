@@ -23,7 +23,8 @@ ClassImp(TDiskCalorimeter)
 
 //_____________________________________________________________________________
 TDiskCalorimeter::TDiskCalorimeter(): TObject() {
-  fInitialized = 0;
+  fNDisks           = -1;
+  fInitialized      = 0;
 }
 
 //_____________________________________________________________________________
@@ -41,7 +42,7 @@ TDiskCalorimeter::~TDiskCalorimeter() {
 
 //-----------------------------------------------------------------------------
 int TDiskCalorimeter::Init(GeomData_t* Geom) {
-  int channel_offset(0);
+  int channel_offset(0), rc(0);
 
   if (fInitialized != 0) {
     printf(">>> TDiskCalorimeter::Init ERROR: an attempt to reinitialize, BAIL OUT\n");
@@ -54,6 +55,15 @@ int TDiskCalorimeter::Init(GeomData_t* Geom) {
 
   double dead_space = Geom->fWrapperThickness+Geom->fShellThickness;
 
+  if (fNDisks <= 0) {
+    printf(">>> TDiskCalorimeter::Init ERROR: failed to initialize geometry with square crystals. CONTINUE.\n");
+    printf(">>>                               check presence of the CalDataBlock branch in the input ntuple.\n\n");
+    fInitialized = -1;
+    return -1;
+  }
+
+  fInitialized = 1;
+  
   for (int i=0; i<fNDisks; i++) {
     fDisk[i] = new TDisk(i,
 			 Geom->fRMin[i],
@@ -63,22 +73,20 @@ int TDiskCalorimeter::Init(GeomData_t* Geom) {
 			 Geom->fHexSize,
 			 dead_space,
 			 Geom->fMinFraction);
-
+    
     if (fDisk[i]->ListOfCrystals() != NULL) {
       fDisk[i]->SetFirstChanOffset(channel_offset);
       channel_offset += fDisk[i]->NCrystals();
     }
     else {
-					// initialization error
+				// initialization error
       fInitialized = -1;
       fNDisks      = -1;
-      return -1;
+      rc           = -1;
     }
   }
 
-  fInitialized = 1;
-
-  return 0;
+  return rc;
 }
 
 //-----------------------------------------------------------------------------
