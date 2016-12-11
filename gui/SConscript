@@ -14,6 +14,8 @@ babarlibs = env['BABARLIBS']
 rootlibs  = env['ROOTLIBS']
 if ( not ("EG" in rootlibs)):
     rootlibs.insert(rootlibs.index("Physics")+1,"EG");
+if ( not ("Geom" in rootlibs)):
+    rootlibs.insert(rootlibs.index("EG")+1     ,"Geom");
 
 stn_helper = stntuple_helper();
 
