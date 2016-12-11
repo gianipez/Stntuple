@@ -9,6 +9,7 @@ class TH1F;
 class TH2F;
 class TCanvas;
 class TFolder;
+class TNtuple;
 
 void merge_stn_hist(const char* InputList, 
 		    const char* OutputFile);
@@ -51,6 +52,7 @@ int    compare_arrays    (TObjArray* Arr1,
 
 double compare_histograms(TH1* H1,TH1* H2, Double_t   MinProb, Int_t flag=0);
 
+int    create_ntuple     (const char* Filename, TNtuple*& Ntuple, int Debug = 0);
 
 int histograms_identical(TH1 * Hist1, TH1 * Hist2);
 

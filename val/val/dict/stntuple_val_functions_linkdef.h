@@ -8,6 +8,7 @@
 #pragma link C++ function merge_prod_hist;
 #pragma link C++ function compare_prod_hist;
 #pragma link C++ function compare_files;
+#pragma link C++ function create_ntuple;
 #pragma link C++ function histograms_identical;
 #pragma link C++ function histograms_fraction;
 #pragma link C++ function folder_to_dir;
