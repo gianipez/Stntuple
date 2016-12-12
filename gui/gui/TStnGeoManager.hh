@@ -38,6 +38,8 @@ public:
   void SetRecursiveVisibilityByName    (TGeoNode* Node, const char* NamePattern, int OnOff);
   void SetRecursiveVisibilityByMaterial(TGeoNode* Node, const char* Material   , int OnOff);
 
+  void HideTsCoils (int OriginalColors);
+  void HideDsCoils (int OriginalColors);
   void HideBuilding(int OriginalColors);
   
 				// Mu2e-specific - Node name starts with 'Pattern'

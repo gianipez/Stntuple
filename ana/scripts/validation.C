@@ -9,6 +9,7 @@
 // def_name validation_003("ces_only");
 // def_name validation_004("debug_ntrk");
 def_name validation_005("val_stn");
+def_name validation_006("evd");
 //-----------------------------------------------------------------------------
 // standard validation studies
 //-----------------------------------------------------------------------------
@@ -91,3 +92,17 @@ void val_stn(int PdgCode = 11, int GeneratorCode = 2) {
   m_val->SetPdgCode      (PdgCode);
   m_val->SetGeneratorCode(GeneratorCode);
 }
+
+
+//-----------------------------------------------------------------------------
+void  evd(int DebugBit = -1) {
+//-----------------------------------------------------------------------------
+// configure analysis module to write TMVA training trees
+//-----------------------------------------------------------------------------
+  m_evd = (TEventDisplayModule*) g.x->AddModule("TEventDisplayModule",0);
+  m_evd->SetDisplayBeamMuMinus(1);
+  m_evd->SetDisplayBeamMuPlus (1);
+
+  if (DebugBit >= 0) m_evd->SetDebugBit(DebugBit,1);
+}
+

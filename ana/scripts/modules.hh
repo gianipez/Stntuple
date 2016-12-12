@@ -24,6 +24,8 @@ class TTrackAnaModule;
 class TTrigAnaModule;
 class TWenuMonModule;
 class TJpsiMonModule;
+
+class TEventDisplayModule;
 class TValidationModule;
 
 namespace stntuple {
@@ -53,5 +55,6 @@ namespace stntuple {
 };
 
 
+TEventDisplayModule*     m_evd   = NULL;
 TValidationModule*       m_val   = NULL;
 #endif

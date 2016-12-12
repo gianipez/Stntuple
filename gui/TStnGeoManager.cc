@@ -237,11 +237,11 @@ void TStnGeoManager::SetRecursiveColorTranspByMaterial(TGeoNode* Node, const cha
 
 //-----------------------------------------------------------------------------
 void TStnGeoManager::SetRecursiveVisibilityColorTranspByNameAndMaterial(TGeoNode*   Top    ,
-									  const char* Name   ,
-									  const char* MatName,
-									  int         Visibility,
-									  int         Color  ,
-									  int         Transp) {
+									const char* Name   ,
+									const char* MatName,
+									int         Visibility,
+									int         Color  ,
+									int         Transp) {
   TGeoVolume*  vol = Top->GetVolume();
   TString name     = vol->GetName();
   TString mat_name = vol->GetMaterial()->GetName();
@@ -260,11 +260,54 @@ void TStnGeoManager::SetRecursiveVisibilityColorTranspByNameAndMaterial(TGeoNode
 }
 
 //-----------------------------------------------------------------------------
+// set default colors
+//-----------------------------------------------------------------------------
 void TStnGeoManager::SetDefaultColorTransp(int Transp) {
   SetRecursiveColorTransp(fTop->GetVolume(),kCyan-10,Transp);
   fTransp = Transp;
+
+//-----------------------------------------------------------------------------
+// color target foils
+//-----------------------------------------------------------------------------
+  SetRecursiveColorTranspByName(fSttMother,"TargetFoil",kGray+3,60);
+
+
 }
 
+
+//-----------------------------------------------------------------------------
+void TStnGeoManager::HideTsCoils(int KeepOriginalColors) {
+
+  // Volumes will be made invisible if their name contains one
+  // of these strings.
+  
+  static TString name[] = {
+    "TS1_Coil", "TS2_Coil", "TS3_Coil", "TS4_Coil", "TS5_Coil",
+    "pBendLogic", "pipeLogic",
+    "centerRing", "leftSideRing", "rightSideRing",
+    ""
+  };
+
+  for (int i=0; name[i] != ""; i++) {
+    SetRecursiveVisibilityByName(fTop,name[i].Data(),0);
+  }
+}
+
+//-----------------------------------------------------------------------------
+void TStnGeoManager::HideDsCoils(int KeepOriginalColors) {
+
+  // Volumes will be made invisible if their name contains one
+  // of these strings.
+  
+  static TString name[] = {
+    "Ceiling", "backfill", "dirt", "concrete",
+    ""
+  };
+
+  for (int i=0; name[i] != ""; i++) {
+    SetRecursiveVisibilityByName(fTop,name[i].Data(),0);
+  }
+}
 
 //-----------------------------------------------------------------------------
 void TStnGeoManager::HideBuilding(int KeepOriginalColors) {
