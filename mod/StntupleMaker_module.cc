@@ -89,6 +89,7 @@ protected:
   std::string              fG4ModuleLabel;
   std::string              fGeneratorModuleLabel;   // defines collection to save, default: "" (all)
   std::string              fMakeStrawHitModuleLabel;
+  std::string              fMakeStrawDigiModuleLabel;
   std::vector<std::string> fTrackSeedBlockName;
   std::vector<std::string> fTrackSeedModuleLabel;
   std::vector<std::string> fTrackBlockName;
@@ -163,16 +164,17 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
   , fMakeTrigger        (PSet.get<int>         ("makeTrigger"    ))
   , fMakeVirtualHits    (PSet.get<int>         ("makeVirtualHits"))
   
-  , fG4ModuleLabel          (PSet.get<string>        ("g4ModuleLabel"          ))
-  , fGeneratorModuleLabel   (PSet.get<string>        ("generatorModuleLabel"   ))
-  , fMakeStrawHitModuleLabel(PSet.get<string>        ("makeStrawHitModuleLabel"))
-  , fTrackSeedBlockName     (PSet.get<vector<string>>("trackSeedBlockName"     ))
-  , fTrackSeedModuleLabel   (PSet.get<vector<string>>("trackSeedModuleLabel"   ))
-  , fTrackBlockName         (PSet.get<vector<string>>("trackBlockName"         ))
-  , fTrkRecoModuleLabel     (PSet.get<vector<string>>("trkRecoModuleLabel"     ))
-  , fTrkExtrapolModuleLabel (PSet.get<vector<string>>("trkExtrapolModuleLabel" ))
-  , fTrkCaloMatchModuleLabel(PSet.get<vector<string>>("trkCaloMatchModuleLabel"))
-  , fPidBlockName           (PSet.get<vector<string>>("pidBlockName"           ))
+  , fG4ModuleLabel           (PSet.get<string>        ("g4ModuleLabel"          ))
+  , fGeneratorModuleLabel    (PSet.get<string>        ("generatorModuleLabel"   ))
+  , fMakeStrawHitModuleLabel (PSet.get<string>        ("makeStrawHitModuleLabel"))
+  , fMakeStrawDigiModuleLabel(PSet.get<string>        ("makeStrawDigiModuleLabel"))
+  , fTrackSeedBlockName      (PSet.get<vector<string>>("trackSeedBlockName"     ))
+  , fTrackSeedModuleLabel    (PSet.get<vector<string>>("trackSeedModuleLabel"   ))
+  , fTrackBlockName          (PSet.get<vector<string>>("trackBlockName"         ))
+  , fTrkRecoModuleLabel      (PSet.get<vector<string>>("trkRecoModuleLabel"     ))
+  , fTrkExtrapolModuleLabel  (PSet.get<vector<string>>("trkExtrapolModuleLabel" ))
+  , fTrkCaloMatchModuleLabel (PSet.get<vector<string>>("trkCaloMatchModuleLabel"))
+  , fPidBlockName            (PSet.get<vector<string>>("pidBlockName"           ))
   , fPidModuleLabel         (PSet.get<vector<string>>("pidModuleLabel"         ))
   , fTrackStrawHitBlockName (PSet.get<vector<string>>("trackStrawHitBlockName" ))
   
@@ -422,8 +424,8 @@ void StntupleMaker::beginJob() {
 
 	track_data->AddCollName("mu2e::KalRepCollection"              ,fTrkRecoModuleLabel[i].data()     ,iname.data());
 	track_data->AddCollName("mu2e::StrawHitCollection"            ,fMakeStrawHitModuleLabel.data()   ,"");
-	track_data->AddCollName("mu2e::StrawDigiMCCollection"         ,fMakeStrawHitModuleLabel.data()   ,"StrawHitMC");
-	track_data->AddCollName("mu2e::PtrStepPointMCVectorCollection",fMakeStrawHitModuleLabel.data()   ,"StrawHitMCPtr");
+	track_data->AddCollName("mu2e::StrawDigiMCCollection"         ,fMakeStrawDigiModuleLabel.data()   ,"StrawHitMC");
+	track_data->AddCollName("mu2e::PtrStepPointMCVectorCollection",fMakeStrawDigiModuleLabel.data()   ,"StrawHitMCPtr");
 	track_data->AddCollName("mu2e::TrkCaloIntersectCollection"    ,fTrkExtrapolModuleLabel [i].data(),"");
 	track_data->AddCollName("mu2e::CaloClusterCollection"         ,fCaloClusterMaker.data()          ,"");
 	track_data->AddCollName("mu2e::TrackClusterMatchCollection"   ,fTrkCaloMatchModuleLabel[i].data(),"");

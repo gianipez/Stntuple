@@ -280,8 +280,9 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 
   art::Handle<mu2e::KalRepPtrCollection> krepsHandle;
   if (krep_module_label[0] != 0) {
-    if (krep_description[0] == 0) AnEvent->getByLabel(krep_module_label,krepsHandle);
-    else                          AnEvent->getByLabel(krep_module_label,krep_description, krepsHandle);
+    // if (krep_description[0] == 0) AnEvent->getByLabel(krep_module_label,krepsHandle);
+    // else                          AnEvent->getByLabel(krep_module_label,krep_description, krepsHandle);
+    AnEvent->getByLabel(krep_module_label,krepsHandle);
     if (krepsHandle.isValid())    list_of_kreps = krepsHandle.product();
   }
 
@@ -300,14 +301,16 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 
   art::Handle<mu2e::StrawDigiMCCollection> sdmcHandle;
   if (sdmc_module_label[0] != 0) {
-    if (sdmc_description[0] == 0) AnEvent->getByLabel(sdmc_module_label,sdmcHandle);
-    else                          AnEvent->getByLabel(sdmc_module_label,sdmc_description,sdmcHandle);
+    // if (sdmc_description[0] == 0) AnEvent->getByLabel(sdmc_module_label,sdmcHandle);
+    // else                          AnEvent->getByLabel(sdmc_module_label,sdmc_description,sdmcHandle);
+    AnEvent->getByLabel(sdmc_module_label,sdmcHandle);
     if (sdmcHandle.isValid()) list_of_mc_straw_hits = sdmcHandle.product();
   }
 
   art::Handle<mu2e::TrkCaloIntersectCollection>  texHandle;
   if (trex_module_label[0] != 0) {
-    AnEvent->getByLabel(trex_module_label,trex_description,texHandle);
+    //    AnEvent->getByLabel(trex_module_label,trex_description,texHandle);
+    AnEvent->getByLabel(trex_module_label,texHandle);
     if (texHandle.isValid()) list_of_extrapolated_tracks = texHandle.product();
   }
 
@@ -349,7 +352,7 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
     fhicl::ParameterSet const& pset = handle.provenance()->parameterSet();
     string module_type = pset.get<std::string>("module_type");
     if      (module_type == "CalPatRec") xxx =  1;
-    else if (module_type == "TrkRecFit") xxx =  0;
+    else if (module_type == "KalFinalFit") xxx =  0;
     else                                 xxx = -1;
 //-----------------------------------------------------------------------------
 // track-only-based particle ID, initialization ahs already happened in the constructor
@@ -494,8 +497,12 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 	  loc   = s_hit-s_hit0;
 	  if ((loc >= 0) && (loc < n_straw_hits)) {
 	    sdmc = &list_of_mc_straw_hits->at(loc);
-	    stmc[0] = sdmc->stepPointMC(mu2e::StrawDigi::zero).get();
-	    stmc[1] = sdmc->stepPointMC(mu2e::StrawDigi::one ).get();
+	    // use TDC channel 0 to define the MC match
+	    mu2e::StrawDigi::TDCChannel itdc = mu2e::StrawDigi::zero;
+	    if(!sdmc->hasTDC(mu2e::StrawDigi::zero)) itdc = mu2e::StrawDigi::one;
+	    stmc[0] = sdmc->stepPointMC(itdc).get();
+	    // stmc[0] = sdmc->stepPointMC(mu2e::StrawDigi::zero).get();
+	    // stmc[1] = sdmc->stepPointMC(mu2e::StrawDigi::one ).get();
 //-----------------------------------------------------------------------------
 // count number of active hits with R > 200 um and misassigned drift signs
 //-----------------------------------------------------------------------------
@@ -778,7 +785,7 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
     track->fNMcStrawHits = 0;
 
     art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandleStraw;
-    AnEvent->getByLabel(strh_module_label,"StrawHitMCPtr",mcptrHandleStraw);
+    AnEvent->getByLabel(strh_module_label,mcptrHandleStraw);
     stepPointMCVectorCollection = mcptrHandleStraw.product();
 
     for (int i=0; i<n_straw_hits; i++) {

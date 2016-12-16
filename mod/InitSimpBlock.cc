@@ -70,7 +70,7 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
   const mu2e::StepPointMC*                    step;
 
   art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandleStraw;
-  AnEvent->getByLabel(strh_module_label,"StrawHitMCPtr",mcptrHandleStraw);
+  AnEvent->getByLabel(strh_module_label,mcptrHandleStraw);
   stepPointMCVectorCollection = mcptrHandleStraw.product();
 
   mu2e::GeomHandle<mu2e::VirtualDetector> vdg;
