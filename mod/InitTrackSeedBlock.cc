@@ -24,6 +24,8 @@
 #include "RecoDataProducts/inc/TrackSeed.hh"
 #include "RecoDataProducts/inc/TrackSeedCollection.hh"
 
+#include "RecoDataProducts/inc/CaloCluster.hh"
+
 #include "CalPatRec/inc/THackData.hh"
 
 //-----------------------------------------------------------------------------
@@ -79,8 +81,8 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
     
     trackSeed->fTrackSeed    = trkSeed;
     trackSeed->fNHits        = trkSeed->_timeCluster._strawHitIdxs.size();
-    trackSeed->fT0           = trkSeed->t0    ();
-    trackSeed->fT0Err        = trkSeed->errt0 ();     
+    trackSeed->fT0           = trkSeed->_timeCluster.t0()._t0;
+    trackSeed->fT0Err        = trkSeed->_timeCluster.t0()._t0err;     
     trackSeed->fD0           = trkSeed->d0    ();
     trackSeed->fPhi0         = trkSeed->phi0  ();     
     trackSeed->fOmega        = trkSeed->omega ();

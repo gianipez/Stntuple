@@ -88,7 +88,7 @@ TAnaDump::TAnaDump(int UseTimeOffsets) {
     std::vector<std::string> VS;
     VS.push_back(std::string("protonTimeMap"));
     VS.push_back(std::string("muonTimeMap"));
-  
+    
     fhicl::ParameterSet  pset;
     pset.put("inputs", VS);
     if (fgTimeOffsets == NULL) {
@@ -441,8 +441,8 @@ void TAnaDump::printTrackSeed(const mu2e::TrackSeed* TrkSeed,	const char* Opt,
   if ((opt == "") || (opt.Index("data") >= 0)) {
     int    nhits   = TrkSeed->_timeCluster._strawHitIdxs.size();
     
-    double t0     = TrkSeed->t0();
-    double t0err  = TrkSeed->errt0();
+    double t0     = TrkSeed->_timeCluster.t0()._t0;
+    double t0err  = TrkSeed->_timeCluster.t0()._t0err;
 
     double d0     = TrkSeed->d0();
     double z0     = TrkSeed->z0();
@@ -512,7 +512,7 @@ void TAnaDump::printTrackSeed(const mu2e::TrackSeed* TrkSeed,	const char* Opt,
     int banner_printed(0);
     for (int i=0; i<nsh; ++i){
       mu2e::PtrStepPointMCVector const& mcptr(hits_mcptrStraw->at(i ) );
-      int  hitIndex  = TrkSeed->_timeCluster._strawHitIdxs.at(i)._index;
+      int  hitIndex  = int(TrkSeed->_timeCluster._strawHitIdxs.at(i));
     
       hit       = &shcol->at(hitIndex);
       const mu2e::StepPointMC* Step = mcptr[0].get();
@@ -834,7 +834,7 @@ void TAnaDump::printCalTimePeak(const mu2e::CalTimePeak* TPeak, const char* Opt)
       int  nhits, loc;
       nhits = TPeak->NHits();
       for (int i=0; i<nhits; i++) {
-	loc   = TPeak->_index[i]._index;
+	loc   = int(TPeak->_index[i]);
 	hit   = &TPeak->_shcol->at(loc);
 	flags = *((int*) &TPeak->_shfcol->at(loc));
 
@@ -1887,7 +1887,7 @@ void TAnaDump::printStepPointMC(const mu2e::StepPointMC* Step, const char* Opt) 
 
       const Hep3Vector* v2 = &Step->position();
       HepPoint    p2(v2->x(),v2->y(),v2->z());
-      
+
       TrkLineTraj trstraw(p1,straw->getDirection()  ,0.,0.);
       TrkLineTraj trstep (p2,Step->momentum().unit(),0.,0.);
 
@@ -2121,10 +2121,10 @@ void TAnaDump::printStrawHitPosition(const mu2e::StrawHitPosition* Hit, const ch
 
   int flag = *((int*) &Hit->flag());
 
-  double wres = Hit->posRes(mu2e::StrawHitPosition::phi);
+  double wres = Hit->posRes(mu2e::StrawHitPosition::wire);
   if (wres > 999.) wres = 999.;
 
-  double rres = Hit->posRes(mu2e::StrawHitPosition::rho);
+  double rres = Hit->posRes(mu2e::StrawHitPosition::trans);
   if (rres > 999.) rres = 999.;
 
   if ((opt == "") || (opt == "data")) {

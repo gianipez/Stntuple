@@ -30,20 +30,22 @@ BEGIN_PROLOG
   calRecoSeq    : [ MakeCaloProtoCluster, MakeCaloCluster ]
 
 # hit pre-making for TrkPatRec; FSHPreStereo is needed to flag straw hits
-  tprPrepHitSeq : [ FSHPreStereo, MakeStereoHits, FlagStrawHits, FlagBkgHits ]
+  tprPrepHitSeq : [ FSHPreStereo, MakeStrawHitPositions, MakeStereoHits, FlagStrawHits, FlagBkgHits ]
 
 # CalPatRec
   cprPrepHitSeq : [ CalPatRecFSHP, CalPatRecMakeStrawHitPositions, CalPatRecMakeStereoHits,  
 		    CalPatRecFlagStrawHits, CalPatRecFlagBkgHits ]
 
-  trkPatRecSeq     : [ @sequence::tprPrepHitSeq, TimePeakFinder, PosHelixFinder, TRFDownstreameMinus , MergePatRec    ]
+  trkPatRecSeq     : [ @sequence::tprPrepHitSeq, TimeClusterFinder, PosHelixFinder, KSFDeM, 
+		       KFFDeM, MergePatRec    ]
   calPatRecSeq     : [ @sequence::cprPrepHitSeq, CalPatRec   , MergePatRec    ]
-  allPatRecSeq     : [ @sequence::tprPrepHitSeq, TimePeakFinder, PosHelixFinder, TRFDownstreameMinus, 
-		       @sequence::cprPrepHitSeq, CalPatRec, 
-		       MergePatRec ]
+  allPatRecSeq     : [ @sequence::tprPrepHitSeq, TimeClusterFinder, PosHelixFinder, KSFDeM, 
+		       KFFDeM, @sequence::cprPrepHitSeq, CalPatRec, MergePatRec ]
 
-  trkPatRecDemSeq  : [ @sequence::tprPrepHitSeq, TimePeakFinder, PosHelixFinder, TRFDownstreameMinus , MergePatRecDem ]
-  trkPatRecDmmSeq  : [ @sequence::tprPrepHitSeq, TimePeakFinder, PosHelixFinder, TRFDownstreammuMinus, MergePatRecDmm ]
+  trkPatRecDemSeq  : [ @sequence::tprPrepHitSeq, TimeClusterFinder, PosHelixFinder, KSFDeM, 
+		       KFFDeM , MergePatRecDem ]
+  trkPatRecDmmSeq  : [ @sequence::tprPrepHitSeq, TimeClusterFinder, PosHelixFinder, KSFDeM, 
+		       KFFDeM, MergePatRecDmm ]
 
   calPatRecDemSeq  : [ @sequence::cprPrepHitSeq, CalPatRecDem, MergePatRecDem ]
 
@@ -51,26 +53,28 @@ BEGIN_PROLOG
 # event for the downstream particles, avikPID requires running both electron and muon track reconstruction 
 # hit making - just once, but two modules
 
-  allPatRecDemSeq     : [ @sequence::tprPrepHitSeq, TimePeakFinder, PosHelixFinder,  TRFDownstreameMinus, 
+  allPatRecDemSeq     : [ @sequence::tprPrepHitSeq, TimeClusterFinder, PosHelixFinder,  KSFDeM, 
+			  KFFDeM, 
 			  @sequence::cprPrepHitSeq, CalPatRecDem, 
 			  MergePatRecDem ]
 
-  allPatRecDmmSeq     : [ @sequence::tprPrepHitSeq, TimePeakFinder, PosHelixFinder,  TRFDownstreammuMinus, 
+  allPatRecDmmSeq     : [ @sequence::tprPrepHitSeq, TimeClusterFinder, PosHelixFinder,  KSFDeM, 
+			  KFFDeM,
 			  @sequence::cprPrepHitSeq, CalPatRecDmm, 
 			  MergePatRecDmm ]
 #------------------------------------------------------------------------------
 # downstream electron and muon reconstructon together
 #------------------------------------------------------------------------------
-  trkPatRecDemDmmSeq  : [ @sequence::tprPrepHitSeq, TimePeakFinder, PosHelixFinder, 
-			  TRFDownstreameMinus, TRFDownstreammuMinus, 
+  trkPatRecDemDmmSeq  : [ @sequence::tprPrepHitSeq, TimeClusterFinder, PosHelixFinder, 
+			  KSFDeM, KFFDeM, KSFDmuM, KFFDmuM, 
 			  MergePatRecDem, MergePatRecDmm ]
 
   calPatRecDemDmmSeq  : [ @sequence::cprPrepHitSeq, 
 			  CalPatRecDem, CalPatRecDmm, 
 			  MergePatRecDem, MergePatRecDmm ]
 
-  allPatRecDemDmmSeq  : [ @sequence::tprPrepHitSeq, TimePeakFinder, PosHelixFinder,  
-			  TRFDownstreameMinus, TRFDownstreammuMinus, 
+  allPatRecDemDmmSeq  : [ @sequence::tprPrepHitSeq, TimeClusterFinder, PosHelixFinder,  
+			  KSFDeM, KFFDeM, KSFDmuM, KFFDmuM, 
 			  @sequence::cprPrepHitSeq, CalPatRecDem, CalPatRecDmm, 
 			  MergePatRecDem, MergePatRecDmm ]
 #------------------------------------------------------------------------------
@@ -135,6 +139,17 @@ BEGIN_PROLOG
 # do track-to-calo matching for each branch separately
 #------------------------------------------------------------------------------
   path_gen_hits_calo_apr_vpid_stnm3 : [ @sequence::generatorSeq, @sequence::hitMakerSeq ,
+					@sequence::calRecoSeq  , @sequence::allPatRecSeq, 
+					MergePatRecTpr,
+					MergePatRecCpr,
+					@sequence::trkCaloMatchingSeq,
+					@sequence::trkCaloMatchingTprSeq,
+					@sequence::trkCaloMatchingCprSeq,
+					ParticleID, 
+					@sequence::stnmaker3_seq ]
+
+
+path_mix_hits_calo_apr_vpid_stnm3 : [ @sequence::gen_mix_seq     , @sequence::hitMakerSeq ,
 					@sequence::calRecoSeq  , @sequence::allPatRecSeq,
 					MergePatRecTpr,
 					MergePatRecCpr,
@@ -388,33 +403,33 @@ Stntuple.cpr_reco        : [ @sequence::CalPatRec.reco,
 			     MergePatRecCpr,
 			     @sequence::TrackCaloMatching.matching_cpr ]
 
-Stntuple.tpr_reco        : [ @sequence::Tracking.TPRDownstreameMinus , 
+Stntuple.tpr_reco        : [ @sequence::Tracking.TPRDeM , 
 			     MergePatRecTpr, 
 			     @sequence::TrackCaloMatching.matching_tpr ]
 
-Stntuple.mpr_reco        : [ @sequence::Tracking.TPRDownstreameMinus , 
+Stntuple.mpr_reco        : [ @sequence::Tracking.TPRDeM , 
 			     @sequence::CalPatRec.reco, 
 			     MergePatRec, 
 			     @sequence::TrackCaloMatching.matching ]
 
-Stntuple.dem_reco        : [ @sequence::Tracking.TPRDownstreameMinus , @sequence::CalPatRec.dem_reco, MergePatRecDem, 
+Stntuple.dem_reco        : [ @sequence::Tracking.TPRDeM , @sequence::CalPatRec.dem_reco, MergePatRecDem, 
 			     @sequence::TrackCaloMatching.matching_dem, AvikPIDNewDem ]
 
-Stntuple.dmm_reco        : [ @sequence::Tracking.TPRDownstreammuMinus, @sequence::CalPatRec.dmm_reco, MergePatRecDmm, 
+Stntuple.dmm_reco        : [ @sequence::Tracking.TPRDeM, @sequence::CalPatRec.dmm_reco, MergePatRecDmm, 
 			     @sequence::TrackCaloMatching.matching_dmm, AvikPIDNewDmm ]
 
-Stntuple.dep_reco        : [ @sequence::Tracking.TPRDownstreamePlus  , @sequence::CalPatRec.dep_reco, MergePatRecDep, 
+Stntuple.dep_reco        : [ @sequence::Tracking.TPRDeP  , @sequence::CalPatRec.dep_reco, MergePatRecDep, 
 			     @sequence::TrackCaloMatching.matching_dep, AvikPIDNewDep ]
 
-Stntuple.dmp_reco        : [ @sequence::Tracking.TPRDownstreammuPlus , @sequence::CalPatRec.dmp_reco, MergePatRecDmp, 
+Stntuple.dmp_reco        : [ @sequence::Tracking.TPRDeP , @sequence::CalPatRec.dmp_reco, MergePatRecDmp, 
 			     @sequence::TrackCaloMatching.matching_dmp, AvikPIDNewDmp ]
 #----------------------------------------------------------------------------------------------------
 # CalPatRec is not used for upstream reconstruction
 #----------------------------------------------------------------------------------------------------
-Stntuple.uem_reco : [ @sequence::Tracking.TPRUpstreameMinus  , MergePatRecUem, @sequence::TrackCaloMatching.matching_uem, AvikPIDNewUem ]
-Stntuple.umm_reco : [ @sequence::Tracking.TPRUpstreammuMinus , MergePatRecUmm, @sequence::TrackCaloMatching.matching_umm, AvikPIDNewUmm ]
-Stntuple.uep_reco : [ @sequence::Tracking.TPRUpstreamePlus   , MergePatRecUep, @sequence::TrackCaloMatching.matching_uep, AvikPIDNewUep ]
-Stntuple.ump_reco : [ @sequence::Tracking.TPRUpstreammuPlus  , MergePatRecUmp, @sequence::TrackCaloMatching.matching_ump, AvikPIDNewUmp ]
+Stntuple.uem_reco : [ @sequence::Tracking.TPRUeM  , MergePatRecUem, @sequence::TrackCaloMatching.matching_uem, AvikPIDNewUem ]
+Stntuple.umm_reco : [ @sequence::Tracking.TPRUeM , MergePatRecUmm, @sequence::TrackCaloMatching.matching_umm, AvikPIDNewUmm ]
+Stntuple.uep_reco : [ @sequence::Tracking.TPRUeP   , MergePatRecUep, @sequence::TrackCaloMatching.matching_uep, AvikPIDNewUep ]
+Stntuple.ump_reco : [ @sequence::Tracking.TPRUmuP  , MergePatRecUmp, @sequence::TrackCaloMatching.matching_ump, AvikPIDNewUmp ]
 
 Stntuple.paths : {
 

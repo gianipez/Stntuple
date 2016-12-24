@@ -209,8 +209,8 @@ int TTrkVisNode::InitEvent() {
 //-----------------------------------------------------------------------------
 // new default, hit position errors come from StrawHitPositionCollection
 //-----------------------------------------------------------------------------
-      sigw  = hit_pos->posRes(mu2e::StrawHitPosition::phi); 
-      sigr  = hit_pos->posRes(mu2e::StrawHitPosition::rho); 
+      sigw  = hit_pos->posRes(mu2e::StrawHitPosition::wire); 
+      sigr  = hit_pos->posRes(mu2e::StrawHitPosition::trans); 
     }
     else {
 //-----------------------------------------------------------------------------

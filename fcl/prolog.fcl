@@ -3,12 +3,6 @@ BEGIN_PROLOG
 #------------------------------------------------------------------------------
 # Stntuple maker sequence
 #------------------------------------------------------------------------------
-StntupleEventDump : { module_type:StntupleEventDump
-    module_name       : StntupleEventDump
-    interactiveMode   : 1
-    useTimeOffsets    : 0
-    debugBits         : { } # bit0:1  # bit1:1 # bit51:1
-}
 #------------------------------------------------------------------------------
 # event list contains 3 numbers per event : run, subrun, event
 # if the event list is empty, all events are passed through
@@ -36,7 +30,7 @@ StntupleMakerTemplate : { module_type:StntupleMaker
     
     TimeOffsets          : { inputs : [ "protonTimeMap", "muonTimeMap" ] }
 
-    KalDiag              : { @table::TrkPatRec.KalDiag    }
+    KalDiag              : { @table::KalDiagDirect    }
     DoubletAmbigResolver : { @table::TrkReco.DoubletAmbigResolver }
 
     g4ModuleLabel        : "g4run"
@@ -48,6 +42,7 @@ StntupleMakerTemplate : { module_type:StntupleMaker
 # module is running upstream, simply copies its output
 #------------------------------------------------------------------------------
     makeStrawHitModuleLabel : "makeSH"
+    makeStrawDigiModuleLabel: "makeSD"
     generatorModuleLabel    : "generate"
     trackSeedBlockName      : ["TrackSeedBlock"]
     trackSeedModuleLabel    : ["CalPatRecNew"  ]
@@ -124,7 +119,7 @@ MuHitDisplay: { module_type:MuHitDisplay        # the class name;
     #------------------------------------------------------------------------------
     # kalDiag and Doublet Resolver
     #------------------------------------------------------------------------------
-    KalDiag                 : { @table::TrkPatRec.KalDiag    }
+    KalDiag                 : { @table::KalDiagDirect    }
     DoubletAmbigResolver    : { @table::TrkReco.DoubletAmbigResolver }
     #------------------------------------------------------------------------------
     # configuration of the underlying visualization manager 
@@ -142,8 +137,6 @@ Stntuple : {
     producers : {}  # empty table
 
     filters : {
-	StntupleEventDump : { @table::StntupleEventDump }
-
 	InitStntuple : { module_type:InitStntuple
 	    module_name       : InitStntuple
 	    histFileName      : "default.stn"
@@ -298,7 +291,7 @@ Stntuple : {
 	    makePid                 : 0
 	    trackBlockName          : [ "TrackBlock"            , "TrkPatRec"               , "CalPatRec"                ]
 	    trackStrawHitBlockName  : [ "TrackHitBlock"         , "TrackHitBlockTpr"        , "TrackHitBlockCpr"         ] 
-	    trkRecoModuleLabel      : [ "MergePatRec"           , "TRFDownstreameMinus"     , "CalPatRec"                ]
+	    trkRecoModuleLabel      : [ "MergePatRec"           , "KFFDeM"                  , "CalPatRec"                ]
 	    trkExtrapolModuleLabel  : [ "TrackCaloIntersection" , "TrackCaloIntersectionTpr", "TrackCaloIntersectionCpr" ]
 	    trkCaloMatchModuleLabel : [ "TrackCaloMatching"     , "TrackCaloMatchingTpr"    , "TrackCaloMatchingCpr"     ]
 	    pidBlockName            : [ "PidBlock"              , ""                        , ""                         ] 
