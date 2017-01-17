@@ -57,6 +57,7 @@ public:
   int  Init_v4_2_4();
   int  Init_v5_7_0();
   int  Init_v5_7_2();
+  int  Init_v5_7_9();
 
   void InitEleDtHist(const char* Fn);
   void InitMuoDtHist(const char* Fn);
