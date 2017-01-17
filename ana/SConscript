@@ -38,4 +38,8 @@ libs             = ['Stntuple_alg', 'Stntuple_obj', 'Stntuple_loop',
 
 stn_helper.build_libs(list_of_cc_files, skip_list,libs);
 
+rootlibs.remove("RGL");
+rootlibs.remove("Eve");
+rootlibs.remove("EG");
+rootlibs.remove("Geom");
 # print "tmpdir:"+env['TMP_LIB_DIR']
