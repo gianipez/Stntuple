@@ -496,59 +496,59 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 	  s_hit = &hit->strawHit();
 	  loc   = s_hit-s_hit0;
 	  if ((loc >= 0) && (loc < n_straw_hits)) {
-	    sdmc = &list_of_mc_straw_hits->at(loc);
-	    // use TDC channel 0 to define the MC match
-	    mu2e::StrawDigi::TDCChannel itdc = mu2e::StrawDigi::zero;
-	    if(!sdmc->hasTDC(mu2e::StrawDigi::zero)) itdc = mu2e::StrawDigi::one;
-	    stmc[0] = sdmc->stepPointMC(itdc).get();
-	    // stmc[0] = sdmc->stepPointMC(mu2e::StrawDigi::zero).get();
-	    // stmc[1] = sdmc->stepPointMC(mu2e::StrawDigi::one ).get();
-//-----------------------------------------------------------------------------
-// count number of active hits with R > 200 um and misassigned drift signs
-//-----------------------------------------------------------------------------
-	    if (hit->driftRadius() > 0.2) {
-	      const CLHEP::Hep3Vector* v1 = &straw->getMidPoint();
-	      HepPoint p1(v1->x(),v1->y(),v1->z());
+	    if (list_of_mc_straw_hits != NULL) {
+	      sdmc = &list_of_mc_straw_hits->at(loc);
+	      // use TDC channel 0 to define the MC match
+	      mu2e::StrawDigi::TDCChannel itdc = mu2e::StrawDigi::zero;
+	      if(!sdmc->hasTDC(mu2e::StrawDigi::zero)) itdc = mu2e::StrawDigi::one;
+	      stmc[0] = sdmc->stepPointMC(itdc).get();
+	      //-----------------------------------------------------------------------------
+	      // count number of active hits with R > 200 um and misassigned drift signs
+	      //-----------------------------------------------------------------------------
+	      if (hit->driftRadius() > 0.2) {
+		const CLHEP::Hep3Vector* v1 = &straw->getMidPoint();
+		HepPoint p1(v1->x(),v1->y(),v1->z());
 	      
-	      const CLHEP::Hep3Vector* v2 = &stmc[0]->position();
-	      HepPoint    p2(v2->x(),v2->y(),v2->z());
+		const CLHEP::Hep3Vector* v2 = &stmc[0]->position();
+		HepPoint    p2(v2->x(),v2->y(),v2->z());
 	      
-	      TrkLineTraj trstraw(p1,straw->getDirection()  ,0.,0.);
-	      TrkLineTraj trstep (p2,stmc[0]->momentum().unit(),0.,0.);
+		TrkLineTraj trstraw(p1,straw->getDirection()  ,0.,0.);
+		TrkLineTraj trstep (p2,stmc[0]->momentum().unit(),0.,0.);
 	      
-	      TrkPoca poca(trstep, 0., trstraw, 0.);
+		TrkPoca poca(trstep, 0., trstraw, 0.);
 	      
-	      mcdoca = poca.doca();
-//-----------------------------------------------------------------------------
-// if mcdoca and hit->_iamb have different signs, the hit drift direction 
-// has wrong sign
-//-----------------------------------------------------------------------------
-	      if (hit->ambig()*mcdoca < 0) nwrong += 1;
+		mcdoca = poca.doca();
+		//-----------------------------------------------------------------------------
+		// if mcdoca and hit->_iamb have different signs, the hit drift direction 
+		// has wrong sign
+		//-----------------------------------------------------------------------------
+		if (hit->ambig()*mcdoca < 0) nwrong += 1;
 
-	      if (hit->ambig()       == 0) ++nhitsambig0;
-	    }
-	    
-	    sim = &(*stmc[0]->simParticle());
-	    if (sim != NULL) id = sim->id().asInt();
-	    else {
-	      printf(">>> ERROR in %s : sim is NULL, set PDG_CODE to -1\n",oname);
-	      id = -1;
-	    }
-
-	    found = 0;
-	    for (int ip=0; ip<npart; ip++) {
-	      if (id == part_id[ip]) {
-		found        = 1;
-		part_nh[ip] += 1;
-		break;
+		if (hit->ambig()       == 0) ++nhitsambig0;
 	      }
-	    }
 	    
-	    if (found == 0) {
-	      part_id      [npart] = id;
-	      part_pdg_code[npart] = sim->pdgId();
-	      part_nh      [npart] = 1;
-	      npart               += 1;
+	      sim = &(*stmc[0]->simParticle());
+	      if (sim != NULL) id = sim->id().asInt();
+	      else {
+		printf(">>> ERROR in %s : sim is NULL, set PDG_CODE to -1\n",oname);
+		id = -1;
+	      }
+
+	      found = 0;
+	      for (int ip=0; ip<npart; ip++) {
+		if (id == part_id[ip]) {
+		  found        = 1;
+		  part_nh[ip] += 1;
+		  break;
+		}
+	      }
+	    
+	      if (found == 0) {
+		part_id      [npart] = id;
+		part_pdg_code[npart] = sim->pdgId();
+		part_nh      [npart] = 1;
+		npart               += 1;
+	      }
 	    }
 	  }
 	  else {
@@ -788,20 +788,22 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
     AnEvent->getByLabel(strh_module_label,mcptrHandleStraw);
     stepPointMCVectorCollection = mcptrHandleStraw.product();
 
-    for (int i=0; i<n_straw_hits; i++) {
-      mu2e::PtrStepPointMCVector const& mcptr(stepPointMCVectorCollection->at(i));
+    if (stepPointMCVectorCollection->size() > 0) {
+      for (int i=0; i<n_straw_hits; i++) {
+	mu2e::PtrStepPointMCVector const& mcptr(stepPointMCVectorCollection->at(i));
 
-      step = mcptr[0].get();
+	step = mcptr[0].get();
     
-      art::Ptr<mu2e::SimParticle> const& simptr = step->simParticle(); 
-      art::Ptr<mu2e::SimParticle> mother = simptr;
-      while(mother->hasParent())  mother = mother->parent();
-      const mu2e::SimParticle*    sim    = mother.operator ->();
+	art::Ptr<mu2e::SimParticle> const& simptr = step->simParticle(); 
+	art::Ptr<mu2e::SimParticle> mother = simptr;
+	while(mother->hasParent())  mother = mother->parent();
+	const mu2e::SimParticle*    sim    = mother.operator ->();
 
-      int sim_id = sim->id().asInt();
+	int sim_id = sim->id().asInt();
 
-      if (sim_id == track->fPartID) {
-	track->fNMcStrawHits += 1;
+	if (sim_id == track->fPartID) {
+	  track->fNMcStrawHits += 1;
+	}
       }
     }
 //-----------------------------------------------------------------------------

@@ -182,20 +182,22 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
 // now look at the straw hits
 //-----------------------------------------------------------------------------
       nhits = 0;
-      for (int i=0; i<n_straw_hits; i++) {
-	mu2e::PtrStepPointMCVector const& mcptr(stepPointMCVectorCollection->at(i) );
+      if (stepPointMCVectorCollection->size() > 0) {
+	for (int i=0; i<n_straw_hits; i++) {
+	  mu2e::PtrStepPointMCVector const& mcptr(stepPointMCVectorCollection->at(i) );
 
-	step = mcptr[0].get(); // operator ->();
+	  step = mcptr[0].get(); // operator ->();
     
-	art::Ptr<mu2e::SimParticle> const& simptr = step->simParticle(); 
-	art::Ptr<mu2e::SimParticle> mother = simptr;
-	while(mother->hasParent())  mother = mother->parent();
-	const mu2e::SimParticle*    sim    = mother.get(); // operator ->();
+	  art::Ptr<mu2e::SimParticle> const& simptr = step->simParticle(); 
+	  art::Ptr<mu2e::SimParticle> mother = simptr;
+	  while(mother->hasParent())  mother = mother->parent();
+	  const mu2e::SimParticle*    sim    = mother.get(); // operator ->();
 
-	int sim_id = sim->id().asInt();
+	  int sim_id = sim->id().asInt();
 
-	if (sim_id == id) {
-	  nhits += 1;
+	  if (sim_id == id) {
+	    nhits += 1;
+	  }
 	}
       }
       simp->SetNStrawHits(nhits);
