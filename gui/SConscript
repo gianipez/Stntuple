@@ -49,3 +49,7 @@ libs             = [ 'Stntuple_obj',
 
 stn_helper.build_libs(list_of_cc_files, skip_list,libs);
 # print "tmpdir:"+env['TMP_LIB_DIR']
+#------------------------------------------------------------------------------
+# in the end restore CXXFLAGS
+#------------------------------------------------------------------------------
+env['CXXFLAGS'].remove('-DSTNTUPLE_NOSAM');
