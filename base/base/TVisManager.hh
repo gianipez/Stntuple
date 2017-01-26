@@ -49,7 +49,7 @@ public:
   virtual ~TVisManager();
 
   static TVisManager* Instance() {
-    return (fgInstance) ? fgInstance : new TVisManager();
+    return (fgInstance) ? fgInstance : fgInstance = new TVisManager();
   }
 					// ****** registry
   void  DeclareCanvas(TCanvas* c);
