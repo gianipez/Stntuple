@@ -214,7 +214,7 @@ namespace mu2e {
     const mu2e::CaloCrystalHitCollection*       fListOfCrystalHits;//
     const mu2e::CaloClusterCollection*          fListOfClusters;   //
 
-    const mu2e::PtrStepPointMCVectorCollection* hits_mcptr;        //
+    const mu2e::PtrStepPointMCVectorCollection* _hits_mcptr;        //
 
     const mu2e::StepPointMCCollection*          _stepPointMCColl;  //
 
@@ -229,7 +229,7 @@ namespace mu2e {
 		
     const mu2e::KalRepPtrCollection*            _kalRepPtrColl;
 
-    mu2e::SimParticlesWithHits*                 fSimParticlesWithHits; // 
+    mu2e::SimParticlesWithHits*                 _simParticlesWithHits; // 
 
     int                    fNClusters;
     // 4 hypotheses: dem, uep, dmm, ump
@@ -330,7 +330,7 @@ namespace mu2e {
 
     fVisManager = TStnVisManager::Instance();
 
-    fSimParticlesWithHits = NULL;
+    _simParticlesWithHits = NULL;
 
     fTrackID = new TStnTrackID();
 
@@ -393,19 +393,18 @@ namespace mu2e {
     fMarker = new TMarker(0, 0, 20);
     fMarker->SetMarkerSize(0.3);
 
-    //-----------------------------------------------------------------------------
-    // define collection names to be used for initialization
-    //-----------------------------------------------------------------------------
-
-    const char* charDirectionAndParticle = fDirectionAndParticle.c_str();
+//-----------------------------------------------------------------------------
+// define collection names to be used for initialization
+//-----------------------------------------------------------------------------
+//    const char* charDirectionAndParticle = fDirectionAndParticle.c_str();
 
 
     fClusterBlock->AddCollName("mu2e::CaloClusterCollection"       ,_caloClusterModuleLabel.data()    ,"");
 
-    fTrackBlock->AddCollName("mu2e::KalRepCollection"              ,fTrkRecoModuleLabel.data()        ,charDirectionAndParticle);
+    fTrackBlock->AddCollName("mu2e::KalRepCollection"              ,fTrkRecoModuleLabel.data()        ,"");
     fTrackBlock->AddCollName("mu2e::StrawHitCollection"            ,_makeStrawHitModuleLabel.data()   ,"");
-    fTrackBlock->AddCollName("mu2e::StrawDigiMCCollection"         ,_makeStrawHitModuleLabel.data()   ,"StrawHitMC");
-    fTrackBlock->AddCollName("mu2e::PtrStepPointMCVectorCollection",_makeStrawHitModuleLabel.data()   ,"StrawHitMCPtr");
+    fTrackBlock->AddCollName("mu2e::StrawDigiMCCollection"         ,_makeStrawHitModuleLabel.data()   ,"");
+    fTrackBlock->AddCollName("mu2e::PtrStepPointMCVectorCollection",_makeStrawHitModuleLabel.data()   ,"");
     fTrackBlock->AddCollName("mu2e::TrkCaloIntersectCollection"    ,fTrkExtrapol.data()               ,"");
     fTrackBlock->AddCollName("mu2e::CaloClusterCollection"         ,_caloClusterModuleLabel.data()    ,"");
     fTrackBlock->AddCollName("mu2e::TrackClusterMatchCollection"   ,fTrkCalMatch.data()               ,"");
@@ -507,16 +506,16 @@ namespace mu2e {
       trk_node->SetStrawHitFlagColl(&fStrawHitFlagColl);
       trk_node->SetCalTimePeakColl(&fCalTimePeakColl);
       trk_node->SetKalRepPtrColl(&_kalRepPtrColl);
-      trk_node->SetMcPtrColl(&hits_mcptr);
+      trk_node->SetMcPtrColl(&_hits_mcptr);
       trk_node->SetStrawDigiMCColl(&_strawDigiMCColl);
       fVisManager->AddNode(trk_node);
 //-----------------------------------------------------------------------------
 // MC truth: StepPointMC's and something else - not entirely sure
 //-----------------------------------------------------------------------------
       mctr_node = new TMcTruthVisNode("McTruthVisNode");
-      mctr_node->SetListOfHitsMcPtr(&hits_mcptr);
+      mctr_node->SetListOfHitsMcPtr(&_hits_mcptr);
       mctr_node->SetStepPointMCCollection(&_stepPointMCColl);
-      mctr_node->SetSimParticlesWithHits(&fSimParticlesWithHits);
+      mctr_node->SetSimParticlesWithHits(&_simParticlesWithHits);
       mctr_node->SetGenpColl(&_genParticleColl);
       fVisManager->AddNode(mctr_node);
     }
@@ -606,12 +605,18 @@ namespace mu2e {
       }
 
       art::Handle<PtrStepPointMCVectorCollection> mcptrHandle;
-      Evt->getByLabel(_makeStrawHitModuleLabel, "StrawHitMCPtr", mcptrHandle);
+      Evt->getByLabel(_makeStrawHitModuleLabel, "", mcptrHandle);
 
 
-      if (mcptrHandle.isValid()) hits_mcptr = mcptrHandle.product();
+      if (mcptrHandle.isValid()) {
+	_hits_mcptr = mcptrHandle.product();
+	if (_hits_mcptr->size() <= 0) {
+	  printf(">>> [%s] WARNING: PtrStepPointMCVectorCollection by %s has zero length. CONTINUE\n",
+		 oname, _makeStrawHitModuleLabel.data());
+	}
+      }
       else {
-	printf(">>> [%s] ERROR: PtrStepPointMCVectorCollection  by %s is missing. BAIL OUT\n",
+	printf(">>> [%s] ERROR: PtrStepPointMCVectorCollection by %s is missing. BAIL OUT\n",
 	       oname, _makeStrawHitModuleLabel.data());
 	return -1;
       }
@@ -640,11 +645,17 @@ namespace mu2e {
       }
 
       art::Handle<StrawDigiMCCollection> handle;
-      art::Selector sel_straw_digi_mc(art::ProductInstanceNameSelector("StrawHitMC") &&
+      art::Selector sel_straw_digi_mc(art::ProductInstanceNameSelector("") &&
 				      art::ProcessNameSelector(_processName) &&
 				      art::ModuleLabelSelector(_makeStrawHitModuleLabel));
       Evt->get(sel_straw_digi_mc, handle);
-      if (handle.isValid()) _strawDigiMCColl = handle.product();
+      if (handle.isValid()) {
+	_strawDigiMCColl = handle.product();
+	if (_strawDigiMCColl->size() <= 0) {
+	  printf(">>> [%s] WARNING:StrawDigiMCCollection by %s has zero length. CONTINUE\n",
+		 oname, _makeStrawHitModuleLabel.data());
+	}
+      }
       else {
 	printf(">>> [%s] ERROR: mu2e::StrawDigiMCCollection by %s is missing. BAIL OUT\n",
 	       oname, _makeStrawHitModuleLabel.data());
@@ -739,7 +750,8 @@ namespace mu2e {
 // tracking data - downstream moving electrons
 //-----------------------------------------------------------------------------
       art::Handle<KalRepPtrCollection> krepHandle;
-      Evt->getByLabel(fTrkRecoModuleLabel.data(), charDirectionAndParticle, krepHandle);
+      //      Evt->getByLabel(fTrkRecoModuleLabel.data(), charDirectionAndParticle, krepHandle);
+      Evt->getByLabel(fTrkRecoModuleLabel.data(), "", krepHandle);
 
       fNTracks[0] = 0;
       _kalRepPtrColl = NULL;
@@ -923,9 +935,9 @@ namespace mu2e {
 //-----------------------------------------------------------------------------
     art::ServiceHandle<mu2e::GeometryService> geom;
 
-    if (fSimParticlesWithHits) delete fSimParticlesWithHits;
+    if (_simParticlesWithHits) delete _simParticlesWithHits;
 
-    fSimParticlesWithHits = new SimParticlesWithHits(Evt,
+    _simParticlesWithHits = new SimParticlesWithHits(Evt,
 						     _g4ModuleLabel,
 						     _makeStrawHitModuleLabel,
 						     _trackerStepPoints,
@@ -936,7 +948,7 @@ namespace mu2e {
 //-----------------------------------------------------------------------------
     SimParticleCollection::key_type key(1);
 
-    SimParticleInfo const *info(fSimParticlesWithHits->findOrNull(key));
+    SimParticleInfo const *info(_simParticlesWithHits->findOrNull(key));
     const StepPointMC     *firstStep;
 
     if (!info) {
@@ -1171,17 +1183,17 @@ namespace mu2e {
       if (fTimePeak != NULL) ihit = fTimePeak->HitIndex(ih);
       else                   ihit = ih;
 
-      hit = &fStrawHitColl->at(ihit);
-      hitpos = &fStrawHitPosColl->at(ihit);
+      hit         = &fStrawHitColl->at(ihit);
+      hitpos      = &fStrawHitPosColl->at(ihit);
       hit_id_word = &fStrawHitFlagColl->at(ihit);
 
       display_hit = 1;
 
-      if (display_hit) {
+      if (display_hit && (_hits_mcptr->size() > 0)) {
 
 	mu2e::GenId gen_id(fGeneratorID);
 
-	mcptr = &hits_mcptr->at(ihit);
+	mcptr = &_hits_mcptr->at(ihit);
 
 	// Get the straw information:
 	straw = &fTracker->getStraw(hit->strawIndex());
@@ -1193,7 +1205,7 @@ namespace mu2e {
 	nmc = mcptr->size();
 	for (size_t j = 0; j<nmc; ++j){
 	  const art::Ptr<mu2e::StepPointMC>& sptr = mcptr->at(j);
-	  const mu2e::StepPointMC* step = sptr.operator ->();
+	  const mu2e::StepPointMC* step = sptr.get();
 
 	  //	  SimParticleCollection::key_type trackId(step->trackId());
 	  art::Ptr<SimParticle> const& simptr = step->simParticle();

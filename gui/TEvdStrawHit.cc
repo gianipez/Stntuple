@@ -35,8 +35,8 @@ TEvdStrawHit::TEvdStrawHit() {
 }
 
 //-----------------------------------------------------------------------------
-TEvdStrawHit::TEvdStrawHit(const mu2e::StrawHit* Hit,
-			   TEvdStraw*            Straw,
+TEvdStrawHit::TEvdStrawHit(const mu2e::StrawHit*    Hit,
+			   TEvdStraw*               Straw,
 			   const mu2e::StrawDigiMC* StrawDigiMC,
 			   double X, double Y, double Z, 
 			   double                Wx,
@@ -73,7 +73,9 @@ TEvdStrawHit::TEvdStrawHit(const mu2e::StrawHit* Hit,
   fLineR.SetLineColor(Color);
 
   const CLHEP::Hep3Vector* mid_point = &fStraw->GetStraw()->getMidPoint();
-  double rdrift = fStrawDigiMC->driftDistance(mu2e::StrawDigi::zero);
+  
+  double rdrift(0.);
+  if (fStrawDigiMC) rdrift = fStrawDigiMC->driftDistance(mu2e::StrawDigi::zero);
       
   fEllipse.SetX1(mid_point->z());
   fEllipse.SetY1(mid_point->perp());

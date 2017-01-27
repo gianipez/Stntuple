@@ -434,7 +434,8 @@ void TAnaDump::printTrackSeed(const mu2e::TrackSeed* TrkSeed,	const char* Opt,
  
 
   art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandleStraw;
-  fEvent->getByLabel("makeSH","StrawHitMCPtr",mcptrHandleStraw);
+  //  fEvent->getByLabel("makeSH","StrawHitMCPtr",mcptrHandleStraw);
+  fEvent->getByLabel("makeSH","",mcptrHandleStraw);
   mu2e::PtrStepPointMCVectorCollection const* hits_mcptrStraw = mcptrHandleStraw.product();
   
 
@@ -562,12 +563,13 @@ void TAnaDump::printTrackSeedCollection(const char* ModuleLabel,
   
   art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandle;
   if (ModuleLabel[0] != 0) {
-    fEvent->getByLabel("makeSH","StrawHitMCPtr",mcptrHandle);
+    //    fEvent->getByLabel("makeSH","StrawHitMCPtr",mcptrHandle);
+    fEvent->getByLabel("makeSH","",mcptrHandle);
     if (mcptrHandle.isValid()) {
       fgListOfMCStrawHits = (mu2e::PtrStepPointMCVectorCollection*) mcptrHandle.product();
     }
     else {
-      printf(">>> ERROR in TAnaDump::printKalRepCollection: failed to locate StepPointMCCollection makeSH:StrawHitMCPtr\n");
+      printf(">>> ERROR in TAnaDump::printKalRepCollection: failed to locate StepPointMCCollection:: by makeSH\n");
       fgListOfMCStrawHits = NULL;
     }
   }
@@ -1144,12 +1146,13 @@ void TAnaDump::printKalRepCollection(const char* ModuleLabel,
 
   art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandle;
   if (ModuleLabel[0] != 0) {
-    fEvent->getByLabel("makeSH","StrawHitMCPtr",mcptrHandle);
+    //    fEvent->getByLabel("makeSH","StrawHitMCPtr",mcptrHandle);
+    fEvent->getByLabel("makeSH","",mcptrHandle);
     if (mcptrHandle.isValid()) {
       fgListOfMCStrawHits = (mu2e::PtrStepPointMCVectorCollection*) mcptrHandle.product();
     }
     else {
-      printf(">>> ERROR in TAnaDump::printKalRepCollection: failed to locate StepPointMCCollection makeSH:StrawHitMCPtr\n");
+      printf(">>> ERROR in TAnaDump::printKalRepCollection: failed to locate StepPointMCCollection:: by makeSH\n");
       fgListOfMCStrawHits = NULL;
     }
   }
@@ -1727,7 +1730,8 @@ void TAnaDump::printStrawHitCollection(const char* ModuleLabel,
 
 // 12 - 11 -2013 giani added some MC info of the straws
   art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandleStraw;
-  fEvent->getByLabel(ModuleLabel,"StrawHitMCPtr",mcptrHandleStraw);
+  //  fEvent->getByLabel(ModuleLabel,"StrawHitMCPtr",mcptrHandleStraw);
+  fEvent->getByLabel(ModuleLabel,"",mcptrHandleStraw);
   mu2e::PtrStepPointMCVectorCollection const* hits_mcptrStraw = mcptrHandleStraw.product();
  
   //------------------------------------------------------------
@@ -2015,7 +2019,8 @@ void TAnaDump::printStepPointMCVectorCollection(const char* ModuleLabel,
 
   art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandle;
   if (ModuleLabel[0] != 0) {
-    fEvent->getByLabel(ModuleLabel,"StrawHitMCPtr", mcptrHandle);
+    //    fEvent->getByLabel(ModuleLabel,"StrawHitMCPtr", mcptrHandle);
+    fEvent->getByLabel(ModuleLabel,"", mcptrHandle);
     if (mcptrHandle.isValid()) {
       fgListOfMCStrawHits = (mu2e::PtrStepPointMCVectorCollection*) mcptrHandle.product();
     }

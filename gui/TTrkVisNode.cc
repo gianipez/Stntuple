@@ -161,7 +161,9 @@ int TTrkVisNode::InitEvent() {
     hit         = &(*fStrawHitColl)    ->at(ihit);
     hit_pos     = &(*fStrawHitPosColl) ->at(ihit);
     //    hit_id_word = &(*fStrawHitFlagColl)->at(ihit);
-    hit_digi_mc = &(*fStrawDigiMCColl)->at(ihit);
+
+    if ((*fStrawDigiMCColl)->size() > 0) hit_digi_mc = &(*fStrawDigiMCColl)->at(ihit);
+    else                                 hit_digi_mc = NULL; // normally, should not be happening, but it does
 
     straw       = &tracker->getStraw(hit->strawIndex());
     display_hit = 1;
@@ -170,8 +172,8 @@ int TTrkVisNode::InitEvent() {
 //-----------------------------------------------------------------------------
 // deal with MC information - later
 //-----------------------------------------------------------------------------
-    mcptr = &(*fMcPtrColl)->at(ihit); // this seems to be wrong
-	
+    if ((*fStrawDigiMCColl)->size() > 0) mcptr = &(*fMcPtrColl)->at(ihit); // this seems to be wrong
+    else                                 mcptr = NULL;
     // Get the straw information:
 
     //    mid   = &straw->getMidPoint();
@@ -179,12 +181,14 @@ int TTrkVisNode::InitEvent() {
 
     isFromConversion = false;
 
-    nmc = mcptr->size();
+    if (mcptr != NULL) nmc = mcptr->size();
+    else               nmc = 0;
+
     for (size_t j=0; j<nmc; ++j ){
       const mu2e::StepPointMC& step = *mcptr->at(j);
       art::Ptr<mu2e::SimParticle> const& simptr = step.simParticle();
       mu2e::SimParticleCollection::key_type trackId(step.trackId());
-      const mu2e::SimParticle* sim  = simptr.operator ->();
+      const mu2e::SimParticle* sim  = simptr.get();
       if (sim == NULL) {
 	printf(">>> ERROR: %s sim == NULL\n",oname);
       }

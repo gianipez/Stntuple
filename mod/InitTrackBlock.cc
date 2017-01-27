@@ -496,7 +496,7 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 	  s_hit = &hit->strawHit();
 	  loc   = s_hit-s_hit0;
 	  if ((loc >= 0) && (loc < n_straw_hits)) {
-	    if (list_of_mc_straw_hits != NULL) {
+	    if ((list_of_mc_straw_hits != NULL) && (list_of_mc_straw_hits->size() > 0)) {
 	      sdmc = &list_of_mc_straw_hits->at(loc);
 	      // use TDC channel 0 to define the MC match
 	      mu2e::StrawDigi::TDCChannel itdc = mu2e::StrawDigi::zero;
