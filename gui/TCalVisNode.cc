@@ -56,8 +56,8 @@ ClassImp(TCalVisNode)
   fMinClusterEnergy = 5.;
   fMinCrystalEnergy = 0.;
 
-  double crystal_size = dc->caloGeomInfo().crystalHalfTrans();
-  int    nedges       = dc->caloGeomInfo().crystalNedges();
+  double crystal_size = dc->caloInfo().crystalHalfTrans();
+  int    nedges       = 4;//dc->caloInfo().crystalNedges();
 
   fSectionID         = SectionID;
   fListOfEvdCrystals = new TObjArray();
@@ -97,11 +97,11 @@ int TCalVisNode::LocalCrystalID(int CrystalID) {
   mu2e::GeomHandle<mu2e::DiskCalorimeter> dc;
   int nc, ns, id;
 
-  ns = dc->nSection();
+  ns = dc->nDisk();//nSection();
   id = CrystalID;
 
   for (int i=0; i<ns; ++i) {
-    nc = dc->section(i).nCrystals();
+    nc = dc->disk(i).nCrystals();
     if (id < nc) break;
     id -= nc;
   }
@@ -161,7 +161,7 @@ int TCalVisNode::InitEvent() {
 
     for (int i=0; i<ncl; i++) {
       cl = &(*fListOfClusters)->at(i);
-      if (cl->sectionId() == fSectionID) {
+      if (cl->diskId() == fSectionID) {
 	evd_cl = NewEvdCluster(cl);
 //-----------------------------------------------------------------------------
 // set colors of the crystals

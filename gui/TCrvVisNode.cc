@@ -246,10 +246,10 @@ int TCrvVisNode::InitEvent()
 				  const mu2e::CrvRecoPulses::CrvSingleRecoPulse &pulse = pulseVector[i];
 				  evd_bar->AddPulse(pulse, SiPM); // Add the pulse to the bar
 
-				  if ((pulse._PEs > fMinPulsePEs) && (pulse._leadingEdge > ftimeLow) && (pulse._leadingEdge < ftimeHigh)) //If the pulse is above the threshold and within the initial time window, color the sipm
+				  if ((pulse._PEs > fMinPulsePEs) && (pulse._pulseTime > ftimeLow) && (pulse._pulseTime < ftimeHigh)) //If the pulse is above the threshold and within the initial time window, color the sipm
 					{						
 						evd_bar->SetFillStyle(1001, SiPM);
-						evd_bar->SetFillColor(colorPalette[(int) ((pulse._leadingEdge - ftimeLow) / (ftimeHigh - ftimeLow) * 999)], SiPM);
+						evd_bar->SetFillColor(colorPalette[(int) ((pulse._pulseTime - ftimeLow) / (ftimeHigh - ftimeLow) * 999)], SiPM);
 					}
 				} // Loop over single pulses
 			} // Loop over SiPMs
@@ -277,7 +277,7 @@ void TCrvVisNode::UpdateEvent()
 	  for (int SiPM = 0; SiPM < 4; SiPM++) {
 	    const mu2e::CrvRecoPulses::CrvSingleRecoPulse* barPulse = evd_bar->lastPulseInWindow(SiPM);
 	    if (barPulse) { //If we have a valid pulse for the bar
-	      evd_bar->SetFillColor(colorPalette[(int) ((barPulse->_leadingEdge - ftimeLow) / (ftimeHigh - ftimeLow) * 999)], SiPM);
+	      evd_bar->SetFillColor(colorPalette[(int) ((barPulse->_pulseTime - ftimeLow) / (ftimeHigh - ftimeLow) * 999)], SiPM);
 	    }
 	    else { // Make the SiPM white since no pulses fall within the window
 	      evd_bar->SetFillColor(kWhite, SiPM);

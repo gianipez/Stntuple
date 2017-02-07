@@ -12,7 +12,7 @@
 #include "GeometryService/inc/GeomHandle.hh"
 
 #include "TTrackerGeom/inc/TTracker.hh"
-#include "CalorimeterGeom/inc/VaneCalorimeter.hh"
+//  #include "CalorimeterGeom/inc/VaneCalorimeter.hh"
 #include "CalorimeterGeom/inc/DiskCalorimeter.hh"
 #include "CalorimeterGeom/inc/Calorimeter.hh"
 
@@ -28,6 +28,10 @@
 #include "RecoDataProducts/inc/StrawHitFlagCollection.hh"
 #include "RecoDataProducts/inc/TrackSeed.hh"
 #include "RecoDataProducts/inc/TrackSeedCollection.hh"
+#include "RecoDataProducts/inc/CaloDigi.hh"
+#include "RecoDataProducts/inc/CaloDigiCollection.hh"
+#include "RecoDataProducts/inc/CaloRecoDigi.hh"
+#include "RecoDataProducts/inc/CaloRecoDigiCollection.hh"
 
 #include "MCDataProducts/inc/GenParticle.hh"
 #include "MCDataProducts/inc/GenParticleCollection.hh"
@@ -179,13 +183,13 @@ void TAnaDump::printCaloCluster(const mu2e::CaloCluster* Cl, const char* Opt) {
 //-----------------------------------------------------------------------------
 // transform cluster coordinates to the tracker coordiante system
 //-----------------------------------------------------------------------------
-    gpos = cal->fromSectionFrameFF(Cl->sectionId(),Cl->cog3Vector());
-    tpos = cal->toTrackerFrame(gpos);
+    gpos = cal->geomUtil().diskToMu2e(Cl->diskId(),Cl->cog3Vector());
+    tpos = cal->geomUtil().mu2eToTracker(gpos);
 
     printf(" %3i %3i %-16p %2i %6i %3i %8.3f %8.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f\n",
 	   row, col,
 	   Cl,
-	   Cl->sectionId(),
+	   Cl->diskId(),
 	   -999, 
 	   nh,
 	   Cl->energyDep(),
@@ -220,15 +224,15 @@ void TAnaDump::printCaloCluster(const mu2e::CaloCluster* Cl, const char* Opt) {
       pos = &cr->localPosition();
       //      pos = cal->crystalOriginInSection(id);
 
-      if(geom->hasElement<mu2e::VaneCalorimeter>() ){
-	mu2e::GeomHandle<mu2e::VaneCalorimeter> cgvane;
-	iz  = cgvane->nCrystalX();
-	ir  = cgvane->nCrystalY();
-      }
-      else {
-	iz = -1;
-	ir = -1;
-      }
+      // if(geom->hasElement<mu2e::VaneCalorimeter>() ){
+      // 	mu2e::GeomHandle<mu2e::VaneCalorimeter> cgvane;
+      // 	iz  = cgvane->nCrystalX();
+      // 	ir  = cgvane->nCrystalY();
+      // }
+      // else {
+      iz = -1;
+      ir = -1;
+	//      }
 
       printf("%6i     %10.3f %5i %5i %8.3f %10.3f %10.3f %10.3f %10.3f\n",
 	     id,
@@ -238,7 +242,7 @@ void TAnaDump::printCaloCluster(const mu2e::CaloCluster* Cl, const char* Opt) {
 	     pos->x(),
 	     pos->y(),
 	     pos->z(),
-	     hit->energyDepTotal()
+	     hit->energyDepTot()
 	     );
     }
   }
@@ -348,15 +352,15 @@ void TAnaDump::printCaloProtoCluster(const mu2e::CaloProtoCluster* Cluster, cons
       cr  = &cal->crystal(id);
       pos = &cr->localPosition();
 
-      if (geom->hasElement<mu2e::VaneCalorimeter>()) {
-	mu2e::GeomHandle<mu2e::VaneCalorimeter> cgvane;
-	iz  = cgvane->nCrystalX();
-	ir  = cgvane->nCrystalY();
-      }
-      else {
-	iz = -1;
-	ir = -1;
-      }
+      // if (geom->hasElement<mu2e::VaneCalorimeter>()) {
+      // 	mu2e::GeomHandle<mu2e::VaneCalorimeter> cgvane;
+      // 	iz  = cgvane->nCrystalX();
+      // 	ir  = cgvane->nCrystalY();
+      // }
+      // else {
+      iz = -1;
+      ir = -1;
+	//      }
       
       printf("%6i     %10.3f %5i %5i %8.3f %10.3f %10.3f %10.3f %10.3f\n",
 	     id,
@@ -366,7 +370,7 @@ void TAnaDump::printCaloProtoCluster(const mu2e::CaloProtoCluster* Cluster, cons
 	     pos->x(),
 	     pos->y(),
 	     pos->z(),
-	     hit->energyDepTotal()
+	     hit->energyDepTot()
 	     );
     }
   }
@@ -1338,22 +1342,22 @@ void TAnaDump::printDiskCalorimeter() {
 
   int nd = cal->nDisk();
   printf(" ndisks = %i\n", nd);
-  printf(" crystal size  : %10.3f\n", 2*cal->caloGeomInfo().crystalHalfTrans());
-  printf(" crystal length: %10.3f\n", 2*cal->caloGeomInfo().crystalHalfLength());
+  printf(" crystal size  : %10.3f\n", 2*cal->caloInfo().crystalHalfTrans());
+  printf(" crystal length: %10.3f\n", 2*cal->caloInfo().crystalHalfLength());
 
   for (int i=0; i<nd; i++) {
     disk = &cal->disk(i);
     printf(" ---- disk # %i\n",i);
     printf(" Rin  : %10.3f  Rout : %10.3f\n", disk->innerRadius(),disk->outerRadius());
     printf(" X : %12.3f Y : %12.3f Z : %12.3f\n",
-	   disk->origin().x(),
-	   disk->origin().y(),
-	   disk->origin().z());
-    printf(" Xsize : %10.3f Ysize : %10.3f Zsize : %10.3f\n", 
-	   disk->size().x(),
-	   disk->size().y(),
-	   disk->size().z()
-	   );
+	   disk->geomInfo().origin().x(),
+	   disk->geomInfo().origin().y(),
+	   disk->geomInfo().origin().z());
+    // printf(" Xsize : %10.3f Ysize : %10.3f Zsize : %10.3f\n", 
+    // 	   disk->size().x(),
+    // 	   disk->size().y(),
+    // 	   disk->size().z()
+    // 	   );
   }
 }
 
@@ -1390,8 +1394,8 @@ void TAnaDump::printCaloCrystalHits(const char* ModuleLabel,
 	   hit->id(),
 	   hit->time(),
 	   hit->energyDep(),
-	   hit->energyDepTotal(),
-	   hit->numberOfROIdsUsed());
+	   hit->energyDepTot(),
+	   hit->nROId());
   }
 }
 
@@ -1422,18 +1426,19 @@ void TAnaDump::printCaloDigiCollection(const char* ModuleLabel,
 
   for (int ic=0; ic<nhits; ic++) {
     hit  = &calodigis->at(ic);
+    int pulse_size =  hit->waveform().size();
 
     printf("%7i  %10.3f %5i\n",
 	   hit->roId(),
 	   hit->t0(),
-	   hit->nSamples());
+	   pulse_size);
   }
 }
 
 
 
 //-----------------------------------------------------------------------------
-void TAnaDump::printRecoCaloDigiCollection(const char* ModuleLabel, 
+void TAnaDump::printCaloRecoDigiCollection(const char* ModuleLabel, 
 				       const char* ProductName,
 				       const char* ProcessName) {
 
@@ -1441,17 +1446,17 @@ void TAnaDump::printRecoCaloDigiCollection(const char* ModuleLabel,
 			  art::ProcessNameSelector(ProcessName)         && 
 			  art::ModuleLabelSelector(ModuleLabel)            );
 
-  art::Handle<mu2e::RecoCaloDigiCollection> recocalodigisHandle;
+  art::Handle<mu2e::CaloRecoDigiCollection> recocalodigisHandle;
 
   fEvent->get(selector,recocalodigisHandle);
 
-  const mu2e::RecoCaloDigiCollection* recocalodigis;
+  const mu2e::CaloRecoDigiCollection* recocalodigis;
 
   recocalodigis = recocalodigisHandle.operator->();
 
   int nhits = recocalodigis->size();
 
-  const mu2e::RecoCaloDigi* hit;
+  const mu2e::CaloRecoDigi* hit;
 
   printf("-----------------------------------------------------------------------------------\n");
   printf("ReadoutID      Time      Time-Chi2     Energy     Amplitude      PSD               \n");
@@ -1463,10 +1468,10 @@ void TAnaDump::printRecoCaloDigiCollection(const char* ModuleLabel,
     printf("%7i  %10.3f   %10.3f   %10.3f   %10.3f   %10.3f\n",
 	   hit->ROid(),
 	   hit->time(),
-	   hit->tChi2(),
-	   hit->edep(),
-	   hit->amplitude(),
-	   hit->psd());
+	   hit->chi2(), 
+	   hit->energyDep(),
+	   -1., //hit->amplitude(),
+	   -1.);//hit->psd());
   }
 }
 
@@ -1543,7 +1548,7 @@ void TAnaDump::printTrkToCaloExtrapol(const mu2e::TrkToCaloExtrapol* trkToCalo,
     double ds = trkToCalo->pathLengthExit()-trkToCalo->pathLengthEntrance();
   
     printf("%6i %10.3f %10.3f %8.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f \n",
-	   trkToCalo->sectionId(),
+	   trkToCalo->diskId(),
 	   trkToCalo->time(),
 	   trkToCalo->pathLengthEntrance(),
 	   ds,
@@ -2202,7 +2207,7 @@ void TAnaDump::printTrackClusterMatch(const mu2e::TrackClusterMatch* Tcm, const 
     const mu2e::CaloCluster*      cl  = Tcm->caloCluster();
     const mu2e::TrkCaloIntersect* tex = Tcm->textrapol  ();
 
-    int disk     = cl->sectionId();
+    int disk     = cl->diskId();
     double chi2  = Tcm->chi2();
 
     printf("%5i %16p  %16p  %8.3f %8.3f %8.3f %8.3f %8.3f\n",

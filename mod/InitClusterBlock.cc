@@ -20,7 +20,7 @@
 #include "GeometryService/inc/GeomHandle.hh"
 
 #include "TTrackerGeom/inc/TTracker.hh"
-#include "CalorimeterGeom/inc/VaneCalorimeter.hh"
+// #include "CalorimeterGeom/inc/VaneCalorimeter.hh"
 #include "CalorimeterGeom/inc/DiskCalorimeter.hh"
 
 #include "RecoDataProducts/inc/KalRepPtrCollection.hh"
@@ -110,10 +110,10 @@ int  StntupleInitMu2eClusterBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode)
     mu2e::GeomHandle<mu2e::Calorimeter> cc;
     cal = cc.get();
   }
-  else if (geom->hasElement<mu2e::VaneCalorimeter>() ) {
-    mu2e::GeomHandle<mu2e::VaneCalorimeter> vc;
-    cal = vc.get();
-  }
+  // else if (geom->hasElement<mu2e::VaneCalorimeter>() ) {
+  //   mu2e::GeomHandle<mu2e::VaneCalorimeter> vc;
+  //   cal = vc.get();
+  // }
   else if (geom->hasElement<mu2e::DiskCalorimeter>() ) {
     mu2e::GeomHandle<mu2e::DiskCalorimeter> dc;
     cal = dc.get();
@@ -135,7 +135,7 @@ int  StntupleInitMu2eClusterBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode)
     //    cl                    = &list_of_clusters->at(i);
     cl                    = list_of_pcl.at(i);
     cluster->fCaloCluster = cl;
-    cluster->fDiskID      = cl->sectionId();
+    cluster->fDiskID      = cl->diskId();
     cluster->fEnergy      = cl->energyDep();
     cluster->fTime        = cl->time();
     

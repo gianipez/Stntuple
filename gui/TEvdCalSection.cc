@@ -26,7 +26,7 @@
 #include "Stntuple/gui/TEvdCalSection.hh"
 #include "Stntuple/gui/TStnVisManager.hh"
 
-#include "CalorimeterGeom/inc/VaneCalorimeter.hh"
+//#include "CalorimeterGeom/inc/VaneCalorimeter.hh"
 #include "CalorimeterGeom/inc/Crystal.hh"
 #include "CalorimeterGeom/inc/Disk.hh"
 #include "CalorimeterGeom/inc/DiskCalorimeter.hh"
@@ -50,44 +50,45 @@ TEvdCalSection::TEvdCalSection(const mu2e::Disk* Disk, int SectionID): TObject()
   double rmin, rmax;
   //  double rmin, rmax, x1,y1,x2,y2;
 
-  if (geom->hasElement<mu2e::VaneCalorimeter>()) {
-    //    mu2e::GeomHandle<mu2e::VaneCalorimeter> vc;
-    //    nv = vc->nVane();
+ //  if (geom->hasElement<mu2e::VaneCalorimeter>()) {
+//     //    mu2e::GeomHandle<mu2e::VaneCalorimeter> vc;
+//     //    nv = vc->nVane();
 
-//     for (int iv=0; iv<nv; iv++) {
-//       const mu2e::Vane* vane = &vc->vane(iv);
-//       rmin = vane->innerRadius();
-//       rmax = vane->outerRadius();
-//       if(iv == 3) {			// top
-// 	x1 = -50;
-// 	y1 = rmin;
-// 	x2 = 50;
-// 	y2 = rmax;
-//       }
-//       else if (iv == 0) { // left
-// 	x1 = -rmax;;
-// 	y1 = -50;
-// 	x2 = -rmin;
-// 	y2 = +50;
-//       }
-//       else if (iv == 1) {		// bottom
-// 	x1 = -50;
-// 	y1 = -rmax;
-// 	x2 = +50; 
-// 	y2 = -rmin;
-//       }
-//       else if (iv == 2) {		// right
-// 	x1 = rmin;
-// 	y1 = -50;
-// 	x2 = rmax;
-// 	y2 = +50;
-//       }
+// //     for (int iv=0; iv<nv; iv++) {
+// //       const mu2e::Vane* vane = &vc->vane(iv);
+// //       rmin = vane->innerRadius();
+// //       rmax = vane->outerRadius();
+// //       if(iv == 3) {			// top
+// // 	x1 = -50;
+// // 	y1 = rmin;
+// // 	x2 = 50;
+// // 	y2 = rmax;
+// //       }
+// //       else if (iv == 0) { // left
+// // 	x1 = -rmax;;
+// // 	y1 = -50;
+// // 	x2 = -rmin;
+// // 	y2 = +50;
+// //       }
+// //       else if (iv == 1) {		// bottom
+// // 	x1 = -50;
+// // 	y1 = -rmax;
+// // 	x2 = +50; 
+// // 	y2 = -rmin;
+// //       }
+// //       else if (iv == 2) {		// right
+// // 	x1 = rmin;
+// // 	y1 = -50;
+// // 	x2 = rmax;
+// // 	y2 = +50;
+// //       }
 
-//       box = new TBox(x1,y1,x2,y2);
-//       fListOfBoxes->Add(box);
-//     }
-  }
-  else if(geom->hasElement<mu2e::DiskCalorimeter>()) {
+// //       box = new TBox(x1,y1,x2,y2);
+// //       fListOfBoxes->Add(box);
+// //     }
+//   }
+//   else
+    if(geom->hasElement<mu2e::DiskCalorimeter>()) {
 
     rmin = fDisk->innerRadius();
 
@@ -149,15 +150,16 @@ void TEvdCalSection::PaintXY(Option_t* Option) {
 
   art::ServiceHandle<mu2e::GeometryService> geom;
 
-  if (geom->hasElement<mu2e::VaneCalorimeter>()) {
-//     mu2e::GeomHandle<mu2e::VaneCalorimeter> vc;
-//     nv = vc->nVane();
+//   if (geom->hasElement<mu2e::VaneCalorimeter>()) {
+// //     mu2e::GeomHandle<mu2e::VaneCalorimeter> vc;
+// //     nv = vc->nVane();
 
-//     for (int iv=0; iv<nv; iv++) {
-//       box->Paint(Option);
-//     }
-  }
-  else if(geom->hasElement<mu2e::DiskCalorimeter>()) {
+// //     for (int iv=0; iv<nv; iv++) {
+// //       box->Paint(Option);
+// //     }
+//   }
+//   else 
+    if(geom->hasElement<mu2e::DiskCalorimeter>()) {
     fEllipse[0]->Paint(Option);
     fEllipse[1]->Paint(Option);
   }

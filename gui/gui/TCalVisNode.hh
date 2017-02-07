@@ -14,7 +14,7 @@
 
 #ifndef __CINT__
 
-#include "CalorimeterGeom/inc/CaloSection.hh"
+//#include "CalorimeterGeom/inc/CaloSection.hh"
 #include "RecoDataProducts/inc/CaloCluster.hh"
 #include "RecoDataProducts/inc/CaloClusterCollection.hh"
 #include "RecoDataProducts/inc/CaloCrystalHitCollection.hh"

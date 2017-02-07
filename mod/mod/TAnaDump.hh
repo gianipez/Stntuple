@@ -99,7 +99,7 @@ public:
 			       const char* ProductName = "", 
 			       const char* ProcessName = ""); 
 
-  void printRecoCaloDigiCollection(const char* ModuleLabel, 
+  void printCaloRecoDigiCollection(const char* ModuleLabel, 
 				   const char* ProductName = "", 
 				   const char* ProcessName = "");
 

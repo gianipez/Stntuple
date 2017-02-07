@@ -22,7 +22,7 @@
 #include "TTrackerGeom/inc/TTracker.hh"
 #include "CalorimeterGeom/inc/Calorimeter.hh"
 #include "CalorimeterGeom/inc/DiskCalorimeter.hh"
-#include "CalorimeterGeom/inc/VaneCalorimeter.hh"
+// #include "CalorimeterGeom/inc/VaneCalorimeter.hh"
 
 #include "RecoDataProducts/inc/KalRepPtrCollection.hh"
 #include "RecoDataProducts/inc/KalRepCollection.hh"
@@ -333,11 +333,11 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
   const mu2e::AlgorithmID*  alg_id;
   int                       mask;
 
-  const mu2e::BaseCalorimeter* bc(NULL);
+  const mu2e::Calorimeter* bc(NULL);
   
   if (geom->hasElement<mu2e::DiskCalorimeter>() ) {
     mu2e::GeomHandle<mu2e::DiskCalorimeter> h;
-    bc = (const mu2e::BaseCalorimeter*) h.get();
+    bc = (const mu2e::Calorimeter*) h.get();
   }
 
   ntrk = list_of_kreps->size();
@@ -831,7 +831,7 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 //-----------------------------------------------------------------------------
 // store coordinates of the best intersection in a plane
 //-----------------------------------------------------------------------------
-	  iv   = extrk->sectionId();
+	  iv   = extrk->diskId();
 	  vint = &(track->fDisk[iv]);
 
 	  if (vint->fID == -1) {
@@ -869,14 +869,14 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
       krep  = extrk->trk().get();
       if (krep == track->fKalRep[0]) {
 	const mu2e::CaloCluster* cl = tcm->caloCluster();
-	iv   = cl->sectionId();
+	iv   = cl->diskId();
 	vint = &track->fDisk[iv];
 	if (bc == 0) {
 	  printf(">>> ERROR: %s VANE calorimeter is not defined \n",oname);
 	  continue;
 	}
 
-	x1   = bc->toSectionFrame(iv,cl->cog3Vector());
+	x1   = bc->geomUtil().mu2eToDisk(iv,cl->cog3Vector());//toSectionFrame(iv,cl->cog3Vector());
 
 	if ((track->fClosestCaloCluster == NULL) || (tcm->chi2() < best_chi2_match )) {
 //-----------------------------------------------------------------------------
@@ -932,7 +932,7 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
     track->fVMinS  = 0;
     track->fVMaxEp = 0;
 
-    int ndisks = bc->nSection();
+    int ndisks = bc->nDisk();
 
     for (int iv=0; iv<ndisks; iv++) {
       v = &track->fDisk[iv];

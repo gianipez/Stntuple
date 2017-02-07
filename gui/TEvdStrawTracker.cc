@@ -29,7 +29,7 @@
 #include "Stntuple/gui/TEvdStrawTracker.hh"
 #include "Stntuple/gui/TStnVisManager.hh"
 
-#include "CalorimeterGeom/inc/VaneCalorimeter.hh"
+// #include "CalorimeterGeom/inc/VaneCalorimeter.hh"
 #include "CalorimeterGeom/inc/Crystal.hh"
 #include "CalorimeterGeom/inc/Disk.hh"
 #include "CalorimeterGeom/inc/DiskCalorimeter.hh"

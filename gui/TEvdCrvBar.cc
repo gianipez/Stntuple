@@ -237,10 +237,10 @@ const mu2e::CrvRecoPulses::CrvSingleRecoPulse* TEvdCrvBar::lastPulseInWindow(int
 		//					And they are...
 
 		//Skip until we get to a pulse in the time window
-		if (sipmPulses[SiPM][i]->_leadingEdge < ftimeLow || sipmPulses[SiPM][i]->_PEs < fthreshold)
+		if (sipmPulses[SiPM][i]->_pulseTime < ftimeLow || sipmPulses[SiPM][i]->_PEs < fthreshold)
 			continue;
 		//if the pulse occurs beyond the time window then break and return the previous pulse, if not then set the buffer (lastpulse)
-		if (sipmPulses[SiPM][i]->_leadingEdge > ftimeHigh)
+		if (sipmPulses[SiPM][i]->_pulseTime > ftimeHigh)
 			break;
 
 		tempPulse = sipmPulses[SiPM][i];		
@@ -267,7 +267,7 @@ void TEvdCrvBar::Print(Option_t* Opt) const {
 		if (tempPulse)
 		{
 			printf("thresh %f , tL %f , tH %f , %p \n", fthreshold, ftimeLow, ftimeHigh, tempPulse);
-			printf("%i	%i	%i	%f	%i \n", barIndex.asInt(), SiPM, fSectionID, tempPulse->_leadingEdge, tempPulse->_PEs);
+			printf("%i	%i	%i	%f	%i \n", barIndex.asInt(), SiPM, fSectionID, tempPulse->_pulseTime, tempPulse->_PEs);
 		}
 	}
 

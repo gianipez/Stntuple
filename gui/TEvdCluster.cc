@@ -25,7 +25,7 @@
 #include "Stntuple/gui/TStnVisManager.hh"
 #include "Stntuple/base/TStnShape.hh"
 
-#include "CalorimeterGeom/inc/VaneCalorimeter.hh"
+//#include "CalorimeterGeom/inc/VaneCalorimeter.hh"
 #include "CalorimeterGeom/inc/Crystal.hh"
 #include "CalorimeterGeom/inc/Disk.hh"
 #include "CalorimeterGeom/inc/DiskCalorimeter.hh"
@@ -54,10 +54,11 @@ TEvdCluster::TEvdCluster(const mu2e::CaloCluster* Cl): TObject() {
 
   art::ServiceHandle<mu2e::GeometryService> geom;
 
-  if( geom->hasElement<mu2e::VaneCalorimeter>() ) {
-    color = 2;
-  } else if(geom->hasElement<mu2e::DiskCalorimeter>()){
-    color = module_color[Cl->sectionId()];
+  // if( geom->hasElement<mu2e::VaneCalorimeter>() ) {
+  //   color = 2;
+  // } else 
+    if(geom->hasElement<mu2e::DiskCalorimeter>()){
+    color = module_color[Cl->diskId()];
   }
 
   fTrkEllipse->SetFillColor(color);
@@ -90,7 +91,7 @@ void TEvdCluster::Paint(Option_t* Option) {
   }
   else if (strstr(view,"cal"   ) != 0) {
     sscanf(view,"cal,%i",&iv);
-    if (iv == fCluster->sectionId()) {
+    if (iv == fCluster->diskId()) {
       PaintCal(Option);
     }
   }

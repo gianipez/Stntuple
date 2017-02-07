@@ -28,7 +28,7 @@
 #include "Stntuple/base/TStnSquare.hh"
 #include "Stntuple/base/TObjHandle.hh"
 
-#include "CalorimeterGeom/inc/VaneCalorimeter.hh"
+//#include "CalorimeterGeom/inc/VaneCalorimeter.hh"
 #include "CalorimeterGeom/inc/Crystal.hh"
 #include "CalorimeterGeom/inc/Disk.hh"
 #include "CalorimeterGeom/inc/DiskCalorimeter.hh"
@@ -165,7 +165,7 @@ void TEvdCrystal::Print(Option_t* Opt) const {
 	   hit->id(),
 	   hit->time(),
 	   hit->energyDep(),
-	   hit->energyDepTotal(),
-	   hit->numberOfROIdsUsed());
+	   hit->energyDepTot(),
+	   hit->nROId());
   }
 }

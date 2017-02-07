@@ -16,7 +16,7 @@
 #include "TTrackerGeom/inc/TTracker.hh"
 #include "CalorimeterGeom/inc/Calorimeter.hh"
 #include "CalorimeterGeom/inc/DiskCalorimeter.hh"
-#include "CalorimeterGeom/inc/VaneCalorimeter.hh"
+// #include "CalorimeterGeom/inc/VaneCalorimeter.hh"
 
 #include "RecoDataProducts/inc/CaloCrystalHitCollection.hh"
 //-----------------------------------------------------------------------------
@@ -74,7 +74,7 @@ Int_t StntupleInitMu2eCalDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int 
     hit      = data->NewCalHitData();
 
     hit->Set(calo_hit->id(),
-	     calo_hit->numberOfROIdsUsed(),
+	     calo_hit->nROId(),
 	     calo_hit->time(),
 	     calo_hit->energyDep());
   }
@@ -95,14 +95,14 @@ Int_t StntupleInitMu2eCalDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int 
     data->fNCrystals[i] = disk->nCrystals();
     data->fRMin     [i] = disk->innerRadius();
     data->fRMax     [i] = disk->outerRadius();
-    data->fZ0       [i] = disk->origin().z();
+    data->fZ0       [i] = disk->geomInfo().origin().z();
   }
-  data->fCrystalSize = cal->caloGeomInfo().crystalHalfTrans();
+  data->fCrystalSize = cal->caloInfo().crystalHalfTrans();
 
 				        // also a dummy line
   data->fMinFraction      = 1.0;
-  data->fWrapperThickness = cal->caloGeomInfo().wrapperThickness();
-  data->fShellThickness   = cal->caloGeomInfo().caseThickness  ();
+  data->fWrapperThickness = cal->caloInfo().wrapperThickness();
+  data->fShellThickness   = cal->caloInfo().caseThickness  ();
 
 					// on return set event and run numbers
 					// to mark block as initialized

@@ -58,7 +58,7 @@
 #include "GeometryService/inc/GeomHandle.hh"
 
 #include "TTrackerGeom/inc/TTracker.hh"
-#include "CalorimeterGeom/inc/VaneCalorimeter.hh"
+// #include "CalorimeterGeom/inc/VaneCalorimeter.hh"
 #include "CalorimeterGeom/inc/DiskCalorimeter.hh"
 #include "CalorimeterGeom/inc/Calorimeter.hh"
 //#include "CaloCluster/inc/CaloClusterUtilities.hh"
@@ -1144,11 +1144,12 @@ namespace mu2e {
 
 	  e = new TEllipse(xl, yl, 50.*cl->energyDep() / 100.);
 	  e->SetFillStyle(3001);
-	  if (geom->hasElement<mu2e::VaneCalorimeter>()){
-	    color = 2;
-	  }
-	  else if (geom->hasElement<mu2e::DiskCalorimeter>()){
-	    color = module_color[cl->sectionId()];
+	  // if (geom->hasElement<mu2e::VaneCalorimeter>()){
+	  //   color = 2;
+	  // }
+	  // else
+	  if (geom->hasElement<mu2e::DiskCalorimeter>()){
+	    color = module_color[cl->diskId()];
 	  }
 	  e->SetFillColor(color);
 	  e->SetLineColor(color);
