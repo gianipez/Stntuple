@@ -79,6 +79,7 @@ protected:
   int              fMakeStrawData;
   int              fMakeTracks;
   int              fMakeTrackStrawHits;
+  int              fMakeHelices;
   int              fMakeTrackSeeds;
   int              fMakeTrigger;
   int              fMakeVirtualHits;
@@ -90,6 +91,8 @@ protected:
   std::string              fGeneratorModuleLabel;   // defines collection to save, default: "" (all)
   std::string              fMakeStrawHitModuleLabel;
   std::string              fMakeStrawDigiModuleLabel;
+  std::vector<std::string> fHelixBlockName;
+  std::vector<std::string> fHelixModuleLabel;
   std::vector<std::string> fTrackSeedBlockName;
   std::vector<std::string> fTrackSeedModuleLabel;
   std::vector<std::string> fTrackBlockName;
@@ -160,6 +163,7 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
   , fMakeStrawData      (PSet.get<int>         ("makeStrawData"  ))
   , fMakeTracks         (PSet.get<int>         ("makeTracks"     ))
   , fMakeTrackStrawHits (PSet.get<int>         ("makeTrackStrawHits"))
+  , fMakeHelices        (PSet.get<int>         ("makeHelices"    ))
   , fMakeTrackSeeds     (PSet.get<int>         ("makeTrackSeeds" ))
   , fMakeTrigger        (PSet.get<int>         ("makeTrigger"    ))
   , fMakeVirtualHits    (PSet.get<int>         ("makeVirtualHits"))
@@ -168,6 +172,8 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
   , fGeneratorModuleLabel    (PSet.get<string>        ("generatorModuleLabel"   ))
   , fMakeStrawHitModuleLabel (PSet.get<string>        ("makeStrawHitModuleLabel"))
   , fMakeStrawDigiModuleLabel(PSet.get<string>        ("makeStrawDigiModuleLabel"))
+  , fHelixBlockName          (PSet.get<vector<string>>("helixBlockName"     ))
+  , fHelixModuleLabel        (PSet.get<vector<string>>("helixModuleLabel"   ))
   , fTrackSeedBlockName      (PSet.get<vector<string>>("trackSeedBlockName"     ))
   , fTrackSeedModuleLabel    (PSet.get<vector<string>>("trackSeedModuleLabel"   ))
   , fTrackBlockName          (PSet.get<vector<string>>("trackBlockName"         ))
@@ -313,6 +319,34 @@ void StntupleMaker::beginJob() {
 			      compression_level);
     if (straw_data) {
       straw_data->AddCollName("mu2e::StrawHitCollection",fMakeStrawHitModuleLabel.data(),"");
+    }
+  }
+//--------------------------------------------------------------------------------
+// helix data
+//--------------------------------------------------------------------------------
+  if (fMakeHelices) {
+    TStnDataBlock* helix_data;
+    const char    *block_name;
+    int            nblocks;
+    
+    nblocks = fHelixBlockName.size();
+
+    for (int i=0; i<nblocks; i++) {
+      
+      block_name = fHelixBlockName[i].data();
+
+      helix_data = AddDataBlock(block_name, 
+				    "TStnHelixBlock",
+				    StntupleInitMu2eHelixBlock,
+				    buffer_size,
+				    split_mode,
+				    compression_level);
+      
+      SetResolveLinksMethod(block_name,StntupleInitMu2eHelixBlockLinks);
+      
+      if (helix_data) {
+	helix_data->AddCollName("mu2e::HelixCollection",fHelixModuleLabel[i].data(),"");
+      }
     }
   }
 //--------------------------------------------------------------------------------

@@ -16,6 +16,7 @@ Int_t StntupleInitMu2ePidBlock           (TStnDataBlock* blk, AbsEvent* evt, int
 Int_t StntupleInitMu2eGenpBlock          (TStnDataBlock* blk, AbsEvent* evt, int mode);
 Int_t StntupleInitMu2eSimpBlock          (TStnDataBlock* blk, AbsEvent* evt, int mode);
 Int_t StntupleInitMu2eVirtualDataBlock   (TStnDataBlock* blk, AbsEvent* evt, int mode);
+Int_t StntupleInitMu2eHelixBlock         (TStnDataBlock* blk, AbsEvent* evt, int mode);
 Int_t StntupleInitMu2eTrackSeedBlock     (TStnDataBlock* blk, AbsEvent* evt, int mode);
 Int_t StntupleInitMu2eTrackStrawHitBlock (TStnDataBlock* blk, AbsEvent* evt, int mode);
 
@@ -25,6 +26,7 @@ Int_t StntupleInitMu2eHeaderBlockLinks   (TStnDataBlock* Block, AbsEvent* AnEven
 Int_t StntupleInitMu2eTrackBlockLinks    (TStnDataBlock* blk  , AbsEvent* evt    , int mode);
 Int_t StntupleInitMu2eClusterBlockLinks  (TStnDataBlock* blk  , AbsEvent* evt    , int mode);
 Int_t StntupleInitMu2ePidBlockLinks      (TStnDataBlock* blk  , AbsEvent* evt    , int mode);
+Int_t StntupleInitMu2eHelixBlockLinks    (TStnDataBlock* blk  , AbsEvent* evt    , int mode);
 Int_t StntupleInitMu2eTrackSeedBlockLinks(TStnDataBlock* blk  , AbsEvent* evt    , int mode);
 
 #endif

@@ -38,9 +38,20 @@ BEGIN_PROLOG
 
   trkPatRecSeq     : [ @sequence::tprPrepHitSeq, TimeClusterFinder, PosHelixFinder, KSFDeM, 
 		       KFFDeM, MergePatRec    ]
+
   calPatRecSeq     : [ @sequence::cprPrepHitSeq, CalPatRec   , MergePatRec    ]
+
   allPatRecSeq     : [ @sequence::tprPrepHitSeq, TimeClusterFinder, PosHelixFinder, KSFDeM, 
 		       KFFDeM, @sequence::cprPrepHitSeq, CalPatRec, MergePatRec ]
+
+  # allPatRecNewSeq  : [ @sequence::tprPrepHitSeq, TimeClusterFinder, PosHelixFinder, KSFDeM, 
+  # 		       KFFDeM, @sequence::cprPrepHitSeq, 
+  # 		       CalTimePeakFinder, CalPatRecNew, CalSeedFit, CalTrkFit,
+  # 		       MergePatRec ]
+  allPatRecNewSeq  : [ TimeClusterFinder, PosHelixFinder, KSFDeM, 
+		       KFFDeM,
+		       CalTimePeakFinder, CalPatRecNew, CalSeedFit, CalTrkFit,
+		       MergePatRec ]
 
   trkPatRecDemSeq  : [ @sequence::tprPrepHitSeq, TimeClusterFinder, PosHelixFinder, KSFDeM, 
 		       KFFDeM , MergePatRecDem ]

@@ -10,6 +10,7 @@
 
 #include "Stntuple/loop/TStnModule.hh"
 
+#include "Stntuple/obj/TStnHelixBlock.hh"
 #include "Stntuple/obj/TStnTrackSeedBlock.hh"
 #include "Stntuple/obj/TStnTrackBlock.hh"
 #include "Stntuple/obj/TStnClusterBlock.hh"
@@ -140,6 +141,20 @@ public:
     TH1F*    fD0;
   };
 
+
+  struct HelixHist_t {
+    TH1F*    fNHits;	 
+    TH1F*    fClusterTime;
+    TH1F*    fClusterEnergy;
+    TH1F*    fRadius;    // fabs(1/omega)
+    TH1F*    fMom;
+    TH1F*    fPt;
+    TH1F*    fLambda;   //dz/dphi
+    TH1F*    fT0;
+    TH1F*    fT0Err;
+    TH1F*    fD0;
+    TH1F*    fAlg;
+  };
 
   struct TrackHist_t {
     TH1F*    fP[3];			// total momentum, 3 hists with different binning
@@ -277,6 +292,7 @@ public:
 //  fTrackEffHist[3]
 //-----------------------------------------------------------------------------
   enum { kNEventHistSets   = 100 };
+  enum { kNHelixHistSets   = 100 };
   enum { kNTrackSeedHistSets = 100 };
   enum { kNTrackHistSets   = 400 };
   enum { kNClusterHistSets = 100 };
@@ -290,6 +306,7 @@ public:
     TrackHist_t*     fTrack     [kNTrackHistSets];
     TrackSeedHist_t* fTimePeak  [kNTrackSeedHistSets];
     TrackSeedHist_t* fTrackSeed [kNTrackSeedHistSets];
+    HelixHist_t*     fHelix     [kNHelixHistSets];
     ClusterHist_t*   fCluster   [kNClusterHistSets];
     CaloHist_t*      fCalo      [kNCaloHistSets];
     GenpHist_t*      fGenp      [kNGenpHistSets];
@@ -302,6 +319,7 @@ public:
 					// pointers to the data blocks used
   TStnTrackSeedBlock*  fTimePeakBlock;
   TStnTrackSeedBlock*  fTrackSeedBlock;
+  TStnHelixBlock*      fHelixBlock;
   TStnTrackBlock*      fTrackBlock;
   TStnClusterBlock*    fClusterBlock;
   TCalDataBlock*       fCalDataBlock;
@@ -327,6 +345,7 @@ public:
   int               fNClusters;
   int               fNTimePeaks [5];
   int               fNTrackSeeds[5];
+  int               fNHelices[5];
   int               fNTracks[10];
   int               fNGoodTracks;
   int               fNMatchedTracks;
@@ -389,6 +408,7 @@ public:
   void    BookSimpHistograms    (SimpHist_t*    Hist, const char* Folder);
   void    BookTrackHistograms   (TrackHist_t*   Hist, const char* Folder);
 
+  void    BookHelixHistograms       (HelixHist_t*       Hist, const char* Folder);
   void    BookTrackSeedHistograms   (TrackSeedHist_t*   Hist, const char* Folder);
 
   void    FillEventHistograms    (EventHist_t* Hist);
@@ -399,6 +419,7 @@ public:
   void    FillTrackHistograms    (TrackHist_t*   Hist, TStnTrack*    Trk    );
 
   void    FillTrackSeedHistograms(TrackSeedHist_t*   Hist, TStnTrackSeed*    TrkSeed);
+  void    FillHelixHistograms    (HelixHist_t*       Hist, TStnHelix*        Helix  );
 
   void    BookHistograms();
   void    FillHistograms();

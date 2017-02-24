@@ -1,0 +1,53 @@
+#ifndef murat_TStnHelixBlock
+#define murat_TStnHelixBlock
+//-----------------------------------------------------------------------------
+//  definition of the cluster block for MU2E analysis
+//  Author:    G. Pezzullo
+//  Date:      April 11 2016
+//-----------------------------------------------------------------------------
+#include "TClonesArray.h"
+
+#include "Stntuple/obj/TStnDataBlock.hh"
+#include "Stntuple/obj/TStnHelix.hh"
+
+class TStnHelixBlock: public TStnDataBlock {
+  friend Int_t StntupleInitMu2eHelixBlockLinks(TStnDataBlock*, AbsEvent* , int);
+public:
+//----------------------------------------------------------------------------
+//  data members
+//-----------------------------------------------------------------------------
+  Int_t          fNHelices;
+  TClonesArray*  fListOfHelices;
+//----------------------------------------------------------------------------
+//  functions
+//----------------------------------------------------------------------------
+public:
+					// ****** constructors and destructor
+  TStnHelixBlock();
+  virtual ~TStnHelixBlock();
+
+  TStnHelix* NewHelix() {
+    TStnHelix* trackSeed = new ((*fListOfHelices)[fNHelices]) TStnHelix();
+    fNHelices++;
+    return trackSeed;
+  }
+//-----------------------------------------------------------------------------
+// accessors
+//-----------------------------------------------------------------------------
+  Int_t           NHelices     () { return fNHelices;   }
+  TClonesArray*   ListOfHelices() { return fListOfHelices; }
+
+  TStnHelix*   Helix(int I) {
+    return (TStnHelix*) fListOfHelices->UncheckedAt(I); 
+  }
+
+//-----------------------------------------------------------------------------
+// overloaded functions of TObject
+//-----------------------------------------------------------------------------
+  void Clear(Option_t* opt="");
+  void Print(Option_t* opt="") const;
+
+  ClassDef(TStnHelixBlock,1)
+};
+
+#endif

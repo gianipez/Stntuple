@@ -73,18 +73,35 @@ TValidationModule::~TValidationModule() {
 }
 
 //-----------------------------------------------------------------------------
+void TValidationModule::BookHelixHistograms   (HelixHist_t*   Hist, const char* Folder){
+  
+    HBook1F(Hist->fNHits         ,"nhits"      ,Form("%s: # of straw hits"              ,Folder), 150,   0,   150,Folder);
+    HBook1F(Hist->fClusterTime   ,"clusterTime",Form("%s: cluster time; t_{cluster}[ns]",Folder), 800, 400,  1700,Folder);
+    HBook1F(Hist->fClusterEnergy ,"clusterE"   ,Form("%s: cluster energy; E [MeV]      ",Folder), 400,   0,  200,Folder);
+    HBook1F(Hist->fRadius        ,"radius"     ,Form("%s: curvature radius; r [mm]"     ,Folder), 500,   0,   500,Folder);
+    HBook1F(Hist->fMom           ,"p"          ,Form("%s: momentum; p [MeV/c]"          ,Folder), 300,   50,   200,Folder);
+    HBook1F(Hist->fPt            ,"pT"         ,Form("%s: pT; pT [MeV/c]"               ,Folder), 600,   0,   150,Folder);
+    HBook1F(Hist->fLambda        ,"lambda"     ,Form("%s: lambda; #lambda"              ,Folder), 400, 1000,   5000,Folder);
+    HBook1F(Hist->fT0            ,"t0"         ,Form("%s: t0; t0[ns]"                   ,Folder), 100,   0,    10,Folder);
+    HBook1F(Hist->fT0Err         ,"t0err"      ,Form("%s: t0err; t0err [ns]"            ,Folder), 100,   0,    10,Folder);
+    HBook1F(Hist->fD0            ,"d0"         ,Form("%s: D0; d0 [mm]"                  ,Folder), 1600,   -400,    400,Folder);
+
+  
+}
+
+//-----------------------------------------------------------------------------
 void TValidationModule::BookTrackSeedHistograms   (TrackSeedHist_t*   Hist, const char* Folder){
   
-    HBook1F(Hist->fNHits       ,"nhits"      ,Form("%s: # of straw hits"              ,Folder), 150,   0,   150,Folder);
-    HBook1F(Hist->fClusterTime ,"clusterTime",Form("%s: cluster time; t_{cluster} [ns]",Folder), 800, 400,  1700,Folder);
-    HBook1F(Hist->fClusterEnergy ,"clusterE"   ,Form("%s: cluster energy; E [MeV]      ",Folder), 400,   0,  200,Folder);
-    HBook1F(Hist->fRadius      ,"radius"     ,Form("%s: curvature radius; r [mm]"     ,Folder), 500,   0,   500,Folder);
-    HBook1F(Hist->fMom         ,"p"          ,Form("%s: momentum; p [MeV/c]"          ,Folder), 300,   50,   200,Folder);
-    HBook1F(Hist->fPt         ,"pT"          ,Form("%s: pT; pT [MeV/c]"               ,Folder), 600,   0,   150,Folder);
-    HBook1F(Hist->fTanDip      ,"tanDip"     ,Form("%s: tanDip; tanDip"               ,Folder), 300,   0,     3,Folder);
-    HBook1F(Hist->fChi2XY      ,"chi2XY"     ,Form("%s: #chi^{2}-XY; #chi^{2}/ndof"   ,Folder), 100,   0,    10,Folder);
-    HBook1F(Hist->fChi2ZPhi    ,"chi2ZPhi"   ,Form("%s: #chi^{2}-ZPhi; #chi^{2}/ndof" ,Folder), 100,   0,    10,Folder);
-    HBook1F(Hist->fD0          ,"d0"         ,Form("%s: D0; #chi^{2}/ndof"            ,Folder), 1600,   -400,    400,Folder);
+    HBook1F(Hist->fNHits         ,"nhits"    ,Form("%s: # of straw hits"              ,Folder), 150,   0,   150,Folder);
+    HBook1F(Hist->fClusterTime ,"clusterTime",Form("%s: cluster time; t_{cluster}[ns]",Folder), 800, 400,  1700,Folder);
+    HBook1F(Hist->fClusterEnergy ,"clusterE" ,Form("%s: cluster energy; E [MeV]      ",Folder), 400,   0,  200,Folder);
+    HBook1F(Hist->fRadius        ,"radius"   ,Form("%s: curvature radius; r [mm]"     ,Folder), 500,   0,   500,Folder);
+    HBook1F(Hist->fMom           ,"p"        ,Form("%s: momentum; p [MeV/c]"          ,Folder), 300,   50,   200,Folder);
+    HBook1F(Hist->fPt            ,"pT"       ,Form("%s: pT; pT [MeV/c]"               ,Folder), 600,   0,   150,Folder);
+    HBook1F(Hist->fTanDip        ,"tanDip"   ,Form("%s: tanDip; tanDip"               ,Folder), 300,   0,     3,Folder);
+    HBook1F(Hist->fChi2XY        ,"chi2XY"   ,Form("%s: #chi^{2}-XY; #chi^{2}/ndof"   ,Folder), 100,   0,    10,Folder);
+    HBook1F(Hist->fChi2ZPhi      ,"chi2ZPhi" ,Form("%s: #chi^{2}-ZPhi; #chi^{2}/ndof" ,Folder), 100,   0,    10,Folder);
+    HBook1F(Hist->fD0            ,"d0"       ,Form("%s: D0; d0 [mm]"                  ,Folder), 1600,   -400,    400,Folder);
 
   
 }
@@ -376,6 +393,30 @@ void TValidationModule::BookHistograms() {
       if (! fol) fol = hist_folder->AddFolder(folder_name,folder_name);
       fHist.fTrackSeed[i] = new TrackSeedHist_t;
       BookTrackSeedHistograms(fHist.fTrackSeed[i],Form("Hist/%s",folder_name));
+    }
+  }
+  
+//--------------------------------------------------------------------------------
+// book helix histograms
+//--------------------------------------------------------------------------------
+  int book_helix_histset[kNHelixHistSets];
+  for (int i=0; i<kNHelixHistSets; ++i)  book_helix_histset[i] = 0;
+
+  book_helix_histset[0] = 1;   // events with at least one helix
+  book_helix_histset[1] = 1;   // events with at least one helix with p > 80 MeV/c
+  book_helix_histset[2] = 1;   // events with at least one helix with p > 90 MeV/c
+  book_helix_histset[3] = 1;   // events with at least one helix with p > 100 MeV/c
+  book_helix_histset[4] = 1;   // events with at least one helix with 10 < nhits < 15
+  book_helix_histset[5] = 1;   // events with at least one helix with nhits >= 15
+  book_helix_histset[6] = 1;   // events with at least one helix with nhits >= 15 and chi2XY(ZPhi)<4
+
+   for (int i=0; i<kNHelixHistSets; i++) {
+    if (book_helix_histset[i] != 0) {
+      sprintf(folder_name,"helix_%i",i);
+      fol = (TFolder*) hist_folder->FindObject(folder_name);
+      if (! fol) fol = hist_folder->AddFolder(folder_name,folder_name);
+      fHist.fHelix[i] = new HelixHist_t;
+      BookHelixHistograms(fHist.fHelix[i],Form("Hist/%s",folder_name));
     }
   }
   
@@ -847,6 +888,38 @@ void TValidationModule::FillTrackSeedHistograms(TrackSeedHist_t*   Hist, TStnTra
 
 }
 
+//--------------------------------------------------------------------------------
+// function to fill TrasckSeedHit block
+//--------------------------------------------------------------------------------
+void TValidationModule::FillHelixHistograms(HelixHist_t*   Hist, TStnHelix*    Helix){
+  
+  int         nhits    = Helix->NHits      ();
+  double      clusterT = Helix->ClusterTime();
+  double      clusterE = Helix->ClusterEnergy();
+  
+  double      radius   = Helix->Radius();
+
+  double      lambda   = Helix->Lambda();  
+  double      tanDip   = lambda/radius;
+  double      mm2MeV   = 3/10.;
+  double      pT       = radius*mm2MeV;
+  double      p        = pT/std::cos( std::atan(tanDip));
+  
+
+  Hist->fNHits         ->Fill(nhits);	 
+  Hist->fClusterTime   ->Fill(clusterT);
+  Hist->fClusterEnergy ->Fill(clusterE);
+  
+  Hist->fRadius        ->Fill(radius);    
+  Hist->fMom           ->Fill(p);	 
+  Hist->fPt            ->Fill(pT);	 
+  Hist->fLambda        ->Fill(lambda);    
+  		       
+  Hist->fAlg           ->Fill(Helix->AlgorithmID());
+  Hist->fD0            ->Fill(Helix->D0());
+
+}
+
 //-----------------------------------------------------------------------------
 void TValidationModule::FillCaloHistograms(CaloHist_t* Hist, TStnCrystal* Cr) {
 
@@ -1191,12 +1264,13 @@ int TValidationModule::BeginJob() {
 //-----------------------------------------------------------------------------
   RegisterDataBlock("TimePeakBlock" ,"TStnTrackSeedBlock",&fTimePeakBlock);
   RegisterDataBlock("TrackSeedBlock","TStnTrackSeedBlock",&fTrackSeedBlock);
-  RegisterDataBlock("TrackBlock"    ,"TStnTrackBlock"   ,&fTrackBlock  );
-  RegisterDataBlock("ClusterBlock"  ,"TStnClusterBlock" ,&fClusterBlock);
-  RegisterDataBlock("CalDataBlock"  ,"TCalDataBlock"    ,&fCalDataBlock);
-  RegisterDataBlock("StrawDataBlock","TStrawDataBlock"  ,&fStrawDataBlock);
-  RegisterDataBlock("GenpBlock"     ,"TGenpBlock"       ,&fGenpBlock);
-  RegisterDataBlock("SimpBlock"     ,"TSimpBlock"       ,&fSimpBlock);
+  RegisterDataBlock("HelixBlock"    ,"TStnHelixBlock"    ,&fHelixBlock);
+  RegisterDataBlock("TrackBlock"    ,"TStnTrackBlock"    ,&fTrackBlock  );
+  RegisterDataBlock("ClusterBlock"  ,"TStnClusterBlock"  ,&fClusterBlock);
+  RegisterDataBlock("CalDataBlock"  ,"TCalDataBlock"     ,&fCalDataBlock);
+  RegisterDataBlock("StrawDataBlock","TStrawDataBlock"   ,&fStrawDataBlock);
+  RegisterDataBlock("GenpBlock"     ,"TGenpBlock"        ,&fGenpBlock);
+  RegisterDataBlock("SimpBlock"     ,"TSimpBlock"        ,&fSimpBlock);
 //-----------------------------------------------------------------------------
 // book histograms
 //-----------------------------------------------------------------------------
@@ -1397,7 +1471,7 @@ void TValidationModule::FillHistograms() {
     FillTrackSeedHistograms(fHist.fTrackSeed[0], trkSeed);
     
     int         nhits    = trkSeed->NHits();
-    double      radius   = trkSeed->ClusterTime();
+    double      radius   = 1./trkSeed->Omega();
     
     double      tanDip   = trkSeed->TanDip();  
     double      mm2MeV   = 3/10.;
@@ -1429,6 +1503,55 @@ void TValidationModule::FillHistograms() {
     
     if ( (chi2xy < 4) && (chi2zphi < 4) && (nhits>=15)){
       FillTrackSeedHistograms(fHist.fTrackSeed[6], trkSeed);
+    }
+  
+  }
+
+
+//--------------------------------------------------------------------------------
+// helix histograms
+//--------------------------------------------------------------------------------
+  TStnHelix* helix;
+  for (int i=0; i<fNHelices[0]; ++i){
+    
+    helix = fHelixBlock->Helix(i);
+    
+    FillHelixHistograms(fHist.fHelix[0], helix);
+    
+    int         nhits    = helix->NHits();
+    double      radius   = helix->Radius();
+    
+    double      lambda   = helix->Lambda();
+    double      tanDip   = lambda/radius;
+    double      mm2MeV   = 3/10.;
+    double      p        = radius*mm2MeV/std::cos( std::atan(tanDip));
+    
+    double      chi2xy   = helix->Chi2XY();
+    double      chi2zphi = helix->Chi2ZPhi();
+    
+   
+    if (p > 80.) {
+      FillHelixHistograms(fHist.fHelix[1], helix);
+    }
+    
+    if (p > 90) {
+      FillHelixHistograms(fHist.fHelix[2], helix);
+    }
+
+    if (p > 100) {
+      FillHelixHistograms(fHist.fHelix[3], helix);
+    }
+    
+    if ( (nhits>10) && (nhits<15)) {
+      FillHelixHistograms(fHist.fHelix[4], helix);
+    }
+
+    if ( nhits>=15) {
+      FillHelixHistograms(fHist.fHelix[5], helix);
+    }
+    
+    if ( (chi2xy < 4) && (chi2zphi < 4) && (nhits>=15)){
+      FillHelixHistograms(fHist.fHelix[6], helix);
     }
   
   }
