@@ -658,7 +658,7 @@ void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix,	const char* Opt,
     float chi2xy   = -1;//Helix->chi2XY();
     float chi2zphi = -1;//Helix->chi2ZPhi();
 
-    printf(" %8.3f %8.3f %8.3f %8.3f %10.3f %10.3f %12.3f %10.3f %10.3f %16p\n",
+    printf(" %8.3f %8.3f %8.3f %8.3f %10.3f %10.3f %12.3f %12.3f %12.3f %08x\n",
 	   d0,fz0,x0,y0,lambda,radius,clusterEnergy,chi2xy,chi2zphi,flag);
   }
 
