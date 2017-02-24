@@ -17,17 +17,19 @@ BEGIN_PROLOG
   mix_seq       : [ dioMixer, protonMixer, neutronMixer, photonMixer, ootMixer, flashMixer
 		    , @sequence::timeMapSeq ]
 
-  hitMakerSeq   : [ MakeCaloReadoutHits, MakeCaloCrystalHits, makeSD, makeSH ]
+  hitMakerSeq   : [ CaloShowerStepFromStepPt, CaloShowerStepROFromShowerStep, CaloDigiFromShower,
+		    CaloRecoDigiFromDigi ,CaloCrystalHitFromHit, makeSD, makeSH ]
 
-  digiMakerSeq  : [ MakeCaloCompressedHits     , CaloDigisFromStepPointMCs, CaloHitsFromCaloDigis, 
-  		    CaloCrystalHitsFromCaloHits,  makeSD, makeSH ]
+  digiMakerSeq  : [ CaloShowerStepFromStepPt, CaloShowerStepROFromShowerStep, CaloDigiFromShower, 
+		    CaloRecoDigiFromDigi ,CaloCrystalHitFromHit, 
+		    makeSD, makeSH ]
  
 # MC generator and hit makers
 
   gen_hits_seq  : [ @sequence::generatorSeq, @sequence::hitMakerSeq ]
 
 # calorimeter cluster reconstruction
-  calRecoSeq    : [ MakeCaloProtoCluster, MakeCaloCluster ]
+  calRecoSeq    : [ CaloProtoClusterFromCrystalHit, CaloClusterFromProtoCluster ]
 
 # hit pre-making for TrkPatRec; FSHPreStereo is needed to flag straw hits
   tprPrepHitSeq : [ FSHPreStereo, MakeStrawHitPositions, MakeStereoHits, FlagStrawHits, FlagBkgHits ]
@@ -336,15 +338,17 @@ Stntuple : { @table::Stntuple  # defined in Stntuple/fcl/prolog.fcl
         muonTimeMap            : { @table::muonTimeMap            }
         makeSD                 : { @table::makeSD                 }
         makeSH                 : { @table::makeSHfromSD           }
-	MakeCaloCompressedHits : { @table::MakeCaloCompressedHits }
-	MakeCaloReadoutHits    : { @table::MakeCaloReadoutHits    }
-	MakeCaloCrystalHits    : { @table::MakeCaloCrystalHitsNew }
+
 #------------------------------------------------------------------------------
 # calorimeter digi maker
 #------------------------------------------------------------------------------
-	CaloDigisFromStepPointMCs   :{ @table::CaloDigisFromStepPointMCs}
-	CaloHitsFromCaloDigis       :{ @table::CaloHitsFromCaloDigis}
-	CaloCrystalHitsFromCaloHits :{ @table::CaloCrystalHitsFromCaloHits}
+	CaloShowerStepFromStepPt          :{ @table::CaloShowerStepFromStepPt}
+	CaloShowerStepROFromShowerStep    :{ @table::CaloShowerStepROFromShowerStep}
+	CaloDigiFromShower                :{ @table::CaloDigiFromShower}
+
+	CaloRecoDigiFromDigi              :{ @table::CaloRecoDigiFromDigi}
+	CaloCrystalHitFromHit             :{ @table::CaloCrystalHitFromHit}
+
 #------------------------------------------------------------------------------
 # TrkPatRec and CalPatRec modules
 #------------------------------------------------------------------------------
@@ -406,9 +410,10 @@ Stntuple.gen_g4_time_map : [ @sequence::Stntuple.gen_g4, @sequence::EventMixing.
 Stntuple.mix             : [ dioMixer, protonMixer, neutronMixer, photonMixer, ootMixer, flashMixer ]
 Stntuple.mix_time_map    : [ @sequence::Stntuple.mix, @sequence::EventMixing.TimeMaps ]
 Stntuple.g4_mix_time_map : [ @sequence::Stntuple.gen_g4, @sequence::Stntuple.mix, @sequence::EventMixing.TimeMaps ]
-Stntuple.digis           : [ MakeCaloReadoutHits, @sequence::Tracking.DigiSim ]
+Stntuple.digis           : [ @sequence::CaloReco.Reco, @sequence::Tracking.DigiSim ]
 
-Stntuple.cal_reco        : [ MakeCaloCrystalHits, MakeCaloProtoCluster, MakeCaloCluster ]
+Stntuple.cal_reco        : [ CaloRecoDigiFromDigi ,CaloCrystalHitFromHit, 
+			     CaloProtoClusterFromCrystalHit, CaloClusterFromProtoCluster ]
 
 Stntuple.cpr_reco        : [ @sequence::CalPatRec.reco, 
 			     MergePatRecCpr,

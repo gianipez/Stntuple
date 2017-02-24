@@ -39,6 +39,7 @@ namespace mu2e {
   class SimParticle;
   class CalTimePeak;
   class TrackSeed;
+  class HelixSeed;
   class TrackClusterMatch;
   class TrkStrawHit;
 }
@@ -128,6 +129,16 @@ public:
 				const char* ModuleLabelStrawHit="");
 
   void printTrackSeedCollection(const char* ModuleLabel             , 
+				const char* ProductName         = "", 
+				const char* ProcessName         = "",
+				int         hitOpt              = 0,
+				const char* ModuleLabelStrawHit =""); 
+
+  void printHelixSeed          (const mu2e::HelixSeed*         Helix, 
+				const char* Opt = ""                ,
+				const char* ModuleLabelStrawHit="" );
+
+  void printHelixSeedCollection(const char* ModuleLabel             , 
 				const char* ProductName         = "", 
 				const char* ProcessName         = "",
 				int         hitOpt              = 0,

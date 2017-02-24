@@ -28,6 +28,10 @@
 #include "RecoDataProducts/inc/StrawHitFlagCollection.hh"
 #include "RecoDataProducts/inc/TrackSeed.hh"
 #include "RecoDataProducts/inc/TrackSeedCollection.hh"
+#include "RecoDataProducts/inc/HelixHit.hh"
+#include "RecoDataProducts/inc/HelixSeed.hh"
+#include "RecoDataProducts/inc/HelixSeedCollection.hh"
+
 #include "RecoDataProducts/inc/CaloDigi.hh"
 #include "RecoDataProducts/inc/CaloDigiCollection.hh"
 #include "RecoDataProducts/inc/CaloRecoDigi.hh"
@@ -594,6 +598,178 @@ void TAnaDump::printTrackSeedCollection(const char* ModuleLabel,
     }
     printTrackSeed(trkseed,"data");
     if(hitOpt>0) printTrackSeed(trkseed,"hits", ModuleLabelStrawHit);
+
+  }
+}
+
+//-----------------------------------------------------------------------------
+void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix,	const char* Opt, 
+			      const char* ModuleLabelStrawHit){
+  TString opt = Opt;
+  
+  if ((opt == "") || (opt == "banner")) {
+    printf("---------------------------------------------------------------------------------");
+    printf("--------------------------------------------------------------------------------\n");
+    printf("  HelID       Address    N      P      pT      T0     T0err  ");
+    printf("    D0       FZ0      X0        Y0       Lambda     radius    caloEnergy     chi2XY    chi2ZPhi    flag  \n");
+    printf("---------------------------------------------------------------------------------");
+    printf("--------------------------------------------------------------------------------\n");
+  }
+ 
+
+  art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandleStraw;
+  //  fEvent->getByLabel("makeSH","StrawHitMCPtr",mcptrHandleStraw);
+  fEvent->getByLabel("makeSH","",mcptrHandleStraw);
+  mu2e::PtrStepPointMCVectorCollection const* hits_mcptrStraw = mcptrHandleStraw.product();
+
+  const mu2e::RobustHelix*robustHel = &Helix->helix();
+
+  if ((opt == "") || (opt.Index("data") >= 0)) {
+    int    nhits  = Helix->hits().size();
+    int    flag   = *((int*) &Helix->status()); 
+
+    double t0     = Helix->t0()._t0;
+    double t0err  = Helix->t0()._t0err;
+
+    double fz0    = robustHel->fz0();
+    //    double phi0   = robustHel->phi0();
+    double radius = robustHel->radius();
+    double d0     = robustHel->rcent() - radius;
+
+    double lambda = robustHel->lambda();
+    double tandip = lambda/radius;
+
+    double mm2MeV = 3/10.;
+    double mom    = radius*mm2MeV/std::cos( std::atan(tandip));
+    double pt     = radius*mm2MeV;
+
+    double x0     = robustHel->centerx();
+    double y0     = robustHel->centery();
+    
+    const mu2e::CaloCluster*cluster = Helix->caloCluster().get();
+    double clusterEnergy(-1);
+    if (cluster != 0) clusterEnergy = cluster->energyDep();
+    printf("%5i %16p %3i %8.3f %8.5f %7.3f %7.3f",
+	   -1,
+	   Helix,
+	   nhits,
+	   mom, pt, t0, t0err );
+
+    float chi2xy   = -1;//Helix->chi2XY();
+    float chi2zphi = -1;//Helix->chi2ZPhi();
+
+    printf(" %8.3f %8.3f %8.3f %8.3f %10.3f %10.3f %12.3f %10.3f %10.3f %16p\n",
+	   d0,fz0,x0,y0,lambda,radius,clusterEnergy,chi2xy,chi2zphi,flag);
+  }
+
+  if ((opt == "") || (opt.Index("hits") >= 0) ){
+    int nsh = Helix->hits().size();
+
+    const mu2e::StrawHit* hit(0);
+    art::Handle<mu2e::StrawHitCollection>         shcHandle;
+    const mu2e::StrawHitCollection*               shcol;
+
+    const char* ProductName = "";
+    const char* ProcessName = "";
+
+                           //now get the strawhitcollection
+    if (ProductName[0] != 0) {
+      art::Selector  selector(art::ProductInstanceNameSelector(ProductName) &&
+			      art::ProcessNameSelector(ProcessName)         && 
+			      art::ModuleLabelSelector(ModuleLabelStrawHit)           );
+      fEvent->get(selector, shcHandle);
+    }
+    else {
+      art::Selector  selector(art::ProcessNameSelector(ProcessName)         && 
+			      art::ModuleLabelSelector(ModuleLabelStrawHit)           );
+      fEvent->get(selector, shcHandle);
+    }
+    
+    shcol = shcHandle.product();
+
+    const mu2e::HelixHit*helHit(0);
+    
+    int banner_printed(0);
+    for (int i=0; i<nsh; ++i){
+      helHit  = &Helix->hits().at(i);
+      mu2e::PtrStepPointMCVector const& mcptr(hits_mcptrStraw->at(i ) );
+      int  hitIndex  = helHit->index();
+    
+      hit       = &shcol->at(hitIndex);
+      const mu2e::StepPointMC* Step = mcptr[0].get();
+    
+      if (banner_printed == 0){
+	printStrawHit(hit, Step, "banner", -1, 0);
+	banner_printed = 1;
+      } else {
+	printStrawHit(hit, Step, "data", -1, 0);
+      }
+    }
+    
+    
+  }
+}
+
+//-----------------------------------------------------------------------------
+
+void TAnaDump::printHelixSeedCollection(const char* ModuleLabel, 
+					const char* ProductName, 
+					const char* ProcessName,
+					int         hitOpt     ,
+					const char* ModuleLabelStrawHit){
+  
+
+  art::Handle<mu2e::HelixSeedCollection> helicesHandle;
+
+  if (ProductName[0] != 0) {
+    art::Selector  selector(art::ProductInstanceNameSelector(ProductName) &&
+			    art::ProcessNameSelector(ProcessName)         && 
+			    art::ModuleLabelSelector(ModuleLabel)            );
+    fEvent->get(selector,helicesHandle);
+  }
+  else {
+    art::Selector  selector(art::ProcessNameSelector(ProcessName)         && 
+			    art::ModuleLabelSelector(ModuleLabel)            );
+    fEvent->get(selector,helicesHandle);
+  }
+//-----------------------------------------------------------------------------
+// make sure collection exists
+//-----------------------------------------------------------------------------
+  if (! helicesHandle.isValid()) {
+    printf("TAnaDump::printHelixSeedCollection: no HelixSeedCollection for module %s, BAIL OUT\n",
+	   ModuleLabel);
+    return;
+  }
+  
+  art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandle;
+  if (ModuleLabel[0] != 0) {
+    //    fEvent->getByLabel("makeSH","StrawHitMCPtr",mcptrHandle);
+    fEvent->getByLabel("makeSH","",mcptrHandle);
+    if (mcptrHandle.isValid()) {
+      fgListOfMCStrawHits = (mu2e::PtrStepPointMCVectorCollection*) mcptrHandle.product();
+    }
+    else {
+      printf(">>> ERROR in TAnaDump::printHelixSeedCollection: failed to locate StepPointMCCollection:: by makeSH\n");
+      fgListOfMCStrawHits = NULL;
+    }
+  }
+
+  mu2e::HelixSeedCollection*  list_of_helixSeeds;
+  list_of_helixSeeds    = (mu2e::HelixSeedCollection*) &(*helicesHandle);
+
+  int nhelices = list_of_helixSeeds->size();
+
+  const mu2e::HelixSeed *helix;
+
+  int banner_printed = 0;
+  for (int i=0; i<nhelices; i++) {
+    helix = &list_of_helixSeeds->at(i);
+    if (banner_printed == 0) {
+      printHelixSeed(helix,"banner");
+      banner_printed = 1;
+    }
+    printHelixSeed(helix,"data");
+    if(hitOpt>0) printHelixSeed(helix,"hits", ModuleLabelStrawHit);
 
   }
 }

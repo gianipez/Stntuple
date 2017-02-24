@@ -35,8 +35,8 @@ StntupleMakerTemplate : { module_type:StntupleMaker
     DoubletAmbigResolver : { @table::TrkReco.DoubletAmbigResolver }
 
     g4ModuleLabel        : "g4run"
-    caloCrystalHitsMaker : "MakeCaloCrystalHits"
-    caloClusterMaker     : "MakeCaloCluster"
+    caloCrystalHitsMaker : "CaloCrystalHitFromHit"
+    caloClusterMaker     : "CaloClusterFromProtoCluster"
 #------------------------------------------------------------------------------
 # sometimes may need to store multiple track blocks, thus - vectors
 # by default, always run MergePatRec, which, in case only one track reconstruction
@@ -93,8 +93,8 @@ MuHitDisplay: { module_type:MuHitDisplay        # the class name;
     strawHitPosMakerModuleLabel  : CalPatRecMakeStrawHitPositions
     strawHitFlagMakerModuleLabel : CalPatRecFlagStrawHits
     
-    caloCrystalHitsMaker         : MakeCaloCrystalHits
-    caloClusterModuleLabel       : MakeCaloCluster
+    caloCrystalHitsMaker         : CaloCrystalHitFromHit
+    caloClusterModuleLabel       : CaloClusterFromProtoCluster
 
     trkRecoModuleLabel           : MergePatRec
     trkExtrapol                  : TrackCaloIntersection
