@@ -23,13 +23,39 @@
 
 #include "RecoDataProducts/inc/HelixSeed.hh"
 #include "RecoDataProducts/inc/HelixSeedCollection.hh"
+#include "RecoDataProducts/inc/HelixHit.hh"
 
 #include "RecoDataProducts/inc/CaloCluster.hh"
 
 //#include "CalPatRec/inc/THackData.hh"
 
 #include "CalPatRec/inc/AlgorithmIDCollection.hh"
-			
+#include "CalPatRec/inc/HelixFitHack.hh"
+
+
+
+double evalWeight(CLHEP::Hep3Vector& HitPos   ,
+		  CLHEP::Hep3Vector& StrawDir ,
+		  CLHEP::Hep3Vector& HelCenter) {
+  
+  double    rs(2.5);   // straw radius, mm
+  double    ew(30.0);  // assumed resolution along the wire, mm
+  
+  double x  = HitPos.x();
+  double y  = HitPos.y();
+  double dx = x-HelCenter.x();
+  double dy = y-HelCenter.y();
+  
+  double costh  = (dx*StrawDir.x()+dy*StrawDir.y())/sqrt(dx*dx+dy*dy);
+  double sinth2 = 1-costh*costh;
+  
+  double e2     = ew*ew*sinth2+rs*rs*costh*costh;
+  double wt     = 1./e2;
+  //scale the weight for having chi2/ndof distribution peaking at 1
+  return wt;
+}
+
+
 //-----------------------------------------------------------------------------
 // assume that the collection name is set, so we could grab it from the event
 //-----------------------------------------------------------------------------
@@ -106,16 +132,45 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
     helix->fNHits        = tmpHel->hits().size();
     helix->fT0           = tmpHel->t0()._t0;
     helix->fT0Err        = tmpHel->t0()._t0err;     
-    helix->fRCent        = robustHel->radius ();
-    helix->fFCent        = robustHel->rcent  ();     
-    helix->fRadius       = robustHel->fcent  ();
+    helix->fRCent        = robustHel->rcent  ();
+    helix->fFCent        = robustHel->fcent  ();     
+    helix->fRadius       = robustHel->radius ();
     helix->fLambda       = robustHel->lambda ();     
     helix->fFZ0          = robustHel->fz0    ();
     helix->fD0           = robustHel->rcent  () - robustHel->radius ();
     
-    //2017-02-23: gianipez - do we want to calculate the chi2 by hands? how to estimate the error here??
-    helix->fChi2XYNDof   = -1;
-    helix->fChi2PhiZNDof = -1;
+    //2017-02-23: gianipez - calculate the chi2
+    const mu2e::HelixHitCollection* hits      = &tmpHel->hits();
+    const mu2e::HelixHit*           hit(0);
+    CLHEP::Hep3Vector         pos(0), helix_pos(0), wdir(0), helix_center(0);
+    double                    phi(0), helix_phi(0);
+    double                    radius    = robustHel->radius();
+    helix_center = robustHel->center();
+
+    double                    chi2xy(0), chi2phiz(0);
+    int                       nhits(hits->size());
+    for (int j=0; j<nhits; ++j){
+      hit       = &hits->at(i);
+      pos       = hit->pos();
+      wdir      = hit->wdir();
+      helix_pos = pos;
+      robustHel->position(helix_pos);
+      phi       = hit->phi();
+      helix_phi = robustHel->circleAzimuth(pos.z());
+    
+      double    resid_x2 = pow( (pos.x() - helix_pos.x()), 2.);
+      double    resid_y2 = pow( (pos.y() - helix_pos.y()), 2.);
+      double    weight   = evalWeight(pos, wdir, helix_center);
+      chi2xy += (resid_x2 + resid_y2)*weight;
+
+      double    resid_phi2 = pow( (phi - helix_phi), 2.);
+      weight    *= (radius*radius);
+      chi2phiz += resid_phi2*weight;
+    }
+    
+
+    helix->fChi2XYNDof   = chi2xy  /(nhits - 5);
+    helix->fChi2PhiZNDof = chi2phiz/(nhits - 2);
     
     
     if (list_of_algs) {
