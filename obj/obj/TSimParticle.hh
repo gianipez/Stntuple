@@ -8,6 +8,7 @@
 #include "TObject.h"
 #include "TParticlePDG.h"
 #include "TLorentzVector.h"
+#include "TBuffer.h"
 
 class TSimParticle : public TObject {
 public:

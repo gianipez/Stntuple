@@ -5,6 +5,7 @@
 #include "RQ_OBJECT.h"
 
 #include "TNamed.h"
+#include "TBuffer.h"
 
 class TStnErrorLogger : public TNamed {
   RQ_OBJECT("TStnErrorLogger")

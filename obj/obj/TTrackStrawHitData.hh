@@ -7,6 +7,7 @@
 #include <math.h>
 #include "TMath.h"
 #include "TObject.h"
+#include "TBuffer.h"
 
 class TTrackStrawHitData : public TObject {
 protected:

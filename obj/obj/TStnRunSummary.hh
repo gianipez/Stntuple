@@ -10,6 +10,7 @@
 
 #include "TObject.h"
 #include "TString.h"
+#include "TBuffer.h"
 
 class TStnRunSummary: public TObject {
 public:

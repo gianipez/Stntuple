@@ -1,3 +1,4 @@
+
 #ifndef STNTUPLE_TStnDBManager_hh
 #define STNTUPLE_TStnDBManager_hh
 //-----------------------------------------------------------------------------
@@ -20,6 +21,7 @@
 
 #include "TObject.h"
 #include "TList.h"
+#include "TBuffer.h"
 
 class TStnDBManager: public TObject {
 //-----------------------------------------------------------------------------

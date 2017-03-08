@@ -51,6 +51,7 @@ def stntuple_gen_rootcint(source, target, env, for_signature):
     includes =   "-Iinclude -I"+os.environ['ART_INC'     ];
     includes = includes + " -I"+os.environ['BTRK_INC'    ];
     includes = includes + " -I"+os.environ['CETLIB_INC'  ];
+    includes = includes + " -I"+os.environ['CETLIB_EXCEPT_INC'];
     includes = includes + " -I"+os.environ['CANVAS_INC'  ];
     includes = includes + " -I"+os.environ['FHICLCPP_INC'];
     includes = includes + " -I"+os.environ['CLHEP_INC'   ];

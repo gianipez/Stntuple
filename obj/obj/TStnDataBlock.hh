@@ -13,6 +13,7 @@
 #include "TNamed.h"
 #include "TObjString.h"
 #include "TObjArray.h"
+#include "TBuffer.h"
 
 class TStnNode;
 class TStnEvent;

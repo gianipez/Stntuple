@@ -8,6 +8,7 @@ class TStnDataBlock;
 class TStnErrorLogger;
 
 #include "TObjArray.h"
+#include "TBuffer.h"
 
 class TStnEvent : public TObject {
 public:

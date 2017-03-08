@@ -7,6 +7,7 @@
 //-----------------------------------------------------------------------------
 #include "TNamed.h"
 #include "TArrayI.h"
+#include "TBuffer.h"
 
 class  TFile;
 class  TTree;

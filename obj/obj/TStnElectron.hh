@@ -35,6 +35,7 @@
 #include "TFolder.h"
 #include "TFile.h"
 #include "TLorentzVector.h"
+#include "TBuffer.h"
 					// 'KalRep' is a BaBar class
 class TStnTrack;
 class TStnCluster;

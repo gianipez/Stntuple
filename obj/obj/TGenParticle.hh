@@ -4,6 +4,8 @@
 #include "TMath.h"
 #include "TParticle.h"
 #include "TParticlePDG.h"
+#include "TBuffer.h"
+
 
 class GENP_PARTICLE;
 

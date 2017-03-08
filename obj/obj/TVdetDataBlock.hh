@@ -7,6 +7,7 @@
 #include "Stntuple/obj/TVdetHitData.hh"
 
 #include "Stntuple/mod/InitStntupleDataBlocks.hh"
+#include "TBuffer.h"
 
 class TVdetDataBlock: public TStnDataBlock {
   friend Int_t StntupleInitMu2eVirtualDataBlock(TStnDataBlock* block, 

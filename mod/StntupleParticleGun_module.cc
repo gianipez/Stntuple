@@ -7,7 +7,7 @@
 #include <memory>
 #include <algorithm>
 
-#include "cetlib/exception.h"
+#include "cetlib_except/exception.h"
 
 #include "TH1.h"
 

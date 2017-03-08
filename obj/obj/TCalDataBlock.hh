@@ -6,6 +6,7 @@
 #include "Stntuple/obj/TStnDataBlock.hh"
 #include "Stntuple/mod/InitStntupleDataBlocks.hh"
 #include "TCalHitData.hh"
+#include "TBuffer.h"
 
 class TCalDataBlock : public TStnDataBlock {
   friend Int_t StntupleInitMu2eCalDataBlock(TStnDataBlock*, AbsEvent*, int);

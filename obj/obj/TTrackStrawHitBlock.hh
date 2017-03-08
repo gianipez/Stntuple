@@ -8,6 +8,7 @@
 #include "Stntuple/obj/TTrackStrawHitData.hh"
 
 #include "Stntuple/mod/InitStntupleDataBlocks.hh"
+#include "TBuffer.h"
 
 class TTrackStrawHitBlock: public TStnDataBlock {
 

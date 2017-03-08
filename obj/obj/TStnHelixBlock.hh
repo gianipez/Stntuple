@@ -9,6 +9,7 @@
 
 #include "Stntuple/obj/TStnDataBlock.hh"
 #include "Stntuple/obj/TStnHelix.hh"
+#include "TBuffer.h"
 
 class TStnHelixBlock: public TStnDataBlock {
   friend Int_t StntupleInitMu2eHelixBlockLinks(TStnDataBlock*, AbsEvent* , int);

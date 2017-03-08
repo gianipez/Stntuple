@@ -5,6 +5,8 @@
 #define TCalHitData_hh
 
 #include "TObject.h"
+#include "TBuffer.h"
+
 
 class TCalHitData : public TObject {
 public:

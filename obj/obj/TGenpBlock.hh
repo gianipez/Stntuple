@@ -19,6 +19,8 @@
 #include "Stntuple/base/TStnArrayI.hh"
 #include "TStnDataBlock.hh"
 #include "TGenParticle.hh"
+#include "TBuffer.h"
+
 
 class TStnEvent;
 

@@ -1604,7 +1604,7 @@ void TAnaDump::printCaloDigiCollection(const char* ModuleLabel,
     hit  = &calodigis->at(ic);
     int pulse_size =  hit->waveform().size();
 
-    printf("%7i  %10.3f %5i\n",
+    printf("%7i  %5i %5i\n",
 	   hit->roId(),
 	   hit->t0(),
 	   pulse_size);

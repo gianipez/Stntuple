@@ -5,6 +5,7 @@
 #define STNTUPLE_DATA_TBitset_hh
 
 #include "TObject.h"
+#include "TBuffer.h"
 
 class TBitset: public TObject {
 protected:

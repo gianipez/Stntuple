@@ -7,6 +7,7 @@
 // 
 //-----------------------------------------------------------------------------
 #include "TStnDataBlock.hh"
+#include "TBuffer.h"
 
 class TStnEvent;
 

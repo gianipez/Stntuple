@@ -6,6 +6,7 @@
 //-----------------------------------------------------------------------------
 
 #include "TMatrixFSym.h"
+#include "TBuffer.h"
 class TMatrix33 : public TMatrixFSym {
 public:
 				// constructor and destructor, all the rest
