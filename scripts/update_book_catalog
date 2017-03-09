@@ -11,7 +11,7 @@ top_dir=/web/sites/mu2e.fnal.gov/htdocs/atwork/computing/Stntuple/cafdfc
 dir=$top_dir/$book
 HTML_CATALOG=$dir/index.shtml
 
-echo "<!--#set var=\"pagetitle\" value=\"STNTUPLE datasets\" -->" >| $HTML_CATALOG
+echo "<!--#set var=\"pagetitle\" value=\"STNTUPLE datasets\" -->"       >| $HTML_CATALOG
 echo "<!--#include virtual=\"/includes/mu2e_top.shtml\" -->"            >> $HTML_CATALOG
 
 echo "<!-- End of header:  Put your html below this comment. -->"       >> $HTML_CATALOG
@@ -46,7 +46,8 @@ for f in `ls $dir | grep -v AAA_DA | grep -v index.shtml` ; do
 	text=" see more details in the fileset catalog ........."
     fi
     dsname=$f" ..................."
-    echo "<li> <a href=$f/AAA_CATALOG.html width=200px>${dsname:0:12}</a> | <a href=$f/AAA_FILES.txt> files </a> | $offline_ver | ${description:0:$ldesc} | $text" >> $HTML_CATALOG ; 
+    ov=`printf "%6s" $offline_ver`
+    echo "<li> <a href=$f/AAA_CATALOG.html width=200px>${dsname:0:12}</a> | <a href=$f/AAA_FILES.txt> files </a> | $ov | ${description:0:$ldesc} | $text" >> $HTML_CATALOG ; 
 done
 
 echo "</ul>"                                                            >> $HTML_CATALOG
