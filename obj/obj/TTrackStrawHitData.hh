@@ -9,7 +9,7 @@
 #include "TObject.h"
 
 class TTrackStrawHitData : public TObject {
-protected:
+public:
   int     fIndex;
   int     fActive;
   int     fAmbig;
@@ -30,10 +30,12 @@ public:
 //-----------------------------------------------------------------------------
 // accessors
 //-----------------------------------------------------------------------------
-  int     Index () { return fIndex;  }
-  float   Time  () { return fTime;   }
-  float   Dt    () { return fDt;     }
-  float   Energy() { return fEnergy; }
+  int     Index      () { return fIndex;  }
+  float   Time       () { return fTime;   }
+  float   Dt         () { return fDt;     }
+  float   Energy     () { return fEnergy; }
+  float   DriftRadius() { return fDriftRadius; }
+  int     Active     () { return fActive; }
 
   int     PdgCode      () { return fPdgCode;       }
   int     MotherPdgCode() { return fMotherPdgCode; }

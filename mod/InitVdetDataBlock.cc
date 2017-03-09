@@ -16,18 +16,22 @@
 #include "GlobalConstantsService/inc/ParticleDataTable.hh"
 
 #include "Mu2eUtilities/inc/SimParticleTimeOffset.hh"
-#include "Stntuple/mod/StntupleGlobals.hh"
+// #include "Stntuple/mod/StntupleGlobals.hh"
 
-// mu2e::SimParticleTimeOffset* fgTimeOffsets;
+#include "Stntuple/mod/THistModule.hh"
+#include "Stntuple/base/TNamedHandle.hh"
 
 //-----------------------------------------------------------------------------
 Int_t StntupleInitMu2eVirtualDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int Mode) 
 {
-
+  static int    initialized(0);
   static char   oname[] = "StntupleInitMu2eVirtualDataBlock";
+
+  static mu2e::SimParticleTimeOffset* _timeOffsets(NULL);
 
   static char   step_module_label[100], step_description[100];
   int           ev_number, rn_number, nhits;
+  char          module_name      [100], time_offsets_name[100];
 
   ev_number = AnEvent->event();
   rn_number = AnEvent->run();
@@ -36,6 +40,18 @@ Int_t StntupleInitMu2eVirtualDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent, 
 
   TVdetDataBlock* data = (TVdetDataBlock*) Block;
   data->Clear();
+
+  if (initialized == 0) {
+    initialized = 1;
+
+    data->GetModuleLabel("TimeOffsetsHandle",module_name);
+    data->GetDescription("TimeOffsetsHandle",time_offsets_name);
+
+   THistModule*  m  = static_cast<THistModule*>  (THistModule::GetListOfModules()->FindObject(module_name));
+   TNamedHandle* nh = static_cast<TNamedHandle*> (m->GetFolder()->FindObject(time_offsets_name));
+   _timeOffsets     = static_cast<mu2e::SimParticleTimeOffset*> (nh->Object());
+  }
+
 //-----------------------------------------------------------------------------
 //  virtual hit information
 //-----------------------------------------------------------------------------
@@ -60,8 +76,8 @@ Int_t StntupleInitMu2eVirtualDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent, 
     return -1;
   }
 
-  //load time offset of this event
-  fgTimeOffsets->updateMap(*AnEvent);
+  // load simulatioin time offsets for this event
+  _timeOffsets->updateMap(*AnEvent);
 
 //-----------------------------------------------------------------------------
 //
@@ -90,7 +106,7 @@ Int_t StntupleInitMu2eVirtualDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent, 
     hit = data->NewHit();
 
     vdIndex   = step->volumeId();
-    time      = fgTimeOffsets->timeWithOffsetsApplied(*step);
+    time      = _timeOffsets->timeWithOffsetsApplied(*step);
 
     pdg_id    = sim->pdgId();
     info      = pdt->particle(pdg_id);    

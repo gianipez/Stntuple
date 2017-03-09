@@ -29,7 +29,7 @@ public:
   virtual ~TTrackStrawHitBlock();
 					// ****** accessors
   Int_t          NTracks  ()      { return fNTracks;  }
-  Int_t          NTrackHits   (int i) { return fNTrackHits->At(i); }
+  Int_t          NTrackHits(int i) { return fNTrackHits->At(i); }
   Int_t          First    (int i) { return fFirst->At(i); } 
 
   TTrackStrawHitData* Hit (int i) { return (TTrackStrawHitData*) fListOfHits->UncheckedAt(i); }

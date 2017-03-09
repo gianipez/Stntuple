@@ -63,7 +63,7 @@ Int_t StntupleInitMu2eTrackStrawHitBlock(TStnDataBlock* Block, AbsEvent* AnEvent
 
     if (strh_handle.isValid()) list_of_hits = strh_handle.product();
 
-    AnEvent->getByLabel(strh_module_label,"StrawHitMCPtr",mcptr_handle);
+    AnEvent->getByLabel(strh_module_label,"",mcptr_handle);
     if (mcptr_handle.isValid()) list_of_steps = mcptr_handle.product();
   }
 

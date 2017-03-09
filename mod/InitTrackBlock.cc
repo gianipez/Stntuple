@@ -351,9 +351,9 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
     AnEvent->get(ptr.id(), handle);
     fhicl::ParameterSet const& pset = handle.provenance()->parameterSet();
     string module_type = pset.get<std::string>("module_type");
-    if      (module_type == "CalPatRec") xxx =  1;
+    if      (module_type == "CalTrkFit"  ) xxx =  1;
     else if (module_type == "KalFinalFit") xxx =  0;
-    else                                 xxx = -1;
+    else                                   xxx = -1;
 //-----------------------------------------------------------------------------
 // track-only-based particle ID, initialization ahs already happened in the constructor
 //-----------------------------------------------------------------------------
@@ -590,18 +590,18 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 
     int   nd, nd_tot(0), nd_os(0), nd_ss(0), ns;
     
-    std::vector<mu2e::Doublet> list_of_doublets;
+    _dar->findDoublets  (krep);
 
-    _dar->findDoublets  (krep,&list_of_doublets);
+    vector<mu2e::Doublet>* list_of_doublets = (vector<mu2e::Doublet>*) _dar->listOfDoublets();
 
-    nd = list_of_doublets.size();
+    nd = list_of_doublets->size();
 //-----------------------------------------------------------------------------
 // counting only 2+ hit doublets
 //-----------------------------------------------------------------------------
     int nad(0);  // number of doublets with all hits active
 
     for (int i=0; i<nd; i++) {
-      d  = &list_of_doublets.at(i);
+      d  = &list_of_doublets->at(i);
       ns = d->fNStrawHits;
 					
       if (ns > 1) { 

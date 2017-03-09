@@ -50,8 +50,9 @@
 
 #include "Stntuple/base/TNamedHandle.hh"
 #include "Stntuple/alg/TStntuple.hh"
-#include "Stntuple/mod/StntupleGlobals.hh"
+// #include "Stntuple/mod/StntupleGlobals.hh"
 
+#include "Mu2eUtilities/inc/SimParticleTimeOffset.hh"
 #include "TrkReco/inc/DoubletAmbigResolver.hh"
 #include "TrkDiag/inc/KalDiag.hh"
 
@@ -113,9 +114,12 @@ protected:
 
   TNamedHandle*            fDarHandle;
   TNamedHandle*            fKalDiagHandle;
+  TNamedHandle*            fTimeOffsetsHandle;
 
   DoubletAmbigResolver*    fDar;
   KalDiag*                 fKalDiag;
+  SimParticleTimeOffset*   fTimeOffsets;
+
 //------------------------------------------------------------------------------
 // function members
 //------------------------------------------------------------------------------
@@ -194,7 +198,8 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
   fVersion      = new TNamed(ver,text);
   TModule::fFolder->Add(fVersion);
 
-  if (fgTimeOffsets == NULL) fgTimeOffsets  = new SimParticleTimeOffset(PSet.get<fhicl::ParameterSet>("TimeOffsets"));
+  fTimeOffsets       = new SimParticleTimeOffset(PSet.get<fhicl::ParameterSet>("TimeOffsets"));
+  fTimeOffsetsHandle = new TNamedHandle("TimeOffsetsHandle",fTimeOffsets);
 
   fDar           = new DoubletAmbigResolver (PSet.get<fhicl::ParameterSet>("DoubletAmbigResolver"),0.,0,0);
   fDarHandle     = new TNamedHandle("DarHandle",fDar);
@@ -204,15 +209,13 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
 
   fFolder->Add(fDarHandle);
   fFolder->Add(fKalDiagHandle);
+  fFolder->Add(fTimeOffsetsHandle);
 }
 
 
 //------------------------------------------------------------------------------
 StntupleMaker::~StntupleMaker() {
-  if (fgTimeOffsets) {
-    delete fgTimeOffsets;
-    fgTimeOffsets = NULL;
-  }
+  delete fTimeOffsets;
   delete fDar;
   delete fDarHandle;
   delete fVersion;
@@ -277,8 +280,6 @@ void StntupleMaker::beginJob() {
   split_mode        = THistModule::SplitLevel();
   compression_level = THistModule::CompressionLevel();
   buffer_size       = THistModule::BufferSize();
-
-  //  _iname1           = fFitDirection1.name() + fFitParticle1.name();
 //-----------------------------------------------------------------------------
 // header block is always there
 //-----------------------------------------------------------------------------
@@ -350,7 +351,6 @@ void StntupleMaker::beginJob() {
   if (fMakeTrackStrawHits) {
     TStnDataBlock  *track_straw_hit_data;
     const char     *block_name;
-    string          iname;
 
     int nblocks = fTrackStrawHitBlockName.size();
 
@@ -367,11 +367,10 @@ void StntupleMaker::beginJob() {
 					  compression_level);
 
       if (track_straw_hit_data) {
-	TrkFitDirection fit_dir = TrkFitDirection((TrkFitDirection::FitDirection)fFitDirection[i]);
-	TrkParticle     part    = TrkParticle    ((TrkParticle::type            )fFitParticle [i]);
-	iname                   = fit_dir.name() + part.name();
+	// TrkFitDirection fit_dir = TrkFitDirection((TrkFitDirection::FitDirection)fFitDirection[i]);
+	// TrkParticle     part    = TrkParticle    ((TrkParticle::type            )fFitParticle [i]);
 
-	track_straw_hit_data->AddCollName("mu2e::KalRepCollection"   ,fTrkRecoModuleLabel[i].data()  ,iname.data());
+	track_straw_hit_data->AddCollName("mu2e::KalRepCollection"   ,fTrkRecoModuleLabel[i].data()  , "");
 	track_straw_hit_data->AddCollName("mu2e::StrawHitCollection" ,fMakeStrawHitModuleLabel.data(), "");
 	
 	//      SetResolveLinksMethod(block_name,StntupleInitMu2eTrackBlockLinks);
@@ -399,7 +398,6 @@ void StntupleMaker::beginJob() {
     TStnDataBlock *track_data;
     const char    *block_name;
     int            nblocks;
-    string         iname;
     
     nblocks = fTrackBlockName.size();
 
@@ -418,11 +416,10 @@ void StntupleMaker::beginJob() {
       SetResolveLinksMethod(block_name,StntupleInitMu2eTrackBlockLinks);
 
       if (track_data) {
-	TrkFitDirection fit_dir = TrkFitDirection((TrkFitDirection::FitDirection)fFitDirection[i]);
-	TrkParticle     part    = TrkParticle((TrkParticle::type)fFitParticle[i]);
-	iname                   = fit_dir.name() + part.name();
+	//	TrkFitDirection fit_dir = TrkFitDirection((TrkFitDirection::FitDirection)fFitDirection[i]);
+	//	TrkParticle     part    = TrkParticle((TrkParticle::type)fFitParticle[i]);
 
-	track_data->AddCollName("mu2e::KalRepCollection"              ,fTrkRecoModuleLabel[i].data()     ,iname.data());
+	track_data->AddCollName("mu2e::KalRepCollection"              ,fTrkRecoModuleLabel[i].data()     ,"");
 	track_data->AddCollName("mu2e::StrawHitCollection"            ,fMakeStrawHitModuleLabel.data()   ,"");
 	track_data->AddCollName("mu2e::StrawDigiMCCollection"         ,fMakeStrawDigiModuleLabel.data()   ,"StrawHitMC");
 	track_data->AddCollName("mu2e::PtrStepPointMCVectorCollection",fMakeStrawDigiModuleLabel.data()   ,"StrawHitMCPtr");
@@ -462,7 +459,6 @@ void StntupleMaker::beginJob() {
     TStnDataBlock *pid_data;
     const char    *block_name;
     int            nblocks;
-    string         iname;
     
     nblocks = fTrackBlockName.size();
 
@@ -537,7 +533,8 @@ void StntupleMaker::beginJob() {
 				compression_level);
 
     if (virtual_data) {
-      virtual_data->AddCollName("mu2e::StepPointMCCollection", fG4ModuleLabel.data(),"virtualdetector");
+      virtual_data->AddCollName("mu2e::StepPointMCCollection",fG4ModuleLabel.data(),"virtualdetector");
+      virtual_data->AddCollName("TimeOffsetsHandle"          ,GetName()            ,"TimeOffsetsHandle");
     }
   }  
 
