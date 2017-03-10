@@ -589,19 +589,18 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
     mu2e::DoubletAmbigResolver::Data_t r;
 
     int   nd, nd_tot(0), nd_os(0), nd_ss(0), ns;
-    
-    _dar->findDoublets  (krep);
+    vector<mu2e::Doublet> list_of_doublets;
 
-    vector<mu2e::Doublet>* list_of_doublets = (vector<mu2e::Doublet>*) _dar->listOfDoublets();
+    _dar->findDoublets(krep,&list_of_doublets);
 
-    nd = list_of_doublets->size();
+    nd = list_of_doublets.size();
 //-----------------------------------------------------------------------------
 // counting only 2+ hit doublets
 //-----------------------------------------------------------------------------
     int nad(0);  // number of doublets with all hits active
 
     for (int i=0; i<nd; i++) {
-      d  = &list_of_doublets->at(i);
+      d  = &list_of_doublets.at(i);
       ns = d->fNStrawHits;
 					
       if (ns > 1) { 
