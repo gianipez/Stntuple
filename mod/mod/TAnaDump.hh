@@ -42,16 +42,16 @@ namespace mu2e {
   class HelixSeed;
   class TrackClusterMatch;
   class TrkStrawHit;
+  class SimParticleTimeOffset;
 }
 
 class TAnaDump : public TObject {
-protected:
+public:
 
-  const art::Event*   fEvent;
-
-
-  TObjArray* fListOfObjects;
-  TString    fFlagBgrHitsModuleLabel;
+  const art::Event*             fEvent;
+  TObjArray*                    fListOfObjects;
+  TString                       fFlagBgrHitsModuleLabel;
+  mu2e::SimParticleTimeOffset*  fTimeOffsets;
 
   double     fTmp[100];  // for testing
 

@@ -99,6 +99,7 @@
 #include "TApplication.h"
 #include "TArc.h"
 #include "TArrow.h"
+#include "TSystem.h"
 #include "TCanvas.h"
 #include "TDirectory.h"
 #include "TGraph.h"
@@ -392,7 +393,12 @@ namespace mu2e {
     fCanvas = new TCanvas(name, title, 800, 800);
     fMarker = new TMarker(0, 0, 20);
     fMarker->SetMarkerSize(0.3);
-
+//-----------------------------------------------------------------------------
+// make sure needed plugin libraries are loaded
+//-----------------------------------------------------------------------------
+    std::string lib = gSystem->Getenv("MU2E_BASE_RELEASE");
+    lib += "/lib/libmu2e_CalPatRec_utils.so";
+    if (! gInterpreter->IsLoaded(lib.data())) gSystem->Load(lib.data());
 //-----------------------------------------------------------------------------
 // define collection names to be used for initialization
 //-----------------------------------------------------------------------------

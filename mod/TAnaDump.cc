@@ -77,8 +77,6 @@ ClassImp(TAnaDump)
 
 TAnaDump* TAnaDump::fgInstance = 0;
 
-mu2e::SimParticleTimeOffset           *fgTimeOffsets(NULL);
-
 namespace {
   mu2e::PtrStepPointMCVectorCollection  *fgListOfMCStrawHits;
 }
@@ -93,15 +91,13 @@ TAnaDump::TAnaDump(int UseTimeOffsets) {
 
 
   if (UseTimeOffsets) {
-    std::vector<std::string> VS;
-    VS.push_back(std::string("protonTimeMap"));
-    VS.push_back(std::string("muonTimeMap"));
+    std::vector<std::string> maps;
+    maps.push_back(std::string("protonTimeMap"));
+    maps.push_back(std::string("muonTimeMap"));
     
     fhicl::ParameterSet  pset;
-    pset.put("inputs", VS);
-    if (fgTimeOffsets == NULL) {
-      fgTimeOffsets = new mu2e::SimParticleTimeOffset(pset);
-    }
+    pset.put("inputs", maps);
+    fTimeOffsets = new mu2e::SimParticleTimeOffset(pset);
   }
 }
 
@@ -119,10 +115,7 @@ TAnaDump* TAnaDump::Instance(int UseTimeOffsets) {
 TAnaDump::~TAnaDump() {
   fListOfObjects->Delete();
   delete fListOfObjects;
-  if (fgTimeOffsets) {
-    delete fgTimeOffsets;
-    fgTimeOffsets = NULL;
-  }
+  delete fTimeOffsets;
 }
 
 //------------------------------------------------------------------------------
@@ -1172,7 +1165,7 @@ void TAnaDump::printKalRep(const KalRep* Krep, const char* Opt, const char* Pref
     printf("---------------------------------------------------------------");
     printf("------------------------------------------------------\n");
     //    printf(" ih  SInd U A     len         x        y        z      HitT    HitDt");
-    printf(" ih  SInd A     len         x        y        z      HitT    HitDt");
+    printf(" ih  SInd    Flag    A     len         x        y        z      HitT    HitDt");
     printf(" Ch Pl  L  W     T0       Xs      Ys        Zs     resid sigres");
     printf("    Rdrift   mcdoca totErr hitErr  t0Err penErr extErr\n");
     printf("--------------------------------------------------------------------");
@@ -1232,9 +1225,10 @@ void TAnaDump::printKalRep(const KalRep* Krep, const char* Opt, const char* Pref
       }
 
       //      printf("%3i %5i %1i %1i %9.3f %8.3f %8.3f %9.3f %8.3f %7.3f",
-      printf("%3i %5i %1i %9.3f %8.3f %8.3f %9.3f %8.3f %7.3f",
+      printf("%3i %5i 0x%08x %1i %9.3f %8.3f %8.3f %9.3f %8.3f %7.3f",
 	     ++i,
 	     straw->index().asInt(), 
+	      hit->hitFlag(),
 	     //	     hit->isUsable(),
 	     hit->isActive(),
 	     len,
@@ -2103,9 +2097,9 @@ void TAnaDump::printStepPointMC(const mu2e::StepPointMC* Step, const char* Opt) 
 //2014-26-11 gianipez added the timeoffsets to the steppoints time
 
     double stepTime(-9999.);
-    if (fgTimeOffsets) {
-      fgTimeOffsets->updateMap(*fEvent);
-      stepTime = fgTimeOffsets->timeWithOffsetsApplied(*Step);
+    if (fTimeOffsets) {
+      fTimeOffsets->updateMap(*fEvent);
+      stepTime = fTimeOffsets->timeWithOffsetsApplied(*Step);
     }
     else {
       stepTime = Step->time();

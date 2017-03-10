@@ -12,7 +12,8 @@
 #  include "Experiment/Experiment.hh"
 #endif
 
-#  ifndef __CINT__
+// #  ifndef __CINT__
+#  ifndef _CODEGEN_
 #    include "art/Framework/Principal/Event.h"
      typedef art::Event AbsEvent;
 #  else

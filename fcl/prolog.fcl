@@ -62,12 +62,12 @@ StntupleMakerTemplate : { module_type:StntupleMaker
     fitDirection            : [              0 ] #  0:downstream,  1:upstrea
     trackStrawHitBlockName  : [ "TrackHitBlock"] 
 
-    trkExtrapol          : TrkExtrapol
-    trkCalMatch          : CaloMatching
-    pidDem               : ParticleID
+    trkExtrapol             : TrkExtrapol
+    trkCalMatch             : CaloMatching
+    pidDem                  : ParticleID
 
-    minTActive          : 0.     # ns
-    minECrystal         : 1.0    # MeV
+    minTActive              : 0.     # ns
+    minECrystal             : 1.0    # MeV
 
     debugBits           : { 
 	# bit0:1  
@@ -296,10 +296,10 @@ Stntuple : {
 	    helixBlockName          : [ "TrackBlock"            , "TrkPatRec"               , "CalPatRec"                ]
 	    helixModuleLabel        : [ "MergeHelix"            , "RobustHelixFinder"       , "CalPatRecNew"             ]
 	    trackBlockName          : [ "TrackBlock"            , "TrkPatRec"               , "CalPatRec"                ]
-	    trackStrawHitBlockName  : [ "TrackHitBlock"         , "TrackHitBlockTpr"        , "TrackHitBlockCpr"         ] 
 	    trkRecoModuleLabel      : [ "MergePatRec"           , "KFFDeM"                  , "CalPatRec"                ]
 	    trkExtrapolModuleLabel  : [ "TrackCaloIntersection" , "TrackCaloIntersectionTpr", "TrackCaloIntersectionCpr" ]
 	    trkCaloMatchModuleLabel : [ "TrackCaloMatching"     , "TrackCaloMatchingTpr"    , "TrackCaloMatchingCpr"     ]
+	    trackStrawHitBlockName  : [ "TrackHitBlock"         , "TrackHitBlockTpr"        , "TrackHitBlockCpr"         ] 
 	    pidBlockName            : [ "PidBlock"              , ""                        , ""                         ] 
 	    pidModuleLabel          : [ "AvikPIDNew"            ,                        "" ,                         "" ]
 	    fitParticle             : [                       11,                         11,                         11 ]

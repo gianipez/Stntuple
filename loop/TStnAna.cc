@@ -64,11 +64,11 @@ TStnAna::TStnAna(const char* Filename, const char* Mode) :
   if      (fMode == "run2") {
     TString fn(Filename);
     if( fn.CompareTo("sam",TString::kIgnoreCase)==0  ) {
-// #ifdef STNTUPLE_NOSAM
+      // #ifdef STNTUPLE_NOSAM
       printf("ERROR: SAM requested, but SAM input module is not linked.\n");
-// #else
-//       fInputModule = new TStnSamInputModule();
-// #endif
+      // #else
+      //       fInputModule = new TStnSamInputModule();
+      // #endif
     } else {
       fInputModule = new TStnRun2InputModule(Filename);
     }
