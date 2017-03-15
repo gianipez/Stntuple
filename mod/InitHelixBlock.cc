@@ -61,7 +61,7 @@ double evalWeight(CLHEP::Hep3Vector& HitPos   ,
 //-----------------------------------------------------------------------------
 int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
 
-  mu2e::HelixSeedCollection*               list_of_helices(0);
+  const mu2e::HelixSeedCollection*               list_of_helices(0);
   mu2e::AlgorithmIDCollection*             list_of_algs   (0);
 
   char                 helix_module_label[100], helix_description[100]; 
@@ -91,9 +91,12 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
 
 
   art::Handle<mu2e::HelixSeedCollection>               helix_handle;
-  if (helix_description[0] == 0) Evt->getByLabel(helix_module_label, helix_handle);
-  else                           Evt->getByLabel(helix_module_label, helix_description, helix_handle);
-  list_of_helices = (mu2e::HelixSeedCollection*) &(*helix_handle);
+  if (helix_description[0] != 0){
+    // if (helix_description[0] == 0) Evt->getByLabel(helix_module_label, helix_handle);
+    // else                           Evt->getByLabel(helix_module_label, helix_description, helix_handle);
+    Evt->getByLabel(helix_module_label, helix_handle);
+    if (helix_handle.isValid()) list_of_helices = helix_handle.product();//(mu2e::HelixSeedCollection*) &(*helix_handle);
+  }
 
   const mu2e::HelixSeed     *tmpHel(0);
   int                        nhelices(0);

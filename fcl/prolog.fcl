@@ -46,10 +46,10 @@ StntupleMakerTemplate : { module_type:StntupleMaker
     makeStrawDigiModuleLabel: "makeSD"
     generatorModuleLabel    : "generate"
     helixBlockName          : ["HelixBlock"]
-    helixModuleLabel        : ["CalPatRecNew"]
+    helixModuleLabel        : ["CalHelixFinder"]
 
     trackSeedBlockName      : ["TrackSeedBlock"]
-    trackSeedModuleLabel    : ["CalPatRecNew"  ]
+    trackSeedModuleLabel    : ["CalHelixFinder"  ]
 
     trackBlockName          : [ "TrackBlock"   ]
     trkRecoModuleLabel      : [ "MergePatRec"  ]
@@ -293,8 +293,8 @@ Stntuple : {
 #------------------------------------------------------------------------------
 	StntupleMakerTcm : { @table::StntupleMakerTemplate 
 	    makePid                 : 0
-	    helixBlockName          : [ "TrackBlock"            , "TrkPatRec"               , "CalPatRec"                ]
-	    helixModuleLabel        : [ "MergeHelix"            , "RobustHelixFinder"       , "CalPatRecNew"             ]
+	    helixBlockName          : [ "HelixBlock"            , "TprHelixBlock"           , "CprHelixBlock"            ]
+	    helixModuleLabel        : [ "MergeHelixFinder"      , "PosHelixFinder"          , "CalHelixFinder"           ]
 	    trackBlockName          : [ "TrackBlock"            , "TrkPatRec"               , "CalPatRec"                ]
 	    trkRecoModuleLabel      : [ "MergePatRec"           , "KFFDeM"                  , "CalPatRec"                ]
 	    trkExtrapolModuleLabel  : [ "TrackCaloIntersection" , "TrackCaloIntersectionTpr", "TrackCaloIntersectionCpr" ]
