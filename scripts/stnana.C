@@ -129,6 +129,17 @@ void stnana (TString     Book   ,
       // m_gen->AddGenerator(py);
       // g.x->SetInputModule(m_gen);
     }
+    else if (Book == "photos") {
+//-----------------------------------------------------------------------------
+// generator-level MC study - use PHOTOS
+//-----------------------------------------------------------------------------
+      printf(">>> STNANA: PHOTOS initialization\n");
+      g.x = new TStnAna();
+      TG3Generator* phts  = TPhotos::Instance();
+      m_stg = new TStnGeneratorModule();
+      m_stg->AddGenerator(phts);
+      g.x->SetInputModule(m_stg);
+    }
     else if (Book == "script") {
       g.x = new TStnAna();
     }

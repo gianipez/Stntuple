@@ -21,8 +21,14 @@ stn_helper.handle_dictionaries();
 
 list_of_cc_files =  Glob('*.cc', strings=True);
 skip_list        = []
-libs             = ['Stntuple_alg', 'Stntuple_obj', 'Stntuple_loop',
-                    'Stntuple_gui', 'Stntuple_geom', 'Stntuple_base',
+
+stntuple_libs    = ['Stntuple_alg', 'Stntuple_obj', 'Stntuple_loop',
+                    'Stntuple_gui', 'Stntuple_geom', 'Stntuple_base'];
+
+if (os.getenv("STNTUPLE_MC_GEN") !=None): 
+    stntuple_libs.append("mc_photos");
+
+libs             = stntuple_libs + [ 
                     'mu2e_BeamlineGeom',
                     'mu2e_BFieldGeom',
                     'mu2e_GeometryService',

@@ -19,7 +19,16 @@ stn_helper.handle_dictionaries();
 
 list_of_cc_files =  Glob('*.cc', strings=True);
 skip_list        = []
-libs             = [ 'Stntuple_obj', 'Stntuple_base', rootlibs ]
+
+if (os.getenv("STNTUPLE_MC_GEN") == None): 
+    skip_list.append('TStnGeneratorModule.cc');
+    skip_list.append('StnGenInitGenpBlock.cc');
+
+stntuple_libs = [ 'Stntuple_obj', 'Stntuple_base'];
+
+if (os.getenv("STNTUPLE_MC_GEN") != None): stntuple_libs.append('mc_base');
+
+libs =  stntuple_libs + rootlibs
 
 stn_helper.build_libs(list_of_cc_files, skip_list,libs);
 # print "tmpdir:"+env['TMP_LIB_DIR']

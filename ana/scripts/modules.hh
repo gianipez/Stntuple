@@ -56,5 +56,6 @@ namespace stntuple {
 
 
 TEventDisplayModule*     m_evd   = NULL;
+TPhotosAnaModule*        m_pho   = NULL;
 TValidationModule*       m_val   = NULL;
 #endif

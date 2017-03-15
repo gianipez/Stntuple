@@ -14,6 +14,7 @@ int load_stnana_scripts_Stntuple() {
     "catalog.C",
     "debug.C",
     "lumi.C",
+    "photos.C",
     "validation.C",
     0 
   };
