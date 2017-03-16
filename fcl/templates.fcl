@@ -52,8 +52,8 @@ BEGIN_PROLOG
   # 		       MergePatRec ]
   allPatRecNewSeq  : [ TimeClusterFinder, PosHelixFinder, KSFDeM, 
 		       KFFDeM,
-		       CalTimePeakFinder, CalPatRecNew, CalSeedFit, CalTrkFit,
-		       MergePatRec ]
+		       CalTimePeakFinder, CalHelixFinder, CalSeedFit, CalTrkFit,
+		       MergePatRec, MergeHelixFinder ]
 
   trkPatRecDemSeq  : [ @sequence::tprPrepHitSeq, TimeClusterFinder, PosHelixFinder, KSFDeM, 
 		       KFFDeM , MergePatRecDem ]
@@ -276,16 +276,14 @@ services : {
     RandomNumberGenerator : { }
     #   Timing                : { }fcl/
 
-    user : {
-        GeometryService        : { inputFile      : "JobConfig/cd3/geom_baseline.txt"      }
-        ConditionsService      : { conditionsfile : "Mu2eG4/test/conditions_01.txt"        }
-        GlobalConstantsService : { inputFile      : "Mu2eG4/test/globalConstants_01.txt"   }
-        BTrkHelper             : @local::BTrkHelperDefault
-        G4Helper               : { }
-        SeedService            : { @table::automaticSeeds
-	    baseSeed         :  0
-	    maxUniqueEngines :  20
-	}
+    GeometryService        : { inputFile      : "JobConfig/cd3/geom_baseline.txt"      }
+    ConditionsService      : { conditionsfile : "Mu2eG4/test/conditions_01.txt"        }
+    GlobalConstantsService : { inputFile      : "Mu2eG4/test/globalConstants_01.txt"   }
+    BTrkHelper             : @local::BTrkHelperDefault
+    G4Helper               : { }
+    SeedService            : { @table::automaticSeeds
+	baseSeed         :  0
+	maxUniqueEngines :  20
     }
 }
 services.scheduler.wantSummary: true

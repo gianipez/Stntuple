@@ -1919,6 +1919,7 @@ int TValidationModule::Event(int ientry) {
   TDiskCalorimeter::GeomData_t disk_geom;
 
   fTrackBlock  ->GetEntry(ientry);
+  fHelixBlock  ->GetEntry(ientry);
   fClusterBlock->GetEntry(ientry);
   //  fStrawDataBlock->GetEntry(ientry);
   fCalDataBlock->GetEntry(ientry);
@@ -1977,6 +1978,7 @@ int TValidationModule::Event(int ientry) {
   fNClusters  = fClusterBlock->NClusters();
   fNCalHits   = fCalDataBlock->NHits();
   fNStrawHits = fStrawDataBlock->NHits();
+  fNHelices[0]= fHelixBlock->NHelices();
 
   fDiskCalorimeter->InitEvent(fCalDataBlock);
 

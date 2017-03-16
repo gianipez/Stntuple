@@ -346,7 +346,7 @@ void StntupleMaker::beginJob() {
       SetResolveLinksMethod(block_name,StntupleInitMu2eHelixBlockLinks);
       
       if (helix_data) {
-	helix_data->AddCollName("mu2e::HelixCollection",fHelixModuleLabel[i].data(),"");
+	helix_data->AddCollName("mu2e::HelixSeeedCollection",fHelixModuleLabel[i].data(),"");
       }
     }
   }
