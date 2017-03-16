@@ -46,9 +46,10 @@ void stnana (TString     Book   ,
   const char* test_release_dir = gSystem->Getenv("MU2E_BASE_RELEASE");
 
   const char* script[] = { // loaded explicitly
-    "init_geometry.C",
-    "parse_job_parameters.C",
-    "setup_trigger_path.C",
+    "init_geometry.C"       , "PWD",
+    "parse_job_parameters.C", "PWD",
+    "setup_trigger_path.C"  , "PWD",
+    "init_photos.C"         , "STNTUPLE_MC_GEN",
     0 
   };
 
@@ -56,18 +57,21 @@ void stnana (TString     Book   ,
 
   TInterpreter* cint = gROOT->GetInterpreter();
   
-  for (int i=0; script[i] != 0; i++) {
+  for (int i=0; script[i] != 0; i+=2) {
     sprintf(macro,"%s/Stntuple/scripts/%s",test_release_dir,script[i]);
     if (! cint->IsLoaded(macro)) {
-      printf("STNANA: locating %s\n",macro);
-      cint->LoadMacro(macro,&rc);
-      if (rc != 0) printf("stnana ERROR : failed to load %s\n",macro);
+      const char* env_var = script[i+1];
+      if (gSystem->Getenv(env_var)) {
+	printf("STNANA: locating %s\n",macro);
+	cint->LoadMacro(macro,&rc);
+	if (rc != 0) printf("stnana ERROR : failed to load %s\n",macro);
+      }
     }
   }
 
-  if (! cint->IsLoaded(macro)) {
-    cint->LoadMacro(macro);
-  }
+  // if (! cint->IsLoaded(macro)) {
+  //   cint->LoadMacro(macro);
+  // }
 
   TString stnana_packages = gEnv->GetValue("Stnana.Package","");
 
@@ -123,7 +127,7 @@ void stnana (TString     Book   ,
 // to work with other generators
 //-----------------------------------------------------------------------------
       printf(">>> STNANA: PYTHIA initialization temporarily turned OFF\n");
-      // g.x = new TStnAna();
+      g.x = new TStnAna();
       // py  = TG3Pythia6::Instance();
       // m_gen = new TStnGeneratorModule();
       // m_gen->AddGenerator(py);
@@ -135,10 +139,7 @@ void stnana (TString     Book   ,
 //-----------------------------------------------------------------------------
       printf(">>> STNANA: PHOTOS initialization\n");
       g.x = new TStnAna();
-      TG3Generator* phts  = TPhotos::Instance();
-      m_stg = new TStnGeneratorModule();
-      m_stg->AddGenerator(phts);
-      g.x->SetInputModule(m_stg);
+      gInterpreter->ProcessLine("init_photos()");
     }
     else if (Book == "script") {
       g.x = new TStnAna();

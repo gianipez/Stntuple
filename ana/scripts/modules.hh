@@ -19,6 +19,7 @@ class TMetAnaModule;
 class TMuoAnaModule;
 class TPesAnaModule;
 class TPhotonAnaModule;
+class TPhotosAnaModule;
 class TSvtAnaModule;
 class TTrackAnaModule;
 class TTrigAnaModule;
