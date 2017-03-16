@@ -125,6 +125,7 @@ class stntuple_helper:
         for f in list_of_linkdef_files:
             linkdef       = string.split(str(f),'/');
             linkdef_fn    = linkdef[len(linkdef)-1];
+
             if (self._debug): 
                 print "linkdef_fn = ",linkdef_fn
 
@@ -139,7 +140,7 @@ class stntuple_helper:
                     print "linkdef = ",linkdef
                     print "include = ",include
 
-                    env.StntupleRootCint(dict,[f,include])
+                env.StntupleRootCint(dict,[f,include])
 #------------------------------------------------------------------------------
 # compile dictionaries
 #------------------------------------------------------------------------------

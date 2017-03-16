@@ -12,9 +12,11 @@ rootlibs = env['ROOTLIBS']
 if ( not ("EG" in rootlibs)):
     rootlibs.insert(rootlibs.index("Physics")+1,"EG");
 
-stn_helper = stntuple_helper();
+debug=False
+stn_helper = stntuple_helper(debug);
 
-stn_helper.handle_dictionaries();
+dict_skip_list = []
+stn_helper.handle_dictionaries(dict_skip_list);
 
 list_of_cc_files =  Glob('*.cc', strings=True);
 skip_list        = []
