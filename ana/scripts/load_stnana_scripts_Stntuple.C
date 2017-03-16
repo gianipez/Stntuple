@@ -7,15 +7,18 @@
 
 // TG3Pythia6*              py      = NULL;
 //-----------------------------------------------------------------------------
+// the first parameter is the script, the second - env.var telling whether 
+// the script has to be loaded
+//-----------------------------------------------------------------------------
 int load_stnana_scripts_Stntuple() {
   char        macro[200];
 
   const char* script[] = { 
-    "catalog.C",
-    "debug.C",
-    "lumi.C",
-    "photos.C",
-    "validation.C",
+    "catalog.C"   , "PWD",
+    "debug.C"     , "PWD",
+    "lumi.C"      , "PWD",
+    "photos.C"    , "STNTUPLE_MC_GEN",
+    "validation.C", "PWD",
     0 
   };
 
@@ -23,10 +26,11 @@ int load_stnana_scripts_Stntuple() {
 
   TInterpreter* cint = gROOT->GetInterpreter();
   
-  for (int i=0; script[i] != 0; i++) {
+  for (int i=0; script[i] != 0; i+=2) {
     sprintf(macro,"%s/Stntuple/ana/scripts/%s",work_dir,script[i]);
     if (! cint->IsLoaded(macro)) {
-      cint->LoadMacro(macro);
+      const char* env_var = script[i+1];
+      if (gSystem->Getenv(env_var) != 0) cint->LoadMacro(macro);
     }
   }
   
