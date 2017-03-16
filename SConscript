@@ -112,7 +112,7 @@ class stntuple_helper:
         env.SharedObject(obj,cc)
         self._list_of_object_files.append(obj);
 
-    def handle_dictionaries(self):
+    def handle_dictionaries(self,skip_list = []):
 #------------------------------------------------------------------------------
 # generate dictionaries
 #------------------------------------------------------------------------------
@@ -124,17 +124,22 @@ class stntuple_helper:
 
         for f in list_of_linkdef_files:
             linkdef       = string.split(str(f),'/');
-            clname        = string.replace(linkdef[len(linkdef)-1],"_linkdef.h","");
-            include       = self.subdir+'/'+clname+'.hh';
+            linkdef_fn    = linkdef[len(linkdef)-1];
+            if (self._debug): 
+                print "linkdef_fn = ",linkdef_fn
+
+            if (not linkdef_fn in skip_list):
+                clname        = string.replace(linkdef_fn,"_linkdef.h","");
+                include       = self.subdir+'/'+clname+'.hh';
             
-            dict          = '#/tmp/src/'+self.d1+'/'+clname+'_dict.cxx';
-            list_of_dict_files.append(dict);
+                dict          = '#/tmp/src/'+self.d1+'/'+clname+'_dict.cxx';
+                list_of_dict_files.append(dict);
 
-            if (self._debug):
-                print "linkdef = ",linkdef
-                print "include = ",include
+                if (self._debug):
+                    print "linkdef = ",linkdef
+                    print "include = ",include
 
-            env.StntupleRootCint(dict,[f,include])
+                    env.StntupleRootCint(dict,[f,include])
 #------------------------------------------------------------------------------
 # compile dictionaries
 #------------------------------------------------------------------------------
