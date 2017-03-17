@@ -1,5 +1,5 @@
-#ifndef murat_TStnHelixBlock
-#define murat_TStnHelixBlock
+#ifndef STNTUPLE_TStnHelixBlock
+#define STNTUPLE_TStnHelixBlock
 //-----------------------------------------------------------------------------
 //  definition of the cluster block for MU2E analysis
 //  Author:    G. Pezzullo
@@ -12,6 +12,8 @@
 #include "TBuffer.h"
 
 class TStnHelixBlock: public TStnDataBlock {
+
+  friend Int_t StntupleInitMu2eHelixBlock     (TStnDataBlock*, AbsEvent* , int);
   friend Int_t StntupleInitMu2eHelixBlockLinks(TStnDataBlock*, AbsEvent* , int);
 public:
 //----------------------------------------------------------------------------

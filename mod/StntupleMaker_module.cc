@@ -32,6 +32,7 @@
 #include "Stntuple/obj/TStnNode.hh"
 #include "Stntuple/obj/TStnErrorLogger.hh"
 #include "Stntuple/obj/TStnTrackBlock.hh"
+#include "Stntuple/obj/TStnHelixBlock.hh"
 #include "Stntuple/obj/TStrawDataBlock.hh"
 #include "Stntuple/obj/TCalDataBlock.hh"
 #include "Stntuple/obj/TStnHeaderBlock.hh"
@@ -346,7 +347,7 @@ void StntupleMaker::beginJob() {
       SetResolveLinksMethod(block_name,StntupleInitMu2eHelixBlockLinks);
       
       if (helix_data) {
-	helix_data->AddCollName("mu2e::HelixSeeedCollection",fHelixModuleLabel[i].data(),"");
+	helix_data->AddCollName("mu2e::HelixSeedCollection",fHelixModuleLabel[i].data(),"");
       }
     }
   }

@@ -91,7 +91,7 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
 
 
   art::Handle<mu2e::HelixSeedCollection>               helix_handle;
-  if (helix_description[0] != 0){
+  if (helix_module_label[0] != 0){
     // if (helix_description[0] == 0) Evt->getByLabel(helix_module_label, helix_handle);
     // else                           Evt->getByLabel(helix_module_label, helix_description, helix_handle);
     Evt->getByLabel(helix_module_label, helix_handle);
