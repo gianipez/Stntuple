@@ -175,7 +175,8 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
     helix->fChi2XYNDof   = chi2xy  /(nhits - 5);
     helix->fChi2PhiZNDof = chi2phiz/(nhits - 2);
     
-    
+    mask = (0x0001 << 16) | 0x0000;
+
     if (list_of_algs) {
       // art::Handle<mu2e::HelixSeedCollection> handle;
       // art::Ptr<mu2e::HelixSeed> const& ptr = list_of_helices->at(i);
@@ -183,7 +184,7 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
       fhicl::ParameterSet const& pset = helix_handle.provenance()->parameterSet();
       std::string         module_type = pset.get<std::string>("module_type");
       
-      if      (module_type == "CalPatRecNew"     ) xxx =  1;
+      if      (module_type == "CalHelixFinder"   ) xxx =  1;
       else if (module_type == "RobustHelixFinder") xxx =  0;
       else                                         xxx = -1;
       
@@ -191,7 +192,7 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
       mask   = alg_id->BestID() | (alg_id->AlgMask() << 16);
       
       if (xxx != alg_id->BestID()) { 
-	printf (" *** InitTrackBlock ERROR: we are in alg_id trouble: xxx = %2i best = %i\n",xxx,alg_id->BestID());
+	printf (" *** InitHelixBlock ERROR: we are in alg_id trouble: xxx = %2i best = %i\n",xxx,alg_id->BestID());
       }
     }
     
