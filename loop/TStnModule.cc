@@ -45,12 +45,12 @@ TStnModule::TStnModule()
 TStnModule::TStnModule(const char* name, const char* title):TNamed(name,title)
 {
   // kludge around until ROOT v1.05+ (version after Feb 09 2003) comes to FNAL
-  struct Folder_t : public TNamed {
-    TCollection* fFolders;
-    Bool_t       fIsOwner;
-  };
+  // struct Folder_t : public TNamed {
+  //   TCollection* fFolders;
+  //   Bool_t       fIsOwner;
+  // };
 
-  Folder_t* x;
+  // Folder_t* x;
 
   fEnabled       = 1;
   fInitialized   = 0;
@@ -61,12 +61,12 @@ TStnModule::TStnModule(const char* name, const char* title):TNamed(name,title)
 				// by default all the events pass
   fPassed        =  1;
 
-  fFolder = new TFolder();
+  fFolder = new TFolder(name,title);
 				// here comes the hack (see above)
-  x = (Folder_t*) fFolder;
-  x->SetName(name);
-  x->SetTitle(title);
-  x->fFolders = new TList();
+  // x = (Folder_t*) fFolder;
+  // x->SetName(name);
+  // x->SetTitle(title);
+  // x->fFolders = new TList();
 
   fFolder->Add(this);
 
