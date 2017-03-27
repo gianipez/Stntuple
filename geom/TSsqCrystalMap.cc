@@ -28,7 +28,7 @@ TSsqCrystalMap::TSsqCrystalMap(double Size, double RMin, double RMax) :
 
   TDiskIndex  di;
   
-  int n_inside(1); // n(crystals) in a given ring inside teh disk, seed the loop
+  int n_inside(1); // n(crystals) in a given ring inside the disk, seed the loop
 
   int nrings = 0;
   int ncrtot = 0;
