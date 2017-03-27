@@ -58,6 +58,8 @@ public:
   int            NHits        () { return fNHits; }
   float          Energy       () { return fEnergy;     }
   double         Radius       () { return fShape->Radius(); }
+  double         Size         () { return fSize; }
+
   //  const mu2e::Crystal* Crystal() { return fCrystal;    }
   TDisk*         Disk         () { return fDisk; }
 
@@ -75,6 +77,9 @@ public:
     fEnergy += CalHit->Energy();
     fNHits++;
   }
+					// use for rad damage estimates
+
+  void   AddEnergy(float E) { fEnergy += E; }
 
   //  virtual void  Draw    (Option_t* option = "");
 
