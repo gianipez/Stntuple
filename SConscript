@@ -19,6 +19,7 @@ def stntuple_codegen_script(source, target, env, for_signature):
 #    print "\n>>> mod_codegen called: pwd = "+os.environ['PWD'];
 #    print ">>> source = ",len(source),str(source[0])
 #    print ">>> target = ",len(target),str(target[0])+'\n'
+#    print ">>> env[\'MU2E_BASE_RELEASE\']:"+os.environ['MU2E_BASE_RELEASE']
     
     tmpdir        = os.path.dirname(str(target[0]));
     

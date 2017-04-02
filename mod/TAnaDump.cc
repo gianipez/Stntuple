@@ -30,7 +30,6 @@
 #include "RecoDataProducts/inc/TrackSeedCollection.hh"
 #include "RecoDataProducts/inc/HelixHit.hh"
 #include "RecoDataProducts/inc/HelixSeed.hh"
-#include "RecoDataProducts/inc/HelixSeedCollection.hh"
 
 #include "RecoDataProducts/inc/CaloDigi.hh"
 #include "RecoDataProducts/inc/CaloDigiCollection.hh"

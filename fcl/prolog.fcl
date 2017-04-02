@@ -370,24 +370,24 @@ Stntuple : {
 	    trkRecoModuleLabel           : MergePatRecDem
 	    trkExtrapol                  : TrackCaloIntersectionDem
 	    trkCalMatch                  : TrackCaloMatchingDem
-	    fitParticle                  : @local::CalPatRec.producers.MergePatRecDem.fitparticle
-	    fitDirection                 : @local::CalPatRec.producers.MergePatRecDem.fitdirection
+	    fitParticle                  : @local::Particle.eminus
+	    fitDirection                 : @local::FitDir.downstream
 	}
 
 	MuHitDisplayDep : { @table::MuHitDisplay 
 	    trkRecoModuleLabel           : MergePatRecDep
 	    trkExtrapol                  : TrackCaloIntersectionDep
 	    trkCalMatch                  : TrackCaloMatchingDep
-	    fitParticle                  : @local::CalPatRec.producers.MergePatRecDep.fitparticle
-	    fitDirection                 : @local::CalPatRec.producers.MergePatRecDep.fitdirection
+	    fitParticle                  : @local::Particle.eplus
+	    fitDirection                 : @local::FitDir.downstream
 	}
 
 	MuHitDisplayDmm : { @table::MuHitDisplay 
 	    trkRecoModuleLabel           : MergePatRecDmm
 	    trkExtrapol                  : TrackCaloIntersectionDmm
 	    trkCalMatch                  : TrackCaloMatchingDmm
-	    fitParticle                  : @local::CalPatRec.producers.MergePatRecDmm.fitparticle
-	    fitDirection                 : @local::CalPatRec.producers.MergePatRecDmm.fitdirection
+	    fitParticle                  : @local::Particle.muminus
+	    fitDirection                 : @local::FitDir.downstream
 	}
     }
 }

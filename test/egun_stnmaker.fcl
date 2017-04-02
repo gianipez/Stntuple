@@ -12,7 +12,7 @@
 #include "Stntuple/fcl/prolog.fcl"
 
 BEGIN_PROLOG
-  pdgCode    : 11
+  pdgCode    : @local::Particle.eminus
   bgHitFiles : @nil
 END_PROLOG
 
@@ -20,19 +20,25 @@ END_PROLOG
 
 process_name : EgunMergePatRecStnmaker
 
-source       : { module_type : EmptyEvent }
+source       : { module_type : EmptyEvent   }
+
+outputs      : { @table::Stntuple.outputs   }
+producers    : { @table::Stntuple.producers }
+filters      : { @table::Stntuple.filters   }
+paths        : { @table::Stntuple.paths     }
 
 physics : {
-    producers: { @table::Stntuple.producers 
-	generate : { @table::Stntuple.producers.egun }
+    producers: { @table::producers 
+	generate                 : { @table::producers.egun }
+# for CE, not old background mixing - default: 'compressPVDetector'
+	CaloShowerStepFromStepPt : { @table::producers.CaloShowerStepFromStepPt  physVolInfoInput: "g4run" }
     }
-    filters  : { @table::Stntuple.filters 
-	InitStntuple : { @table::Stntuple.filters.InitStntuple
-	    histFileName : "egun_stnmaker.stn" 
-	}
+    
+    filters  : { @table::filters 
+	InitStntuple : { @table::filters.InitStntuple histFileName : "aaa.stntuple.bbb.ccc.egun_stnmaker.stn" }
     }
 
-    @table::Stntuple.paths
+    @table::paths
 
     trigger_paths : [ path_gen_digi_reco_stn_dem_dmm ]
     #    out : [detectorOutput]  # detectorOutput is defined in Stntuple/fcl/templates.fcl
@@ -40,17 +46,14 @@ physics : {
     end_paths     : [ out ]
 
 }
-#
-# can use path names specified in 'physics.' context w/o prefixing
-#
-services.TFileService.fileName            : "egun_stnmaker.hist"
-# physics.filters.InitStntuple.histFileName : "egun_stnmaker.stn" 
+
+services.TFileService.fileName            : "nts.stntuple.bbb.ccc.egun_stnmaker.root"
 #------------------------------------------------------------------------------
 # uncomment the next 2 lines if you want the DST file to be written out
 #-----------------------------------------------------------------------------
 # physics.out                               : [ detectorOutput ]
-# outputs.detectorOutput.SelectEvents       : { SelectEvents : [ path_gen_digi_reco_stn_dem_dmm ] }
-outputs.detectorOutput.fileName           : "egun_stnmaker.root"
+# outputs.detectorOutput.SelectEvents       : [ path_gen_digi_reco_stn_dem_dmm ]
+outputs.detectorOutput.fileName           : "aaa.stntuple.bbb.ccc.egun_stnmaker.art"
 #------------------------------------------------------------------------------
 # debugging
 #------------------------------------------------------------------------------

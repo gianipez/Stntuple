@@ -5,10 +5,11 @@
 
 file=$1
 
- offline_version=v6_0_0
+ offline_version=v6_1_2
          release=`echo $MU2E_BASE_RELEASE`
- offline_git_tag=`cat $MU2E_BASE_RELEASE/.git/ORIG_HEAD`
-stntuple_git_tag=`cat $MU2E_BASE_RELEASE/Stntuple/.git/ORIG_HEAD`
+ offline_git_tag=`cat $MU2E_BASE_RELEASE/.git/logs/HEAD | awk '{print $2}'` 
+stntuple_git_tag=`cat $MU2E_BASE_RELEASE/Stntuple/.git/logs/HEAD | awk '{print $2}'`
+
 #-----------------------------------------------------------------------
 # first check if what is being built is different from dev_243
 #-----------------------------------------------------------------------
@@ -25,8 +26,8 @@ echo  ""
 echo  "void stntuple_print_header() {"                                       >> $file
 echo  "  printf(\"stnmaker.exe built on `date` by $USER@`hostname`\n\");"    >> $file
 echo  "  printf(\"MU2E_BASE_RELEASE: $release, \");"                         >> $file
-echo  "  printf(\"OFFLINE GIT tag: $offline_git_tag , \");"                  >> $file
-echo  "  printf(\"STNTUPLE GIT tag: $stntuple_git_tag\n\");"                 >> $file
+echo  "  printf(\"OFFLINE  GIT tag : $offline_git_tag\n\");"                 >> $file
+echo  "  printf(\"STNTUPLE GIT tag : $stntuple_git_tag\n\");"                >> $file
 echo  "}"                                                                    >> $file
 echo  ""
 echo  "void stntuple_get_version(char* Version, char* Text) {"               >> $file
@@ -35,7 +36,7 @@ echo  "  strcpy(Version,\"$offline_version\");"                              >> 
 echo  "  strcpy(txt,\"stnmaker.exe \");"                                     >> $file
 echo  "  strcat(txt,\"built on `date` by $USER@`hostname`\");"               >> $file
 echo  "  strcat(txt,\" MU2E_BASE_RELEASE $release, \");"                     >> $file
-echo  "  strcat(txt,\" OFFLINE GIT tag $offline_git_tag , \");"              >> $file
+echo  "  strcat(txt,\" OFFLINE  GIT tag $offline_git_tag \");"               >> $file
 echo  "  strcat(txt,\" STNTUPLE GIT tag $stntuple_git_tag \");"              >> $file
 echo  "  strcpy(Text,txt);"                                                  >> $file
 echo  "}"                                                                    >> $file

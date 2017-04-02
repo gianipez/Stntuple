@@ -22,7 +22,6 @@
 // #include "TrkReco/inc/TrkStrawHit.hh"
 
 #include "RecoDataProducts/inc/HelixSeed.hh"
-#include "RecoDataProducts/inc/HelixSeedCollection.hh"
 #include "RecoDataProducts/inc/HelixHit.hh"
 
 #include "RecoDataProducts/inc/CaloCluster.hh"
