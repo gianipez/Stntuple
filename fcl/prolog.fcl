@@ -296,7 +296,7 @@ Stntuple : {
 	    helixBlockName          : [ "HelixBlock"            , "TprHelixBlock"           , "CprHelixBlock"            ]
 	    helixModuleLabel        : [ "MergeHelixFinder"      , "PosHelixFinder"          , "CalHelixFinder"           ]
 	    trackBlockName          : [ "TrackBlock"            , "TrkPatRec"               , "CalPatRec"                ]
-	    trkRecoModuleLabel      : [ "MergePatRec"           , "KFFDeM"                  , "CalPatRec"                ]
+	    trkRecoModuleLabel      : [ "MergePatRec"           , "KFFDeM"                  , "MergePatRecCpr"           ]
 	    trkExtrapolModuleLabel  : [ "TrackCaloIntersection" , "TrackCaloIntersectionTpr", "TrackCaloIntersectionCpr" ]
 	    trkCaloMatchModuleLabel : [ "TrackCaloMatching"     , "TrackCaloMatchingTpr"    , "TrackCaloMatchingCpr"     ]
 	    trackStrawHitBlockName  : [ "TrackHitBlock"         , "TrackHitBlockTpr"        , "TrackHitBlockCpr"         ] 

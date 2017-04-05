@@ -405,12 +405,12 @@ Stntuple : { @table::Stntuple  # defined in Stntuple/fcl/prolog.fcl
 #------------------------------------------------------------------------------
 # sequences: can't define recursively within one namespace
 #------------------------------------------------------------------------------
-Stntuple.gen_g4          : [ generate, g4run, detectorFilter]
-Stntuple.gen_g4_time_map : [ @sequence::Stntuple.gen_g4, @sequence::EventMixing.TimeMaps ]
-Stntuple.mix             : [ dioMixer, protonMixer, neutronMixer, photonMixer, ootMixer, flashMixer ]
-Stntuple.mix_time_map    : [ @sequence::Stntuple.mix, @sequence::EventMixing.TimeMaps ]
-Stntuple.g4_mix_time_map : [ @sequence::Stntuple.gen_g4, @sequence::Stntuple.mix, @sequence::EventMixing.TimeMaps ]
-Stntuple.digis           : [ @sequence::CaloDigiMC.DigiSim, @sequence::Tracking.DigiSim ]
+Stntuple.gen_g4              : [ generate, g4run, detectorFilter]
+Stntuple.gen_g4_time_map     : [ @sequence::Stntuple.gen_g4, @sequence::EventMixing.TimeMaps ]
+Stntuple.mix                 : [ dioMixer, protonMixer, neutronMixer, photonMixer, ootMixer, flashMixer ]
+Stntuple.mix_time_map        : [ @sequence::Stntuple.mix, @sequence::EventMixing.TimeMaps ]
+Stntuple.gen_g4_mix_time_map : [ @sequence::Stntuple.gen_g4, @sequence::Stntuple.mix, @sequence::EventMixing.TimeMaps ]
+Stntuple.digis               : [ @sequence::CaloDigiMC.DigiSim, @sequence::Tracking.DigiSim ]
 
 Stntuple.cal_reco        : [ @sequence::CaloReco.Reco          , 
 			     @sequence::CaloDigiMC.TruthMatch  , 
