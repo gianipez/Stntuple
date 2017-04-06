@@ -6,6 +6,7 @@
 #include "TROOT.h"
 #include "TFolder.h"
 #include "TLorentzVector.h"
+#include "TVector2.h"
 
 #include "Stntuple/obj/TStnDataBlock.hh"
 
@@ -35,7 +36,9 @@
 
 double evalWeight(CLHEP::Hep3Vector& HitPos   ,
 		  CLHEP::Hep3Vector& StrawDir ,
-		  CLHEP::Hep3Vector& HelCenter) {
+		  CLHEP::Hep3Vector& HelCenter, 
+		  double             Radius   ,
+		  int                WeightMode) {//WeightMode = 1 is for XY chi2 , WeightMode = 0 is for Phi-z chi2
   
   double    rs(2.5);   // straw radius, mm
   double    ew(30.0);  // assumed resolution along the wire, mm
@@ -48,9 +51,19 @@ double evalWeight(CLHEP::Hep3Vector& HitPos   ,
   double costh  = (dx*StrawDir.x()+dy*StrawDir.y())/sqrt(dx*dx+dy*dy);
   double sinth2 = 1-costh*costh;
   
-  double e2     = ew*ew*sinth2+rs*rs*costh*costh;
-  double wt     = 1./e2;
-  //scale the weight for having chi2/ndof distribution peaking at 1
+  double wt(0);
+  
+                                            //scale the weight for having chi2/ndof distribution peaking at 1
+  if ( WeightMode == 1){
+    double e2     = ew*ew*sinth2+rs*rs*costh*costh;
+    wt  = 1./e2;
+    wt *= 0.2941; //FIX ME! it should be get from CalPatRec/fcl/prolog.fcl
+  } else if (WeightMode ==0 ){
+    double e2     = ew*ew*costh*costh+rs*rs*sinth2;
+    wt     = Radius*Radius/e2;
+    wt    *=  0.174;//FIX ME! it should be get from CalPatRec/fcl/prolog.fcl
+  }
+  
   return wt;
 }
 
@@ -105,7 +118,7 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
   const mu2e::AlgorithmID*   alg_id(0);
   int                        mask(-1);
 
-  int xxx(0);
+  //  int xxx(0);
 
   nhelices = list_of_helices->size();
   
@@ -152,21 +165,21 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
     double                    chi2xy(0), chi2phiz(0);
     int                       nhits(hits->size());
     for (int j=0; j<nhits; ++j){
-      hit       = &hits->at(i);
+      hit       = &hits->at(j);
       pos       = hit->pos();
       wdir      = hit->wdir();
       helix_pos = pos;
       robustHel->position(helix_pos);
-      phi       = hit->phi();
-      helix_phi = robustHel->circleAzimuth(pos.z());
+      phi       = TVector2::Phi_0_2pi(hit->phi());
+      helix_phi = TVector2::Phi_0_2pi(robustHel->circleAzimuth(pos.z()));
     
       double    resid_x2 = pow( (pos.x() - helix_pos.x()), 2.);
       double    resid_y2 = pow( (pos.y() - helix_pos.y()), 2.);
-      double    weight   = evalWeight(pos, wdir, helix_center);
+      double    weight   = evalWeight(pos, wdir, helix_center, radius, 1);
       chi2xy += (resid_x2 + resid_y2)*weight;
 
       double    resid_phi2 = pow( (phi - helix_phi), 2.);
-      weight    *= (radius*radius);
+      weight    = evalWeight(pos, wdir, helix_center, radius, 0);//*= (radius*radius);
       chi2phiz += resid_phi2*weight;
     }
     
@@ -183,16 +196,16 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
       fhicl::ParameterSet const& pset = helix_handle.provenance()->parameterSet();
       std::string         module_type = pset.get<std::string>("module_type");
       
-      if      (module_type == "CalHelixFinder"   ) xxx =  1;
-      else if (module_type == "RobustHelixFinder") xxx =  0;
-      else                                         xxx = -1;
-      
+      // if      (module_type == "CalHelixFinder"   ) xxx =  1;
+      // else if (module_type == "RobustHelixFinder") xxx =  0;
+      // else                                         xxx = -1;
+       
       alg_id = &list_of_algs->at(i);
       mask   = alg_id->BestID() | (alg_id->AlgMask() << 16);
       
-      if (xxx != alg_id->BestID()) { 
-	printf (" *** InitHelixBlock ERROR: we are in alg_id trouble: xxx = %2i best = %i\n",xxx,alg_id->BestID());
-      }
+      // if (xxx != alg_id->BestID()) { 
+      // 	printf (" *** InitHelixBlock ERROR: we are in alg_id trouble: xxx = %2i best = %i\n",xxx,alg_id->BestID());
+      // }
     }
     
     helix->fAlgorithmID = mask;

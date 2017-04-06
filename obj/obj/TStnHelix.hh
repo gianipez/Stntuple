@@ -81,6 +81,7 @@ public:
   int     NHits      () { return  fNHits;  }
   int     AlgorithmID() { return fAlgorithmID; }
   int     AlgMask    () { return (fAlgorithmID >> 16) & 0xffff; }
+  int     BestAlg    () { return fAlgorithmID & 0xffff; }
 
   float   T0         () { return  fT0;     }
   float   T0Err      () { return  fT0Err;  }
