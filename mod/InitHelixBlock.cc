@@ -20,6 +20,7 @@
 #include "GeometryService/inc/GeomHandle.hh"
 
 #include "TTrackerGeom/inc/TTracker.hh"
+#include "CalorimeterGeom/inc/Calorimeter.hh"
 // #include "TrkReco/inc/TrkStrawHit.hh"
 
 #include "RecoDataProducts/inc/HelixSeed.hh"
@@ -31,6 +32,7 @@
 
 #include "CalPatRec/inc/AlgorithmIDCollection.hh"
 #include "CalPatRec/inc/HelixFitHack.hh"
+#include "CalPatRec/inc/LsqSums4.hh"
 
 
 
@@ -130,11 +132,16 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
     cluster                = tmpHel->caloCluster().get();
     robustHel              = &tmpHel->helix();
     if (cluster != 0){
+      mu2e::GeomHandle<mu2e::Calorimeter> ch;
+      const mu2e::Calorimeter* _calorimeter = ch.get();      
+      
       helix->fClusterTime    = cluster->time();
       helix->fClusterEnergy  = cluster->energyDep();
-      helix->fClusterX       = cluster->cog3Vector().x();
-      helix->fClusterY       = cluster->cog3Vector().y();
-      helix->fClusterZ       = cluster->cog3Vector().z();
+      CLHEP::Hep3Vector         gpos = _calorimeter->geomUtil().diskToMu2e(cluster->diskId(),cluster->cog3Vector());
+      CLHEP::Hep3Vector         tpos = _calorimeter->geomUtil().mu2eToTracker(gpos);
+      helix->fClusterX       = tpos.x();
+      helix->fClusterY       = tpos.y();
+      helix->fClusterZ       = tpos.z();
     }else {
       helix->fClusterTime    = 0; 
       helix->fClusterEnergy  = 0; 
@@ -157,35 +164,70 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
     //2017-02-23: gianipez - calculate the chi2
     const mu2e::HelixHitCollection* hits      = &tmpHel->hits();
     const mu2e::HelixHit*           hit(0);
-    CLHEP::Hep3Vector         pos(0), helix_pos(0), wdir(0), helix_center(0);
+    CLHEP::Hep3Vector         pos(0), /*helix_pos(0),*/ wdir(0), sdir(0), helix_center(0);
     double                    phi(0), helix_phi(0);
     double                    radius    = robustHel->radius();
     helix_center = robustHel->center();
 
-    double                    chi2xy(0), chi2phiz(0);
+    //    double                    chi2xy(0), chi2phiz(0);
     int                       nhits(hits->size());
+
+    LsqSums4 sxy;
+    //add the stopping target center as in CalHeliFinderAlg.cc
+    sxy.addPoint(0., 0., 1./900.);
+
+    LsqSums4 srphi;
+    static const CLHEP::Hep3Vector zdir(0.0,0.0,1.0);
+    
     for (int j=0; j<nhits; ++j){
       hit       = &hits->at(j);
       pos       = hit->pos();
       wdir      = hit->wdir();
-      helix_pos = pos;
-      robustHel->position(helix_pos);
-      phi       = TVector2::Phi_0_2pi(hit->phi());
-      helix_phi = TVector2::Phi_0_2pi(robustHel->circleAzimuth(pos.z()));
-    
-      double    resid_x2 = pow( (pos.x() - helix_pos.x()), 2.);
-      double    resid_y2 = pow( (pos.y() - helix_pos.y()), 2.);
-      double    weight   = evalWeight(pos, wdir, helix_center, radius, 1);
-      chi2xy += (resid_x2 + resid_y2)*weight;
+      sdir      = zdir.cross(wdir);
+      phi       = hit->phi();
+      helix_phi = helix->fFZ0 + pos.z()/helix->fLambda;
+      double    weightXY   = evalWeight(pos, sdir, helix_center, radius, 1);
 
-      double    resid_phi2 = pow( (phi - helix_phi), 2.);
-      weight    = evalWeight(pos, wdir, helix_center, radius, 0);//*= (radius*radius);
-      chi2phiz += resid_phi2*weight;
+      sxy.addPoint(pos.x(), pos.y(), weightXY);
+
+      double    dPhi     = helix_phi - phi- M_PI/2.;
+      while (dPhi > M_PI){
+	phi    += 2*M_PI;
+        dPhi   = helix_phi - phi;
+      }
+      while (dPhi < -M_PI){
+	phi   -= 2*M_PI; 
+	dPhi  = helix_phi - phi;
+      }
+      double weight    = evalWeight(pos, sdir, helix_center, radius, 0);
+      srphi.addPoint(pos.z(), phi, weight);
+    } 
+    
+    if (cluster != 0){
+      double     weight_cl_xy = 1./100.;//FIX ME!
+      pos       = CLHEP::Hep3Vector(helix->fClusterX, helix->fClusterY, helix->fClusterZ);
+      sxy.addPoint(pos.x(), pos.y(), weight_cl_xy);
+      
+      phi       = CLHEP::Hep3Vector(pos - helix_center).phi();
+      phi       = TVector2::Phi_0_2pi(phi);
+      helix_phi = helix->fFZ0 + pos.z()/helix->fLambda;
+      double     dPhi        = helix_phi - phi;
+      while (dPhi > M_PI){
+	phi    += 2*M_PI;
+        dPhi   = helix_phi - phi;
+      }
+      while (dPhi < -M_PI){
+	phi   -= 2*M_PI; 
+	dPhi  = helix_phi - phi;
+      }
+
+      double     weight_cl_phiz = 10.;//1./(err_cl*err_cl);
+      srphi.addPoint(pos.z(), phi, weight_cl_phiz);
     }
     
 
-    helix->fChi2XYNDof   = chi2xy  /(nhits - 5);
-    helix->fChi2PhiZNDof = chi2phiz/(nhits - 2);
+    helix->fChi2XYNDof   = sxy.chi2DofCircle();
+    helix->fChi2PhiZNDof = srphi.chi2DofLine();
     
     mask = (0x0001 << 16) | 0x0000;
 
