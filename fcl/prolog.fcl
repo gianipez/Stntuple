@@ -156,6 +156,15 @@ Stntuple : {
 		# bit0:1  # bit1:1 # bit51:1
 	    }
 	}
+
+	StntupleEventDump : { module_type:StntupleEventDump 
+	    module_name       : StntupleEventDump
+	    histFileName      : "default.stn"
+	    splitLevel        : 0
+	    debugBits         : { 
+		# bit0:1  # bit1:1 # bit51:1
+	    }
+	}
 #------------------------------------------------------------------------------
 # downstream electrons - explicitly - the same as default
 #------------------------------------------------------------------------------

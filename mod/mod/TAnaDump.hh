@@ -16,11 +16,16 @@
 #ifndef __CINT__
 
 #include "art/Framework/Principal/Event.h"
+#include "MCDataProducts/inc/PtrStepPointMCVectorCollection.hh"
 
 #else
 
 namespace art {
   class Event;
+}
+
+namespace mu2e {
+  class PtrStepPointMCVectorCollection;
 }
 
 #endif
@@ -48,18 +53,12 @@ namespace mu2e {
 class TAnaDump : public TObject {
 public:
 
-  const art::Event*             fEvent;
-  TObjArray*                    fListOfObjects;
-  TString                       fFlagBgrHitsModuleLabel;
-  mu2e::SimParticleTimeOffset*  fTimeOffsets;
-
-  double     fTmp[100];  // for testing
-
-//   TCanvas*   c_plot_hits_xy;
-//   TH2F*      h2_xy;
-//   TH2F*      h2_yz;
-//   TEllipse*  e;
-//   TF1*       yf;       
+  const art::Event*                     fEvent;
+  TObjArray*                            fListOfObjects;
+  TString                               fFlagBgrHitsModuleLabel;
+  mu2e::SimParticleTimeOffset*          fTimeOffsets;
+  mu2e::PtrStepPointMCVectorCollection* fListOfMCStrawHits;
+  double                                fTmp[100];  // for testing
 
 private:
 
@@ -164,11 +163,6 @@ public:
 					 const char* ProductName = "", 
 					 const char* ProcessName = "");
 
-//   void printTrackClusterLink            (const char* ModuleLabel, 
-// 					 const char* ProductName = "", 
-// 					 const char* ProcessName = "");
-    
-
   void printCalTimePeak   (const mu2e::CalTimePeak* TimePeak, const char* Opt = "");
 
   void printCalTimePeakCollection(const char* ModuleLabel     , 
@@ -231,8 +225,6 @@ public:
   void  refitTrack(void* Trk, double NSig);
 
   void  Test_000(const KalRep* Krep, mu2e::TrkStrawHit* Hit);
-
- //   void printVaneCalorimeter(VaneCalorimeter* Cal);
 
   ClassDef(TAnaDump,0)
 };
