@@ -397,9 +397,9 @@ Stntuple : { @table::Stntuple  # defined in Stntuple/fcl/prolog.fcl
 
     outputs: {
 	detectorOutput : {
-	    module_type : RootOutput
-	    SelectEvents: { SelectEvents: [] }
-	    outputCommands:   [ "keep *_*_*_*"]
+	    module_type   : RootOutput
+	    SelectEvents  : [] 
+	    outputCommands: [ "keep *_*_*_*"]
 	}
     }
 }

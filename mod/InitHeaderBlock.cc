@@ -13,6 +13,8 @@
 #include "RecoDataProducts/inc/StrawHitCollection.hh"
 #include "MCDataProducts/inc/ProtonBunchIntensity.hh"
 
+#include "messagefacility/MessageLogger/MessageLogger.h"
+
 #include "art/Framework/Principal/Selector.h"
 #include "art/Framework/Principal/Handle.h"
 #include "art/Framework/Principal/Event.h"
@@ -56,7 +58,7 @@ Int_t StntupleInitMu2eHeaderBlock(TStnDataBlock* block, AbsEvent* AnEvent, int m
   //  AnEvent->getManyByType(pbiHandles);
   AnEvent->getMany(selector,pbiHandles);
   if (pbiHandles.empty()) {
-    printf("[%s] WARNING: no ProtonBunchIntensity objects found\n",oname);
+    mf::LogWarning(oname) << " WARNING: no ProtonBunchIntensity objects found\n";
   }
   else {
 //-----------------------------------------------------------------------------

@@ -21,6 +21,7 @@ StntupleMakerTemplate : { module_type:StntupleMaker
     makeGenp            : 1
     makePid             : 1
     makeSimp            : 1
+    makeStepPointMC     : 0
     makeStrawData       : 0
     makeTracks          : 1
     makeTrackStrawHits  : 0
@@ -68,6 +69,12 @@ StntupleMakerTemplate : { module_type:StntupleMaker
 
     minTActive              : 0.     # ns
     minECrystal             : 1.0    # MeV
+#------------------------------------------------------------------------------
+# this is the default for Stage1 simulation
+#------------------------------------------------------------------------------
+    stepPointMCBlockName    : ["StepPointMCBlock"]
+    stepPointMCModuleLabel  : ["muonBeamFilter"  ]
+    stepPointMCProductName  : ["mubeam"          ]
 
     debugBits           : { 
 	# bit0:1  

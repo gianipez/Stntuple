@@ -78,6 +78,7 @@ protected:
   int              fMakeGenp;
   int              fMakePid;
   int              fMakeSimp;
+  int              fMakeStepPointMC;
   int              fMakeStrawData;
   int              fMakeTracks;
   int              fMakeTrackStrawHits;
@@ -104,6 +105,10 @@ protected:
   std::vector<std::string> fPidBlockName;
   std::vector<std::string> fPidModuleLabel;
   std::vector<std::string> fTrackStrawHitBlockName;
+
+  std::vector<std::string> fStepPointMCBlockName;
+  std::vector<std::string> fStepPointMCModuleLabel;
+  std::vector<std::string> fStepPointMCProductName;
 
   std::vector<int>         fFitParticle;
   std::vector<int>         fFitDirection;
@@ -165,6 +170,7 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
   , fMakeGenp           (PSet.get<int>         ("makeGenp"       ))
   , fMakePid            (PSet.get<int>         ("makePid"        ))
   , fMakeSimp           (PSet.get<int>         ("makeSimp"       ))
+  , fMakeStepPointMC    (PSet.get<int>         ("makeStepPointMC"))
   , fMakeStrawData      (PSet.get<int>         ("makeStrawData"  ))
   , fMakeTracks         (PSet.get<int>         ("makeTracks"     ))
   , fMakeTrackStrawHits (PSet.get<int>         ("makeTrackStrawHits"))
@@ -173,30 +179,33 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
   , fMakeTrigger        (PSet.get<int>         ("makeTrigger"    ))
   , fMakeVirtualHits    (PSet.get<int>         ("makeVirtualHits"))
   
-  , fG4ModuleLabel           (PSet.get<string>        ("g4ModuleLabel"          ))
-  , fGeneratorModuleLabel    (PSet.get<string>        ("generatorModuleLabel"   ))
-  , fMakeStrawHitModuleLabel (PSet.get<string>        ("makeStrawHitModuleLabel"))
+  , fG4ModuleLabel           (PSet.get<string>        ("g4ModuleLabel"           ))
+  , fGeneratorModuleLabel    (PSet.get<string>        ("generatorModuleLabel"    ))
+  , fMakeStrawHitModuleLabel (PSet.get<string>        ("makeStrawHitModuleLabel" ))
   , fMakeStrawDigiModuleLabel(PSet.get<string>        ("makeStrawDigiModuleLabel"))
-  , fHelixBlockName          (PSet.get<vector<string>>("helixBlockName"     ))
-  , fHelixModuleLabel        (PSet.get<vector<string>>("helixModuleLabel"   ))
-  , fTrackSeedBlockName      (PSet.get<vector<string>>("trackSeedBlockName"     ))
-  , fTrackSeedModuleLabel    (PSet.get<vector<string>>("trackSeedModuleLabel"   ))
-  , fTrackBlockName          (PSet.get<vector<string>>("trackBlockName"         ))
-  , fTrkRecoModuleLabel      (PSet.get<vector<string>>("trkRecoModuleLabel"     ))
-  , fTrkExtrapolModuleLabel  (PSet.get<vector<string>>("trkExtrapolModuleLabel" ))
-  , fTrkCaloMatchModuleLabel (PSet.get<vector<string>>("trkCaloMatchModuleLabel"))
-  , fPidBlockName            (PSet.get<vector<string>>("pidBlockName"           ))
-  , fPidModuleLabel         (PSet.get<vector<string>>("pidModuleLabel"         ))
-  , fTrackStrawHitBlockName (PSet.get<vector<string>>("trackStrawHitBlockName" ))
+  , fHelixBlockName          (PSet.get<vector<string>>("helixBlockName"          ))
+  , fHelixModuleLabel        (PSet.get<vector<string>>("helixModuleLabel"        ))
+  , fTrackSeedBlockName      (PSet.get<vector<string>>("trackSeedBlockName"      ))
+  , fTrackSeedModuleLabel    (PSet.get<vector<string>>("trackSeedModuleLabel"    ))
+  , fTrackBlockName          (PSet.get<vector<string>>("trackBlockName"          ))
+  , fTrkRecoModuleLabel      (PSet.get<vector<string>>("trkRecoModuleLabel"      ))
+  , fTrkExtrapolModuleLabel  (PSet.get<vector<string>>("trkExtrapolModuleLabel"  ))
+  , fTrkCaloMatchModuleLabel (PSet.get<vector<string>>("trkCaloMatchModuleLabel" ))
+  , fPidBlockName            (PSet.get<vector<string>>("pidBlockName"            ))
+  , fPidModuleLabel          (PSet.get<vector<string>>("pidModuleLabel"          ))
+  , fTrackStrawHitBlockName  (PSet.get<vector<string>>("trackStrawHitBlockName"  ))
   
-  , fFitParticle            (PSet.get<vector<int>>        ("fitParticle"       ))
-  , fFitDirection           (PSet.get<vector<int>>        ("fitDirection"      ))
+  , fStepPointMCBlockName    (PSet.get<vector<string>>("stepPointMCBlockName"    ))
+  , fStepPointMCModuleLabel  (PSet.get<vector<string>>("stepPointMCModuleLabel"  ))
+  , fStepPointMCProductName  (PSet.get<vector<string>>("stepPointMCProductName"  ))
+
+  , fFitParticle            (PSet.get<vector<int>>        ("fitParticle" ))
+  , fFitDirection           (PSet.get<vector<int>>        ("fitDirection"))
 
   , fCaloCrystalHitMaker(PSet.get<string> ("caloCrystalHitsMaker"))
   , fCaloClusterMaker   (PSet.get<string> ("caloClusterMaker"    ))
-  
-  , fMinTActive         (PSet.get<double>      ("minTActive"     ))
-  , fMinECrystal        (PSet.get<double>      ("minECrystal"    ))
+  , fMinTActive         (PSet.get<double> ("minTActive" ))
+  , fMinECrystal        (PSet.get<double> ("minECrystal"))
 {
 
   char  ver[20], text[200];
@@ -552,6 +561,37 @@ void StntupleMaker::beginJob() {
       simp_data->AddCollName("mu2e::SimParticleCollection",""                   ,"");
       simp_data->AddCollName("mu2e::StrawHitCollection"   ,fMakeStrawHitModuleLabel.data(),"");
       simp_data->AddCollName("mu2e::StepPointMCCollection",fG4ModuleLabel.data(),"");
+    }
+  }
+//-----------------------------------------------------------------------------
+// StepPointMC collections - could be several
+//-----------------------------------------------------------------------------
+  if (fMakeStepPointMC) {
+    TStnDataBlock *block_data;
+    const char    *block_name;
+    int            nblocks;
+    
+    nblocks = fStepPointMCBlockName.size();
+
+    for (int i=0; i<nblocks; i++) {
+					// always store defTracks for the 
+					// default process in the "TrackBlock"
+
+      block_name = fStepPointMCBlockName[i].data();
+      block_data = AddDataBlock(block_name,
+				"TStepPointMCBlock",
+				StntupleInitMu2eStepPointMCBlock,
+				buffer_size,
+				split_mode,
+				compression_level);
+
+      //      SetResolveLinksMethod(block_name,StntupleInitMu2eTrackBlockLinks);
+
+      if (block_data) {
+	block_data->AddCollName("mu2e::StepPointMCCollection",
+				fStepPointMCModuleLabel[i].data(),
+				fStepPointMCProductName[i].data());
+      }
     }
   }
 //-----------------------------------------------------------------------------
