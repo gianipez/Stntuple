@@ -3,11 +3,6 @@ BEGIN_PROLOG
 #------------------------------------------------------------------------------
 # Stntuple maker sequence
 #------------------------------------------------------------------------------
-#------------------------------------------------------------------------------
-# event list contains 3 numbers per event : run, subrun, event
-# if the event list is empty, all events are passed through
-#------------------------------------------------------------------------------
-#------------------------------------------------------------------------------
 # default configuration of StntupleMaker
 #------------------------------------------------------------------------------
 StntupleMakerTemplate : { module_type:StntupleMaker
@@ -45,6 +40,7 @@ StntupleMakerTemplate : { module_type:StntupleMaker
 #------------------------------------------------------------------------------
     makeStrawHitModuleLabel : "makeSH"
     makeStrawDigiModuleLabel: "makeSD"
+    makeSimpModuleLabel     : "g4run"
     generatorModuleLabel    : "generate"
     helixBlockName          : ["HelixBlock"]
     helixModuleLabel        : ["CalHelixFinder"]
@@ -72,9 +68,9 @@ StntupleMakerTemplate : { module_type:StntupleMaker
 #------------------------------------------------------------------------------
 # this is the default for Stage1 simulation
 #------------------------------------------------------------------------------
-    stepPointMCBlockName    : ["StepPointMCBlock"]
-    stepPointMCModuleLabel  : ["muonBeamFilter"  ]
-    stepPointMCProductName  : ["mubeam"          ]
+    stepPointMCBlockName    : ["SpmcBlock"      ]
+    stepPointMCModuleLabel  : ["muonBeamFilter" ]
+    stepPointMCProductName  : ["mubeam"         ]
 
     debugBits           : { 
 	# bit0:1  

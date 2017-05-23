@@ -1,8 +1,6 @@
 //-----------------------------------------------------------------------------
-// TStepPointMC: STNTUPLE description of the generator-level MC particle
-// It inherits from ROOT's TParticle and adds more functions to it
-// particle number in the original list is saved in TObject::fUniqueID 
-// Nov 25 2000 P.Murat (CDF/FNAL)
+// TStepPointMC: STNTUPLE description of the Mu2e step point
+// fMom and fPos are in the beginning of the step
 //----------------------------------------------------------------------------- 
 #include <limits.h>	// UINT_MAX
 #include "TDatabasePDG.h"
@@ -126,32 +124,46 @@ TStepPointMC::~TStepPointMC() {
 
 //_____________________________________________________________________________
 void TStepPointMC::Print(Option_t* Opt) const {
-  printf("WARNING: TStepPointMC::Print not implemented yet\n");
-  // // TString opt = Opt;
-  // // if ((opt == "banner") || (opt == "")) {
-  // // 				// print banner
-  // //   printf("   i name                   PDG  GenpID  isthep  im1  im2  id1  id2      px");
-  // //   printf("      py       pz       e        vx       vy        vz       t\n");
-  // // }
+  TString opt = Opt;
+  if ((opt == "banner") || (opt == "")) {
+    // print banner
+    printf("---------------------------------------------------------------------------------------------------------------");
+    printf("---------------------------------------------------------------\n");
+    printf("   Vol   Gen     PDG Particle          Creation   SimID   PPdg  PSimID  StopProc     X          Y          Z   ");
+    printf("  Edep(Tot) Edep(NIO)  Step    Time      Px        Py        Pz\n");
+    printf("---------------------------------------------------------------------------------------------------------------");
+    printf("---------------------------------------------------------------\n");
+  }
 
-  // // TDatabasePDG* db = TDatabasePDG::Instance();
+  TDatabasePDG* db = TDatabasePDG::Instance();
 
-  // // TParticlePDG* pdg = db->GetParticle(fPdgCode);
+  TParticlePDG* pdg = db->GetParticle(fPDGCode);
 
-  // // if ((opt == "data") || (opt == "")) {
-  // //   printf("%4i",Number());
-  // //   if (pdg) printf(" %-19s",pdg->GetName());
-  // //   else          printf(" %-19s","*** unknown ***");
-  // //   printf("%7i"  ,fPdgCode);
-  // //   printf("%8i"  ,fGenpID);
-  // //   printf("%9.3f",fStartMom.Px());
-  // //   printf("%9.3f",fStartMom.Py());
-  // //   printf("%9.3f",fStartMom.Pz());
-  // //   printf("%9.3f",fStartMom.Energy());
-  // //   printf("%9.3f",fStartPos.X());
-  // //   printf("%9.3f",fStartPos.Y());
-  // //   printf("%9.3f",fStartPos.X());
-  // //   printf("%9.3f",fStartPos.T());
-  // //   printf("\n");
-  // // }
+  if ((opt == "data") || (opt == "")) {
+     printf("%5i",VolumeID());
+     printf("%8i"  ,fGenIndex);
+
+     printf("%7i"  ,fPDGCode);
+     if (pdg) printf(" %-19s",pdg->GetName());
+     else          printf(" %-19s","*** unknown ***");
+
+     printf("%7i"  ,fCreationCode);
+     printf("%8i"  ,fSimID);
+     printf("%7i"  ,fParentPDGCode);
+     printf("%8i"  ,fParentSimID);
+     printf("%8i"  ,fEndProcessCode);
+     printf("%11.3f",fPos.X());
+     printf("%11.3f",fPos.Y());
+     printf("%11.3f",fPos.X());
+
+     printf("%9.5f",fEDepTot);
+     printf("%9.5f",fEDepNio);
+     printf("%9.3f",fTime);
+     printf("%9.3f",fStepLength);
+     
+     printf("%9.3f",fMom.Px());
+     printf("%9.3f",fMom.Py());
+     printf("%9.3f",fMom.Pz());
+     printf("\n");
+  }
 }

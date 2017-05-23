@@ -18,9 +18,12 @@ END_PROLOG
 
 #include "Stntuple/fcl/templates.fcl"
 
-process_name : EgunMergePatRecStnmaker
+process_name : Stage1SpmcStn
 
-source       : { module_type : RootInput    }
+source       : { module_type : RootInput 
+# use one of the concatenated Stage1 files 
+    fileNames : ["/pnfs/mu2e/tape/phy-sim/sim/mu2e/cd3-beam-cs1-mubeam/0506a/art/00/01/sim.mu2e.cd3-beam-cs1-mubeam.0506a.001002_00488421.art"]
+}
 
 outputs      : { @table::Stntuple.outputs   }
 producers    : { @table::Stntuple.producers }
@@ -39,12 +42,14 @@ physics : {
 #------------------------------------------------------------------------------
 # disable everything, enable StepPointMC
 #------------------------------------------------------------------------------
-	    makeClusters    : 0
-	    makePid         : 0
-	    makeSimp        : 0
-	    makeTracks      : 0
-	    makeVirtualHits : 0
-	    makeStepPointMC : 1
+	    makeClusters        : 0
+	    makePid             : 0
+	    makeSimp            : 1
+	    makeTracks          : 0
+	    makeVirtualHits     : 0
+	    makeStepPointMC     : 1
+
+	    makeSimpModuleLabel : "muonBeamFilter"
 	}
 	InitStntuple : { @table::filters.InitStntuple histFileName : "stn.stntuple.bbb.stage1.step_point_mc.stn" }
     }

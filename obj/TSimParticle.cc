@@ -47,7 +47,7 @@ void TSimParticle::ReadV1(TBuffer &R__b) {
   fEndVolumeIndex   = data.fEndVolumeIndex;
   fNStrawHits       = data.fNStrawHits;
 
-  fGenpID           = -1;         // ** added in V2 **
+  fGeneratorID         = -1;         // ** added in V2 **
 
   fStartPos.Streamer(R__b);
   fStartMom.Streamer(R__b);
@@ -91,14 +91,14 @@ void TSimParticle::Streamer(TBuffer& R__b) {
 //_____________________________________________________________________________
 TSimParticle::TSimParticle() {
   SetUniqueID(UINT_MAX);
-  fGenpID   = -1;
+  fGeneratorID   = -1;
 }
 
 //_____________________________________________________________________________
 TSimParticle::TSimParticle(Int_t ID, Int_t ParentID, Int_t PdgCode, 
 			   int CreationCode, int TerminationCode,
 			   int StartVolumeIndex, int EndVolumeIndex,
-			   int GenpID,
+			   int GeneratorID,
 			   Float_t px, Float_t py, Float_t pz, Float_t e,
 			   Float_t vx, Float_t vy, Float_t vz, Float_t t):
   TObject(),
@@ -114,7 +114,7 @@ TSimParticle::TSimParticle(Int_t ID, Int_t ParentID, Int_t PdgCode,
   fStartVolumeIndex = StartVolumeIndex;
   fEndVolumeIndex   = EndVolumeIndex;
   fNStrawHits       = 0;
-  fGenpID           = GenpID;
+  fGeneratorID         = GeneratorID;
   fMomTargetEnd     = -1.;
   fMomTrackerFront  = -1.;
 }
@@ -127,7 +127,7 @@ TSimParticle::~TSimParticle() {
 int  TSimParticle::Init(Int_t ID, Int_t ParentID, Int_t PdgCode, 
 			int CreationCode, int TerminationCode,
 			int StartVolumeIndex, int EndVolumeIndex,
-			int GenpID,
+			int GeneratorID,
 			Float_t px, Float_t py, Float_t pz, Float_t e,
 			Float_t vx, Float_t vy, Float_t vz, Float_t t) 
 {
@@ -139,7 +139,7 @@ int  TSimParticle::Init(Int_t ID, Int_t ParentID, Int_t PdgCode,
   fStartVolumeIndex = StartVolumeIndex;
   fEndVolumeIndex   = EndVolumeIndex;
   fNStrawHits       = 0;
-  fGenpID           = GenpID;
+  fGeneratorID           = GeneratorID;
   fMomTargetEnd     = -1.;
   fMomTrackerFront  = -1.;
 
@@ -155,8 +155,8 @@ void TSimParticle::Print(Option_t* Opt) const {
   TString opt = Opt;
   if ((opt == "banner") || (opt == "")) {
 				// print banner
-    printf("   i name                   PDG  GenpID  isthep  im1  im2  id1  id2      px");
-    printf("      py       pz       e        vx       vy        vz       t\n");
+    printf("   i name                   PDG   ID GenID  ParentID     px");
+    printf("        py         pz          e          vx         vy          vz         t\n");
   }
 
   TDatabasePDG* db = TDatabasePDG::Instance();
@@ -165,20 +165,23 @@ void TSimParticle::Print(Option_t* Opt) const {
 
   if ((opt == "data") || (opt == "")) {
     printf("%4i",Number());
+
     if (pdg) printf(" %-19s",pdg->GetName());
     else          printf(" %-19s","*** unknown ***");
-    printf("%7i"  ,fPdgCode);
-    printf("%8i"  ,fGenpID);
-    printf("%9.3f",fStartMom.Px());
-    printf("%9.3f",fStartMom.Py());
-    printf("%9.3f",fStartMom.Pz());
-    printf("%9.3f",fStartMom.Energy());
-    printf("%9.3f",fStartPos.X());
-    printf("%9.3f",fStartPos.Y());
-    printf("%9.3f",fStartPos.X());
-    printf("%9.3f",fStartPos.T());
+
+    printf("%7i"   ,fPdgCode);
+    printf("%5i"   ,GetUniqueID());
+    printf("%6i"   ,fGeneratorID);
+    printf("%8i"   ,fParentID);
+    printf("%11.3f",fStartMom.Px());
+    printf("%11.3f",fStartMom.Py());
+    printf("%11.3f",fStartMom.Pz());
+    printf("%11.3f",fStartMom.Energy());
+    printf("%11.3f",fStartPos.X());
+    printf("%11.3f",fStartPos.Y());
+    printf("%11.3f",fStartPos.X());
+    printf("%11.3f",fStartPos.T());
     printf("\n");
   }
 }
-
 

@@ -16,9 +16,10 @@ void TSimpBlock::Streamer(TBuffer &R__b)
     Version_t R__v = R__b.ReadVersion(); if (R__v) { }
     R__b >> fNParticles;
     fListOfParticles->Streamer(R__b);
-    for (int i=0; i<fNParticles; i++) {
-      Particle(i)->SetUniqueID(i);
-    }
+    // particle ID is its index in the original simulation list, don't ovewrite it!
+    // for (int i=0; i<fNParticles; i++) {
+    //   Particle(i)->SetUniqueID(i);
+    // }
   } 
   else {
     R__b.WriteVersion(TSimpBlock::IsA());
@@ -49,12 +50,30 @@ void TSimpBlock::Clear(const char* opt) {
   fListOfParticles->Clear(opt);
 }
 
+
+//-----------------------------------------------------------------------------
+// find TSimParticle with given ID
+//-----------------------------------------------------------------------------
+TSimParticle* TSimpBlock::FindParticle(int ID) {
+  TSimParticle* par(NULL);
+
+  for (int i=0; i<fNParticles; i++) {
+    TSimParticle* p = Particle(i);
+    int id = p->GetUniqueID();
+    if ( id == ID) {
+      par = p;
+      break;
+    }
+  }
+  return par;
+}
+
 //_____________________________________________________________________________
 TSimParticle* 
 TSimpBlock::NewParticle(Int_t ID, Int_t ParentID, Int_t PdgCode, 
 			int CreationCode, int TerminationCode,
 			int StartVolumeIndex, int EndVolumeIndex,
-			int GenpID,
+			int GeneratorID,
 			Float_t px, Float_t py, Float_t pz, Float_t e,
 			Float_t vx, Float_t vy, Float_t vz, Float_t t)
 {
@@ -68,7 +87,7 @@ TSimpBlock::NewParticle(Int_t ID, Int_t ParentID, Int_t PdgCode,
 
   p->Init(ID,ParentID, PdgCode,CreationCode,TerminationCode,
 	  StartVolumeIndex,EndVolumeIndex,
-	  GenpID,
+	  GeneratorID,
 	  px,py,pz,e,vx,vy,vz,t);
 
   fNParticles += 1;

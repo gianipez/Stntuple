@@ -47,6 +47,8 @@ public:
   TSimParticle*   Particle(int i) { 
     return (TSimParticle*) fListOfParticles->UncheckedAt(i); 
   }
+
+  TSimParticle*   FindParticle(int ID);
 //-----------------------------------------------------------------------------
 //  modifiers
 //-----------------------------------------------------------------------------

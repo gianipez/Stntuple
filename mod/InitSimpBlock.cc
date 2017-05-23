@@ -25,6 +25,8 @@
 
 #include "Stntuple/mod/InitStntupleDataBlocks.hh"
 
+#include "messagefacility/MessageLogger/MessageLogger.h"
+
 //-----------------------------------------------------------------------------
 int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode) 
 {
@@ -40,10 +42,10 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
   const mu2e::SimParticleCollection*       simp_coll(0);
   const mu2e::SimParticle*                 sim(0);
   art::Handle<mu2e::SimParticleCollection> simp_handle;
-  mu2e::StrawHitCollection*                list_of_straw_hits(0);
+  const mu2e::StrawHitCollection*          list_of_straw_hits(0);
 
   double        px, py, pz, mass, energy;
-  int           id, parent_id, genp_id, n_straw_hits(0), nhits;
+  int           id, parent_id, generator_id, n_straw_hits(0), nhits;
   int           pdg_code, start_vol_id, end_vol_id, creation_code, termination_code;
   TParticlePDG* part;
   TDatabasePDG* pdg_db = TDatabasePDG::Instance();
@@ -62,16 +64,20 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
   if (strh_module_label[0] != 0) {
     if (strh_description[0] == 0) AnEvent->getByLabel(strh_module_label,shHandle);
     else                          AnEvent->getByLabel(strh_module_label,strh_description,shHandle);
-    list_of_straw_hits = (mu2e::StrawHitCollection*) &(*shHandle);
-    n_straw_hits      = list_of_straw_hits->size();
+    if (shHandle.isValid()) {
+      list_of_straw_hits = shHandle.product();
+      n_straw_hits      = list_of_straw_hits->size();
+    }
   }
 
-  const mu2e::PtrStepPointMCVectorCollection* stepPointMCVectorCollection;
+  const mu2e::PtrStepPointMCVectorCollection* stepPointMCVectorCollection(0);
   const mu2e::StepPointMC*                    step;
 
   art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandleStraw;
   AnEvent->getByLabel(strh_module_label,mcptrHandleStraw);
-  stepPointMCVectorCollection = mcptrHandleStraw.product();
+  if (mcptrHandleStraw.isValid()) {
+    stepPointMCVectorCollection = mcptrHandleStraw.product();
+  }
 
   mu2e::GeomHandle<mu2e::VirtualDetector> vdg;
 //-----------------------------------------------------------------------------
@@ -98,30 +104,36 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
 
     for (mu2e::SimParticleCollection::const_iterator ip = simp_coll->begin(); ip != simp_coll->end(); ip++) {
       sim      = &ip->second;
-      if (! sim->isPrimary())                               goto NEXT_PARTICLE;
+      //      if (! sim->isPrimary())                               goto NEXT_PARTICLE;
       id        = sim->id().asInt();
       parent_id = -1;
       if (sim->parent()) parent_id = sim->parent()->id().asInt();
 
       pdg_code         = (int) sim->pdgId();
-      genp_id          = sim->generatorIndex();
+      generator_id     = sim->generatorIndex();   // ID of the MC generator
       creation_code    = sim->creationCode();
       termination_code = sim->stoppingCode();
 
       start_vol_id     = sim->startVolumeIndex();
       end_vol_id       = sim->endVolumeIndex();
       
-      part     = pdg_db->GetParticle(pdg_code);
-
       px     = sim->startMomentum().x();
       py     = sim->startMomentum().y();
       pz     = sim->startMomentum().z();
-      mass   = part->Mass();
-      energy = sqrt(px*px+py*py+pz*pz+mass*mass);
+
+      part   = pdg_db->GetParticle(pdg_code);
+      if (part) {
+	mass   = part->Mass();
+	energy = sqrt(px*px+py*py+pz*pz+mass*mass);
+      }
+      else {
+	mf::LogWarning(oname) << " ERROR: PDG code " << pdg_code << "not in the database, set particle mass to 0\n";
+	energy = sqrt(px*px+py*py+pz*pz);
+      }
 
       simp   = simp_block->NewParticle(id, parent_id, pdg_code, 
 				       creation_code, termination_code,
-				       genp_id,
+				       generator_id,
 				       start_vol_id, end_vol_id,
 				       px, py, pz, energy,
 				       sim->startPosition().x(),
@@ -181,8 +193,9 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
 //------------------------------------------------------------------------------
 // now look at the straw hits
 //-----------------------------------------------------------------------------
-      nhits = 0;
-      if (stepPointMCVectorCollection->size() > 0) {
+      nhits = -1;
+      if (stepPointMCVectorCollection && (stepPointMCVectorCollection->size() > 0)) {
+	nhits = 0;
 	for (int i=0; i<n_straw_hits; i++) {
 	  mu2e::PtrStepPointMCVector const& mcptr(stepPointMCVectorCollection->at(i) );
 
@@ -202,7 +215,7 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
       }
       simp->SetNStrawHits(nhits);
 
-    NEXT_PARTICLE:;
+      //    NEXT_PARTICLE:;
     }
   }
   else {

@@ -94,6 +94,7 @@ protected:
   std::string              fGeneratorModuleLabel;   // defines collection to save, default: "" (all)
   std::string              fMakeStrawHitModuleLabel;
   std::string              fMakeStrawDigiModuleLabel;
+  std::string              fMakeSimpModuleLabel;    // name of the module produced SimParticleCollection
   std::vector<std::string> fHelixBlockName;
   std::vector<std::string> fHelixModuleLabel;
   std::vector<std::string> fTrackSeedBlockName;
@@ -183,6 +184,7 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
   , fGeneratorModuleLabel    (PSet.get<string>        ("generatorModuleLabel"    ))
   , fMakeStrawHitModuleLabel (PSet.get<string>        ("makeStrawHitModuleLabel" ))
   , fMakeStrawDigiModuleLabel(PSet.get<string>        ("makeStrawDigiModuleLabel"))
+  , fMakeSimpModuleLabel     (PSet.get<string>        ("makeSimpModuleLabel"     ))
   , fHelixBlockName          (PSet.get<vector<string>>("helixBlockName"          ))
   , fHelixModuleLabel        (PSet.get<vector<string>>("helixModuleLabel"        ))
   , fTrackSeedBlockName      (PSet.get<vector<string>>("trackSeedBlockName"      ))
@@ -558,9 +560,9 @@ void StntupleMaker::beginJob() {
     //    SetResolveLinksMethod("GenpBlock",StntupleInitMu2eClusterBlockLinks);
 
     if (simp_data) {
-      simp_data->AddCollName("mu2e::SimParticleCollection",""                   ,"");
+      simp_data->AddCollName("mu2e::SimParticleCollection",""                             ,"");
       simp_data->AddCollName("mu2e::StrawHitCollection"   ,fMakeStrawHitModuleLabel.data(),"");
-      simp_data->AddCollName("mu2e::StepPointMCCollection",fG4ModuleLabel.data(),"");
+      simp_data->AddCollName("mu2e::StepPointMCCollection",fMakeSimpModuleLabel.data()    ,"");
     }
   }
 //-----------------------------------------------------------------------------
