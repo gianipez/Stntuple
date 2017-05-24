@@ -1941,12 +1941,15 @@ void TAnaDump::printSimParticle(const mu2e::SimParticle* P, const char* Opt) {
     TString opt = Opt;
 
     if ((opt == "") || (opt == "banner")) {
-      printf("------------------------------------------------------------------------------------------------");
-      printf("------------------------------------------------\n");
-      printf("Index    Primary       ID  Parent        GenpID     PDG        X          Y          Z          ");
-      printf("T          Px          Py         Pz         E  \n");
-      printf("------------------------------------------------------------------------------------------------");
-      printf("------------------------------------------------\n");
+      printf("-----------------------------------------------------------------------------------------");
+      printf("-----------------------------------------");
+      printf("---------------------------------------------------------------------------------------\n");
+      printf("Index Primary     ID Parent     GenpID        PDG      X0          Y0         Z0         ");
+      printf("T0       Px0       Py0      Pz0        E0 ");
+      printf("        X1         Y1           Z1        T1         Px1       Py1      Pz1        E1  \n");
+      printf("-----------------------------------------------------------------------------------------");
+      printf("------------------------------------------");
+      printf("---------------------------------------------------------------------------------------\n");
     }
  
     if ((opt == "") || (opt == "data")) {
@@ -1960,9 +1963,11 @@ void TAnaDump::printSimParticle(const mu2e::SimParticle* P, const char* Opt) {
       int  pdg_id    = P->pdgId();
       int  primary   = P->isPrimary();
 
-      printf("%5i %10i %8i %7i %10i %10i  %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f \n",
+      printf("%5i %7i %6i %6i %10i %10i",
 	     -1, primary, id, parent_id, 
-	     P->generatorIndex(), pdg_id, 
+	     P->generatorIndex(), pdg_id);
+
+      printf(" %10.3f %10.3f %10.3f %9.3f %9.3f %9.3f %9.3f %9.3f",
 	     P->startPosition().x(),
 	     P->startPosition().y(),
 	     P->startPosition().z(),
@@ -1971,6 +1976,16 @@ void TAnaDump::printSimParticle(const mu2e::SimParticle* P, const char* Opt) {
 	     P->startMomentum().y(),
 	     P->startMomentum().z(),
 	     P->startMomentum().e());
+
+      printf(" %10.3f %10.3f %10.3f %10.3f %9.3f %9.3f %9.3f %9.3f\n",
+	     P->endPosition().x(),
+	     P->endPosition().y(),
+	     P->endPosition().z(),
+	     P->endGlobalTime(),
+	     P->endMomentum().x(),
+	     P->endMomentum().y(),
+	     P->endMomentum().z(),
+	     P->endMomentum().e());
     }
   }
 
