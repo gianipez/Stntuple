@@ -11,7 +11,7 @@
 //               = 11 : execute both commands
 ///////////////////////////////////////////////////////////////////////////////
 #include "iostream"
-using namespace std;
+
 #include "TSystem.h"
 #include "TF1.h"
 #include "TCanvas.h"
@@ -24,6 +24,8 @@ using namespace std;
 #include "Stntuple/obj/TStnHeaderBlock.hh"
 
 #include "Stntuple/loop/TDFCModule.hh"
+
+using namespace std;
 
 ClassImp(TDFCModule)
 //_____________________________________________________________________________
