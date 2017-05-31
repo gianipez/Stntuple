@@ -58,9 +58,7 @@ public:
   TSimParticle*  NewParticle(Int_t ID, Int_t ParentID, Int_t PdgCode, 
 			     int CreationCode, int TerminationCode,
 			     int StartVolumeIndex, int EndVolumeIndex,
-			     int GenpID,
-			     Float_t px, Float_t py, Float_t pz, Float_t e,
-			     Float_t vx, Float_t vy, Float_t vz, Float_t t);
+			     int GeneratorID);
 //-----------------------------------------------------------------------------
 // overloaded functions of TObject
 //-----------------------------------------------------------------------------

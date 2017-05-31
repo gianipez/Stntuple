@@ -133,13 +133,17 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
 
       simp   = simp_block->NewParticle(id, parent_id, pdg_code, 
 				       creation_code, termination_code,
-				       generator_id,
 				       start_vol_id, end_vol_id,
-				       px, py, pz, energy,
-				       sim->startPosition().x(),
-				       sim->startPosition().y(),
-				       sim->startPosition().z(),
-				       sim->startGlobalTime());
+				       generator_id);
+      simp->SetStartMom(px, py, pz, energy);
+      const CLHEP::Hep3Vector* sp = &sim->startPosition();
+      simp->SetStartPos(sp->x(),sp->y(),sp->z(),sim->startGlobalTime());
+      simp->SetEndMom  (sim->endMomentum().x(),
+			sim->endMomentum().y(),
+			sim->endMomentum().z(),
+			sim->endMomentum().e());
+      const CLHEP::Hep3Vector* ep = &sim->endPosition();
+      simp->SetEndPos(ep->x(),ep->y(),ep->z(),sim->endGlobalTime());
 //-----------------------------------------------------------------------------
 // particle parameters at virtual detectors
 //-----------------------------------------------------------------------------

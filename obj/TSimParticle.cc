@@ -52,6 +52,55 @@ void TSimParticle::ReadV1(TBuffer &R__b) {
   fStartPos.Streamer(R__b);
   fStartMom.Streamer(R__b);
   
+  fEndPos.SetXYZT(0.,0.,0.,0.);		// ** added in V3 **
+  fEndMom.SetXYZT(0.,0.,0.,0.);		// ** added in V3 **
+}
+
+//-----------------------------------------------------------------------------
+void TSimParticle::ReadV2(TBuffer &R__b) {
+
+  struct TSimParticleV02_t {
+    int             fParentID;
+    int             fPdgCode;
+    int             fCreationCode;
+    int             fStartVolumeIndex;
+    int             fTerminationCode;
+    int             fEndVolumeIndex;
+    int             fNStrawHits;
+    int             fGeneratorID;               // ** MC generator ID, added in V2
+    
+    float           fMomTargetEnd;
+    float           fMomTrackerFront;		// entrance to ST
+
+    TLorentzVector  fStartPos;
+    TLorentzVector  fStartMom;
+  };
+
+  TSimParticleV02_t data;
+
+  int nwi = ((int*  ) &data.fMomTargetEnd) - &data.fParentID;
+  int nwf = ((float*) &data.fStartPos    ) - &data.fMomTargetEnd ;
+
+  TObject::Streamer(R__b);
+
+  R__b.ReadFastArray(&data.fParentID   ,nwi);
+  R__b.ReadFastArray(&data.fMomTargetEnd,nwf);
+
+  fParentID         = data.fParentID;
+  fPdgCode          = data.fPdgCode;
+  fCreationCode     = data.fCreationCode;
+  fStartVolumeIndex = data.fStartVolumeIndex;
+  fTerminationCode  = data.fTerminationCode;
+  fEndVolumeIndex   = data.fEndVolumeIndex;
+  fNStrawHits       = data.fNStrawHits;
+  fGeneratorID      = data.fGeneratorID;         // ** added in V2 **
+
+  fStartPos.Streamer(R__b);
+  fStartMom.Streamer(R__b);
+
+  fEndPos.SetXYZT(0.,0.,0.,0.);		// ** added in V3 **
+  fEndMom.SetXYZT(0.,0.,0.,0.);		// ** added in V3 **
+  
 }
 
 //-----------------------------------------------------------------------------
@@ -66,6 +115,7 @@ void TSimParticle::Streamer(TBuffer& R__b) {
   if (R__b.IsReading()) {
     Version_t R__v = R__b.ReadVersion(); 
     if (R__v == 1) ReadV1(R__b);
+    if (R__v == 2) ReadV2(R__b);
     else {
 
       TObject::Streamer(R__b);
@@ -74,6 +124,8 @@ void TSimParticle::Streamer(TBuffer& R__b) {
 
       fStartPos.Streamer(R__b);
       fStartMom.Streamer(R__b);
+      fEndPos.Streamer  (R__b);
+      fEndMom.Streamer  (R__b);
     }
   }
   else {
@@ -85,6 +137,8 @@ void TSimParticle::Streamer(TBuffer& R__b) {
 
     fStartPos.Streamer(R__b);
     fStartMom.Streamer(R__b);
+    fEndPos.Streamer  (R__b);
+    fEndMom.Streamer  (R__b);
   }
 }
 
@@ -95,28 +149,13 @@ TSimParticle::TSimParticle() {
 }
 
 //_____________________________________________________________________________
-TSimParticle::TSimParticle(Int_t ID, Int_t ParentID, Int_t PdgCode, 
+TSimParticle::TSimParticle(Int_t ID, Int_t ParentID, Int_t PDGCode, 
 			   int CreationCode, int TerminationCode,
 			   int StartVolumeIndex, int EndVolumeIndex,
-			   int GeneratorID,
-			   Float_t px, Float_t py, Float_t pz, Float_t e,
-			   Float_t vx, Float_t vy, Float_t vz, Float_t t):
-  TObject(),
-  fStartPos(vx,vy,vz,t),
-  fStartMom(px,py,pz,e)
+			   int GeneratorID): TObject()
   
 {
-  SetUniqueID(ID);
-  fParentID         = ParentID;
-  fPdgCode          = PdgCode;
-  fCreationCode     = CreationCode;
-  fTerminationCode  = TerminationCode;
-  fStartVolumeIndex = StartVolumeIndex;
-  fEndVolumeIndex   = EndVolumeIndex;
-  fNStrawHits       = 0;
-  fGeneratorID         = GeneratorID;
-  fMomTargetEnd     = -1.;
-  fMomTrackerFront  = -1.;
+  Init(ID,ParentID,PDGCode,CreationCode,TerminationCode,StartVolumeIndex,EndVolumeIndex,GeneratorID);
 }
 
 //-----------------------------------------------------------------------------
@@ -124,16 +163,14 @@ TSimParticle::~TSimParticle() {
 }
 
 //_____________________________________________________________________________
-int  TSimParticle::Init(Int_t ID, Int_t ParentID, Int_t PdgCode, 
+int  TSimParticle::Init(Int_t ID, Int_t ParentID, Int_t PDGCode, 
 			int CreationCode, int TerminationCode,
 			int StartVolumeIndex, int EndVolumeIndex,
-			int GeneratorID,
-			Float_t px, Float_t py, Float_t pz, Float_t e,
-			Float_t vx, Float_t vy, Float_t vz, Float_t t) 
+			int GeneratorID) 
 {
   SetUniqueID(ID);
   fParentID         = ParentID;
-  fPdgCode          = PdgCode;
+  fPdgCode          = PDGCode;
   fCreationCode     = CreationCode;
   fTerminationCode  = TerminationCode;
   fStartVolumeIndex = StartVolumeIndex;
@@ -142,9 +179,6 @@ int  TSimParticle::Init(Int_t ID, Int_t ParentID, Int_t PdgCode,
   fGeneratorID           = GeneratorID;
   fMomTargetEnd     = -1.;
   fMomTrackerFront  = -1.;
-
-  fStartPos.SetXYZT(vx,vy,vz,t);
-  fStartMom.SetXYZT(px,py,pz,e);
 
   return 0;
 }

@@ -19,52 +19,51 @@ public:
   int             fTerminationCode;
   int             fEndVolumeIndex;
   int             fNStrawHits;
-  int             fGeneratorID;                 // ** MC generator ID, added in V2
+  int             fGeneratorID;	        // ** MC generator ID, added in V2
 
   float           fMomTargetEnd;
-  float           fMomTrackerFront;		// entrance to ST
+  float           fMomTrackerFront;	// entrance to ST
 
   TLorentzVector  fStartPos;
   TLorentzVector  fStartMom;
+  TLorentzVector  fEndPos;
+  TLorentzVector  fEndMom;
 //-----------------------------------------------------------------------------
 // here start transient variables
 //-----------------------------------------------------------------------------
-  int             fNumber;                      //! 
+  int             fNumber;              //! number in the list, transient,
+					//  set by the reading streamer
 public:
 //------------------------------------------------------------------------------
 //  functions
 //------------------------------------------------------------------------------
-				// ****** constructors and destructor
+				        // ****** constructors and destructor
   TSimParticle();
 
-  TSimParticle(Int_t ID, Int_t ParentID, Int_t PdgCode, 
+  TSimParticle(int ID, int ParentID, int PdgCode, 
 	       int CreationCode, int TerminationCode,
-	       int StartVolumeIndex, int EndVolumeIndex,
-	       int GeneratorID,
-	       Float_t px, Float_t py, Float_t pz, Float_t e,
-	       Float_t vx, Float_t vy, Float_t vz, Float_t t);
+	       int StartVolumeIndex, int EndVolumeIndex, int GeneratorID);
 
   virtual ~TSimParticle();
 //-----------------------------------------------------------------------------
 // init methods
 //-----------------------------------------------------------------------------
-  int Init(Int_t id, Int_t ParentID, Int_t PdgCode, 
+  int Init(int id, int ParentID, int PdgCode, 
 	   int CreationCode, int TerminationCode,
-	   int StartVolumeIndex, int EndVolumeIndex, 
-	   int GeneratorID,
-	   Float_t px, Float_t py, Float_t pz, Float_t e,
-	   Float_t vx, Float_t vy, Float_t vz, Float_t t);
+	   int StartVolumeIndex, int EndVolumeIndex, int GeneratorID);
 //-----------------------------------------------------------------------------
 // accessors
 //-----------------------------------------------------------------------------
-  int    Number      () const { return GetUniqueID(); }
+  int    Number      () const { return fNumber;       }
   int    NStrawHits  () const { return fNStrawHits;   }
   int    PDGCode     () const { return fPdgCode;      }
   int    ParentID    () const { return fParentID;     }
   int    CreationCode() const { return fCreationCode; }
 
-  const TLorentzVector* StartPos() const { return &fStartPos ; }
-  const TLorentzVector* StartMom() const { return &fStartMom ; }
+  const TLorentzVector* StartPos() const { return &fStartPos; }
+  const TLorentzVector* StartMom() const { return &fStartMom; }
+  const TLorentzVector* EndPos  () const { return &fEndPos;   }
+  const TLorentzVector* EndMom  () const { return &fEndMom;   }
 //------------------------------------------------------------------------------
 //  missing TParticle accessors and setters
 //------------------------------------------------------------------------------
@@ -72,6 +71,24 @@ public:
 
   void     SetMomTargetEnd   (double P) { fMomTargetEnd    = P; }
   void     SetMomTrackerFront(double P) { fMomTrackerFront = P; }
+
+  void     SetStartPos(double X, double Y, double Z, double T) {
+    fStartPos.SetXYZT(X,Y,Z,T);
+  }
+
+  void     SetStartMom(double X, double Y, double Z, double T) {
+    fStartMom.SetXYZT(X,Y,Z,T);
+  }
+
+  void     SetEndPos(double X, double Y, double Z, double T) {
+    fEndPos.SetXYZT(X,Y,Z,T);
+  }
+
+  void     SetEndMom(double X, double Y, double Z, double T) {
+    fEndMom.SetXYZT(X,Y,Z,T);
+  }
+
+  void     SetNumber(int N) { fNumber = N; }
 //-----------------------------------------------------------------------------
 // overloaded methods of TObject
 //-----------------------------------------------------------------------------
@@ -80,8 +97,9 @@ public:
 // schema evolution
 //-----------------------------------------------------------------------------
   void     ReadV1(TBuffer &R__b);
+  void     ReadV2(TBuffer &R__b);
 
-  ClassDef(TSimParticle,2)
+  ClassDef(TSimParticle,3)
 };
 
 #endif
