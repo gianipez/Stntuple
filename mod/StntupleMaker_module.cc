@@ -85,16 +85,17 @@ protected:
   int              fMakeHelices;
   int              fMakeTrackSeeds;
   int              fMakeTrigger;
-  int              fMakeVirtualHits;
+  int              fMakeVdetHits;
 //-----------------------------------------------------------------------------
 // module parameters
 // generator
 //-----------------------------------------------------------------------------
   std::string              fG4ModuleLabel;
-  std::string              fGeneratorModuleLabel;   // defines collection to save, default: "" (all)
+  std::string              fGeneratorModuleLabel;    // defines collection to save, default: "" (all)
   std::string              fMakeStrawHitModuleLabel;
   std::string              fMakeStrawDigiModuleLabel;
-  std::string              fMakeSimpModuleLabel;    // name of the module produced SimParticleCollection
+  std::string              fMakeSimpModuleLabel;     // name of the module produced SimParticleCollection
+  std::string              fMakeVdetHitsModuleLabel; // name of the module produced SimParticleCollection
   std::vector<std::string> fHelixBlockName;
   std::vector<std::string> fHelixModuleLabel;
   std::vector<std::string> fTrackSeedBlockName;
@@ -178,13 +179,14 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
   , fMakeHelices        (PSet.get<int>         ("makeHelices"    ))
   , fMakeTrackSeeds     (PSet.get<int>         ("makeTrackSeeds" ))
   , fMakeTrigger        (PSet.get<int>         ("makeTrigger"    ))
-  , fMakeVirtualHits    (PSet.get<int>         ("makeVirtualHits"))
+  , fMakeVdetHits       (PSet.get<int>         ("makeVirtualHits"))
   
   , fG4ModuleLabel           (PSet.get<string>        ("g4ModuleLabel"           ))
   , fGeneratorModuleLabel    (PSet.get<string>        ("generatorModuleLabel"    ))
   , fMakeStrawHitModuleLabel (PSet.get<string>        ("makeStrawHitModuleLabel" ))
   , fMakeStrawDigiModuleLabel(PSet.get<string>        ("makeStrawDigiModuleLabel"))
   , fMakeSimpModuleLabel     (PSet.get<string>        ("makeSimpModuleLabel"     ))
+  , fMakeVdetHitsModuleLabel (PSet.get<string>        ("makeVdetHitsModuleLabel" ))
   , fHelixBlockName          (PSet.get<vector<string>>("helixBlockName"          ))
   , fHelixModuleLabel        (PSet.get<vector<string>>("helixModuleLabel"        ))
   , fTrackSeedBlockName      (PSet.get<vector<string>>("trackSeedBlockName"      ))
@@ -216,7 +218,12 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
   fVersion      = new TNamed(ver,text);
   TModule::fFolder->Add(fVersion);
 
-  fTimeOffsets       = new SimParticleTimeOffset(PSet.get<fhicl::ParameterSet>("TimeOffsets"));
+  fhicl::ParameterSet pset_to = PSet.get<fhicl::ParameterSet>("TimeOffsets");
+  
+  int len = pset_to.get_names().size();
+  if (len > 0) fTimeOffsets       = new SimParticleTimeOffset(pset_to);
+  else         fTimeOffsets       = NULL;
+
   fTimeOffsetsHandle = new TNamedHandle("TimeOffsetsHandle",fTimeOffsets);
 
   fDar           = new DoubletAmbigResolver (PSet.get<fhicl::ParameterSet>("DoubletAmbigResolver"),0.,0,0);
@@ -597,21 +604,21 @@ void StntupleMaker::beginJob() {
     }
   }
 //-----------------------------------------------------------------------------
-// virtual detectior hits
+// hits on virtual detectors (StepPointMC's)
 //-----------------------------------------------------------------------------
-  if (fMakeVirtualHits) {
-    TStnDataBlock* virtual_data;
+  if (fMakeVdetHits) {
+    TStnDataBlock* vdet_hit_data;
 
-    virtual_data = AddDataBlock("VdetBlock",
-				"TVdetDataBlock",
-				StntupleInitMu2eVirtualDataBlock,
-				buffer_size,
-				split_mode,
-				compression_level);
+    vdet_hit_data = AddDataBlock("VdetBlock",
+				 "TVdetDataBlock",
+				 StntupleInitMu2eVirtualDataBlock,
+				 buffer_size,
+				 split_mode,
+				 compression_level);
 
-    if (virtual_data) {
-      virtual_data->AddCollName("mu2e::StepPointMCCollection",fG4ModuleLabel.data(),"virtualdetector");
-      virtual_data->AddCollName("TimeOffsetsHandle"          ,GetName()            ,"TimeOffsetsHandle");
+    if (vdet_hit_data) {
+      vdet_hit_data->AddCollName("mu2e::StepPointMCCollection",fMakeVdetHitsModuleLabel.data(),"virtualdetector");
+      vdet_hit_data->AddCollName("TimeOffsetsHandle"          ,GetName()                      ,"TimeOffsetsHandle");
     }
   }  
 
