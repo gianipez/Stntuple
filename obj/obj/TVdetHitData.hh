@@ -33,24 +33,24 @@ public:
 //-----------------------------------------------------------------------------
 // accessors
 //-----------------------------------------------------------------------------
-  int     Index () { return fIndex; }
-  float   Time  () { return fTime; }
-  float   Mass  () { return fMass; }
+  int     Index        () { return fIndex; }
+  float   Time         () { return fTime; }
+  float   Mass         () { return fMass; }
 
-  float   EnergyKin () { return fEnergyKin; }
-  float   Energy    () { return fEnergy; }
+  float   EnergyKin    () { return fEnergyKin;     }
+  float   Energy       () { return fEnergy;        }
 
   int     PdgCode      () { return fPdgCode;       }
   int     GeneratorCode() { return fGeneratorCode; }
 
   float   McMomentum   () { return fMcMomentum;    }
-  float   McMomentumX   () { return fMcMomentumX;    }
-  float   McMomentumY   () { return fMcMomentumY;    }
-  float   McMomentumZ   () { return fMcMomentumZ;    }
+  float   McMomentumX  () { return fMcMomentumX;   }
+  float   McMomentumY  () { return fMcMomentumY;   }
+  float   McMomentumZ  () { return fMcMomentumZ;   }
 
-  float   McPositionX   () { return fMcPositionX;    }
-  float   McPositionY   () { return fMcPositionY;    }
-  float   McPositionZ   () { return fMcPositionZ;    }
+  float   McPositionX  () { return fMcPositionX;   }
+  float   McPositionY  () { return fMcPositionY;   }
+  float   McPositionZ  () { return fMcPositionZ;   }
 //-----------------------------------------------------------------------------
 // modifiers
 //-----------------------------------------------------------------------------
