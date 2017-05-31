@@ -76,8 +76,8 @@ Int_t StntupleInitMu2eVirtualDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent, 
     return -1;
   }
 
-  // load simulatioin time offsets for this event
-  _timeOffsets->updateMap(*AnEvent);
+  // load simulation time offsets for this event: timeOffsets may not be defined yet (stages 1, 2, 3)
+  if (_timeOffsets) _timeOffsets->updateMap(*AnEvent);
 
 //-----------------------------------------------------------------------------
 //
@@ -106,13 +106,14 @@ Int_t StntupleInitMu2eVirtualDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent, 
     hit = data->NewHit();
 
     vdIndex   = step->volumeId();
-    time      = _timeOffsets->timeWithOffsetsApplied(*step);
+    if (_timeOffsets) time = _timeOffsets->timeWithOffsetsApplied(*step);
+    else              time =  step->time();
 
     pdg_id    = sim->pdgId();
     info      = pdt->particle(pdg_id);    
     
     mass      = info.ref().mass();
-    energy    = sqrt(step->momentum().mag2() + std::pow(mass, 2));
+    energy    = sqrt(step->momentum().mag2() + mass*mass);
     energyKin = energy - mass;
 
     gen_index = sim->genParticle()->generatorId().id();
