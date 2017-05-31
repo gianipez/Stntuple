@@ -41,7 +41,9 @@ StntupleMakerTemplate : { module_type:StntupleMaker
     makeStrawHitModuleLabel : "makeSH"
     makeStrawDigiModuleLabel: "makeSD"
     makeSimpModuleLabel     : "g4run"
+    makeVdetHitsModuleLabel : "g4run"
     generatorModuleLabel    : "generate"
+
     helixBlockName          : ["HelixBlock"]
     helixModuleLabel        : ["CalHelixFinder"]
 
