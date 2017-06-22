@@ -5,6 +5,8 @@
 #include "TDatabasePDG.h"
 #include "TParticlePDG.h"
 
+#include "messagefacility/MessageLogger/MessageLogger.h"
+
 #include "art/Framework/Principal/Handle.h"
 #include "art/Framework/Principal/Selector.h"
 
@@ -149,10 +151,10 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
 //-----------------------------------------------------------------------------
     if (vdg->nDet() > 0) {
       art::Handle<mu2e::StepPointMCCollection> vdhits;
-      AnEvent->getByLabel(g4_module_label,"virtualdetector",vdhits);
+      AnEvent->getByLabel(g4_module_label,g4_description,vdhits);
       if (!vdhits.isValid()) {
-	printf("[%s] ERROR: StepPointMCCollection %s:virtualdetector NOT FOUND\n",
-	       g4_module_label,oname);
+	printf("[%s] ERROR: StepPointMCCollection %s:%s NOT FOUND\n",
+	       oname,g4_module_label,g4_description);
       }
       else {
 	int nvdhits = vdhits->size();
@@ -223,9 +225,11 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
     }
   }
   else {
-    printf(" [%s] ERROR: SimParticleCollection %s:virtualdetector NOT FOUND",
-	   oname,g4_module_label);
-    printf(". BAIL OUT. \n");
+    // printf(" [%s] ERROR: SimParticleCollection %s:virtualdetector NOT FOUND",
+    // 	   oname,g4_module_label);
+    // printf(". BAIL OUT. \n");
+    mf::LogWarning(oname) << " WARNING in " << oname << ": SimParticleCollection " 
+			  << g4_module_label << " not found, BAIL OUT\n";
     return -1;
   }
   //  }

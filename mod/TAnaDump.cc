@@ -2041,13 +2041,13 @@ void TAnaDump::printStepPointMC(const mu2e::StepPointMC* Step, const char* Opt) 
     if ((opt == "") || (opt.Index("banner") >= 0)) {
       printf("---------------------------------------------------------------------------------------------");
       printf("----------------------------");
-      printf("-------------------------------------------------------------------------------------------------------------------\n");
+      printf("--------------------------------------------------------------------------------------------------------------------\n");
       printf("  Vol          PDG    ID GenIndex PPdg ParentID      X          Y          Z          T      ");
       printf("  X0          Y0         Z0 ");
-      printf("  Edep(Tot) Edep(NI)  Edep(I)    Step  EndCode  Energy    EKin     Mom       Pt    doca  Creation      StopProc    \n");
+      printf("  Edep(Tot) Edep(NI)  Edep(I)    Step  EndCode  Energy    EKin     Mom       Pt    doca   Creation       StopProc   \n");
       printf("---------------------------------------------------------------------------------------------");
       printf("----------------------------");
-      printf("-------------------------------------------------------------------------------------------------------------------\n");
+      printf("--------------------------------------------------------------------------------------------------------------------\n");
     }
 
     mu2e::GeomHandle<mu2e::TTracker> ttHandle;
@@ -2121,7 +2121,7 @@ void TAnaDump::printStepPointMC(const mu2e::StepPointMC* Step, const char* Opt) 
     //    const mu2e::PhysicalVolumeInfo& pvinfo = volumes->at(Step->volumeId()); - sometimes crashes..
 
     if ((opt == "") || (opt.Index("data") >= 0)) {
-      printf("%5i %12i %5i %5i %5i %7i %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %8.2f %8.2f %8.2f %8.3f %4i %10.3f %8.3f %8.3f %8.3f %6.2f %-12s %-s\n",
+      printf("%5i %12i %6i %5i %5i %7i %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f %8.2f %8.2f %8.2f %8.3f %4i %10.3f %8.3f %8.3f %8.3f %7.2f %-12s %-s\n",
 	     (int) Step->volumeId(),
 	     //	     pvinfo.name().data(), // smth is wrong with the name defined by volumeId()....
 	     (int) sim->pdgId(),

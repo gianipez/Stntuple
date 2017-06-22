@@ -41,6 +41,7 @@ StntupleMakerTemplate : { module_type:StntupleMaker
     makeStrawHitModuleLabel : "makeSH"
     makeStrawDigiModuleLabel: "makeSD"
     makeSimpModuleLabel     : "g4run"
+    vdCollName              : "virtualdetector"
     makeVdetHitsModuleLabel : "g4run"
     generatorModuleLabel    : "generate"
 

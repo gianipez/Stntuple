@@ -95,7 +95,9 @@ protected:
   std::string              fMakeStrawHitModuleLabel;
   std::string              fMakeStrawDigiModuleLabel;
   std::string              fMakeSimpModuleLabel;     // name of the module produced SimParticleCollection
+  std::string              fVDCollName;
   std::string              fMakeVdetHitsModuleLabel; // name of the module produced SimParticleCollection
+
   std::vector<std::string> fHelixBlockName;
   std::vector<std::string> fHelixModuleLabel;
   std::vector<std::string> fTrackSeedBlockName;
@@ -186,6 +188,7 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
   , fMakeStrawHitModuleLabel (PSet.get<string>        ("makeStrawHitModuleLabel" ))
   , fMakeStrawDigiModuleLabel(PSet.get<string>        ("makeStrawDigiModuleLabel"))
   , fMakeSimpModuleLabel     (PSet.get<string>        ("makeSimpModuleLabel"     ))
+  , fVDCollName              (PSet.get<string>        ("vdCollName"              ))
   , fMakeVdetHitsModuleLabel (PSet.get<string>        ("makeVdetHitsModuleLabel" ))
   , fHelixBlockName          (PSet.get<vector<string>>("helixBlockName"          ))
   , fHelixModuleLabel        (PSet.get<vector<string>>("helixModuleLabel"        ))
@@ -569,7 +572,10 @@ void StntupleMaker::beginJob() {
     if (simp_data) {
       simp_data->AddCollName("mu2e::SimParticleCollection",""                             ,"");
       simp_data->AddCollName("mu2e::StrawHitCollection"   ,fMakeStrawHitModuleLabel.data(),"");
-      simp_data->AddCollName("mu2e::StepPointMCCollection",fMakeSimpModuleLabel.data()    ,"");
+
+      simp_data->AddCollName("mu2e::StepPointMCCollection",
+			     fMakeSimpModuleLabel.data()    ,
+			     fVDCollName.data());
     }
   }
 //-----------------------------------------------------------------------------
