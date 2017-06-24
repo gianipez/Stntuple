@@ -115,8 +115,16 @@ public:
 		Int_t Nx, Double_t XMin, Double_t XMax,
 		const char* FolderName = "Hist");
 
+  void  HBook1F(TH1F*& Hist, const char* Name, const char* Title,
+		Int_t Nx, const float* LowEdge, 
+		const char* FolderName = "Hist");
+
   void  HBook1D(TH1D*& Hist, const char* Name, const char* Title,
 		Int_t Nx, Double_t XMin, Double_t XMax,
+		const char* FolderName = "Hist");
+
+  void  HBook1D(TH1D*& Hist, const char* Name, const char* Title,
+		Int_t Nx, const double* LowEdge, 
 		const char* FolderName = "Hist");
 
   void  HBook2F(TH2F*& Hist, const char* Name, const char* Title,

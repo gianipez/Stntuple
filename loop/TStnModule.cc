@@ -277,6 +277,18 @@ void TStnModule::HBook1F(TH1F*& Hist, const char* Name, const char* Title,
 }
 
 //_____________________________________________________________________________
+void TStnModule::HBook1F(TH1F*& Hist, const char* Name, const char* Title,
+			 Int_t Nx, const float* LowEdge,
+			 const char* FolderName)
+{
+  // book 1D histogram with variable size bins, add it to the module's list of histograms and 
+  // return pointer to it to the user
+
+  Hist = new TH1F(Name,Title,Nx,LowEdge);
+  AddHistogram(Hist,FolderName);
+}
+
+//_____________________________________________________________________________
 void TStnModule::HBook1D(TH1D*& Hist, const char* Name, const char* Title,
 			 Int_t Nx, Double_t XMin, Double_t XMax,
 			 const char* FolderName)
@@ -286,6 +298,18 @@ void TStnModule::HBook1D(TH1D*& Hist, const char* Name, const char* Title,
   // return pointer to it to the user
 
   Hist = new TH1D(Name,Title,Nx,XMin,XMax);
+  AddHistogram(Hist,FolderName);
+}
+
+//_____________________________________________________________________________
+void TStnModule::HBook1D(TH1D*& Hist, const char* Name, const char* Title,
+			 Int_t Nx, const double* LowEdge,
+			 const char* FolderName)
+{
+  // book 1D histogram with variable size bins, add it to the module's list of histograms and 
+  // return pointer to it to the user
+
+  Hist = new TH1D(Name,Title,Nx,LowEdge);
   AddHistogram(Hist,FolderName);
 }
 

@@ -37,14 +37,14 @@ physics : {
     filters  : { @table::filters 
 	StntupleMaker: { @table::filters.StntupleMaker
 #------------------------------------------------------------------------------
-# disable everything, enable StepPointMC
+# disable everything, enable SimParticles
 #------------------------------------------------------------------------------
 	    makeClusters        : 0
 	    makePid             : 0
 	    makeSimp            : 1
 	    makeTracks          : 0
 	    makeVirtualHits     : 0
-	    makeStepPointMC     : 1
+	    makeStepPointMC     : 0
 
 	    makeSimpModuleLabel : "g4run"
 	    vdCollName          : "stepper"
@@ -53,7 +53,7 @@ physics : {
 	    stepPointMCModuleLabel  : ["g4run"         , "g4run"          ]
 	    stepPointMCProductName  : ["stepper"       , "timeVD"         ]
 	}
-	InitStntuple : { @table::filters.InitStntuple histFileName : "nts.murat.xxx.g4study.step_point_mc.stn" }
+	InitStntuple : { @table::filters.InitStntuple histFileName : "nts.murat.xxx.g4study2.simp.stn" }
     }
 
     @table::paths
@@ -65,7 +65,7 @@ physics : {
     end_paths     : [ out ]
 }
 
-services.TFileService.fileName            : "nts.stntuple.bbb.stage1.step_point_mc.root"
+services.TFileService.fileName            : "nts.murat.bbb.g4study2.simp.root"
 #------------------------------------------------------------------------------
 # uncomment the next 2 lines if you want the DST file to be written out
 #-----------------------------------------------------------------------------
