@@ -154,7 +154,7 @@ void TStepPointMC::Print(Option_t* Opt) const {
      printf("%8i"  ,fEndProcessCode);
      printf("%11.3f",fPos.X());
      printf("%11.3f",fPos.Y());
-     printf("%11.3f",fPos.X());
+     printf("%11.3f",fPos.Z());
 
      printf("%9.5f",fEDepTot);
      printf("%9.5f",fEDepNio);
