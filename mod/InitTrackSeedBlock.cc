@@ -21,8 +21,7 @@
 #include "TTrackerGeom/inc/TTracker.hh"
 // #include "TrkReco/inc/TrkStrawHit.hh"
 
-#include "RecoDataProducts/inc/TrackSeed.hh"
-#include "RecoDataProducts/inc/TrackSeedCollection.hh"
+#include "RecoDataProducts/inc/KalSeed.hh"
 
 #include "RecoDataProducts/inc/CaloCluster.hh"
 
@@ -33,7 +32,7 @@
 //-----------------------------------------------------------------------------
 int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
 
-  mu2e::TrackSeedCollection*  list_of_trackSeeds;
+  mu2e::KalSeedCollection*  list_of_trackSeeds;
 
   static char                 trkSeed_module_label[100], trkSeed_description[100]; 
 
@@ -43,15 +42,15 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
 
   cb->Clear();
 
-  cb->GetModuleLabel("mu2e::TrackSeedCollection", trkSeed_module_label);
-  cb->GetDescription("mu2e::TrackSeedCollection", trkSeed_description );
+  cb->GetModuleLabel("mu2e::KalSeedCollection", trkSeed_module_label);
+  cb->GetDescription("mu2e::KalSeedCollection", trkSeed_description );
 
-  art::Handle<mu2e::TrackSeedCollection>               trackSeed_handle;
+  art::Handle<mu2e::KalSeedCollection>               trackSeed_handle;
   if (trkSeed_description[0] == 0) Evt->getByLabel(trkSeed_module_label, trackSeed_handle);
   else                          Evt->getByLabel(trkSeed_module_label, trkSeed_description, trackSeed_handle);
-  list_of_trackSeeds = (mu2e::TrackSeedCollection*) &(*trackSeed_handle);
+  list_of_trackSeeds = (mu2e::KalSeedCollection*) &(*trackSeed_handle);
 
-  const mu2e::TrackSeed         *trkSeed(0);
+  const mu2e::KalSeed         *trkSeed(0);
   int                           ntrkseeds(0);
   
   const mu2e::CaloCluster       *cluster(0);
@@ -63,7 +62,7 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
   for (int i=0; i<ntrkseeds; i++) {
     trackSeed                  = cb->NewTrackSeed();
     trkSeed                    = &list_of_trackSeeds->at(i);
-    cluster                    = trkSeed->_timeCluster._caloCluster.get();
+    cluster                    = trkSeed->caloCluster().get();
 
     if (cluster != 0){
       trackSeed->fClusterTime    = cluster->time();
@@ -79,31 +78,26 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
       trackSeed->fClusterZ       = 0; 
     }
     
+    mu2e::KalSegment kalSeg  = trkSeed->segments().at(0);//take the KalSegment closer to the entrance of the tracker
     trackSeed->fTrackSeed    = trkSeed;
-    trackSeed->fNHits        = trkSeed->_timeCluster._strawHitIdxs.size();
-    trackSeed->fT0           = trkSeed->_timeCluster.t0()._t0;
-    trackSeed->fT0Err        = trkSeed->_timeCluster.t0()._t0err;     
-    trackSeed->fD0           = trkSeed->d0    ();
-    trackSeed->fPhi0         = trkSeed->phi0  ();     
-    trackSeed->fOmega        = trkSeed->omega ();
-    trackSeed->fZ0           = trkSeed->z0    ();     
-    trackSeed->fTanDip       = trkSeed->tanDip();
+    trackSeed->fNHits        = trkSeed->hits().size();//_timeCluster._strawHitIdxs.size();
+    trackSeed->fT0           = trkSeed->t0()._t0;
+    trackSeed->fT0Err        = trkSeed->t0()._t0err;     
+    trackSeed->fD0           = kalSeg.helix().d0();
+    trackSeed->fFlt0         = trkSeed->flt0();     
+    trackSeed->fTanDip       = kalSeg.helix().tanDip();
+    trackSeed->fP            = kalSeg.mom();
+    trackSeed->fPt           = trackSeed->fP*std::cos( std::atan(trackSeed->fTanDip));
+    trackSeed->fZ0           = kalSeg.helix().z0();
 
-    THackData* hack(0);
-    hack = (THackData*) gROOT->GetRootFolder()->FindObject("HackData");
-    if (hack != 0){
-      trackSeed->fChi2XYNDof   = hack->trkSeedChi2XY  (i);
-      trackSeed->fChi2PhiZNDof = hack->trkSeedChi2ZPhi(i);
-    }else {
-      trackSeed->fChi2XYNDof   = -1;
-      trackSeed->fChi2PhiZNDof = -1;
-    }
+    trackSeed->fChi2         = trkSeed->chisquared();
+    trackSeed->fFitCons      = trkSeed->fitConsistency();
 
     
   }
 
   //------------------------------------------------------------------------------------------
-  // 2016-04-11 G. Pezzullo: how do we want to propagate information of each strawhit 
+  // 2016-07-11 G. Pezzullo: how do we want to propagate information of each strawhit 
   //  present in the track candidate?
   //------------------------------------------------------------------------------------------
 

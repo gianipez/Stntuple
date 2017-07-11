@@ -396,7 +396,7 @@ void StntupleMaker::beginJob() {
       SetResolveLinksMethod(block_name,StntupleInitMu2eTrackSeedBlockLinks);
       
       if (trackSeed_data) {
-	trackSeed_data->AddCollName("mu2e::TrackSeedCollection",fTrackSeedModuleLabel[i].data(),"");
+	trackSeed_data->AddCollName("mu2e::KalSeedCollection",fTrackSeedModuleLabel[i].data(),"");
       }
     }
   }

@@ -26,8 +26,7 @@
 #include "RecoDataProducts/inc/StrawHitCollection.hh"
 #include "RecoDataProducts/inc/StrawHitPositionCollection.hh"
 #include "RecoDataProducts/inc/StrawHitFlagCollection.hh"
-#include "RecoDataProducts/inc/TrackSeed.hh"
-#include "RecoDataProducts/inc/TrackSeedCollection.hh"
+#include "RecoDataProducts/inc/KalSeed.hh"
 #include "RecoDataProducts/inc/HelixHit.hh"
 #include "RecoDataProducts/inc/HelixSeed.hh"
 
@@ -417,7 +416,7 @@ void TAnaDump::printCaloProtoClusterCollection(const char* ModuleLabel,
 }
 
 //-----------------------------------------------------------------------------
-void TAnaDump::printTrackSeed(const mu2e::TrackSeed* TrkSeed,	const char* Opt, 
+void TAnaDump::printTrackSeed(const mu2e::KalSeed* TrkSeed,	const char* Opt, 
 			      const char* ModuleLabelStrawHit){
   TString opt = Opt;
   
@@ -438,22 +437,24 @@ void TAnaDump::printTrackSeed(const mu2e::TrackSeed* TrkSeed,	const char* Opt,
   
 
   if ((opt == "") || (opt.Index("data") >= 0)) {
-    int    nhits   = TrkSeed->_timeCluster._strawHitIdxs.size();
+    int    nhits   = TrkSeed->hits().size();
     
-    double t0     = TrkSeed->_timeCluster.t0()._t0;
-    double t0err  = TrkSeed->_timeCluster.t0()._t0err;
+    double t0     = TrkSeed->t0()._t0;
+    double t0err  = TrkSeed->t0()._t0err;
 
-    double d0     = TrkSeed->d0();
-    double z0     = TrkSeed->z0();
-    double phi0   = TrkSeed->phi0();
-    double radius = 1./fabs(TrkSeed->omega());
-    double tandip = TrkSeed->tanDip();
+    mu2e::KalSegment kalSeg  = TrkSeed->segments().at(0);//take the KalSegment closer to the entrance of the tracker
 
+    double d0     = kalSeg.helix().d0();
+    double z0     = kalSeg.helix().z0();
+    double phi0   = kalSeg.helix().phi0();
+    double tandip = kalSeg.helix().tanDip();
     double mm2MeV = 3/10.;
-    double mom    = radius*mm2MeV/std::cos( std::atan(tandip));
-    double pt     = radius*mm2MeV;
+    double mom    = kalSeg.mom();
+    double pt     = mom*std::cos( std::atan(tandip));
+    double radius = pt/mm2MeV;
 
-    const mu2e::CaloCluster*cluster = TrkSeed->_timeCluster._caloCluster.get();
+
+    const mu2e::CaloCluster*cluster = TrkSeed->caloCluster().get();
     double clusterEnergy(-1);
     if (cluster != 0) clusterEnergy = cluster->energyDep();
     printf("%5i %16p %3i %8.3f %8.5f %7.3f %7.3f",
@@ -462,11 +463,11 @@ void TAnaDump::printTrackSeed(const mu2e::TrackSeed* TrkSeed,	const char* Opt,
 	   nhits,
 	   mom, pt, t0, t0err );
 
-    float chi2xy   = -1.;		// TrkSeed->chi2XY();
-    float chi2zphi = -1.;		// TrkSeed->chi2ZPhi();
+    float chi2    = TrkSeed->chisquared();
+    float fitCons = TrkSeed->fitConsistency();
 
     printf(" %8.3f %8.3f %8.3f %8.4f %10.4f %10.3f %8.3f %8.3f\n",
-	   d0,z0,phi0,tandip,radius,clusterEnergy,chi2xy,chi2zphi);
+	   d0,z0,phi0,tandip,radius,clusterEnergy,chi2,fitCons);
   }
 
   if ((opt == "") || (opt.Index("hits") >= 0) ){
@@ -484,7 +485,7 @@ void TAnaDump::printTrackSeed(const mu2e::TrackSeed* TrkSeed,	const char* Opt,
   }
 
   if ((opt == "") || (opt.Index("hits") >= 0) ){
-    int nsh = TrkSeed->_timeCluster._strawHitIdxs.size();
+    int nsh = TrkSeed->hits().size();
 
     const mu2e::StrawHit* hit(0);
     art::Handle<mu2e::StrawHitCollection>         shcHandle;
@@ -511,7 +512,7 @@ void TAnaDump::printTrackSeed(const mu2e::TrackSeed* TrkSeed,	const char* Opt,
     int banner_printed(0);
     for (int i=0; i<nsh; ++i){
       mu2e::PtrStepPointMCVector const& mcptr(hits_mcptrStraw->at(i ) );
-      int  hitIndex  = int(TrkSeed->_timeCluster._strawHitIdxs.at(i));
+      int  hitIndex  = int(TrkSeed->hits().at(i).index());
     
       hit       = &shcol->at(hitIndex);
       const mu2e::StepPointMC* Step = mcptr[0].get();
@@ -537,7 +538,7 @@ void TAnaDump::printTrackSeedCollection(const char* ModuleLabel,
 					const char* ModuleLabelStrawHit){
   
 
-  art::Handle<mu2e::TrackSeedCollection> trkseedsHandle;
+  art::Handle<mu2e::KalSeedCollection> trkseedsHandle;
 
   if (ProductName[0] != 0) {
     art::Selector  selector(art::ProductInstanceNameSelector(ProductName) &&
@@ -554,7 +555,7 @@ void TAnaDump::printTrackSeedCollection(const char* ModuleLabel,
 // make sure collection exists
 //-----------------------------------------------------------------------------
   if (! trkseedsHandle.isValid()) {
-    printf("TAnaDump::printTrackSeedCollection: no TrackSeedCollection for module %s, BAIL OUT\n",
+    printf("TAnaDump::printTrackSeedCollection: no KalSeedCollection for module %s, BAIL OUT\n",
 	   ModuleLabel);
     return;
   }
@@ -572,12 +573,12 @@ void TAnaDump::printTrackSeedCollection(const char* ModuleLabel,
     }
   }
 
-  mu2e::TrackSeedCollection*  list_of_trackSeeds;
-  list_of_trackSeeds    = (mu2e::TrackSeedCollection*) &(*trkseedsHandle);
+  mu2e::KalSeedCollection*  list_of_trackSeeds;
+  list_of_trackSeeds    = (mu2e::KalSeedCollection*) &(*trkseedsHandle);
 
   int ntrkseeds = list_of_trackSeeds->size();
 
-  const mu2e::TrackSeed *trkseed;
+  const mu2e::KalSeed *trkseed;
 
   int banner_printed = 0;
   for (int i=0; i<ntrkseeds; i++) {

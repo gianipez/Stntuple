@@ -49,7 +49,7 @@ StntupleMakerTemplate : { module_type:StntupleMaker
     helixModuleLabel        : ["CalHelixFinder"]
 
     trackSeedBlockName      : ["TrackSeedBlock"]
-    trackSeedModuleLabel    : ["CalHelixFinder"  ]
+    trackSeedModuleLabel    : ["CalSeedFit"  ]
 
     trackBlockName          : [ "TrackBlock"   ]
     trkRecoModuleLabel      : [ "MergePatRec"  ]
@@ -308,6 +308,7 @@ Stntuple : {
 #------------------------------------------------------------------------------
 	StntupleMakerTcm : { @table::StntupleMakerTemplate 
 	    makePid                 : 0
+	    makeHelices             : 1
 	    helixBlockName          : [ "HelixBlock"            , "TprHelixBlock"           , "CprHelixBlock"            ]
 	    helixModuleLabel        : [ "MergeHelixFinder"      , "PosHelixFinder"          , "CalHelixFinder"           ]
 	    trackBlockName          : [ "TrackBlock"            , "TrkPatRec"               , "CalPatRec"                ]

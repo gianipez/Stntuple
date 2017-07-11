@@ -99,8 +99,8 @@ void TValidationModule::BookTrackSeedHistograms   (TrackSeedHist_t*   Hist, cons
     HBook1F(Hist->fMom           ,"p"        ,Form("%s: momentum; p [MeV/c]"          ,Folder), 300,   50,   200,Folder);
     HBook1F(Hist->fPt            ,"pT"       ,Form("%s: pT; pT [MeV/c]"               ,Folder), 600,   0,   150,Folder);
     HBook1F(Hist->fTanDip        ,"tanDip"   ,Form("%s: tanDip; tanDip"               ,Folder), 300,   0,     3,Folder);
-    HBook1F(Hist->fChi2XY        ,"chi2XY"   ,Form("%s: #chi^{2}-XY; #chi^{2}/ndof"   ,Folder), 100,   0,    10,Folder);
-    HBook1F(Hist->fChi2ZPhi      ,"chi2ZPhi" ,Form("%s: #chi^{2}-ZPhi; #chi^{2}/ndof" ,Folder), 100,   0,    10,Folder);
+    HBook1F(Hist->fChi2          ,"chi2"   ,Form("%s: #chi^{2}-XY; #chi^{2}/ndof"     ,Folder), 100,   0,    10,Folder);
+    HBook1F(Hist->fFitCons      ,"FitCons" ,Form("%s: Fit consistency; Fit-cons"      ,Folder), 100,   0,    1, Folder);
     HBook1F(Hist->fD0            ,"d0"       ,Form("%s: D0; d0 [mm]"                  ,Folder), 1600,   -400,    400,Folder);
 
   
@@ -384,7 +384,7 @@ void TValidationModule::BookHistograms() {
   book_trackSeed_histset[3] = 1;   // events with at least one trackSeed with p > 100 MeV/c
   book_trackSeed_histset[4] = 1;   // events with at least one trackSeed with 10 < nhits < 15
   book_trackSeed_histset[5] = 1;   // events with at least one trackSeed with nhits >= 15
-  book_trackSeed_histset[6] = 1;   // events with at least one trackSeed with nhits >= 15 and chi2XY(ZPhi)<4
+  book_trackSeed_histset[6] = 1;   // events with at least one trackSeed with nhits >= 15 and chi2(ZPhi)<4
 
    for (int i=0; i<kNTrackSeedHistSets; i++) {
     if (book_trackSeed_histset[i] != 0) {
@@ -408,7 +408,7 @@ void TValidationModule::BookHistograms() {
   book_helix_histset[3] = 1;   // events with at least one helix with p > 100 MeV/c
   book_helix_histset[4] = 1;   // events with at least one helix with 10 < nhits < 15
   book_helix_histset[5] = 1;   // events with at least one helix with nhits >= 15
-  book_helix_histset[6] = 1;   // events with at least one helix with nhits >= 15 and chi2XY(ZPhi)<4
+  book_helix_histset[6] = 1;   // events with at least one helix with nhits >= 15 and chi2(ZPhi)<4
 
    for (int i=0; i<kNHelixHistSets; i++) {
     if (book_helix_histset[i] != 0) {
@@ -865,11 +865,11 @@ void TValidationModule::FillTrackSeedHistograms(TrackSeedHist_t*   Hist, TStnTra
   double      clusterT = TrkSeed->ClusterTime();
   double      clusterE = TrkSeed->ClusterEnergy();
   
-  double      radius   = 1./fabs(TrkSeed->Omega());
+  double      mm2MeV   = 3/10.;
+  double      pT       = TrkSeed->Pt();
+  double      radius   = pT/mm2MeV;
 
   double      tanDip   = TrkSeed->TanDip();  
-  double      mm2MeV   = 3/10.;
-  double      pT       = radius*mm2MeV;
   double      p        = pT/std::cos( std::atan(tanDip));
   
 
@@ -882,8 +882,8 @@ void TValidationModule::FillTrackSeedHistograms(TrackSeedHist_t*   Hist, TStnTra
   Hist->fPt         ->Fill(pT);	 
   Hist->fTanDip     ->Fill(tanDip);    
   
-  Hist->fChi2XY     ->Fill(TrkSeed->Chi2XY());
-  Hist->fChi2ZPhi   ->Fill(TrkSeed->Chi2ZPhi());
+  Hist->fChi2       ->Fill(TrkSeed->Chi2());
+  Hist->fFitCons    ->Fill(TrkSeed->FitCons());
   Hist->fD0         ->Fill(TrkSeed->D0());
 
 }
@@ -1263,7 +1263,7 @@ int TValidationModule::BeginJob() {
 // register data blocks
 //-----------------------------------------------------------------------------
   RegisterDataBlock("TimePeakBlock" ,"TStnTrackSeedBlock",&fTimePeakBlock);
-  RegisterDataBlock("TrackSeedBlock","TStnTrackSeedBlock",&fTrackSeedBlock);
+  RegisterDataBlock("CalTrackSeedBlock","TStnTrackSeedBlock",&fTrackSeedBlock);
   RegisterDataBlock("HelixBlock"    ,"TStnHelixBlock"    ,&fHelixBlock);
   RegisterDataBlock("TrackBlock"    ,"TStnTrackBlock"    ,&fTrackBlock  );
   RegisterDataBlock("ClusterBlock"  ,"TStnClusterBlock"  ,&fClusterBlock);
@@ -1471,14 +1471,13 @@ void TValidationModule::FillHistograms() {
     FillTrackSeedHistograms(fHist.fTrackSeed[0], trkSeed);
     
     int         nhits    = trkSeed->NHits();
-    double      radius   = 1./trkSeed->Omega();
+    //    double      mm2MeV   = 3/10.;
+    double      p        = trkSeed->P();
+    //    double      radius   = trkSeed->Pt()/mm2MeV;
+    //    double      tanDip   = trkSeed->TanDip();  
     
-    double      tanDip   = trkSeed->TanDip();  
-    double      mm2MeV   = 3/10.;
-    double      p        = radius*mm2MeV/std::cos( std::atan(tanDip));
-    
-    double      chi2xy   = trkSeed->Chi2XY();
-    double      chi2zphi = trkSeed->Chi2ZPhi();
+    double      chi2      = trkSeed->Chi2();
+    //    double     fitCons = trkSeed->Fitcons();
     
    
     if (p > 80.) {
@@ -1501,7 +1500,7 @@ void TValidationModule::FillHistograms() {
       FillTrackSeedHistograms(fHist.fTrackSeed[5], trkSeed);
     }
     
-    if ( (chi2xy < 4) && (chi2zphi < 4) && (nhits>=15)){
+    if ( (chi2 < 4) /*&& (chi2zphi < 4)*/ && (nhits>=15)){
       FillTrackSeedHistograms(fHist.fTrackSeed[6], trkSeed);
     }
   
