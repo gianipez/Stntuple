@@ -1270,12 +1270,15 @@ void TAnaDump::printKalRep(const KalRep* Krep, const char* Opt, const char* Pref
 	  
 
       printf("  %7.3f",mcdoca);
+
+      double exterr = hit->temperature()*hit->driftVelocity();
+
       printf(" %6.3f %6.3f %6.3f %6.3f %6.3f",		 
 	     hit->totalErr(),
 	     hit->hitErr(),
 	     hit->t0Err(),
 	     hit->penaltyErr(),
-	     hit->extErr()
+	     exterr
 	     );
 //-----------------------------------------------------------------------------
 // test: calculated residual in fTmp[0]
