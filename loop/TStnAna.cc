@@ -323,12 +323,18 @@ int TStnAna::DeleteModule(const char* name) {
   return 0;
 }
 
-//_____________________________________________________________________________
+//-----------------------------------------------------------------------------
+// TStnAna::ReloadModule is not really used, it is more a legacy code, 
+// want to keep it around for a while
+//-----------------------------------------------------------------------------
 int TStnAna::ReloadModule(const char* name, const char* filename) {
   char fname[200], soname[200], cmd[200];
   char class_name[100];
+					// the following complication is only needed 
+					// to fool the compiler which pretends to be smart
+  TStnAna* x = this;
 
-  if (this) {
+  if (x != NULL) {
     printf(">>> TStnAna::ReloadModule not implemented yet\n");
     return -1;
   }
