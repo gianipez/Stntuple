@@ -25,7 +25,7 @@
 
 #include "RecoDataProducts/inc/CaloCluster.hh"
 
-#include "CalPatRec/inc/THackData.hh"
+// #include "CalPatRec/inc/THackData.hh"
 
 //-----------------------------------------------------------------------------
 // assume that the collection name is set, so we could grab it from the event

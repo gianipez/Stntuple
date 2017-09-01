@@ -31,7 +31,7 @@
 //#include "CalPatRec/inc/THackData.hh"
 
 #include "CalPatRec/inc/AlgorithmIDCollection.hh"
-#include "CalPatRec/inc/HelixFitHack.hh"
+//#include "CalPatRec/inc/HelixFitHack.hh"
 #include "CalPatRec/inc/LsqSums4.hh"
 
 
