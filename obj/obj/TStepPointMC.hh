@@ -26,7 +26,7 @@ public:
   float           fTime;
   float           fStepLength;
 
-  TVector3        fPos;
+  TVector3        fPos;			// starting point of the step
   TVector3        fMom;
 
 public:
