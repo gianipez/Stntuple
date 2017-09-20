@@ -40,14 +40,17 @@ void TStnTrackSeed::Streamer(TBuffer& R__b) {
 
 TStnTrackSeed::TStnTrackSeed(int i) {
 
-  fNHits  = 0;
-  fT0     = 0;    
-  fT0Err  = 0; 
-  fD0     = 0;    
-  fPhi0   = 0;  
-  fOmega  = 0; 
-  fZ0     = 0;    
-  fTanDip = 0;
+  fNHits   = 0;
+  fT0      = 0;    
+  fT0Err   = 0; 
+  fD0      = 0;    
+  fZ0      = 0;    
+  fP       = 0;
+  fPt      = 0;
+  fTanDip  = 0;
+  fFlt0    = 0;
+  fChi2    = 0;
+  fFitCons = 0;
 
   fClusterTime   = 0;  
   fClusterEnergy = 0;

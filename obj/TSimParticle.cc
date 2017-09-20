@@ -189,8 +189,12 @@ void TSimParticle::Print(Option_t* Opt) const {
   TString opt = Opt;
   if ((opt == "banner") || (opt == "")) {
 				// print banner
-    printf("   i name                   PDG   ID GenID  ParentID     px");
+    printf("-------------------------------------------------------------");
+    printf("-----------------------------------------------------------------------------\n");
+    printf("   i name                   PDG     ID GenID  ParentID     px");
     printf("        py         pz          e          vx         vy          vz         t\n");
+    printf("-------------------------------------------------------------");
+    printf("-----------------------------------------------------------------------------\n");
   }
 
   TDatabasePDG* db = TDatabasePDG::Instance();
@@ -204,7 +208,7 @@ void TSimParticle::Print(Option_t* Opt) const {
     else          printf(" %-19s","*** unknown ***");
 
     printf("%7i"   ,fPdgCode);
-    printf("%5i"   ,GetUniqueID());
+    printf("%7i"   ,GetUniqueID());
     printf("%6i"   ,fGeneratorID);
     printf("%8i"   ,fParentID);
     printf("%11.3f",fStartMom.Px());

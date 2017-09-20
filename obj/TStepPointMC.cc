@@ -147,23 +147,24 @@ void TStepPointMC::Print(Option_t* Opt) const {
      if (pdg) printf(" %-19s",pdg->GetName());
      else          printf(" %-19s","*** unknown ***");
 
-     printf("%7i"  ,fCreationCode);
-     printf("%8i"  ,fSimID);
-     printf("%7i"  ,fParentPDGCode);
-     printf("%8i"  ,fParentSimID);
-     printf("%8i"  ,fEndProcessCode);
+     printf("%7i"   ,fCreationCode);
+     printf("%8i"   ,fSimID);
+     printf("%7i"   ,fParentPDGCode);
+     printf("%8i"   ,fParentSimID);
+     printf("%8i"   ,fEndProcessCode);
      printf("%11.3f",fPos.X());
      printf("%11.3f",fPos.Y());
-     printf("%11.3f",fPos.X());
+     printf("%11.3f",fPos.Z());
 
-     printf("%9.5f",fEDepTot);
-     printf("%9.5f",fEDepNio);
-     printf("%9.3f",fTime);
-     printf("%9.3f",fStepLength);
+     printf("%9.5f" ,fEDepTot);
+     printf("%9.5f" ,fEDepNio);
+
+     printf("%9.3f" ,fStepLength);
+     printf("%9.3f" ,fTime);
      
-     printf("%9.3f",fMom.Px());
-     printf("%9.3f",fMom.Py());
-     printf("%9.3f",fMom.Pz());
+     printf("%9.3f" ,fMom.Px());
+     printf("%9.3f" ,fMom.Py());
+     printf("%9.3f" ,fMom.Pz());
      printf("\n");
   }
 }

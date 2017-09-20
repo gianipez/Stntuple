@@ -23,7 +23,7 @@
 //namespace murat {
 
 namespace mu2e {
-  class TrackSeed;
+  class KalSeed;
   class StrawHit;
   class CaloCluster;
 }
@@ -49,12 +49,13 @@ public:
   float                     fT0;    
   float                     fT0Err; 
   float                     fD0;    
-  float                     fPhi0;  
-  float                     fOmega; 
   float                     fZ0;    
+  float                     fP;  
+  float                     fPt; 
   float                     fTanDip;
-  float                     fChi2XYNDof;
-  float                     fChi2PhiZNDof;
+  float                     fFlt0;// flight distance where the track crosses the tracker midplane (z=0)
+  float                     fChi2;
+  float                     fFitCons;
 
   float                     fClusterTime;   
   float			    fClusterEnergy; 
@@ -65,7 +66,7 @@ public:
 //-----------------------------------------------------------------------------
 // transients
 //-----------------------------------------------------------------------------
-  const mu2e::TrackSeed*    fTrackSeed;  //!
+  const mu2e::KalSeed*      fTrackSeed;  //!
   const mu2e::CaloCluster*  fCluster;    //!
   //  const std::vector<art::Ptr<mu2e::StrawHit> > *fSelectedTrkHits;
 //-----------------------------------------------------------------------------
@@ -81,13 +82,14 @@ public:
   float   T0         () { return  fT0;    }
   float   T0Err      () { return  fT0Err; }
   float   D0         () { return  fD0;    }
-  float   Phi0       () { return  fPhi0;  }
-  float   Omega      () { return  fOmega; }
+  float   P          () { return  fP;  }
+  float   Pt         () { return  fPt; }
   float   Z0         () { return  fZ0;    }
   float   TanDip     () { return  fTanDip; }
+  float   Flt0       () { return  fFlt0; }
 
-  float   Chi2XY     () { return  fChi2XYNDof;}
-  float   Chi2ZPhi   () { return  fChi2PhiZNDof;}
+  float   Chi2       () { return  fChi2;}
+  float   FitCons    () { return  fFitCons;}
 
   float   ClusterTime   () { return fClusterTime; }
   float   ClusterEnergy () { return fClusterEnergy;}
