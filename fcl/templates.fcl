@@ -276,7 +276,7 @@ source : {
 #------------------------------------------------------------------------------
 services : {
     message               : @local::default_message
-    TFileService          : { fileName : "Stntuple_fcl_templates_fcl.hist" }
+    TFileService          : { fileName : "nts.stntuple.jobtype.offver.sequencer.root" }
     RandomNumberGenerator : { }
     #   Timing                : { }fcl/
 

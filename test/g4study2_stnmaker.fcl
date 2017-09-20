@@ -49,7 +49,7 @@ physics : {
 	    makeSimpModuleLabel : "g4run"
 	    vdCollName          : "stepper"
 
-	    stepPointMCBlockName    : ["SpmcBlock"     , "SpmcVdBlock"    ]
+	    stepPointMCBlockName    : ["SpmcBlock"     , "VdetBlock"    ]
 	    stepPointMCModuleLabel  : ["g4run"         , "g4run"          ]
 	    stepPointMCProductName  : ["stepper"       , "timeVD"         ]
 	}

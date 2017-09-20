@@ -50,27 +50,35 @@ physics : {
 	    makeStepPointMC     : 1
 
 	    makeSimpModuleLabel : "muonBeamFilter"
+
+	    stepPointMCBlockName    : ["SpmcBlock"     , "VdetBlock"      ]
+	    stepPointMCModuleLabel  : ["muonBeamFilter", "muonBeamFilter" ]
+	    stepPointMCProductName  : ["mubeam"        , "virtualdetector"]
 	}
-	InitStntuple : { @table::filters.InitStntuple histFileName : "stn.stntuple.bbb.stage1.step_point_mc.stn" }
+	InitStntuple : { @table::filters.InitStntuple histFileName : "nts.murat.xxx_xxxx.g4s1_mubeam.000001.stn" }
+    }
+
+    analyzers : {
+	GenEventCountReader      : { module_type: GenEventCountReader }
     }
 
     @table::paths
 
     p1            : [ @sequence::stnmaker_seq ]
     trigger_paths : [ p1 ]
-    #    out : [detectorOutput]  # detectorOutput is defined in Stntuple/fcl/templates.fcl
-    out           : []
+    #    out : [ detectorOutput, GenEventCountReader ]  # detectorOutput is defined in Stntuple/fcl/templates.fcl
+    out           : [ GenEventCountReader ]
     end_paths     : [ out ]
 
 }
 
-services.TFileService.fileName            : "nts.stntuple.bbb.stage1.step_point_mc.root"
+services.TFileService.fileName            : "nts.murat.xxx_xxxx.g4s1_mubeam_hist.000001.root"
 #------------------------------------------------------------------------------
 # uncomment the next 2 lines if you want the DST file to be written out
 #-----------------------------------------------------------------------------
 # physics.out                               : [ detectorOutput ]
 # outputs.detectorOutput.SelectEvents       : [ path_gen_digi_reco_stn_dem_dmm ]
-outputs.detectorOutput.fileName           : "aaa.stntuple.bbb.stage1.step_point_mc.art"
+outputs.detectorOutput.fileName           : "sim.murat.xxx_xxxx.g4s1_mubeam_filter.000001.art"
 #------------------------------------------------------------------------------
 # debugging
 #------------------------------------------------------------------------------
