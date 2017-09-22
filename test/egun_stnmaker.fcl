@@ -35,25 +35,24 @@ physics : {
     }
     
     filters  : { @table::filters 
-	InitStntuple : { @table::filters.InitStntuple histFileName : "aaa.stntuple.bbb.ccc.egun_stnmaker.stn" }
+	InitStntuple : { @table::filters.InitStntuple histFileName : "nts.user.egun_stnmaker.xxx.000001.stn" }
     }
 
     @table::paths
 
     trigger_paths : [ path_gen_digi_reco_stn_dem_dmm ]
     #    out : [detectorOutput]  # detectorOutput is defined in Stntuple/fcl/templates.fcl
-    out           : []
+    out           : [     ]
     end_paths     : [ out ]
-
 }
 
-services.TFileService.fileName            : "nts.stntuple.bbb.ccc.egun_stnmaker.root"
+services.TFileService.fileName            : "nts.user.egun_stnmaker.xxx.000001.root"
 #------------------------------------------------------------------------------
 # uncomment the next 2 lines if you want the DST file to be written out
 #-----------------------------------------------------------------------------
 # physics.out                               : [ detectorOutput ]
 # outputs.detectorOutput.SelectEvents       : [ path_gen_digi_reco_stn_dem_dmm ]
-outputs.detectorOutput.fileName           : "aaa.stntuple.bbb.ccc.egun_stnmaker.art"
+outputs.detectorOutput.fileName           : "sim.user.egun_stnmaker.xxx.000001.art"
 #------------------------------------------------------------------------------
 # debugging
 #------------------------------------------------------------------------------
