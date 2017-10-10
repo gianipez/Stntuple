@@ -396,9 +396,9 @@ namespace mu2e {
 //-----------------------------------------------------------------------------
 // make sure needed plugin libraries are loaded
 //-----------------------------------------------------------------------------
-    std::string lib = gSystem->Getenv("MU2E_BASE_RELEASE");
-    lib += "/lib/libmu2e_CalPatRec_utils.so";
-    if (! gInterpreter->IsLoaded(lib.data())) gSystem->Load(lib.data());
+    // std::string lib = gSystem->Getenv("MU2E_BASE_RELEASE");
+    // lib += "/lib/libmu2e_CalPatRec_utils.so";
+    // if (! gInterpreter->IsLoaded(lib.data())) gSystem->Load(lib.data());
 //-----------------------------------------------------------------------------
 // define collection names to be used for initialization
 //-----------------------------------------------------------------------------
@@ -725,11 +725,15 @@ namespace mu2e {
       fTimePeak = NULL;
 
       art::Handle<CalTimePeakCollection> tpch;
-      const char* charDirectionAndParticle = fDirectionAndParticle.c_str();
+      //      const char* charDirectionAndParticle = fDirectionAndParticle.c_str();
 
       if (_showTracks){
-	Evt->getByLabel("CalTimePeakFinder", charDirectionAndParticle, tpch);
-      } else {
+	Evt->getByLabel("CalTimePeakFinder", "", tpch);
+      } 
+      else {
+//-----------------------------------------------------------------------------
+// not sure I understand the clause
+//-----------------------------------------------------------------------------
 	Evt->getByLabel("CalTimePeakFinder", tpch);
       }
       if (tpch.isValid()) {
