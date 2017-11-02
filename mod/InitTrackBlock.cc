@@ -19,6 +19,7 @@
 #include "GeometryService/inc/VirtualDetector.hh"
 #include "GeometryService/inc/DetectorSystem.hh"
 
+#include "TrackerConditions/inc/Types.hh"
 #include "TTrackerGeom/inc/TTracker.hh"
 #include "CalorimeterGeom/inc/Calorimeter.hh"
 #include "CalorimeterGeom/inc/DiskCalorimeter.hh"
@@ -471,7 +472,6 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 
     const mu2e::StrawHit      *s_hit0;
     const mu2e::StrawHit      *s_hit; 
-    const mu2e::StrawDigiMC   *sdmc; 
     const mu2e::SimParticle   *sim(NULL); 
     const mu2e::StepPointMC   *stmc[2];
     const mu2e::Straw         *straw;
@@ -497,11 +497,16 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 	  loc   = s_hit-s_hit0;
 	  if ((loc >= 0) && (loc < n_straw_hits)) {
 	    if ((list_of_mc_straw_hits != NULL) && (list_of_mc_straw_hits->size() > 0)) {
-	      sdmc = &list_of_mc_straw_hits->at(loc);
-	      // use TDC channel 0 to define the MC match
-	      mu2e::StrawDigi::TDCChannel itdc = mu2e::StrawDigi::zero;
-	      if(!sdmc->hasTDC(mu2e::StrawDigi::zero)) itdc = mu2e::StrawDigi::one;
-	      stmc[0] = sdmc->stepPointMC(itdc).get();
+
+	      const mu2e::StrawDigiMC* mcdigi = &list_of_mc_straw_hits->at(loc);
+
+	      if (mcdigi->wireEndTime(mu2e::TrkTypes::cal) < mcdigi->wireEndTime(mu2e::TrkTypes::hv)) {
+		stmc[0] = mcdigi->stepPointMC(mu2e::TrkTypes::cal).get();
+	      }
+	      else {
+		stmc[0] = mcdigi->stepPointMC(mu2e::TrkTypes::hv ).get();
+	      }
+
 	      //-----------------------------------------------------------------------------
 	      // count number of active hits with R > 200 um and misassigned drift signs
 	      //-----------------------------------------------------------------------------

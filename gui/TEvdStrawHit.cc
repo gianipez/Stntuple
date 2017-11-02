@@ -23,6 +23,7 @@
 #include "GeometryService/inc/GeomHandle.hh"
 
 #include "TrackerGeom/inc/Straw.hh"
+#include "TrackerConditions/inc/Types.hh"
 
 #include "Stntuple/gui/TEvdStraw.hh"
 #include "Stntuple/gui/TEvdStrawHit.hh"
@@ -75,7 +76,14 @@ TEvdStrawHit::TEvdStrawHit(const mu2e::StrawHit*    Hit,
   const CLHEP::Hep3Vector* mid_point = &fStraw->GetStraw()->getMidPoint();
   
   double rdrift(0.);
-  if (fStrawDigiMC) rdrift = fStrawDigiMC->driftDistance(mu2e::StrawDigi::zero);
+  if (fStrawDigiMC) {
+    if (fStrawDigiMC->wireEndTime(mu2e::TrkTypes::cal) < fStrawDigiMC->wireEndTime(mu2e::TrkTypes::hv)) {
+      rdrift = fStrawDigiMC->driftDistance(mu2e::TrkTypes::cal);
+    }
+    else {
+      rdrift = fStrawDigiMC->driftDistance(mu2e::TrkTypes::hv);
+    }
+  }
       
   fEllipse.SetX1(mid_point->z());
   fEllipse.SetY1(mid_point->perp());
