@@ -118,7 +118,7 @@ MuHitDisplay: { module_type:MuHitDisplay        # the class name;
 
     #      goodHitMask                 : ["EnergySelection","RadiusSelection","TimeSelection"]
     goodHitMask                  : ["EnergySelection", "RadiusSelection"]
-    badHitMask                   : ["DeltaRay", "Isolated"]
+    badHitMask                   : ["Background"] 
     
     trackerStepPoints            : tracker
     minHits                      : 5
@@ -308,10 +308,17 @@ Stntuple : {
 #------------------------------------------------------------------------------
 	StntupleMakerTcm : { @table::StntupleMakerTemplate 
 	    makePid                 : 0
+	    makeTrackSeeds          : 1
 	    makeHelices             : 1
 	    helixBlockName          : [ "HelixBlock"            , "TprHelixBlock"           , "CprHelixBlock"            ]
 	    helixModuleLabel        : [ "MergeHelixFinder"      , "PosHelixFinder"          , "CalHelixFinder"           ]
+<<<<<<< Updated upstream
 	    trackBlockName          : [ "TrackBlock"            , "TrkPatRec"               , "CalTrkFit"                ]
+=======
+	    trackSeedBlockName      : [ "TprTrackSeedBlock"     , "CalTrackSeedBlock"       ]
+	    trackSeedModuleLabel    : [ "KSFDeM"                , "CalSeedFit"              ]
+	    trackBlockName          : [ "TrackBlock"            , "TrkPatRec"               , "CalPatRec"                ]
+>>>>>>> Stashed changes
 	    trkRecoModuleLabel      : [ "MergePatRec"           , "KFFDeM"                  , "MergePatRecCpr"           ]
 	    trkExtrapolModuleLabel  : [ "TrackCaloIntersection" , "TrackCaloIntersectionTpr", "TrackCaloIntersectionCpr" ]
 	    trkCaloMatchModuleLabel : [ "TrackCaloMatching"     , "TrackCaloMatchingTpr"    , "TrackCaloMatchingCpr"     ]

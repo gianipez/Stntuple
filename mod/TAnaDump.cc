@@ -463,10 +463,10 @@ void TAnaDump::printTrackSeed(const mu2e::KalSeed* TrkSeed,	const char* Opt,
 	   nhits,
 	   mom, pt, t0, t0err );
 
-    float chi2    = TrkSeed->chisquared();
+    float chi2    = TrkSeed->chisquared()/double(nhits - 5.);
     float fitCons = TrkSeed->fitConsistency();
 
-    printf(" %8.3f %8.3f %8.3f %8.4f %10.4f %10.3f %8.3f %8.3f\n",
+    printf(" %8.3f %8.3f %8.3f %8.4f %10.4f %10.3f %8.3f %8.3e\n",
 	   d0,z0,phi0,tandip,radius,clusterEnergy,chi2,fitCons);
   }
 
@@ -488,6 +488,7 @@ void TAnaDump::printTrackSeed(const mu2e::KalSeed* TrkSeed,	const char* Opt,
     int nsh = TrkSeed->hits().size();
 
     const mu2e::StrawHit* hit(0);
+
     art::Handle<mu2e::StrawHitCollection>         shcHandle;
     const mu2e::StrawHitCollection*               shcol;
 
@@ -690,10 +691,12 @@ void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix,	const char* Opt,
       const mu2e::StepPointMC* Step = mcptr[0].get();
     
       if (banner_printed == 0){
-	printStrawHit(hit, Step, "banner", -1, 0);
+	//	printStrawHit(hit, Step, "banner", -1, 0);
+	printHelixHit(helHit, hit, Step, "banner", -1, 0);
 	banner_printed = 1;
       } else {
-	printStrawHit(hit, Step, "data", -1, 0);
+	//	printStrawHit(hit, Step, "data", -1, 0);
+	printHelixHit(helHit, hit, Step, "data", -1, 0);
       }
     }
     
@@ -1070,6 +1073,8 @@ void TAnaDump::printEventHeader() {
 	 fEvent->subRun(),
 	 fEvent->event());
 }
+
+
 
 //-----------------------------------------------------------------------------
 void TAnaDump::printKalRep(const KalRep* Krep, const char* Opt, const char* Prefix) {
@@ -1844,6 +1849,92 @@ void TAnaDump::printStrawHit(const mu2e::StrawHit* Hit, const mu2e::StepPointMC*
 	     straw->id().getPanel(),
 	     straw->id().getLayer(),
 	     straw->id().getStraw(),
+	     Hit->time(),
+	     Hit->dt(),
+	     Hit->energyDep(),
+	     pdg_id,
+	     mother_pdg_id,
+	     generator_id,
+	     sim_id,
+	     mc_mom);
+    }
+  }
+
+
+//-----------------------------------------------------------------------------
+void TAnaDump::printHelixHit(const mu2e::HelixHit*    HelHit, const mu2e::StrawHit* Hit, 
+			     const mu2e::StepPointMC* Step, const char* Opt, int IHit, int Flags) {
+    TString opt = Opt;
+    opt.ToLower();
+
+    if ((opt == "") || (opt.Index("banner") >= 0)) {
+      printf("-----------------------------------------------------------------------------------");
+      printf("-------------------------------------------------------------\n");
+      printf("   I   SHID  Flags      Plane   Panel  Layer Straw     x          y           z          phi      Time          dt       eDep ");
+      printf("           PDG       PDG(M)   Generator         ID       p   \n");
+      printf("-----------------------------------------------------------------------------------");
+      printf("-------------------------------------------------------------\n");
+    }
+
+    if (opt == "banner") return;
+
+    mu2e::GeomHandle<mu2e::TTracker> ttHandle;
+    const mu2e::TTracker* tracker = ttHandle.get();
+
+    const mu2e::Straw* straw;
+
+    straw = &tracker->getStraw(Hit->strawIndex());
+
+// 12 - 11 -2013 giani added some MC info of the straws
+    //Hep3Vector mom = Step->momentum();
+    // double pt = std::sqrt(mom.mag()*mom.mag() - mom.z()*mom.z());
+
+    const mu2e::SimParticle * sim (0);
+    
+    int      pdg_id(-1), mother_pdg_id(-1), generator_id(-1), sim_id(-1);
+    double   mc_mom(-1.);
+    double   x(0), y(0), z(0), phi(0);
+
+    CLHEP::Hep3Vector  shPos = HelHit->pos();
+    x      = shPos.x();
+    y      = shPos.y();
+    z      = shPos.z();    
+    phi    = HelHit->phi();
+    
+    mu2e::GenId gen_id;
+
+    if (Step) {
+      art::Ptr<mu2e::SimParticle> const& simptr = Step->simParticle(); 
+      art::Ptr<mu2e::SimParticle> mother = simptr;
+
+      while(mother->hasParent()) mother = mother->parent();
+
+      sim = mother.operator ->();
+
+      pdg_id        = simptr->pdgId();
+      mother_pdg_id = sim->pdgId();
+
+      if (simptr->fromGenerator()) generator_id = simptr->genParticle()->generatorId().id();
+      else                         generator_id = -1;
+
+      sim_id        = simptr->id().asInt();
+      mc_mom        = Step->momentum().mag();
+    }
+    
+    if ((opt == "") || (opt == "data")) {
+      if (IHit  >= 0) printf("%5i " ,IHit);
+      else            printf("    ");
+
+      printf("%5i",Hit->strawIndex().asInt());
+
+      if (Flags >= 0) printf(" %08x",Flags);
+      else            printf("        ");
+      printf("  %5i  %5i   %5i   %5i   %8.3f   %8.3f    %10.3f    %6.3f   %8.3f   %8.3f   %9.6f   %10i   %10i  %10i  %10i %8.3f\n",
+	     straw->id().getPlane(),
+	     straw->id().getPanel(),
+	     straw->id().getLayer(),
+	     straw->id().getStraw(),
+	     x, y, z, phi,
 	     Hit->time(),
 	     Hit->dt(),
 	     Hit->energyDep(),

@@ -56,14 +56,14 @@ double evalWeight(CLHEP::Hep3Vector& HitPos   ,
   double wt(0);
   
                                             //scale the weight for having chi2/ndof distribution peaking at 1
-  if ( WeightMode == 1){
+  if ( WeightMode == 1){//XY-Fit
     double e2     = ew*ew*sinth2+rs*rs*costh*costh;
     wt  = 1./e2;
-    wt *= 0.2941; //FIX ME! it should be get from CalPatRec/fcl/prolog.fcl
-  } else if (WeightMode ==0 ){
+    wt *= 0.1018;//0.2941; //FIX ME! it should be get from CalPatRec/fcl/prolog.fcl
+  } else if (WeightMode ==0 ){//Phi-Z Fit
     double e2     = ew*ew*costh*costh+rs*rs*sinth2;
     wt     = Radius*Radius/e2;
-    wt    *=  0.174;//FIX ME! it should be get from CalPatRec/fcl/prolog.fcl
+    wt    *=  0.0502;//0.174;//FIX ME! it should be get from CalPatRec/fcl/prolog.fcl
   }
   
   return wt;

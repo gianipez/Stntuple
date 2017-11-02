@@ -45,6 +45,7 @@ namespace mu2e {
   class CalTimePeak;
   class KalSeed;
   class HelixSeed;
+  class HelixHit;
   class TrackClusterMatch;
   class TrkStrawHit;
   class SimParticleTimeOffset;
@@ -149,6 +150,7 @@ public:
 
 
 
+
   void printKalRep(const KalRep* Krep, const char* Opt = "", const char* Prefix = "");
 
   void printKalRepCollection(const char* ModuleLabel     , 
@@ -182,6 +184,13 @@ public:
 				  const char* ProcessName = "");
 
   void printStrawHit      (const mu2e::StrawHit*    Hit, 
+			   const mu2e::StepPointMC* Step,
+			   const char*              Opt   = "", 
+			   int                      INit  = -1,
+			   int                      Flags = -1);
+  
+  void printHelixHit      (const mu2e::HelixHit*    HelHit,
+			   const mu2e::StrawHit*    Hit, 
 			   const mu2e::StepPointMC* Step,
 			   const char*              Opt   = "", 
 			   int                      INit  = -1,

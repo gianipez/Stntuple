@@ -11,7 +11,7 @@ BEGIN_PROLOG
   generatorSeq  : [ generate, g4run, detectorFilter, @sequence::timeMapSeq ]
 
   gen_mix_seq   : [ generate, g4run, detectorFilter
-		    , dioMixer, protonMixer, neutronMixer, photonMixer, ootMixer, flashMixer
+		    , dioMixer, protonMixer, neutronMixer, photonMixer, ootMixer, flashMixer, deuteronMixer
 		    , @sequence::timeMapSeq ]
 
   mix_seq       : [ dioMixer, protonMixer, neutronMixer, photonMixer, ootMixer, flashMixer
@@ -92,7 +92,8 @@ BEGIN_PROLOG
 
   allPatRecDemDmmSeq  : [ @sequence::tprPrepHitSeq, TimeClusterFinder, PosHelixFinder,  
 			  KSFDeM, KFFDeM, KSFDmuM, KFFDmuM, 
-			  @sequence::cprPrepHitSeq, CalPatRecDem, CalPatRecDmm, 
+			  @sequence::CalPatRec.dem_reco,
+			  @sequence::CalPatRec.dmm_reco,
 			  MergePatRecDem, MergePatRecDmm ]
 #------------------------------------------------------------------------------
 # extrapolation and matching
@@ -384,6 +385,9 @@ Stntuple : { @table::Stntuple  # defined in Stntuple/fcl/prolog.fcl
 	}
 	protonMixer          : { @table::mixerTemplate
 	    fileNames : @local::bgHitFiles detail: { @table::mixerTemplate.detail g4ModuleLabel:protonMixer genModuleLabel:protonMixer }
+	}
+	deuteronMixer          : { @table::mixerTemplate
+	    fileNames : @local::bgHitFiles detail: { @table::mixerTemplate.detail g4ModuleLabel:deuteronMixer genModuleLabel:deuteronMixer }
 	}
 #------------------------------------------------------------------------------
 # Andrej's filter
@@ -687,7 +691,7 @@ physics : {
 outputs: {
     detectorOutput : {
         module_type : RootOutput
-        SelectEvents: { SelectEvents: [] }
+        SelectEvents: [] 
         outputCommands:   [ "keep *_*_*_*",
                             "drop uintmu2e::PhysicalVolumeInfomvstd::pairs_g4run_*_*"
 			   ]
