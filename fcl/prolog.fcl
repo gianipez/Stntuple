@@ -312,13 +312,9 @@ Stntuple : {
 	    makeHelices             : 1
 	    helixBlockName          : [ "HelixBlock"            , "TprHelixBlock"           , "CprHelixBlock"            ]
 	    helixModuleLabel        : [ "MergeHelixFinder"      , "PosHelixFinder"          , "CalHelixFinder"           ]
-<<<<<<< Updated upstream
-	    trackBlockName          : [ "TrackBlock"            , "TrkPatRec"               , "CalTrkFit"                ]
-=======
 	    trackSeedBlockName      : [ "TprTrackSeedBlock"     , "CalTrackSeedBlock"       ]
 	    trackSeedModuleLabel    : [ "KSFDeM"                , "CalSeedFit"              ]
 	    trackBlockName          : [ "TrackBlock"            , "TrkPatRec"               , "CalPatRec"                ]
->>>>>>> Stashed changes
 	    trkRecoModuleLabel      : [ "MergePatRec"           , "KFFDeM"                  , "MergePatRecCpr"           ]
 	    trkExtrapolModuleLabel  : [ "TrackCaloIntersection" , "TrackCaloIntersectionTpr", "TrackCaloIntersectionCpr" ]
 	    trkCaloMatchModuleLabel : [ "TrackCaloMatching"     , "TrackCaloMatchingTpr"    , "TrackCaloMatchingCpr"     ]

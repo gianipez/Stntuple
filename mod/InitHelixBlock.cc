@@ -40,7 +40,8 @@ double evalWeight(CLHEP::Hep3Vector& HitPos   ,
 		  CLHEP::Hep3Vector& StrawDir ,
 		  CLHEP::Hep3Vector& HelCenter, 
 		  double             Radius   ,
-		  int                WeightMode) {//WeightMode = 1 is for XY chi2 , WeightMode = 0 is for Phi-z chi2
+		  int                WeightMode,
+		  fhicl::ParameterSet const& Pset) {//WeightMode = 1 is for XY chi2 , WeightMode = 0 is for Phi-z chi2
   
   double    rs(2.5);   // straw radius, mm
   double    ew(30.0);  // assumed resolution along the wire, mm
@@ -53,17 +54,25 @@ double evalWeight(CLHEP::Hep3Vector& HitPos   ,
   double costh  = (dx*StrawDir.x()+dy*StrawDir.y())/sqrt(dx*dx+dy*dy);
   double sinth2 = 1-costh*costh;
   
-  double wt(0);
+  double wt(0), wtXY(1), wtPhiZ(1);
+
+  //  fhicl::ParameterSet const& pset = helix_handle.provenance()->parameterSet();
+  std::string                module     = Pset.get<std::string>("module_type");
   
+  if ( module == "CalHelixFinder"){
+    fhicl::ParameterSet const& psetHelFit = Pset.get<fhicl::ParameterSet>("HelixFinderAlg", fhicl::ParameterSet());
+    wtXY   = psetHelFit.get<double>("weightXY");
+    wtPhiZ = psetHelFit.get<double>("weightZPhi");
+  }
                                             //scale the weight for having chi2/ndof distribution peaking at 1
   if ( WeightMode == 1){//XY-Fit
     double e2     = ew*ew*sinth2+rs*rs*costh*costh;
     wt  = 1./e2;
-    wt *= 0.1018;//0.2941; //FIX ME! it should be get from CalPatRec/fcl/prolog.fcl
+    wt *= wtXY;
   } else if (WeightMode ==0 ){//Phi-Z Fit
     double e2     = ew*ew*costh*costh+rs*rs*sinth2;
     wt     = Radius*Radius/e2;
-    wt    *=  0.0502;//0.174;//FIX ME! it should be get from CalPatRec/fcl/prolog.fcl
+    wt    *= wtPhiZ;
   }
   
   return wt;
@@ -178,6 +187,8 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
 
     LsqSums4 srphi;
     static const CLHEP::Hep3Vector zdir(0.0,0.0,1.0);
+
+    fhicl::ParameterSet const& pset = helix_handle.provenance()->parameterSet();
     
     for (int j=0; j<nhits; ++j){
       hit       = &hits->at(j);
@@ -186,7 +197,7 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
       sdir      = zdir.cross(wdir);
       phi       = hit->phi();
       helix_phi = helix->fFZ0 + pos.z()/helix->fLambda;
-      double    weightXY   = evalWeight(pos, sdir, helix_center, radius, 1);
+      double    weightXY   = evalWeight(pos, sdir, helix_center, radius, 1, pset);
 
       sxy.addPoint(pos.x(), pos.y(), weightXY);
 
@@ -199,7 +210,7 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
 	phi   -= 2*M_PI; 
 	dPhi  = helix_phi - phi;
       }
-      double weight    = evalWeight(pos, sdir, helix_center, radius, 0);
+      double weight    = evalWeight(pos, sdir, helix_center, radius, 0, pset);
       srphi.addPoint(pos.z(), phi, weight);
     } 
     
@@ -232,22 +243,11 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
     mask = (0x0001 << 16) | 0x0000;
 
     if (list_of_algs) {
-      // art::Handle<mu2e::HelixSeedCollection> handle;
-      // art::Ptr<mu2e::HelixSeed> const& ptr = list_of_helices->at(i);
-      // Evt->get(ptr.id(), handle);
-      fhicl::ParameterSet const& pset = helix_handle.provenance()->parameterSet();
+      //      fhicl::ParameterSet const& pset = helix_handle.provenance()->parameterSet();
       std::string         module_type = pset.get<std::string>("module_type");
       
-      // if      (module_type == "CalHelixFinder"   ) xxx =  1;
-      // else if (module_type == "RobustHelixFinder") xxx =  0;
-      // else                                         xxx = -1;
-       
       alg_id = &list_of_algs->at(i);
       mask   = alg_id->BestID() | (alg_id->AlgMask() << 16);
-      
-      // if (xxx != alg_id->BestID()) { 
-      // 	printf (" *** InitHelixBlock ERROR: we are in alg_id trouble: xxx = %2i best = %i\n",xxx,alg_id->BestID());
-      // }
     }
     
     helix->fAlgorithmID = mask;
