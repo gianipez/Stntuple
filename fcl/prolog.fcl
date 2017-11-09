@@ -96,6 +96,7 @@ MuHitDisplay: { module_type:MuHitDisplay        # the class name;
     generatorModuleLabel         : generate
     g4ModuleLabel                : g4run
     strawHitMakerModuleLabel     : makeSH
+    strawDigiMakerModuleLabel    : makeSD
     strawHitPosMakerModuleLabel  : CalPatRecMakeStrawHitPositions
     strawHitFlagMakerModuleLabel : CalPatRecFlagStrawHits
     

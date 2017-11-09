@@ -150,6 +150,7 @@ namespace mu2e {
     std::string        _producerName;
 
     std::string        _makeStrawHitModuleLabel;
+    std::string        _makeStrawDigiModuleLabel;
     std::string        fStrawHitPosMaker;
     std::string        fStrawHitFlagMaker;
 
@@ -290,6 +291,7 @@ namespace mu2e {
     _producerName(""),
 
     _makeStrawHitModuleLabel(pset.get<std::string>("strawHitMakerModuleLabel")),
+    _makeStrawDigiModuleLabel(pset.get<std::string>("strawDigiMakerModuleLabel")),
     fStrawHitPosMaker(pset.get<std::string>("strawHitPosMakerModuleLabel")),
     fStrawHitFlagMaker(pset.get<std::string>("strawHitFlagMakerModuleLabel")),
 
@@ -409,8 +411,8 @@ namespace mu2e {
 
     fTrackBlock->AddCollName("mu2e::KalRepCollection"              ,fTrkRecoModuleLabel.data()        ,"");
     fTrackBlock->AddCollName("mu2e::StrawHitCollection"            ,_makeStrawHitModuleLabel.data()   ,"");
-    fTrackBlock->AddCollName("mu2e::StrawDigiMCCollection"         ,_makeStrawHitModuleLabel.data()   ,"");
-    fTrackBlock->AddCollName("mu2e::PtrStepPointMCVectorCollection",_makeStrawHitModuleLabel.data()   ,"");
+    fTrackBlock->AddCollName("mu2e::StrawDigiMCCollection"         ,_makeStrawDigiModuleLabel.data()   ,"");
+    fTrackBlock->AddCollName("mu2e::PtrStepPointMCVectorCollection",_makeStrawDigiModuleLabel.data()   ,"");
     fTrackBlock->AddCollName("mu2e::TrkCaloIntersectCollection"    ,fTrkExtrapol.data()               ,"");
     fTrackBlock->AddCollName("mu2e::CaloClusterCollection"         ,_caloClusterModuleLabel.data()    ,"");
     fTrackBlock->AddCollName("mu2e::TrackClusterMatchCollection"   ,fTrkCalMatch.data()               ,"");
@@ -611,19 +613,19 @@ namespace mu2e {
       }
 
       art::Handle<PtrStepPointMCVectorCollection> mcptrHandle;
-      Evt->getByLabel(_makeStrawHitModuleLabel, "", mcptrHandle);
+      Evt->getByLabel(_makeStrawDigiModuleLabel, "", mcptrHandle);
 
 
       if (mcptrHandle.isValid()) {
 	_hits_mcptr = mcptrHandle.product();
 	if (_hits_mcptr->size() <= 0) {
 	  printf(">>> [%s] WARNING: PtrStepPointMCVectorCollection by %s has zero length. CONTINUE\n",
-		 oname, _makeStrawHitModuleLabel.data());
+		 oname, _makeStrawDigiModuleLabel.data());
 	}
       }
       else {
 	printf(">>> [%s] ERROR: PtrStepPointMCVectorCollection by %s is missing. BAIL OUT\n",
-	       oname, _makeStrawHitModuleLabel.data());
+	       oname, _makeStrawDigiModuleLabel.data());
 	return -1;
       }
 
@@ -653,18 +655,18 @@ namespace mu2e {
       art::Handle<StrawDigiMCCollection> handle;
       art::Selector sel_straw_digi_mc(art::ProductInstanceNameSelector("") &&
 				      art::ProcessNameSelector(_processName) &&
-				      art::ModuleLabelSelector(_makeStrawHitModuleLabel));
+				      art::ModuleLabelSelector(_makeStrawDigiModuleLabel));
       Evt->get(sel_straw_digi_mc, handle);
       if (handle.isValid()) {
 	_strawDigiMCColl = handle.product();
 	if (_strawDigiMCColl->size() <= 0) {
 	  printf(">>> [%s] WARNING:StrawDigiMCCollection by %s has zero length. CONTINUE\n",
-		 oname, _makeStrawHitModuleLabel.data());
+		 oname, _makeStrawDigiModuleLabel.data());
 	}
       }
       else {
 	printf(">>> [%s] ERROR: mu2e::StrawDigiMCCollection by %s is missing. BAIL OUT\n",
-	       oname, _makeStrawHitModuleLabel.data());
+	       oname, _makeStrawDigiModuleLabel.data());
 	return -1;
       }
 

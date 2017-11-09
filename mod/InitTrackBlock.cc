@@ -790,9 +790,13 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 
     art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandleStraw;
     AnEvent->getByLabel(stmc_module_label,mcptrHandleStraw);
-    stepPointMCVectorCollection = mcptrHandleStraw.product();
+    int   nstepMC(0);
+    if (mcptrHandleStraw.isValid()){
+      stepPointMCVectorCollection = mcptrHandleStraw.product();
+      nstepMC                     = stepPointMCVectorCollection->size();
+    }
 
-    if (stepPointMCVectorCollection->size() > 0) {
+    if (nstepMC > 0) {
       for (int i=0; i<n_straw_hits; i++) {
 	mu2e::PtrStepPointMCVector const& mcptr(stepPointMCVectorCollection->at(i));
 
