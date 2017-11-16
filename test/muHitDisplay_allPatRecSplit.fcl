@@ -220,42 +220,9 @@ physics : {
     #------------------------------------------------------------------------------
 
     gen  : [
-	     @sequence::timeMapSeq,
+	    @sequence::EventMixing.TimeMaps, 
             CaloShowerStepFromStepPt, CaloShowerStepROFromShowerStep, CaloDigiFromShower,
             CaloRecoDigiFromDigi ,CaloCrystalHitFromHit, makeSD
-#
-	    # @sequence::CaloReco.Reco	       , 
-	    # @sequence::CaloCluster.Reco        , 
-	    # makeSH			       , 
-	    # CalPatRecFSHP, 
-	    # CalPatRecMakeStrawHitPositions, 
-	    # CalPatRecMakeStereoHits,  
-	    # CalPatRecFlagStrawHits,   
-	    # CalPatRecFlagBkgHits,
-	    # #
-	    # CalTimePeakFinder, 
-	    # CalHelixFinder   ,
-	    # CalSeedFit       , 
-	    # CalTrkFit        ,
-	    # #
-	    # FSHPreStereo		       , 
-	    # MakeStrawHitPositions	       , 
-	    # MakeStereoHits		       , 
-	    # FlagStrawHits		       , 
-	    # #
-	    # FlagBkgHits,
-	    # #
-	    # TimeClusterFinder, PosHelixFinder, KSFDeM, KFFDeM,
-	    # #
-	    # MergeHelixFinder,
-	    # MergePatRec,
-	    # MergePatRecTpr,
-	    # MergePatRecCpr,
-	    # @sequence::trkCaloMatchingSeq,
-	    # @sequence::trkCaloMatchingTprSeq,
-	    # @sequence::trkCaloMatchingCprSeq,
-	    # ParticleID, 
-	    # @sequence::stnmaker3_seq
 	   ]
 
 
