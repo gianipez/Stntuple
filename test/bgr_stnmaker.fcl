@@ -45,7 +45,7 @@ physics : { @table::physics
     }
 
     p1 : [ protonTimeMap, muonTimeMap, @sequence::hitMakerSeq, @sequence::tprPrepHitSeq, 
-	   @sequence::calRecoSeq, @sequence::allPatRecSeq, @sequence::vadimPidSeq,
+	   @sequence::CaloCluster.Reco, @sequence::allPatRecSeq, @sequence::vadimPidSeq,
 	   @sequence::stnmakerSeq       , EventFilter]
     e1 : []
 }
