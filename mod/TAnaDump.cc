@@ -422,11 +422,11 @@ void TAnaDump::printTrackSeed(const mu2e::KalSeed* TrkSeed,	const char* Opt,
   
   if ((opt == "") || (opt == "banner")) {
     printf("---------------------------------------------------------------------------------");
-    printf("-----------------------------------------------------\n");
+    printf("-------------------------------------------------------\n");
     printf("  TrkID       Address    N      P      pT      T0     T0err  ");
-    printf("      D0       Z0      Phi0   TanDip    radius    caloEnergy     chi2XY    chi2ZPhi\n");
+    printf("      D0       Z0      Phi0   TanDip    radius    caloEnergy     chi2      FitCon\n");
     printf("---------------------------------------------------------------------------------");
-    printf("-----------------------------------------------------\n");
+    printf("-------------------------------------------------------\n");
   }
  
 
@@ -466,7 +466,7 @@ void TAnaDump::printTrackSeed(const mu2e::KalSeed* TrkSeed,	const char* Opt,
     float chi2    = TrkSeed->chisquared()/double(nhits - 5.);
     float fitCons = TrkSeed->fitConsistency();
 
-    printf(" %8.3f %8.3f %8.3f %8.4f %10.4f %10.3f %8.3f %8.3e\n",
+    printf(" %8.3f %8.3f %8.3f %8.4f %10.4f %10.3f %12.3f %12.3e\n",
 	   d0,z0,phi0,tandip,radius,clusterEnergy,chi2,fitCons);
   }
 
@@ -1998,7 +1998,7 @@ void TAnaDump::printStrawHitCollection(const char* ModuleLabel,
 // 12 - 11 -2013 giani added some MC info of the straws
   art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandleStraw;
   //  fEvent->getByLabel(ModuleLabel,"StrawHitMCPtr",mcptrHandleStraw);
-  fEvent->getByLabel(ModuleLabel,"",mcptrHandleStraw);
+  fEvent->getByLabel("makeSD","",mcptrHandleStraw);
   mu2e::PtrStepPointMCVectorCollection const* hits_mcptrStraw = mcptrHandleStraw.product();
  
   //------------------------------------------------------------
