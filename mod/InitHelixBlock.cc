@@ -131,7 +131,7 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
 
   //  int xxx(0);
 
-  nhelices = list_of_helices->size();
+  if (list_of_helices) nhelices = list_of_helices->size();
   
 
   
