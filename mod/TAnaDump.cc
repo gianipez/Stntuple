@@ -421,12 +421,12 @@ void TAnaDump::printTrackSeed(const mu2e::KalSeed* TrkSeed,	const char* Opt,
   TString opt = Opt;
   
   if ((opt == "") || (opt == "banner")) {
-    printf("---------------------------------------------------------------------------------");
-    printf("-------------------------------------------------------\n");
+    printf("-------------------------------------------------------------");
+    printf("---------------------------------------------------------------------------------\n");
     printf("  TrkID       Address    N      P      pT      T0     T0err  ");
     printf("      D0       Z0      Phi0   TanDip    radius    caloEnergy     chi2      FitCon\n");
-    printf("---------------------------------------------------------------------------------");
-    printf("-------------------------------------------------------\n");
+    printf("-------------------------------------------------------------");
+    printf("---------------------------------------------------------------------------------\n");
   }
  
 
@@ -512,10 +512,10 @@ void TAnaDump::printTrackSeed(const mu2e::KalSeed* TrkSeed,	const char* Opt,
     
     int banner_printed(0);
     for (int i=0; i<nsh; ++i){
-      mu2e::PtrStepPointMCVector const& mcptr(hits_mcptrStraw->at(i ) );
       int  hitIndex  = int(TrkSeed->hits().at(i).index());
-    
-      hit       = &shcol->at(hitIndex);
+      hit            = &shcol->at(hitIndex);
+
+      mu2e::PtrStepPointMCVector const& mcptr(hits_mcptrStraw->at(hitIndex));
       const mu2e::StepPointMC* Step = mcptr[0].get();
     
       if (banner_printed == 0){
@@ -657,7 +657,6 @@ void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix,	const char* Opt,
   if ((opt == "") || (opt.Index("hits") >= 0) ){
     int nsh = Helix->hits().size();
 
-    const mu2e::StrawHit* hit(0);
     art::Handle<mu2e::StrawHitCollection>         shcHandle;
     const mu2e::StrawHitCollection*               shcol;
 
@@ -679,23 +678,19 @@ void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix,	const char* Opt,
     
     shcol = shcHandle.product();
 
-    const mu2e::HelixHit*helHit(0);
-    
     int banner_printed(0);
     for (int i=0; i<nsh; ++i){
-      helHit  = &Helix->hits().at(i);
-      mu2e::PtrStepPointMCVector const& mcptr(hits_mcptrStraw->at(i ) );
-      int  hitIndex  = helHit->index();
-    
-      hit       = &shcol->at(hitIndex);
+      const mu2e::HelixHit* helHit  = &Helix->hits().at(i);
+      int  hitIndex                 = helHit->index();
+      const mu2e::StrawHit*  hit    = &shcol->at(hitIndex);
+
+      mu2e::PtrStepPointMCVector const& mcptr(hits_mcptrStraw->at(hitIndex) );
       const mu2e::StepPointMC* Step = mcptr[0].get();
     
-      if (banner_printed == 0){
-	//	printStrawHit(hit, Step, "banner", -1, 0);
+      if (banner_printed == 0) {
 	printHelixHit(helHit, hit, Step, "banner", -1, 0);
 	banner_printed = 1;
       } else {
-	//	printStrawHit(hit, Step, "data", -1, 0);
 	printHelixHit(helHit, hit, Step, "data", -1, 0);
       }
     }
@@ -1790,12 +1785,12 @@ void TAnaDump::printStrawHit(const mu2e::StrawHit* Hit, const mu2e::StepPointMC*
     opt.ToLower();
 
     if ((opt == "") || (opt.Index("banner") >= 0)) {
-      printf("-----------------------------------------------------------------------------------");
-      printf("-------------------------------------------------------------\n");
-      printf("   I   SHID  Flags      Plane   Panel  Layer Straw     Time          dt       eDep ");
-      printf("           PDG       PDG(M)   Generator         ID       p   \n");
-      printf("-----------------------------------------------------------------------------------");
-      printf("-------------------------------------------------------------\n");
+      printf("---------------------------------------------------------------------------------");
+      printf("------------------------------------------------------------\n");
+      printf("   I   SHID  Flags  Plane   Panel  Layer   Straw     Time          dt       eDep ");
+      printf("           PDG       PDG(M)   Generator          ID      p  \n");
+      printf("---------------------------------------------------------------------------------");
+      printf("------------------------------------------------------------\n");
     }
 
     if (opt == "banner") return;
