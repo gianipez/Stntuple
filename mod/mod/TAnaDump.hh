@@ -169,7 +169,8 @@ public:
 
   void printCalTimePeakCollection(const char* ModuleLabel     , 
 				  const char* ProductName = "", 
-				  const char* ProcessName = "");
+				  const char* ProcessName = "",
+				  int         hitOpt      = 0);
 
 //   void printCaloCrystalHit(const CaloCrystalHit* Hit, const char* Opt = "");
 //   void printCaloHit       (const CaloHit*        Hit, const char* Opt = "");

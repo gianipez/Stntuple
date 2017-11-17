@@ -9,20 +9,20 @@ BEGIN_PROLOG
   generatorSeq  : [ generate, g4run, detectorFilter, @sequence::EventMixing.TimeMaps ]
 
   gen_mix_seq   : [ generate, g4run, detectorFilter,
-		    @sequence::Event.Mixing.CD3Mixers, @sequence::EventMixing.TimeMaps ]
+		    @sequence::EventMixing.CD3Mixers, @sequence::EventMixing.TimeMaps ]
 
-  mix_seq       : [ @sequence::Event.Mixing.CD3Mixers, @sequence::EventMixing.TimeMaps ]
+  mix_seq       : [ @sequence::EventMixing.CD3Mixers, @sequence::EventMixing.TimeMaps ]
 
-  hitMakerSeq   : [ CaloDigiMC.DigiSim, CaloReco.Reco, Tracking.DigiSim, makeSH ]
+  hitMakerSeq   : [ @sequence::CaloDigiMC.DigiSim, @sequence::CaloReco.Reco, @sequence::Tracking.DigiSim, makeSH ]
 
-  digiMakerSeq  : [ CaloDigiMC.DigiSim, CaloReco.Reco, Tracking.DigiSim, makeSH ]
+  digiMakerSeq  : [ @sequence::CaloDigiMC.DigiSim, @sequence::CaloReco.Reco, @sequence::Tracking.DigiSim, makeSH ]
  
 # MC generator and hit makers
 
   gen_hits_seq  : [ @sequence::generatorSeq, @sequence::hitMakerSeq ]
 
 # calorimeter cluster reconstruction
-  calRecoSeq    : [ CaloCluster.Reco ]
+  calRecoSeq    : [ @sequence::CaloCluster.Reco ]
 
 # hit pre-making for TrkPatRec; FSHPreStereo is needed to flag straw hits
   tprPrepHitSeq : [ FSHPreStereo, MakeStrawHitPositions, MakeStereoHits, FlagStrawHits, FlagBkgHits ]
@@ -122,7 +122,7 @@ BEGIN_PROLOG
 				 @sequence::stnmaker_seq ]
 
   hits_calo_tprdem_stnmaker_seq : [ @sequence::EventMixing.TimeMaps, @sequence::hitMakerSeq, 
-				    @sequence:: CaloCluster.Reco,
+				    @sequence::CaloCluster.Reco,
 				    @sequence::trkPatRecDemSeq,
 				    @sequence::trkCaloMatchingDemSeq,
 				    #				      AvikPID, 
