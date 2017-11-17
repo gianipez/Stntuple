@@ -1063,7 +1063,9 @@ void TAnaDump::printCalTimePeakCollection(const char* ModuleLabel,
       banner_printed = 1;
     }
     printCalTimePeak(tp,"data");
-    if(hitOpt>0)     printCalTimePeak(tp,"hits");
+    if(hitOpt>0)     printCalTimePeak(tp,"data+hits");
+    else             printCalTimePeak(tp,"data");
+
   }
 }
 
