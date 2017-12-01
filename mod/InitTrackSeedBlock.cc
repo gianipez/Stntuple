@@ -8,6 +8,10 @@
 #include "TLorentzVector.h"
 
 #include "Stntuple/obj/TStnDataBlock.hh"
+#include "Stntuple/obj/TStnEvent.hh"
+
+#include "Stntuple/obj/TStnHelix.hh"
+#include "Stntuple/obj/TStnHelixBlock.hh"
 
 #include "Stntuple/obj/TStnTrackSeed.hh"
 #include "Stntuple/obj/TStnTrackSeedBlock.hh"
@@ -45,6 +49,9 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
   cb->GetModuleLabel("mu2e::KalSeedCollection", trkSeed_module_label);
   cb->GetDescription("mu2e::KalSeedCollection", trkSeed_description );
 
+  if (trkSeed_module_label[0] == 0) {
+    cb->GetModuleLabel("ShortTrackSeedBlockName", trkSeed_module_label);
+  }
   art::Handle<mu2e::KalSeedCollection>               trackSeed_handle;
   if (trkSeed_description[0] == 0) Evt->getByLabel(trkSeed_module_label, trackSeed_handle);
   else                          Evt->getByLabel(trkSeed_module_label, trkSeed_description, trackSeed_handle);
@@ -121,30 +128,72 @@ Int_t StntupleInitMu2eTrackSeedBlockLinks(TStnDataBlock* Block, AbsEvent* AnEven
 
   if (Block->LinksInitialized()) return 0;
 
-  TStnTrackSeedBlock* tsb = (TStnTrackSeedBlock*) Block;
-  // TStnClusterBlock*   clb = (TStnClusterBlock*  ) Block->GetEvent()->GetDataBlock("ClusterBlock");
+  TStnTrackSeedBlock* tsb, *ftsb;
+  TStnTrackSeed*      trkseed, *ftrkseed;
+  TStnHelixBlock*     hb;//, *fhb;
+  TStnHelix          *helix;//, *fhelix;
+  TStnEvent*          ev;
 
-  // int nclusters = clb->NClusters();
+  const mu2e::HelixSeed* khelix, *fkhelix;
+  const mu2e::KalSeed*   kseed, *fkseed;
 
-  // if (! tdata) return -1;
+  tsb    = (TStnTrackSeedBlock*) Block;
 
+  char                kseed_module_label[100], helix_block_name[100], short_helix_block_name[100], short_seed_block_name[100];
+  tsb->GetModuleLabel("mu2e::KalSeedCollection"  , kseed_module_label);
+  tsb->GetModuleLabel("HelixBlockName"           , helix_block_name  );
+  tsb->GetModuleLabel("ShortHelixBlockName"      , short_helix_block_name  );
+  tsb->GetModuleLabel("ShortTrackSeedBlockName"  , short_seed_block_name);
 
-  // //  TStnEvent* ev   = header->GetEvent();
-  // for (int i=0; i<ntrkseeds; i++) {
-  //   trkSeed  = tsb->TrackSeed(i);
-  //   b1      = trkSeed->fCaloCluster;
+  ev     = Block->GetEvent();
+  hb     = (TStnHelixBlock*)     ev->GetDataBlock(helix_block_name      );
+  //  fhb    = (TStnHelixBlock*)     ev->GetDataBlock(short_helix_block_name);
+  ftsb   = (TStnTrackSeedBlock*) ev->GetDataBlock(short_seed_block_name );
+  
+  int    ntrkseed = tsb ->NTrackSeeds();
+  int    ntrk     = ftsb->NTrackSeeds();
+  int    nhelix   = hb  ->NHelices();
+  
+  for (int i=0; i<ntrkseed; i++) {
+    trkseed = tsb->TrackSeed(i);
+    kseed   = trkseed->fTrackSeed;
 
-  //   for (icl=0; icl<ncl; icl++) {
-  //     TStnCluster* cl = clb->Cluster(icl);
-  //     b2 = cl->fCaloCluster;
-
-  //     if (b1 == b2) {
-  //     }
-  //   }
-
-
-  //   //trackerHitTime = trkSeed->_relatedTimeCluster.operator ->();
-  // }
+    //    fhelix   =  fhb  ->Helix(i);
+    fkhelix  = kseed->helix().get();//fhelix->fHelix;
+    int  helixIndex(-1);
+    for (int j=0; j<nhelix; ++j){
+      helix  = hb->Helix(j);
+      khelix = helix->fHelix;
+      if ( khelix == fkhelix){
+	helixIndex = j;
+	break;
+      }    
+    }
+    
+    if (helixIndex < 0) {
+      printf(">>> ERROR: %s trackseed %i -> no HelixSeed associated\n", kseed_module_label, i);
+      continue;
+    }
+    trkseed->SetHelixIndex(helixIndex);
+    
+    int      trkIndex(-1);
+    for (int k=0; k<ntrk; ++k){
+      ftrkseed = ftsb->TrackSeed(k);
+      fkseed   = ftrkseed->fTrackSeed;
+      fkseed   = fkseed->kalSeed().get();
+      if (kseed == fkseed) {
+	trkIndex = k;
+	break;
+      }
+    }
+    
+    if (trkIndex < 0) {
+      printf(">>> ERROR: %s trackseed %i -> no KalRep associated\n", kseed_module_label, i);
+      continue;
+    }
+    trkseed->SetTrackIndex(trkIndex);
+   
+  }
 //-----------------------------------------------------------------------------
 // mark links as initialized
 //-----------------------------------------------------------------------------

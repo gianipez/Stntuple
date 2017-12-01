@@ -9,9 +9,13 @@
 #include "TVector2.h"
 
 #include "Stntuple/obj/TStnDataBlock.hh"
+#include "Stntuple/obj/TStnEvent.hh"
 
 #include "Stntuple/obj/TStnHelix.hh"
 #include "Stntuple/obj/TStnHelixBlock.hh"
+
+#include "Stntuple/obj/TStnTrackSeed.hh"
+#include "Stntuple/obj/TStnTrackSeedBlock.hh"
 
 #include "art/Framework/Principal/Handle.h"
 #include "art/Framework/Principal/Event.h"
@@ -25,6 +29,7 @@
 
 #include "RecoDataProducts/inc/HelixSeed.hh"
 #include "RecoDataProducts/inc/HelixHit.hh"
+#include "RecoDataProducts/inc/KalSeed.hh"
 
 #include "RecoDataProducts/inc/CaloCluster.hh"
 
@@ -272,34 +277,54 @@ Int_t StntupleInitMu2eHelixBlockLinks(TStnDataBlock* Block, AbsEvent* AnEvent, i
 
   if (Block->LinksInitialized()) return 0;
 
-  TStnHelixBlock* tsb = (TStnHelixBlock*) Block;
-  // TStnClusterBlock*   clb = (TStnClusterBlock*  ) Block->GetEvent()->GetDataBlock("ClusterBlock");
+  TStnEvent*           ev;
+  //  char                 kseed_module_label[100];
+  TStnHelixBlock*      hb;
+  TStnHelix*           helix;
+  TStnTrackSeedBlock*  tsb;
+  TStnTrackSeed*       trkseed;
 
-  // int nclusters = clb->NClusters();
+  const mu2e::HelixSeed* khelix, *fkhelix;
+  const mu2e::KalSeed*   kseed;
 
-  // if (! tdata) return -1;
+  char                 short_helix_block_name[100];
 
+  ev     = Block->GetEvent();
+  hb     = (TStnHelixBlock*) Block;
+  
+  hb->GetModuleLabel("mu2e::KalSeedCollection"  , short_helix_block_name);
 
-  // //  TStnEvent* ev   = header->GetEvent();
-  // for (int i=0; i<nhelices; i++) {
-  //   tmpHel  = tsb->Helix(i);
-  //   b1      = tmpHel->fCaloCluster;
+  tsb    = (TStnTrackSeedBlock*) ev->GetDataBlock(short_helix_block_name);
+  
+  int    nhelix   = hb ->NHelices();
+  int    ntrkseed = tsb->NTrackSeeds();
 
-  //   for (icl=0; icl<ncl; icl++) {
-  //     TStnCluster* cl = clb->Cluster(icl);
-  //     b2 = cl->fCaloCluster;
+  for (int i=0; i<nhelix; ++i){
+    helix  = hb   ->Helix(i);
+    khelix = helix->fHelix;
+    int      trackseedIndex(-1);
+    for (int j=0; j<ntrkseed; ++j){
+      trkseed = tsb->TrackSeed(j);
+      kseed   = trkseed->fTrackSeed;
+      fkhelix = kseed->helix().get();
+      if (fkhelix == khelix) {
+	trackseedIndex = j;
+	break;
+      }
+    }
+    
+    if (trackseedIndex < 0) {
+      printf(">>> ERROR: CalHelixFinder helix %i -> no TrackSeed associated\n", i);//FIXME!
+	  continue;
+    }
+    
+    helix->SetTrackSeedIndex(trackseedIndex);
+  }
 
-  //     if (b1 == b2) {
-  //     }
-  //   }
-
-
-  //   //trackerHitTime = tmpHel->_relatedTimeCluster.operator ->();
-  // }
 //-----------------------------------------------------------------------------
 // mark links as initialized
 //-----------------------------------------------------------------------------
-  tsb->fLinksInitialized = 1;
+  hb->fLinksInitialized = 1;
 
 
   return 0;

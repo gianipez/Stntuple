@@ -45,6 +45,7 @@ public:
 //-----------------------------------------------------------------------------
   int                       fNHits;
   int                       fAlgorithmID;     // bit-packed : (alg_mask << 16 ) | best
+  int                       fTrackSeedIndex;
 //-----------------------------------------------------------------------------
 // floats
 //-----------------------------------------------------------------------------
@@ -78,10 +79,11 @@ public:
 //-----------------------------------------------------------------------------
 // accessors
 //-----------------------------------------------------------------------------
-  int     NHits      () { return  fNHits;  }
-  int     AlgorithmID() { return fAlgorithmID; }
-  int     AlgMask    () { return (fAlgorithmID >> 16) & 0xffff; }
-  int     BestAlg    () { return fAlgorithmID & 0xffff; }
+  int     NHits         () { return  fNHits;  }
+  int     AlgorithmID   () { return fAlgorithmID; }
+  int     AlgMask       () { return (fAlgorithmID >> 16) & 0xffff; }
+  int     BestAlg       () { return fAlgorithmID & 0xffff; }
+  int     TrackSeedIndex() { return fTrackSeedIndex; }
 
   float   T0         () { return  fT0;     }
   float   T0Err      () { return  fT0Err;  }
@@ -103,6 +105,11 @@ public:
   float   ClusterX      () { return fClusterX;     }
   float   ClusterY      () { return fClusterY;     }
   float   ClusterZ      () { return fClusterZ;     }
+
+//----------------------------------------------------------------------------
+// setters
+//----------------------------------------------------------------------------
+  void    SetTrackSeedIndex(int I) { fTrackSeedIndex = I; }
 
 //-----------------------------------------------------------------------------
 // overloaded methods of TObject

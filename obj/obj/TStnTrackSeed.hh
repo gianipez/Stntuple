@@ -43,6 +43,8 @@ public:
 // integers
 //-----------------------------------------------------------------------------
   int                       fNHits;
+  int                       fHelixIndex;
+  int                       fTrackIndex;
 //-----------------------------------------------------------------------------
 // floats
 //-----------------------------------------------------------------------------
@@ -77,7 +79,9 @@ public:
 //-----------------------------------------------------------------------------
 // accessors
 //-----------------------------------------------------------------------------
-  int     NHits      () { return  fNHits;  }
+  int     NHits      () { return  fNHits;      }
+  int     HelixIndex () { return  fHelixIndex; }
+  int     TrackIndex () { return  fTrackIndex; }
 
   float   T0         () { return  fT0;    }
   float   T0Err      () { return  fT0Err; }
@@ -96,6 +100,12 @@ public:
   float   ClusterX      () { return fClusterX;     }
   float   ClusterY      () { return fClusterY;     }
   float   ClusterZ      () { return fClusterZ;     }
+
+//-----------------------------------------------------------------------------
+// setters
+//-----------------------------------------------------------------------------
+  void    SetHelixIndex(int I) { fHelixIndex = I; }
+  void    SetTrackIndex(int I) { fTrackIndex = I; }
 
 //-----------------------------------------------------------------------------
 // overloaded methods of TObject
