@@ -10,6 +10,12 @@
 					// Mu2e 
 #include "Stntuple/obj/TStnTrack.hh"
 #include "Stntuple/obj/TStnTrackBlock.hh"
+#include "Stntuple/obj/TStnEvent.hh"
+#include "Stntuple/obj/TStnHelix.hh"
+#include "Stntuple/obj/TStnHelixBlock.hh"
+
+#include "Stntuple/obj/TStnTrackSeed.hh"
+#include "Stntuple/obj/TStnTrackSeedBlock.hh"
 
 #include "art/Framework/Principal/Selector.h"
 #include "art/Framework/Principal/Handle.h"
@@ -25,10 +31,13 @@
 #include "CalorimeterGeom/inc/DiskCalorimeter.hh"
 // #include "CalorimeterGeom/inc/VaneCalorimeter.hh"
 
+#include "RecoDataProducts/inc/HelixSeed.hh"
+#include "RecoDataProducts/inc/KalSeed.hh"
 #include "RecoDataProducts/inc/KalRepPtrCollection.hh"
 #include "RecoDataProducts/inc/KalRepCollection.hh"
 #include "BTrkData/inc/TrkStrawHit.hh"
 #include "RecoDataProducts/inc/Doublet.hh"
+#include "RecoDataProducts/inc/TrkQual.hh"
 #include "TrkReco/inc/DoubletAmbigResolver.hh"
 
 #include "RecoDataProducts/inc/TrkCaloIntersectCollection.hh"
@@ -188,6 +197,7 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 
   mu2e::AlgorithmIDCollection*             list_of_algs               (0);
   const mu2e::KalRepPtrCollection*         list_of_kreps              (0);
+  const mu2e::TrkQualCollection*           list_of_trkqual            (0);
   const mu2e::StrawDigiMCCollection*       list_of_mc_straw_hits      (0);
   const mu2e::StrawHitCollection*          list_of_straw_hits         (0);
   const mu2e::TrkCaloIntersectCollection*  list_of_extrapolated_tracks(0);
@@ -287,6 +297,13 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
     if (krepsHandle.isValid())    list_of_kreps = krepsHandle.product();
   }
 
+  art::Handle<mu2e::TrkQualCollection> trkQualHandle;
+  if (krep_module_label[0] != 0) {
+    AnEvent->getByLabel(krep_module_label,trkQualHandle);
+    if (trkQualHandle.isValid())    list_of_trkqual = trkQualHandle.product();
+  }
+
+
   art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandle;
   if (stmc_module_label[0] != 0) {
     if (stmc_description[0] == 0) AnEvent->getByLabel(stmc_module_label,mcptrHandle);
@@ -355,6 +372,7 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
     if      (module_type == "CalTrkFit"  ) xxx =  1;
     else if (module_type == "KalFinalFit") xxx =  0;
     else                                   xxx = -1;
+
 //-----------------------------------------------------------------------------
 // track-only-based particle ID, initialization ahs already happened in the constructor
 //-----------------------------------------------------------------------------
@@ -584,7 +602,7 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 //-----------------------------------------------------------------------------
     track->fNHits     = ntrkhits | (_kalDiag->_trkinfo._nbend << 16);
     track->fNMatSites = _kalDiag->_trkinfo._nmat | (_kalDiag->_trkinfo._nmatactive << 16);
-    track->fTrkQual   = _kalDiag->_trkinfo._trkqual;
+    track->fTrkQual   = list_of_trkqual->at(itrk).MVAOutput();//_kalDiag->_trkinfo._trkqual;
 //-----------------------------------------------------------------------------
 // defined bit-packed fNActive word
 //-----------------------------------------------------------------------------
@@ -1035,11 +1053,82 @@ Int_t StntupleInitMu2eTrackBlockLinks(TStnDataBlock* Block, AbsEvent* AnEvent, i
 //-----------------------------------------------------------------------------
 // TStnTrackBlock is already initialized
 //-----------------------------------------------------------------------------
-//  TStnTrack* trk;
-  int ntrk = tb->NTracks();
+  TStnEvent*           ev;
+  char                 krep_module_label[100];
+  tb->GetModuleLabel("mu2e::KalRepCollection",krep_module_label);
+  
+  TStnHelixBlock*      hb;
+  TStnHelix*           helix;
+
+  TStnTrackSeedBlock*  ftsb    , *tsb;
+  TStnTrackSeed*       ftrkseed, *trkseed;
+
+  TStnTrack*           trk;
+
+  const mu2e::KalSeed*   kseed, *fkseed;
+  const mu2e::HelixSeed* khelix, *fkhelix;
+
+  char                 kseed_module_label   [100], hseed_module_label[100];
+  char                 short_seed_block_name[100], short_helix_block_name[100];
+
+  tb->GetModuleLabel("HelixBlockName"     , hseed_module_label    );
+  tb->GetModuleLabel("ShortHelixBlockName", short_helix_block_name);
+
+  ev     = Block->GetEvent();
+  hb     = (TStnHelixBlock*)     ev->GetDataBlock(hseed_module_label    );
+  //  fhb    = (TStnHelixBlock*)     ev->GetDataBlock(short_helix_block_name);
+
+  tb->GetModuleLabel("TrackSeedBlockName"     , kseed_module_label);
+  tb->GetModuleLabel("ShortTrackSeedBlockName",short_seed_block_name);
+
+  tsb    = (TStnTrackSeedBlock*) ev->GetDataBlock(kseed_module_label);
+  ftsb   = (TStnTrackSeedBlock*) ev->GetDataBlock(short_seed_block_name);
+
+  int    ntrk     = tb  ->NTracks();
+  int    ntrkseed = tsb->NTrackSeeds();
+  int    nhelix   = hb  ->NHelices();
+  
   for (int i=0; i<ntrk; i++) {
-    //    trk = tb->Track(i);
-    // ### TO BE COMPLETED
+    trk      = tb->Track(i);
+    ftrkseed = ftsb->TrackSeed(i);
+    fkseed   = ftrkseed->fTrackSeed;
+    fkseed   = fkseed->kalSeed().get();
+    int  trackSeedIndex(-1);
+    for (int j=0; j<ntrkseed; ++j){
+      trkseed = tsb->TrackSeed(j);
+      kseed   = trkseed->fTrackSeed;
+      if (fkseed == kseed) {
+	trackSeedIndex = j;
+	break;
+      }
+    }
+    
+    if (trackSeedIndex < 0) {
+      printf(">>> ERROR: %s track %i -> no TrackSeed associated\n", krep_module_label, i);
+	  continue;
+    }
+    
+    trk->SetTrackSeedIndex(trackSeedIndex);
+    
+    //    fhelix  = fhb   ->Helix(trackSeedIndex);
+    fkhelix = fkseed->helix().get();//fhelix->fHelix;
+
+    int  helixIndex(-1);
+    for (int k=0; k<nhelix; ++k){
+      helix  = hb->Helix(k);
+      khelix = helix->fHelix;
+      if ( khelix == fkhelix){
+	helixIndex = k;
+	break;
+      }
+    }
+    
+    if (helixIndex < 0) {
+      printf(">>> ERROR: %s track %i -> no HelixSeed associated\n", krep_module_label, i);
+	  continue;
+    }
+    
+    trk->SetHelixIndex(helixIndex);
   }
 //-----------------------------------------------------------------------------
 // mark links as initialized

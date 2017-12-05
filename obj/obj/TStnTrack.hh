@@ -90,7 +90,10 @@ class TStnTrack : public TObject {
     kNFreeIntsV10  =  5,     //         in V10 2 words per intersection are added
     kNFreeFloatsV10=  4,
 
-    kNFreeInts     =  5,     //         V11: add Dave's TrkQual, I/O doesn't change
+    kNFreeIntsV11  =  5,     //         V11: add Dave's TrkQual, I/O doesn't change
+    kNFreeFloatsV11=  3,
+
+    kNFreeInts     =  3,     //         V12: add helix and seed indices, I/O doesn't change
     kNFreeFloats   =  3
   };
 
@@ -154,6 +157,8 @@ public:
   int                       fAlgorithmID;     // bit-packed : (alg_mask << 16 ) | best
   int                       fNHits;           // undefined before V9: total number of hits associated with the track | (nbend << 16)
   int                       fNDoublets;       // undefined before V9: nd_os | (nd_ss << 8) | (nhitsambig0 << 16) | (nda << 24)
+  int                       fHelixIndex;      // added in V12
+  int                       fSeedIndex;
   int                       fInt[kNFreeInts]; // provision for future I/O expansion
   
   float                     fChi2;
@@ -248,6 +253,9 @@ public:
   int    BestAlg    () const { return fAlgorithmID & 0xffff; }
   int    AlgMask    () const { return (fAlgorithmID >> 16) & 0xffff; }
 
+  int    HelixIndex     () const { return fHelixIndex; }
+  int    TrackSeedIndex () const { return fSeedIndex; }
+
   float  T0       () const { return fT0;    }
   float  T0Err    () const { return fT0Err; }
   float  FitCons  () const { return fFitCons; }
@@ -294,14 +302,17 @@ public:
   float  P2         () const { return fP2;      }
   float  C0         () const { return fC0;      }
   float  Phi0       () const { return fPhi0;    }
-  float  DaveTrkQual() const { return fTrkQual; }
+  float  DaveTrkQual() const { return fTrkQual; }  // kept for not hurting previous Ana codes
+  float  TrkQual    () const { return fTrkQual; }
 
   float  RMax       () const { return fabs(fD0+2/fC0); }
 //-----------------------------------------------------------------------------
 // setters
 //-----------------------------------------------------------------------------
-  void   SetNumber      (int I ) { fNumber      = I ; }
-  void   SetAlgorithmID (int ID) { fAlgorithmID = ID; }
+  void   SetNumber        (int I ) { fNumber      = I ; }
+  void   SetAlgorithmID   (int ID) { fAlgorithmID = ID; }
+  void   SetHelixIndex    (int I ) { fHelixIndex  = I;  }
+  void   SetTrackSeedIndex(int I ) { fSeedIndex   = I;  }
 //-----------------------------------------------------------------------------
 // overloaded methods of TObject
 //-----------------------------------------------------------------------------

@@ -106,6 +106,7 @@ public:
   void GetModuleLabel(const char* CollectionClassName, char* ModuleLabela);
   void GetDescription(const char* CollectionClassName, char* Description);
   void GetProcessName(const char* CollectionClassName, char* ProcessName);
+  void GetValue      (const char* Key                , char* Value      );
 //-----------------------------------------------------------------------------
 //  setters
 //-----------------------------------------------------------------------------

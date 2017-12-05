@@ -98,6 +98,10 @@ protected:
   std::string              fVDCollName;
   std::string              fMakeVdetHitsModuleLabel; // name of the module produced SimParticleCollection
 
+  std::vector<std::string> fShortHelixBlockName;
+  std::vector<std::string> fShortHelixModuleLabel;
+  std::vector<std::string> fShortTrackSeedBlockName;
+  std::vector<std::string> fShortTrackSeedModuleLabel;
   std::vector<std::string> fHelixBlockName;
   std::vector<std::string> fHelixModuleLabel;
   std::vector<std::string> fTrackSeedBlockName;
@@ -190,6 +194,10 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
   , fMakeSimpModuleLabel     (PSet.get<string>        ("makeSimpModuleLabel"     ))
   , fVDCollName              (PSet.get<string>        ("vdCollName"              ))
   , fMakeVdetHitsModuleLabel (PSet.get<string>        ("makeVdetHitsModuleLabel" ))
+  , fShortHelixBlockName      (PSet.get<vector<string>>("shortHelixBlockName"      ))
+  , fShortHelixModuleLabel    (PSet.get<vector<string>>("shortHelixModuleLabel"    ))
+  , fShortTrackSeedBlockName  (PSet.get<vector<string>>("shortTrackSeedBlockName"  ))
+  , fShortTrackSeedModuleLabel(PSet.get<vector<string>>("shortTrackSeedModuleLabel")) 
   , fHelixBlockName          (PSet.get<vector<string>>("helixBlockName"          ))
   , fHelixModuleLabel        (PSet.get<vector<string>>("helixModuleLabel"        ))
   , fTrackSeedBlockName      (PSet.get<vector<string>>("trackSeedBlockName"      ))
@@ -344,6 +352,61 @@ void StntupleMaker::beginJob() {
       straw_data->AddCollName("mu2e::StrawHitCollection",fMakeStrawHitModuleLabel.data(),"");
     }
   }
+//----------------------------------------------------------------------------
+// short helix data (from SeedFit modules)
+//----------------------------------------------------------------------------
+  if (fMakeTracks) {
+    TStnDataBlock* helix_data, *trackSeed_data;
+    const char    *block_name;
+    int            nblocks;
+    
+    nblocks = fShortHelixBlockName.size();
+
+    for (int i=0; i<nblocks; i++) {
+      
+      block_name = fShortHelixBlockName[i].data();
+
+      helix_data = AddDataBlock(block_name, 
+				"TStnHelixBlock",
+				StntupleInitMu2eHelixBlock,
+				buffer_size,
+				split_mode,
+				compression_level);
+      
+      //      SetResolveLinksMethod(block_name,StntupleInitMu2eHelixBlockLinks);
+      
+      if (helix_data) {
+	helix_data->AddCollName("mu2e::HelixSeedCollection", fShortHelixModuleLabel[i].data(),"");
+	helix_data->AddCollName("ShortHelixBlockName"      , fShortHelixBlockName[i].data()    ,"");
+      }
+    }
+    
+    
+    // short trackSeed collections
+    nblocks = fShortTrackSeedBlockName.size();
+
+    for (int i=0; i<nblocks; i++) {
+      
+      block_name = fShortTrackSeedBlockName[i].data();
+
+      trackSeed_data = AddDataBlock(block_name, 
+				    "TStnTrackSeedBlock",
+				    StntupleInitMu2eTrackSeedBlock,
+				    buffer_size,
+				    split_mode,
+				    compression_level);
+
+      //     SetResolveLinksMethod(block_name,StntupleInitMu2eTrackSeedBlockLinks);
+      
+      if (trackSeed_data) {
+	trackSeed_data->AddCollName("mu2e::KalSeedCollection"  ,fShortTrackSeedModuleLabel[i].data(),"");
+	trackSeed_data->AddCollName("ShortTrackSeedBlockName"  ,fShortTrackSeedBlockName[i].data(),"");
+      }
+    }
+    
+  }
+
+
 //--------------------------------------------------------------------------------
 // helix data
 //--------------------------------------------------------------------------------
@@ -365,7 +428,7 @@ void StntupleMaker::beginJob() {
 				    split_mode,
 				    compression_level);
       
-      SetResolveLinksMethod(block_name,StntupleInitMu2eHelixBlockLinks);
+      //      SetResolveLinksMethod(block_name,StntupleInitMu2eHelixBlockLinks);
       
       if (helix_data) {
 	helix_data->AddCollName("mu2e::HelixSeedCollection",fHelixModuleLabel[i].data(),"");
@@ -392,12 +455,17 @@ void StntupleMaker::beginJob() {
 				    buffer_size,
 				    split_mode,
 				    compression_level);
-      
-      SetResolveLinksMethod(block_name,StntupleInitMu2eTrackSeedBlockLinks);
+
+      //     SetResolveLinksMethod(block_name,StntupleInitMu2eTrackSeedBlockLinks);
       
       if (trackSeed_data) {
-	trackSeed_data->AddCollName("mu2e::KalSeedCollection",fTrackSeedModuleLabel[i].data(),"");
+	trackSeed_data->AddCollName("mu2e::HelixSeedCollection",fHelixModuleLabel[i].data()    ,"");
+	trackSeed_data->AddCollName("mu2e::KalSeedCollection"  ,fTrackSeedModuleLabel[i].data(),"");
+	trackSeed_data->AddCollName("HelixBlockName"           ,fHelixBlockName[i].data()       ,"");
+	trackSeed_data->AddCollName("ShortHelixBlockName"      ,fShortHelixBlockName[i].data(),"");
+	trackSeed_data->AddCollName("ShortTrackSeedBlockName"  ,fShortTrackSeedBlockName[i].data(),"");
       }
+
     }
   }
 
@@ -469,8 +537,9 @@ void StntupleMaker::beginJob() {
 				split_mode,
 				compression_level);
 
-      SetResolveLinksMethod(block_name,StntupleInitMu2eTrackBlockLinks);
 
+         //      SetResolveLinksMethod(block_name,StntupleInitMu2eTrackBlockLinks);
+      int       nshortblocks = fHelixBlockName.size();
       if (track_data) {
 	//	TrkFitDirection fit_dir = TrkFitDirection((TrkFitDirection::FitDirection)fFitDirection[i]);
 	//	TrkParticle     part    = TrkParticle((TrkParticle::type)fFitParticle[i]);
@@ -486,7 +555,51 @@ void StntupleMaker::beginJob() {
 	track_data->AddCollName("mu2e::StepPointMCCollection"         ,fG4ModuleLabel.data()             ,"");
 	track_data->AddCollName("DarHandle"                           ,GetName()                         ,"DarHandle");
 	track_data->AddCollName("KalDiagHandle"                       ,GetName()                         ,"KalDiagHandle");
+
+	if (i <nshortblocks) {
+	  track_data->AddCollName("ShortHelixBlockName"      ,fShortHelixBlockName[i].data(),"");
+	  track_data->AddCollName("ShortTrackSeedBlockName"  ,fShortTrackSeedBlockName[i].data(),"");
+	  track_data->AddCollName("mu2e::HelixSeedCollection",fHelixModuleLabel[i].data()       ,"");
+	  track_data->AddCollName("mu2e::KalSeedCollection"  ,fTrackSeedModuleLabel[i].data()   ,"");
+	  track_data->AddCollName("HelixBlockName"           ,fHelixBlockName[i].data()       ,"");
+	  track_data->AddCollName("TrackSeedBlockName"       ,fTrackSeedBlockName[i].data()   ,"");
+	}
       }
+      
+      if (i <nshortblocks) SetResolveLinksMethod(block_name,StntupleInitMu2eTrackBlockLinks);
+    }
+    
+  }
+
+//----------------------------------------------------------------------------
+// resolve the links for TrackSeed and Helix Blocks
+//----------------------------------------------------------------------------
+  if (fMakeTracks) {
+    const char    *block_name;
+    int            nblocks;
+    TStnDataBlock* helix_data, *trackSeed_data;
+
+    nblocks = fHelixBlockName.size();
+
+    for (int i=0; i<nblocks; i++) {
+      block_name = fHelixBlockName[i].data();
+      helix_data = Event()->GetDataBlock(block_name);
+      if (helix_data) {
+	helix_data->AddCollName("mu2e::KalSeedCollection"  ,fTrackSeedModuleLabel[i].data(),"");
+	helix_data->AddCollName("ShortTrackSeedBlockName"  ,fShortTrackSeedBlockName[i].data(),"");
+      }
+      SetResolveLinksMethod(block_name,StntupleInitMu2eHelixBlockLinks);
+    }
+    
+    nblocks = fTrackSeedBlockName.size();
+
+    for (int i=0; i<nblocks; i++) {
+      block_name     = fTrackSeedBlockName[i].data();
+      trackSeed_data = Event()->GetDataBlock(block_name);
+      if (trackSeed_data) {
+	trackSeed_data->AddCollName("mu2e::KalRepCollection"   ,fTrkRecoModuleLabel[i].data()  ,"");	
+      }
+      SetResolveLinksMethod(block_name,StntupleInitMu2eTrackSeedBlockLinks);
     }
   }
 //-----------------------------------------------------------------------------
