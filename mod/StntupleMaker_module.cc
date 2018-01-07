@@ -82,6 +82,7 @@ protected:
   int              fMakeStrawData;
   int              fMakeTracks;
   int              fMakeTrackStrawHits;
+  int              fMakeTimeCluster;
   int              fMakeHelices;
   int              fMakeTrackSeeds;
   int              fMakeTrigger;
@@ -102,6 +103,8 @@ protected:
   std::vector<std::string> fShortHelixModuleLabel;
   std::vector<std::string> fShortTrackSeedBlockName;
   std::vector<std::string> fShortTrackSeedModuleLabel;
+  std::vector<std::string> fTimeClusterBlockName;
+  std::vector<std::string> fTimeClusterModuleLabel;
   std::vector<std::string> fHelixBlockName;
   std::vector<std::string> fHelixModuleLabel;
   std::vector<std::string> fTrackSeedBlockName;
@@ -182,6 +185,7 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
   , fMakeStrawData      (PSet.get<int>         ("makeStrawData"  ))
   , fMakeTracks         (PSet.get<int>         ("makeTracks"     ))
   , fMakeTrackStrawHits (PSet.get<int>         ("makeTrackStrawHits"))
+  , fMakeTimeCluster    (PSet.get<int>         ("makeTimeClusters"))
   , fMakeHelices        (PSet.get<int>         ("makeHelices"    ))
   , fMakeTrackSeeds     (PSet.get<int>         ("makeTrackSeeds" ))
   , fMakeTrigger        (PSet.get<int>         ("makeTrigger"    ))
@@ -198,6 +202,8 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
   , fShortHelixModuleLabel    (PSet.get<vector<string>>("shortHelixModuleLabel"    ))
   , fShortTrackSeedBlockName  (PSet.get<vector<string>>("shortTrackSeedBlockName"  ))
   , fShortTrackSeedModuleLabel(PSet.get<vector<string>>("shortTrackSeedModuleLabel")) 
+  , fTimeClusterBlockName    (PSet.get<vector<string>>("timeClusterBlockName"    ))
+  , fTimeClusterModuleLabel  (PSet.get<vector<string>>("timeClusterModuleLabel"  ))
   , fHelixBlockName          (PSet.get<vector<string>>("helixBlockName"          ))
   , fHelixModuleLabel        (PSet.get<vector<string>>("helixModuleLabel"        ))
   , fTrackSeedBlockName      (PSet.get<vector<string>>("trackSeedBlockName"      ))
@@ -405,7 +411,35 @@ void StntupleMaker::beginJob() {
     }
     
   }
+//--------------------------------------------------------------------------------
+// helix data
+//--------------------------------------------------------------------------------
+  if (fMakeTimeCluster) {
+    TStnDataBlock* timeCluster_data;
+    const char    *block_name;
+    int            nblocks;
+    
+    nblocks = fTimeClusterBlockName.size();
 
+    for (int i=0; i<nblocks; i++) {
+      
+      block_name = fTimeClusterBlockName[i].data();
+
+      timeCluster_data = AddDataBlock(block_name, 
+				    "TStnTimeClusterBlock",
+				      StntupleInitMu2eTimePeakBlock,
+				      buffer_size,
+				      split_mode,
+				      compression_level);
+      
+      //      SetResolveLinksMethod(block_name,StntupleInitMu2eTimeClusterBlockLinks);
+      
+      if (timeCluster_data) {
+	timeCluster_data->AddCollName("mu2e::HelixSeedCollection"  ,fHelixModuleLabel[i].data()      ,"");
+ 	timeCluster_data->AddCollName("mu2e::TimeClusterCollection",fTimeClusterModuleLabel[i].data(),"");
+     }
+    }
+  }
 
 //--------------------------------------------------------------------------------
 // helix data
@@ -431,8 +465,9 @@ void StntupleMaker::beginJob() {
       //      SetResolveLinksMethod(block_name,StntupleInitMu2eHelixBlockLinks);
       
       if (helix_data) {
-	helix_data->AddCollName("mu2e::HelixSeedCollection",fHelixModuleLabel[i].data(),"");
-      }
+	helix_data->AddCollName("mu2e::HelixSeedCollection"  ,fHelixModuleLabel[i].data()      ,"");
+ 	helix_data->AddCollName("mu2e::TimeClusterCollection",fTimeClusterModuleLabel[i].data(),"");
+     }
     }
   }
 //--------------------------------------------------------------------------------

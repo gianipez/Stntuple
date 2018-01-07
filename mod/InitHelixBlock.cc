@@ -11,6 +11,9 @@
 #include "Stntuple/obj/TStnDataBlock.hh"
 #include "Stntuple/obj/TStnEvent.hh"
 
+#include "Stntuple/obj/TStnTimePeak.hh"
+#include "Stntuple/obj/TStnTimePeakBlock.hh"
+
 #include "Stntuple/obj/TStnHelix.hh"
 #include "Stntuple/obj/TStnHelixBlock.hh"
 
@@ -27,6 +30,7 @@
 #include "CalorimeterGeom/inc/Calorimeter.hh"
 // #include "TrkReco/inc/TrkStrawHit.hh"
 
+#include "RecoDataProducts/inc/TimeCluster.hh"
 #include "RecoDataProducts/inc/HelixSeed.hh"
 #include "RecoDataProducts/inc/HelixHit.hh"
 #include "RecoDataProducts/inc/KalSeed.hh"
@@ -41,48 +45,49 @@
 
 
 
-double evalWeight(CLHEP::Hep3Vector& HitPos   ,
-		  CLHEP::Hep3Vector& StrawDir ,
-		  CLHEP::Hep3Vector& HelCenter, 
-		  double             Radius   ,
-		  int                WeightMode,
-		  fhicl::ParameterSet const& Pset) {//WeightMode = 1 is for XY chi2 , WeightMode = 0 is for Phi-z chi2
+namespace {
+  double evalWeight(CLHEP::Hep3Vector& HitPos   ,
+		    CLHEP::Hep3Vector& StrawDir ,
+		    CLHEP::Hep3Vector& HelCenter, 
+		    double             Radius   ,
+		    int                WeightMode,
+		    fhicl::ParameterSet const& Pset) {//WeightMode = 1 is for XY chi2 , WeightMode = 0 is for Phi-z chi2
   
-  double    rs(2.5);   // straw radius, mm
-  double    ew(30.0);  // assumed resolution along the wire, mm
+    double    rs(2.5);   // straw radius, mm
+    double    ew(30.0);  // assumed resolution along the wire, mm
   
-  double x  = HitPos.x();
-  double y  = HitPos.y();
-  double dx = x-HelCenter.x();
-  double dy = y-HelCenter.y();
+    double x  = HitPos.x();
+    double y  = HitPos.y();
+    double dx = x-HelCenter.x();
+    double dy = y-HelCenter.y();
   
-  double costh  = (dx*StrawDir.x()+dy*StrawDir.y())/sqrt(dx*dx+dy*dy);
-  double sinth2 = 1-costh*costh;
+    double costh  = (dx*StrawDir.x()+dy*StrawDir.y())/sqrt(dx*dx+dy*dy);
+    double sinth2 = 1-costh*costh;
   
-  double wt(0), wtXY(1), wtPhiZ(1);
+    double wt(0), wtXY(1), wtPhiZ(1);
 
-  //  fhicl::ParameterSet const& pset = helix_handle.provenance()->parameterSet();
-  std::string                module     = Pset.get<std::string>("module_type");
+    //  fhicl::ParameterSet const& pset = helix_handle.provenance()->parameterSet();
+    std::string                module     = Pset.get<std::string>("module_type");
   
-  if ( module == "CalHelixFinder"){
-    fhicl::ParameterSet const& psetHelFit = Pset.get<fhicl::ParameterSet>("HelixFinderAlg", fhicl::ParameterSet());
-    wtXY   = psetHelFit.get<double>("weightXY");
-    wtPhiZ = psetHelFit.get<double>("weightZPhi");
-  }
-                                            //scale the weight for having chi2/ndof distribution peaking at 1
-  if ( WeightMode == 1){//XY-Fit
-    double e2     = ew*ew*sinth2+rs*rs*costh*costh;
-    wt  = 1./e2;
-    wt *= wtXY;
-  } else if (WeightMode ==0 ){//Phi-Z Fit
-    double e2     = ew*ew*costh*costh+rs*rs*sinth2;
-    wt     = Radius*Radius/e2;
-    wt    *= wtPhiZ;
-  }
+    if ( module == "CalHelixFinder"){
+      fhicl::ParameterSet const& psetHelFit = Pset.get<fhicl::ParameterSet>("HelixFinderAlg", fhicl::ParameterSet());
+      wtXY   = psetHelFit.get<double>("weightXY");
+      wtPhiZ = psetHelFit.get<double>("weightZPhi");
+    }
+    //scale the weight for having chi2/ndof distribution peaking at 1
+    if ( WeightMode == 1){//XY-Fit
+      double e2     = ew*ew*sinth2+rs*rs*costh*costh;
+      wt  = 1./e2;
+      wt *= wtXY;
+    } else if (WeightMode ==0 ){//Phi-Z Fit
+      double e2     = ew*ew*costh*costh+rs*rs*sinth2;
+      wt     = Radius*Radius/e2;
+      wt    *= wtPhiZ;
+    }
   
-  return wt;
+    return wt;
+  }
 }
-
 
 //-----------------------------------------------------------------------------
 // assume that the collection name is set, so we could grab it from the event
@@ -283,21 +288,27 @@ Int_t StntupleInitMu2eHelixBlockLinks(TStnDataBlock* Block, AbsEvent* AnEvent, i
   TStnHelix*           helix;
   TStnTrackSeedBlock*  tsb;
   TStnTrackSeed*       trkseed;
+  TStnTimePeakBlock*   tpb;
+  TStnTimePeak*        tp;
 
-  const mu2e::HelixSeed* khelix, *fkhelix;
-  const mu2e::KalSeed*   kseed;
+  const mu2e::HelixSeed*    khelix, *fkhelix;
+  const mu2e::KalSeed*      kseed;
+  const mu2e::TimeCluster* ktimepeak, *fktimepeak;
 
-  char                 short_helix_block_name[100];
+  char                 short_helix_block_name[100], timepeak_block_name[100];
 
   ev     = Block->GetEvent();
   hb     = (TStnHelixBlock*) Block;
   
-  hb->GetModuleLabel("mu2e::KalSeedCollection"  , short_helix_block_name);
+  hb->GetModuleLabel("mu2e::KalSeedCollection"    , short_helix_block_name);
+  hb->GetModuleLabel("mu2e::TimeClusterCollection", timepeak_block_name   );
 
   tsb    = (TStnTrackSeedBlock*) ev->GetDataBlock(short_helix_block_name);
-  
+  tpb    = (TStnTimePeakBlock* ) ev->GetDataBlock(timepeak_block_name   );
+
   int    nhelix   = hb ->NHelices();
   int    ntrkseed = tsb->NTrackSeeds();
+  int    ntpeak   = tpb->NTimePeaks();
 
   for (int i=0; i<nhelix; ++i){
     helix  = hb   ->Helix(i);
@@ -317,8 +328,27 @@ Int_t StntupleInitMu2eHelixBlockLinks(TStnDataBlock* Block, AbsEvent* AnEvent, i
       printf(">>> ERROR: CalHelixFinder helix %i -> no TrackSeed associated\n", i);//FIXME!
 	  continue;
     }
-    
     helix->SetTrackSeedIndex(trackseedIndex);
+
+    ktimepeak = khelix->timeCluster().get();
+    int      timepeakIndex(-1);
+    for (int j=0; j<ntpeak;++j){
+      tp         = tpb->TimePeak(j);
+      fktimepeak = tp->fTimeCluster;
+      if (fktimepeak == ktimepeak){
+	timepeakIndex = j;
+	break;
+      }
+    }
+
+    if (timepeakIndex < 0) {
+      printf(">>> ERROR: CalHelixFinder helix %i -> no TimeCluster associated\n", i);//FIXME!
+	  continue;
+    }
+
+    helix->SetTimeClusterIndex(timepeakIndex);
+
+    
   }
 
 //-----------------------------------------------------------------------------

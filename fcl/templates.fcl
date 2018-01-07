@@ -358,25 +358,32 @@ Stntuple : { @table::Stntuple  # defined in Stntuple/fcl/prolog.fcl
 #------------------------------------------------------------------------------
 #	@table::EventMixing.filters
         flashMixer           : { @table::mixerTemplate
-	    fileNames : @local::bgHitFiles detail: { @table::mixerTemplate.detail g4ModuleLabel:flashMixer genModuleLabel:flashMixer }
+#	    fileNames : @local::bgHitFiles 
+	    detail: { @table::mixerTemplate.detail g4ModuleLabel:flashMixer genModuleLabel:flashMixer }
 	}
 	ootMixer             : { @table::mixerTemplate
-	    fileNames : @local::bgHitFiles detail: { @table::mixerTemplate.detail g4ModuleLabel:ootMixer   genModuleLabel:ootMixer   }
+#	    fileNames : @local::bgHitFiles 
+	    detail: { @table::mixerTemplate.detail g4ModuleLabel:ootMixer   genModuleLabel:ootMixer   }
 	}
 	dioMixer             : { @table::mixerTemplate
-	    fileNames : @local::bgHitFiles detail: { @table::mixerTemplate.detail g4ModuleLabel:dioMixer   genModuleLabel:dioMixer   }
+#	    fileNames : @local::bgHitFiles 
+	    detail: { @table::mixerTemplate.detail g4ModuleLabel:dioMixer   genModuleLabel:dioMixer   }
 	}
 	neutronMixer         : { @table::mixerTemplate
-	    fileNames : @local::bgHitFiles detail: { @table::mixerTemplate.detail g4ModuleLabel:neutronMixer genModuleLabel:neutronMixer }
+#	    fileNames : @local::bgHitFiles 
+	    detail: { @table::mixerTemplate.detail g4ModuleLabel:neutronMixer genModuleLabel:neutronMixer }
 	}
 	photonMixer          : { @table::mixerTemplate
-	    fileNames : @local::bgHitFiles detail: { @table::mixerTemplate.detail g4ModuleLabel:photonMixer genModuleLabel:photonMixer }
+#	    fileNames : @local::bgHitFiles 
+	    detail: { @table::mixerTemplate.detail g4ModuleLabel:photonMixer genModuleLabel:photonMixer }
 	}
 	protonMixer          : { @table::mixerTemplate
-	    fileNames : @local::bgHitFiles detail: { @table::mixerTemplate.detail g4ModuleLabel:protonMixer genModuleLabel:protonMixer }
+#	    fileNames : @local::bgHitFiles 
+	    detail: { @table::mixerTemplate.detail g4ModuleLabel:protonMixer genModuleLabel:protonMixer }
 	}
 	deuteronMixer          : { @table::mixerTemplate
-	    fileNames : @local::bgHitFiles detail: { @table::mixerTemplate.detail g4ModuleLabel:deuteronMixer genModuleLabel:deuteronMixer }
+#	    fileNames : @local::bgHitFiles 
+	    detail: { @table::mixerTemplate.detail g4ModuleLabel:deuteronMixer genModuleLabel:deuteronMixer }
 	}
 #------------------------------------------------------------------------------
 # Andrej's filter

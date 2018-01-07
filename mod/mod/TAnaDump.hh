@@ -90,6 +90,13 @@ public:
   void SetEvent(art::Event& Evt) { fEvent = &Evt; }
   void SetFlagBgrHitsModuleLabel(const char* Label) { fFlagBgrHitsModuleLabel = Label; }
 
+  double evalWeight(CLHEP::Hep3Vector& HitPos   ,
+		    CLHEP::Hep3Vector& StrawDir ,
+		    CLHEP::Hep3Vector& HelCenter, 
+		    double             Radius   ,
+		    int                WeightMode,
+		    fhicl::ParameterSet const& Pset);
+
   void printEventHeader();
 
   void printCaloCrystalHits (const char* ModuleLabel, 

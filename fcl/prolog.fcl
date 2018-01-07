@@ -22,6 +22,7 @@ StntupleMakerTemplate : { module_type:StntupleMaker
     makeTrackStrawHits  : 0
     makeTrigger         : 0
     makeTrackSeeds      : 0
+    makeTimeClusters    : 0
     makeHelices         : 0
     makeVirtualHits     : 1
     
@@ -44,6 +45,9 @@ StntupleMakerTemplate : { module_type:StntupleMaker
     vdCollName              : "virtualdetector"
     makeVdetHitsModuleLabel : "g4run"
     generatorModuleLabel    : "generate"
+
+    timeClusterBlockName    : ["TimeClusterBlock" ]
+    timeClusterModuleLabel  : ["CalTimePeakFinder"]
 
     helixBlockName          : ["HelixBlock"]
     helixModuleLabel        : ["CalHelixFinder"]
@@ -103,8 +107,8 @@ MuHitDisplay: { module_type:MuHitDisplay        # the class name;
     g4ModuleLabel                : g4run
     strawHitMakerModuleLabel     : makeSH
     strawDigiMakerModuleLabel    : makeSD
-    strawHitPosMakerModuleLabel  : CalPatRecMakeStrawHitPositions
-    strawHitFlagMakerModuleLabel : CalPatRecFlagStrawHits
+    strawHitPosMakerModuleLabel  : MakeStrawHitPositions
+    strawHitFlagMakerModuleLabel : FlagStrawHits
     
     caloCrystalHitsMaker         : CaloCrystalHitFromHit
     caloClusterModuleLabel       : CaloClusterFromProtoCluster
@@ -320,7 +324,10 @@ Stntuple : {
 	StntupleMakerTcm : { @table::StntupleMakerTemplate 
 	    makePid                    : 0
 	    makeTrackSeeds             : 1
+	    makeTimeClusters           : 1
 	    makeHelices                : 1
+	    timeClusterBlockName       : [ "TprTimeClusterBlock"   , "CprTimeClusterBlock"     ]
+	    timeClusterModuleLabel     : [ "TimeClusterFinder"     , "CalTimePeakFinder"       ]
 	    helixBlockName             : [ "TprHelixBlock"         , "CprHelixBlock"           ]
 	    helixModuleLabel           : [ "PosHelixFinder"        , "CalHelixFinder"          ]
 	    trackSeedBlockName         : [ "TprTrackSeedBlock"     , "CprTrackSeedBlock"       ]

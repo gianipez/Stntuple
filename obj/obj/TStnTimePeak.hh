@@ -7,8 +7,8 @@
 //
 // Contact person Pavel Murat
 //
-#ifndef Stntuple_obj_TStnHelix_hh
-#define Stntuple_obj_TStnHelix_hh
+#ifndef Stntuple_obj_TStnTimePeak_hh
+#define Stntuple_obj_TStnTimePeak_hh
 
 // storable objects (data products)
 // 
@@ -24,12 +24,10 @@
 //namespace murat {
 
 namespace mu2e {
-  class HelixSeed;
-  class StrawHit;
-  class CaloCluster;
+  class TimeCluster;
 }
 
-class TStnHelix : public TObject {
+class TStnTimePeak : public TObject {
 
   // enum {
   //   kNFreeIntsV1   = 10,		// V1
@@ -44,24 +42,17 @@ public:
 // integers
 //-----------------------------------------------------------------------------
   int                       fNHits;
-  int                       fAlgorithmID;     // bit-packed : (alg_mask << 16 ) | best
-  int                       fTimeClusterIndex;
-  int                       fTrackSeedIndex;
+  int                       fHelixSeedIndex;
 //-----------------------------------------------------------------------------
 // floats
 //-----------------------------------------------------------------------------
   float                     fT0;    
   float                     fT0Err; 
 
-  float                     fRCent;  // radius of circle center
-  float                     fFCent;  // azimuth of circle center
-  float                     fRadius; // transverse radius of the helix (mm).  Always positive
-  float                     fLambda; // dz/dphi (mm/radian)
-  float                     fFZ0;    // azimuth (phi) at the center z position (radians)
-  float                     fD0;     // impact paramter 
-  float                     fChi2XYNDof;
-  float                     fChi2PhiZNDof;
-
+  float                     fPosX;
+  float                     fPosY;
+  float                     fPosZ;
+ 
   float                     fClusterTime;   
   float			    fClusterEnergy; 
   float			    fClusterX;      
@@ -71,36 +62,24 @@ public:
 //-----------------------------------------------------------------------------
 // transients
 //-----------------------------------------------------------------------------
-  const mu2e::HelixSeed*    fHelix;  //!
+  const mu2e::TimeCluster*    fTimeCluster;  //!
 //-----------------------------------------------------------------------------
 // methods
 //-----------------------------------------------------------------------------
-  TStnHelix(int i = -1);
-  ~TStnHelix();
+  TStnTimePeak(int i = -1);
+  ~TStnTimePeak();
 //-----------------------------------------------------------------------------
 // accessors
 //-----------------------------------------------------------------------------
-  int     NHits           () { return  fNHits;  }
-  int     AlgorithmID     () { return fAlgorithmID; }
-  int     AlgMask         () { return (fAlgorithmID >> 16) & 0xffff; }
-  int     BestAlg         () { return fAlgorithmID & 0xffff; }
-  int     TimeClusterIndex() { return fTimeClusterIndex; }
-  int     TrackSeedIndex  () { return fTrackSeedIndex;   }
+  int     NHits         () { return  fNHits;  }
+  int     HelixSeedIndex() { return  fHelixSeedIndex; }
 
-  float   T0         () { return  fT0;     }
-  float   T0Err      () { return  fT0Err;  }
+  float   T0            () { return  fT0;     }
+  float   T0Err         () { return  fT0Err;  }
 
-  float   RCent      () { return  fRCent;  } 
-  float   FCent      () { return  fFCent;  } 
-  float   Radius     () { return  fRadius; }
-  float   Lambda     () { return  fLambda; }
-  float   FZ0        () { return  fFZ0;    }   
-  float   CenterX    () { return  fRCent*cos(fFCent);}
-  float   CenterY    () { return  fRCent*sin(fFCent);}
-  float   D0         () { return  fD0;    }   
-
-  float   Chi2XY     () { return  fChi2XYNDof;}
-  float   Chi2ZPhi   () { return  fChi2PhiZNDof;}
+  float   posX          () { return  fPosX;}
+  float   posY          () { return  fPosY;}
+  float   posZ          () { return  fPosZ;}
 
   float   ClusterTime   () { return fClusterTime;  }
   float   ClusterEnergy () { return fClusterEnergy;}
@@ -111,8 +90,7 @@ public:
 //----------------------------------------------------------------------------
 // setters
 //----------------------------------------------------------------------------
-  void    SetTimeClusterIndex(int I) { fTimeClusterIndex = I; }
-  void    SetTrackSeedIndex  (int I) { fTrackSeedIndex   = I; }
+  void    SetHelixSeedIndex(int I) { fHelixSeedIndex = I; }
 
 //-----------------------------------------------------------------------------
 // overloaded methods of TObject
@@ -124,7 +102,7 @@ public:
 //-----------------------------------------------------------------------------
 //  void ReadV1(TBuffer& R__b);
 
-  ClassDef(TStnHelix,1);
+  ClassDef(TStnTimePeak,1)
 };
 
 #endif

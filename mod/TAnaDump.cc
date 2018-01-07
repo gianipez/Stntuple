@@ -2,6 +2,7 @@
 
 #include "mod/TAnaDump.hh"
 #include "TROOT.h"
+#include "TVector2.h"
 
 
 #include "art/Framework/Principal/Handle.h"
@@ -54,6 +55,7 @@
 #include "TrackCaloMatching/inc/TrackClusterMatch.hh"
 
 #include "CalPatRec/inc/CalTimePeak.hh"
+#include "CalPatRec/inc/LsqSums4.hh"
 
 #include "Stntuple/base/TNamedHandle.hh"
 
@@ -73,6 +75,49 @@
 ClassImp(TAnaDump)
 
 TAnaDump* TAnaDump::fgInstance = 0;
+
+double TAnaDump::evalWeight(CLHEP::Hep3Vector& HitPos   ,
+			    CLHEP::Hep3Vector& StrawDir ,
+			    CLHEP::Hep3Vector& HelCenter, 
+			    double             Radius   ,
+			    int                WeightMode,
+			    fhicl::ParameterSet const& Pset) {//WeightMode = 1 is for XY chi2 , WeightMode = 0 is for Phi-z chi2
+  
+  double    rs(2.5);   // straw radius, mm
+  double    ew(30.0);  // assumed resolution along the wire, mm
+  
+  double x  = HitPos.x();
+  double y  = HitPos.y();
+  double dx = x-HelCenter.x();
+  double dy = y-HelCenter.y();
+  
+  double costh  = (dx*StrawDir.x()+dy*StrawDir.y())/sqrt(dx*dx+dy*dy);
+  double sinth2 = 1-costh*costh;
+  
+  double wt(0), wtXY(1), wtPhiZ(1);
+
+  //  fhicl::ParameterSet const& pset = helix_handle.provenance()->parameterSet();
+  std::string                module     = Pset.get<std::string>("module_type");
+  
+  if ( module == "CalHelixFinder"){
+    fhicl::ParameterSet const& psetHelFit = Pset.get<fhicl::ParameterSet>("HelixFinderAlg", fhicl::ParameterSet());
+    wtXY   = psetHelFit.get<double>("weightXY");
+    wtPhiZ = psetHelFit.get<double>("weightZPhi");
+  }
+                                            //scale the weight for having chi2/ndof distribution peaking at 1
+  if ( WeightMode == 1){//XY-Fit
+    double e2     = ew*ew*sinth2+rs*rs*costh*costh;
+    wt  = 1./e2;
+    wt *= wtXY;
+  } else if (WeightMode ==0 ){//Phi-Z Fit
+    double e2     = ew*ew*costh*costh+rs*rs*sinth2;
+    wt     = Radius*Radius/e2;
+    wt    *= wtPhiZ;
+  }
+  
+  return wt;
+}
+
 
 //______________________________________________________________________________
 TAnaDump::TAnaDump(int UseTimeOffsets) {
@@ -601,11 +646,11 @@ void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix,	const char* Opt,
   
   if ((opt == "") || (opt == "banner")) {
     printf("---------------------------------------------------------------------------------");
-    printf("--------------------------------------------------------------------------------\n");
+    printf("-------------------------------------------------------------------------------------\n");
     printf("  HelID       Address    N      P      pT      T0     T0err  ");
-    printf("    D0       FZ0      X0        Y0       Lambda     radius    caloEnergy     chi2XY    chi2ZPhi    flag  \n");
+    printf("    D0       FZ0      X0        Y0       Lambda     radius    caloEnergy     chi2XY      chi2ZPhi   flag  \n");
     printf("---------------------------------------------------------------------------------");
-    printf("--------------------------------------------------------------------------------\n");
+    printf("-------------------------------------------------------------------------------------\n");
   }
  
 
@@ -640,18 +685,89 @@ void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix,	const char* Opt,
     
     const mu2e::CaloCluster*cluster = Helix->caloCluster().get();
     double clusterEnergy(-1);
-    if (cluster != 0) clusterEnergy = cluster->energyDep();
+    if (cluster != 0) {
+      clusterEnergy = cluster->energyDep();
+    }
     printf("%5i %16p %3i %8.3f %8.5f %7.3f %7.3f",
 	   -1,
 	   Helix,
 	   nhits,
 	   mom, pt, t0, t0err );
 
-    float chi2xy   = -1;//Helix->chi2XY();
-    float chi2zphi = -1;//Helix->chi2ZPhi();
+    //eval the chi2
+    auto helix_handle = fEvent->getValidHandle<mu2e::HelixSeedCollection>("CalHelixFinder");//FIX ME!
+    fhicl::ParameterSet const& pset = helix_handle.provenance()->parameterSet();
+
+    int nsh = Helix->hits().size();
+    const mu2e::HelixHitCollection* hits      = &Helix->hits();
+    const mu2e::HelixHit*           hit(0);
+    CLHEP::Hep3Vector         pos(0), /*helix_pos(0),*/ wdir(0), sdir(0), helix_center(0);
+    double                    phi(0), helix_phi(0);
+
+    helix_center = robustHel->center();
+    //add the stopping target center as in CalHeliFinderAlg.cc
+    LsqSums4 sxy;
+    sxy.addPoint(0., 0., 1./900.);
+
+    LsqSums4 srphi;
+    static const CLHEP::Hep3Vector zdir(0.0,0.0,1.0);
+
+    for (int j=0; j<nsh; ++j){
+      hit       = &hits->at(j);
+      pos       = hit->pos();
+      wdir      = hit->wdir();
+      sdir      = zdir.cross(wdir);
+      phi       = hit->phi();
+      helix_phi = fz0 + pos.z()/lambda;
+      double    weightXY   = evalWeight(pos, sdir, helix_center, radius, 1, pset);
+      
+      sxy.addPoint(pos.x(), pos.y(), weightXY);
+
+      double    dPhi     = helix_phi - phi- M_PI/2.;
+      while (dPhi > M_PI){
+	phi    += 2*M_PI;
+        dPhi   = helix_phi - phi;
+      }
+      while (dPhi < -M_PI){
+	phi   -= 2*M_PI; 
+	dPhi  = helix_phi - phi;
+      }
+      double weight    = evalWeight(pos, sdir, helix_center, radius, 0, pset);
+      srphi.addPoint(pos.z(), phi, weight);
+    }
+    if (cluster != 0){
+      double     weight_cl_xy = 1./100.;//FIX ME!
+      mu2e::GeomHandle<mu2e::Calorimeter> ch;
+      const mu2e::Calorimeter* _calorimeter = ch.get();      
+      CLHEP::Hep3Vector         gpos = _calorimeter->geomUtil().diskToMu2e(cluster->diskId(),cluster->cog3Vector());
+      CLHEP::Hep3Vector         tpos = _calorimeter->geomUtil().mu2eToTracker(gpos);
+
+      pos       = CLHEP::Hep3Vector(tpos.x(), tpos.y(), tpos.z());
+      sxy.addPoint(pos.x(), pos.y(), weight_cl_xy);
+      
+      phi       = CLHEP::Hep3Vector(pos - helix_center).phi();
+      phi       = TVector2::Phi_0_2pi(phi);
+      helix_phi = fz0  + pos.z()/lambda;
+      double     dPhi        = helix_phi - phi;
+      while (dPhi > M_PI){
+	phi    += 2*M_PI;
+        dPhi   = helix_phi - phi;
+      }
+      while (dPhi < -M_PI){
+	phi   -= 2*M_PI; 
+	dPhi  = helix_phi - phi;
+      }
+
+      double     weight_cl_phiz = 10.;//1./(err_cl*err_cl);
+      srphi.addPoint(pos.z(), phi, weight_cl_phiz);
+    }
+
+
+    float chi2xy   = sxy.chi2DofCircle();
+    float chi2zphi = srphi.chi2DofLine();
 
     printf(" %8.3f %8.3f %8.3f %8.3f %10.3f %10.3f %12.3f %12.3f %12.3f %08x\n",
-	   d0,fz0,x0,y0,lambda,radius,clusterEnergy,chi2xy,chi2zphi,flag);
+	   d0,fz0,x0,y0,lambda,radius,clusterEnergy,chi2xy,chi2zphi, flag);
   }
 
   if ((opt == "") || (opt.Index("hits") >= 0) ){
@@ -986,15 +1102,16 @@ void TAnaDump::printCalTimePeak(const mu2e::CalTimePeak* TPeak, const char* Opt)
   opt.ToLower();
 
   if ((opt == "") || (opt.Index("banner") >= 0)) {
-    printf("------------------------------------------------\n");
-    printf("    Energy CalPatRec      Z         T0    Nhits \n");
-    printf("------------------------------------------------\n");
+    printf("----------------------------------------------------------------\n");
+    printf("    Energy CalPatRec      X       Y       Z         T0    Nhits \n");
+    printf("----------------------------------------------------------------\n");
   }
  
   if ((opt == "") || (opt.Index("data") >= 0)) {
-    printf("%10.3f %8i %10.3f %10.3f %5i \n",
+    printf("%10.3f %8i %10.3f %10.3f %10.3f  %5i \n",
 	   TPeak->Cluster()->energyDep(), 
 	   TPeak->CprIndex (),
+	   TPeak->ClusterY (),
 	   TPeak->ClusterZ (),
 	   TPeak->ClusterT0(),
 	   TPeak->NHits    ());
@@ -1873,11 +1990,11 @@ void TAnaDump::printHelixHit(const mu2e::HelixHit*    HelHit, const mu2e::StrawH
 
     if ((opt == "") || (opt.Index("banner") >= 0)) {
       printf("-----------------------------------------------------------------------------------");
-      printf("-------------------------------------------------------------\n");
+      printf("---------------------------------------------------------------------------------------------------------\n");
       printf("   I   SHID  Flags      Plane   Panel  Layer Straw     x          y           z          phi      Time          dt       eDep ");
       printf("           PDG       PDG(M)   Generator         ID       p   \n");
       printf("-----------------------------------------------------------------------------------");
-      printf("-------------------------------------------------------------\n");
+      printf("---------------------------------------------------------------------------------------------------------\n");
     }
 
     if (opt == "banner") return;

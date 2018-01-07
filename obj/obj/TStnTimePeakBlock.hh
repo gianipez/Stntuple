@@ -1,5 +1,5 @@
-#ifndef STNTUPLE_TStnHelixBlock
-#define STNTUPLE_TStnHelixBlock
+#ifndef STNTUPLE_TStnTimePeakBlock
+#define STNTUPLE_TStnTimePeakBlock
 //-----------------------------------------------------------------------------
 //  definition of the cluster block for MU2E analysis
 //  Author:    G. Pezzullo
@@ -8,40 +8,40 @@
 #include "TClonesArray.h"
 
 #include "Stntuple/obj/TStnDataBlock.hh"
-#include "Stntuple/obj/TStnHelix.hh"
+#include "Stntuple/obj/TStnTimePeak.hh"
 #include "TBuffer.h"
 
-class TStnHelixBlock: public TStnDataBlock {
+class TStnTimePeakBlock: public TStnDataBlock {
 
-  friend Int_t StntupleInitMu2eHelixBlock     (TStnDataBlock*, AbsEvent* , int);
-  friend Int_t StntupleInitMu2eHelixBlockLinks(TStnDataBlock*, AbsEvent* , int);
+  friend Int_t StntupleInitMu2eTimePeakBlock     (TStnDataBlock*, AbsEvent* , int);
+  friend Int_t StntupleInitMu2eTimePeakBlockLinks(TStnDataBlock*, AbsEvent* , int);
 public:
 //----------------------------------------------------------------------------
 //  data members
 //-----------------------------------------------------------------------------
-  Int_t          fNHelices;
-  TClonesArray*  fListOfHelices;
+  Int_t          fNTimePeaks;
+  TClonesArray*  fListOfTimePeaks;
 //----------------------------------------------------------------------------
 //  functions
 //----------------------------------------------------------------------------
 public:
 					// ****** constructors and destructor
-  TStnHelixBlock();
-  virtual ~TStnHelixBlock();
+  TStnTimePeakBlock();
+  virtual ~TStnTimePeakBlock();
 
-  TStnHelix* NewHelix() {
-    TStnHelix* helixSeed = new ((*fListOfHelices)[fNHelices]) TStnHelix();
-    fNHelices++;
-    return helixSeed;
+  TStnTimePeak* NewTimePeak() {
+    TStnTimePeak* trackSeed = new ((*fListOfTimePeaks)[fNTimePeaks]) TStnTimePeak();
+    fNTimePeaks++;
+    return trackSeed;
   }
 //-----------------------------------------------------------------------------
 // accessors
 //-----------------------------------------------------------------------------
-  Int_t           NHelices     () { return fNHelices;   }
-  TClonesArray*   ListOfHelices() { return fListOfHelices; }
+  Int_t              NTimePeaks     () { return fNTimePeaks;   }
+  TClonesArray*      ListOfTimePeaks() { return fListOfTimePeaks; }
 
-  TStnHelix*   Helix(int I) {
-    return (TStnHelix*) fListOfHelices->UncheckedAt(I); 
+  TStnTimePeak*   TimePeak(int I) {
+    return (TStnTimePeak*) fListOfTimePeaks->UncheckedAt(I); 
   }
 
 //-----------------------------------------------------------------------------
@@ -50,7 +50,7 @@ public:
   void Clear(Option_t* opt="");
   void Print(Option_t* opt="") const;
 
-  ClassDef(TStnHelixBlock,1)
+  ClassDef(TStnTimePeakBlock,1)
 };
 
 #endif
