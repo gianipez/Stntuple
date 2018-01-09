@@ -645,12 +645,12 @@ void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix,	const char* Opt,
   TString opt = Opt;
   
   if ((opt == "") || (opt == "banner")) {
-    printf("---------------------------------------------------------------------------------");
-    printf("-------------------------------------------------------------------------------------\n");
-    printf("  HelID       Address    N      P      pT      T0     T0err  ");
-    printf("    D0       FZ0      X0        Y0       Lambda     radius    caloEnergy     chi2XY      chi2ZPhi   flag  \n");
-    printf("---------------------------------------------------------------------------------");
-    printf("-------------------------------------------------------------------------------------\n");
+    printf("--------------------------------------------------------------");
+    printf("---------------------------------------------------------------------------------------------------------\n");
+    printf("  HelID       Address    N      P      pT       T0     T0err  ");
+    printf("    D0       FZ0      X0        Y0      Lambda     radius    caloEnergy      chi2XY    chi2ZPhi    flag  \n");
+    printf("--------------------------------------------------------------");
+    printf("---------------------------------------------------------------------------------------------------------\n");
   }
  
 
@@ -685,10 +685,8 @@ void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix,	const char* Opt,
     
     const mu2e::CaloCluster*cluster = Helix->caloCluster().get();
     double clusterEnergy(-1);
-    if (cluster != 0) {
-      clusterEnergy = cluster->energyDep();
-    }
-    printf("%5i %16p %3i %8.3f %8.5f %7.3f %7.3f",
+    if (cluster != 0) clusterEnergy = cluster->energyDep();
+    printf("%5i %16p %3i %8.3f %8.3f %7.3f %7.3f",
 	   -1,
 	   Helix,
 	   nhits,
@@ -1128,8 +1126,8 @@ void TAnaDump::printCalTimePeak(const mu2e::CalTimePeak* TPeak, const char* Opt)
  	loc   = int(TPeak->_index[i]);
 	mu2e::PtrStepPointMCVector           const& mcptr(hits_mcptrStraw->at(loc) );
 	const mu2e::StepPointMC*                    step = mcptr[0].get();
-	hit   = &TPeak->_shcol->at(loc);
-	flags = *((int*) &TPeak->_shfcol->at(loc));
+	hit   = &TPeak->_shcol->at(loc);  // undefined
+	flags = 0; // *((int*) &TPeak->_shfcol->at(loc));
 
 	printStrawHit(hit,step,"data",i,flags);
       }
