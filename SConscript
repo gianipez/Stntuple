@@ -120,7 +120,7 @@ class stntuple_helper:
 #------------------------------------------------------------------------------
         list_of_linkdef_files = Glob(self.subdir+'/dict/*_linkdef.h', strings=True)
         if (self._debug):
-            print "[Stntuple."+self.subdir+"] handle_dictionaries: list_of_linkdef_files = \n",list_of_linkdef_files
+            print ("[Stntuple."+self.subdir+"] handle_dictionaries: list_of_linkdef_files = \n",list_of_linkdef_files)
             
         list_of_dict_files    = []
 
@@ -129,7 +129,7 @@ class stntuple_helper:
             linkdef_fn    = linkdef[len(linkdef)-1];
 
             if (self._debug): 
-                print "linkdef_fn = ",linkdef_fn
+                print ("linkdef_fn = ",linkdef_fn)
 
             if (not linkdef_fn in skip_list):
                 clname        = string.replace(linkdef_fn,"_linkdef.h","");
@@ -139,8 +139,8 @@ class stntuple_helper:
                 list_of_dict_files.append(dict);
 
                 if (self._debug):
-                    print "linkdef = ",linkdef
-                    print "include = ",include
+                    print ("linkdef = ",linkdef)
+                    print ("include = ",include)
 
                 env.StntupleRootCint(dict,[f,include])
 #------------------------------------------------------------------------------
@@ -159,12 +159,12 @@ class stntuple_helper:
 
     def build_libs(self,list_of_cc_files, skip_list = [],libs = []):
         if (self._debug):
-            print "[Stntuple.build_libs]: list_of_cc_files:"+self.subdir,list_of_cc_files
+            print ("[Stntuple.build_libs]: list_of_cc_files:"+self.subdir,list_of_cc_files)
 
         for cc in list_of_cc_files:
             if (not cc in skip_list):
                 if (self._debug):
-                    print ".cc file: "+cc
+                    print (".cc file: "+cc)
                     
                 o = '#/tmp/src/'+self.d1+'/'+string.split(cc,'.')[0]+'.o'
                 self._list_of_object_files.append(o);
@@ -175,19 +175,19 @@ class stntuple_helper:
         lib_name = os.environ['MU2E_BASE_RELEASE']+'/lib/'+self.libname+'.so';
 
         if (self._debug):
-            print "Stntuple/obj list_of_object_files:",self._list_of_object_files
+            print ("Stntuple/obj list_of_object_files:",self._list_of_object_files)
 
         env.SharedLibrary(lib_name,self._list_of_object_files,LIBS = [libs])
 
 
     def build_modules(self,list_of_module_files, skip_list, libs = []):
         if (self._debug):
-            print "[Stntuple.build_libs]: list_of_module_files in Stntuple/"+self.subdir," : ",list_of_module_files
+            print ("[Stntuple.build_libs]: list_of_module_files in Stntuple/"+self.subdir," : ",list_of_module_files)
 
         for module in list_of_module_files:
             if (not module in skip_list):
                 if (self._debug):
-                    print "module file: "+module
+                    print ("module file: "+module)
                     
                 o = '#/tmp/src/'+self.d1+'/'+string.split(module,'.')[0]+'.o'
                 env.SharedObject(o,module)
@@ -195,7 +195,7 @@ class stntuple_helper:
                 mname = string.split(os.path.basename(module),'.')[0];
                 lib   = '#/lib/libmu2e_'+self.dirname+'_'+mname+'.so';
                 if (self._debug):
-                    print "o: "+o, "lib:"+lib
+                    print ("o: "+o, "lib:"+lib)
                     
                 env.SharedLibrary(lib,o,LIBS = ['libStntuple_mod.so',libs]);
 

@@ -8,5 +8,5 @@
 #pragma link C++  nestedtypedefs;
 #
 #pragma link C++  class  TStnTrack-;
-// #pragma link C++  class  TStnTrack::InterData_t-;
+#pragma link C++  class  TStnTrack::InterData_t-;
 #endif

@@ -325,19 +325,19 @@ Stntuple : {
 	    makePid                    : 0
 	    makeTrackSeeds             : 1
 	    makeTimeClusters           : 1
-	    makeHelices                : 1
-	    timeClusterBlockName       : [ "TprTimeClusterBlock"   , "CprTimeClusterBlock"     ]
-	    timeClusterModuleLabel     : [ "TimeClusterFinder"     , "CalTimePeakFinder"       ]
-	    helixBlockName             : [ "TprHelixBlock"         , "CprHelixBlock"           ]
-	    helixModuleLabel           : [ "PosHelixFinder"        , "CalHelixFinder"          ]
-	    trackSeedBlockName         : [ "TprTrackSeedBlock"     , "CprTrackSeedBlock"       ]
-	    trackSeedModuleLabel       : [ "KSFDeM"                , "CalSeedFit"              ]
-	    shortHelixBlockName        : [ "ShortTprHelixBlock"    , "ShortCprHelixBlock"      ]
-	    shortHelixModuleLabel      : [ "KSFDeM"                , "CalSeedFit"              ]
-	    shortTrackSeedBlockName    : [ "ShortTprTrackSeedBlock", "ShortCprTrackSeedBlock"  , "ShortTrackSeedBlock"]
-	    shortTrackSeedModuleLabel  : [ "MergePatRecTpr"        , "MergePatRecCpr"          , "MergePatRec"        ]
-	    trackBlockName             : [ "TprTrackBlock"         , "CprTrackBlock"           , "TrackBlock"               ]
-	    trkRecoModuleLabel         : [ "MergePatRecTpr"        , "MergePatRecCpr"          , "MergePatRec"              ]
+#	    makeHelices                : 1
+	    timeClusterBlockName       : [ "TprTimeClusterBlock"     , "CprTimeClusterBlock"     ]
+	    timeClusterModuleLabel     : [ "TimeClusterFinder"       , "CalTimePeakFinder"       ]
+	    helixBlockName             : [ "TprHelixBlock"           , "CprHelixBlock"           ]
+	    helixModuleLabel           : [ "PosHelixFinder"          , "CalHelixFinder"          ]
+	    trackSeedBlockName         : [ "TprTrackSeedBlock"       , "CprTrackSeedBlock"       ]
+	    trackSeedModuleLabel       : [ "KSFDeM"                  , "CalSeedFit"              ]
+	    shortHelixBlockName        : [ "ShortTprHelixBlock"      , "ShortCprHelixBlock"      , "ShortHelixBlock"        ]
+	    shortHelixModuleLabel      : [ "KSFDeM"                  , "CalSeedFit"              , "MergePatRec"            ]
+	    shortTrackSeedBlockName    : [ "ShortTprTrackSeedBlock"  , "ShortCprTrackSeedBlock"  , "ShortTrackSeedBlock"    ]
+	    shortTrackSeedModuleLabel  : [ "MergePatRecTpr"          , "MergePatRecCpr"          , "MergePatRec"            ]
+	    trackBlockName             : [ "TprTrackBlock"           , "CprTrackBlock"           , "TrackBlock"             ]
+	    trkRecoModuleLabel         : [ "MergePatRecTpr"          , "MergePatRecCpr"          , "MergePatRec"            ]
 	    trkExtrapolModuleLabel     : [ "TrackCaloIntersectionTpr", "TrackCaloIntersectionCpr", "TrackCaloIntersection"  ]
 	    trkCaloMatchModuleLabel    : [ "TrackCaloMatchingTpr"    , "TrackCaloMatchingCpr"    , "TrackCaloMatching"      ]
 	    trackStrawHitBlockName     : [ "TrackHitBlockTpr"        , "TrackHitBlockCpr"        , "TrackHitBlock"          ] 

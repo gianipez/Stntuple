@@ -1057,16 +1057,12 @@ Int_t StntupleInitMu2eTrackBlockLinks(TStnDataBlock* Block, AbsEvent* AnEvent, i
   char                 krep_module_label[100];
   tb->GetModuleLabel("mu2e::KalRepCollection",krep_module_label);
   
-  TStnHelixBlock*      hb;
-  TStnHelix*           helix;
-
   TStnTrackSeedBlock*  ftsb    , *tsb;
   TStnTrackSeed*       ftrkseed, *trkseed;
 
   TStnTrack*           trk;
 
   const mu2e::KalSeed*   kseed, *fkseed;
-  const mu2e::HelixSeed* khelix, *fkhelix;
 
   char                 kseed_module_label   [100], hseed_module_label[100];
   char                 short_seed_block_name[100], short_helix_block_name[100];
@@ -1075,7 +1071,9 @@ Int_t StntupleInitMu2eTrackBlockLinks(TStnDataBlock* Block, AbsEvent* AnEvent, i
   tb->GetModuleLabel("ShortHelixBlockName", short_helix_block_name);
 
   ev     = Block->GetEvent();
-  hb     = (TStnHelixBlock*)     ev->GetDataBlock(hseed_module_label    );
+
+  //  TStnHelixBlock*      hb;
+  //  hb     = (TStnHelixBlock*)     ev->GetDataBlock(hseed_module_label    );
   //  fhb    = (TStnHelixBlock*)     ev->GetDataBlock(short_helix_block_name);
 
   tb->GetModuleLabel("TrackSeedBlockName"     , kseed_module_label);
@@ -1086,7 +1084,6 @@ Int_t StntupleInitMu2eTrackBlockLinks(TStnDataBlock* Block, AbsEvent* AnEvent, i
 
   int    ntrk     = tb  ->NTracks();
   int    ntrkseed = tsb->NTrackSeeds();
-  int    nhelix   = hb  ->NHelices();
   
   for (int i=0; i<ntrk; i++) {
     trk      = tb->Track(i);
@@ -1110,18 +1107,22 @@ Int_t StntupleInitMu2eTrackBlockLinks(TStnDataBlock* Block, AbsEvent* AnEvent, i
     
     trk->SetTrackSeedIndex(trackSeedIndex);
     
+    //    const mu2e::HelixSeed* khelix, *fkhelix;
     //    fhelix  = fhb   ->Helix(trackSeedIndex);
-    fkhelix = fkseed->helix().get();//fhelix->fHelix;
+    //    fkhelix = fkseed->helix().get();//fhelix->fHelix;
 
     int  helixIndex(-1);
-    for (int k=0; k<nhelix; ++k){
-      helix  = hb->Helix(k);
-      khelix = helix->fHelix;
-      if ( khelix == fkhelix){
-	helixIndex = k;
-	break;
-      }
-    }
+    // 2018-01-12 PM: it is the TrackSeed, not track , which knows explicitly about HelixSeed
+    // TStnHelix*        helix;
+    // int    nhelix   = hb  ->NHelices();
+    // for (int k=0; k<nhelix; ++k){
+    //   helix  = hb->Helix(k);
+    //   khelix = helix->fHelix;
+    //   if ( khelix == fkhelix){
+    // 	helixIndex = k;
+    // 	break;
+    //   }
+    // }
     
     if (helixIndex < 0) {
       printf(">>> ERROR: %s track %i -> no HelixSeed associated\n", krep_module_label, i);
