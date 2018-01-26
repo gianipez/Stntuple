@@ -133,23 +133,23 @@ public:
   
   void printTrackSeed          (const mu2e::KalSeed* TrkSeed, 
 				const char* Opt = ""    ,
-				const char* ModuleLabelStrawHit="");
+				const char* ModuleLabelStrawHit="makeSH");
 
   void printTrackSeedCollection(const char* ModuleLabel             , 
 				const char* ProductName         = "", 
 				const char* ProcessName         = "",
 				int         hitOpt              = 0,
-				const char* ModuleLabelStrawHit =""); 
+				const char* ModuleLabelStrawHit ="makeSH"); 
 
   void printHelixSeed          (const mu2e::HelixSeed*         Helix, 
 				const char* Opt = ""                ,
-				const char* ModuleLabelStrawHit="" );
+				const char* ModuleLabelStrawHit="makeSH" );
 
   void printHelixSeedCollection(const char* ModuleLabel             , 
 				const char* ProductName         = "", 
 				const char* ProcessName         = "",
 				int         hitOpt              = 0,
-				const char* ModuleLabelStrawHit =""); 
+				const char* ModuleLabelStrawHit ="makeSH"); 
 
 //   void plotTrackSeed           (int Index                      , 
 // 				const char* ModuleLabelTrkSeeds,

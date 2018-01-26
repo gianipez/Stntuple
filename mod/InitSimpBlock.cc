@@ -129,7 +129,7 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
 	energy = sqrt(px*px+py*py+pz*pz+mass*mass);
       }
       else {
-	mf::LogWarning(oname) << " ERROR: PDG code " << pdg_code << "not in the database, set particle mass to 0\n";
+	mf::LogWarning(oname) << " ERROR: PDG code " << pdg_code << " not in the database, set particle mass to 0\n";
 	energy = sqrt(px*px+py*py+pz*pz);
       }
 

@@ -641,7 +641,7 @@ void TAnaDump::printTrackSeedCollection(const char* ModuleLabel,
 
 //-----------------------------------------------------------------------------
 void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix,	const char* Opt, 
-			      const char* ModuleLabelStrawHit){
+			      const char* ModuleLabelStrawHit) {
   TString opt = Opt;
   
   if ((opt == "") || (opt == "banner")) {

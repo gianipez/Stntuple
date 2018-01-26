@@ -94,19 +94,19 @@ namespace {
 	Map->fMap[ipl][isec][1] = loc;
       }
 					// form the list of Z-coordinates
-      const mu2e::Layer *l0, *l1;
+      const mu2e::Straw *s0, *s1;
 
-      l0 = &Tracker->getPlane(ipl).getPanel(0).getLayer(0);
-      l1 = &Tracker->getPlane(ipl).getPanel(0).getLayer(1);
-      z0 = l0->straw0MidPoint().z();
-      z1 = l1->straw0MidPoint().z();
+      s0 = &Tracker->getPlane(ipl).getPanel(0).getStraw(0);
+      s1 = &Tracker->getPlane(ipl).getPanel(0).getStraw(1);
+      z0 = s0->getMidPoint().z();
+      z1 = s1->getMidPoint().z();
 
       Map->fZ[2*ipl] = (z0+z1)/2.;
 
-      l0 = &Tracker->getPlane(ipl).getPanel(1).getLayer(0);
-      l1 = &Tracker->getPlane(ipl).getPanel(1).getLayer(1);
-      z0 = l0->straw0MidPoint().z();
-      z1 = l1->straw0MidPoint().z();
+      s0 = &Tracker->getPlane(ipl).getPanel(1).getStraw(0);
+      s1 = &Tracker->getPlane(ipl).getPanel(1).getStraw(1);
+      z0 = s0->getMidPoint().z();
+      z1 = s1->getMidPoint().z();
 
       Map->fZ[2*ipl+1] = (z0+z1)/2.;
     }

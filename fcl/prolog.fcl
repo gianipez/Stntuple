@@ -107,8 +107,8 @@ MuHitDisplay: { module_type:MuHitDisplay        # the class name;
     g4ModuleLabel                : g4run
     strawHitMakerModuleLabel     : makeSH
     strawDigiMakerModuleLabel    : makeSD
-    strawHitPosMakerModuleLabel  : MakeStrawHitPositions
-    strawHitFlagMakerModuleLabel : FlagStrawHits
+    strawHitPosMakerModuleLabel  : makeSH # MakeStrawHitPositions
+    strawHitFlagMakerModuleLabel : makeSH # FlagStrawHits
     
     caloCrystalHitsMaker         : CaloCrystalHitFromHit
     caloClusterModuleLabel       : CaloClusterFromProtoCluster

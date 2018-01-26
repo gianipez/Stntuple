@@ -205,7 +205,7 @@ void TEvdTrack::PaintRZ(Option_t* Option) {
 //-----------------------------------------------------------------------------
 // assume all wires in a layer have the same Z, extrapolate track to the layer
 //-----------------------------------------------------------------------------
-	straw[il] = &panel->getLayer(il).getStraw(0);
+	straw[il] = &panel->getStraw(il);
 	zwire[il] = straw[il]->getMidPoint().z();
       }
 					// order locally in Z
@@ -243,7 +243,7 @@ void TEvdTrack::PaintRZ(Option_t* Option) {
 	rt[ipoint] = -1.e6;
 	for (int ipp=0; ipp<3; ipp++) {
 	  const mu2e::Panel* pp = &plane->getPanel(2*ipp+iface);
-	  s  = &pp->getLayer(0).getStraw(0);
+	  s  = &pp->getStraw(0);
 	  wd = &s->getDirection();
 	  r  = (tpos.x()*wd->y()-tpos.y()*wd->x()); // *flip;
 	  if (r > rt[ipoint]) rt[ipoint] = r;
