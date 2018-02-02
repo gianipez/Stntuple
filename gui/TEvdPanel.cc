@@ -61,7 +61,8 @@ TEvdPanel::TEvdPanel(int ID, const mu2e::Panel* Panel, TEvdPlane* Plane): TObjec
   }
 
   int nst = Panel->nStraws();
-  for (int ist=0; ist<nst; ist++) {
+
+  for (uint16_t ist=0; ist<nst; ist++) {
     const mu2e::Straw* straw = &Panel->getStraw(ist);
 
     //    const mu2e::Layer* layer = &fPanel->getLayer(il);

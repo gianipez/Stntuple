@@ -1156,13 +1156,9 @@ namespace mu2e {
 
 	  e = new TEllipse(xl, yl, 50.*cl->energyDep() / 100.);
 	  e->SetFillStyle(3001);
-	  // if (geom->hasElement<mu2e::VaneCalorimeter>()){
-	  //   color = 2;
-	  // }
-	  // else
-	  if (geom->hasElement<mu2e::DiskCalorimeter>()){
-	    color = module_color[cl->diskId()];
-	  }
+
+	  if (geom->hasElement<mu2e::DiskCalorimeter>()) color = module_color[cl->diskId()];
+
 	  e->SetFillColor(color);
 	  e->SetLineColor(color);
 
@@ -1244,9 +1240,9 @@ namespace mu2e {
 	v = trackCal->TimeDiffToDistance(straw->index(), hit->dt());
 	vnorm = v / straw->getHalfLength();
 	if (fUseStereoHits) {
-	  //-----------------------------------------------------------------------------
-	  // new default, hit position errors come from StrawHitPositionCollection
-	  //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// new default, hit position errors come from StrawHitPositionCollection
+//-----------------------------------------------------------------------------
 	  sigv = hitpos->posRes(StrawHitPosition::wire);
 	  sigr = hitpos->posRes(StrawHitPosition::trans);
 	}
@@ -1270,22 +1266,22 @@ namespace mu2e {
 // CE hits : red (in time), blue (out-of-time)
 // the rest: cyan+3 (if any bad bit), otherwise - black 
 //-----------------------------------------------------------------------------
+	int width(1);
 	if (isFromConversion) {
-	  if (intime) color = kRed;
+	  if (intime) color = kRed-3;
 	  else        color = kBlue;
+	  width = 2;
 	}
 	else {
-
-	  if (hit_id_word->hasAnyProperty(fBadHitMask)) color = kCyan + 3;
-					
-	  else color = kBlack;
+	  if (hit_id_word->hasAnyProperty(fBadHitMask)) color = kCyan+3;
+	  else                                          color = kBlack;
 	}
 //-----------------------------------------------------------------------------
 // not sure why the logic is that complicated
 //-----------------------------------------------------------------------------
 	if ((isFromConversion) || (intime)) {
-					
 	  line->SetLineColor(color);
+	  line->SetLineWidth(width);
 	  line->DrawLine(vx1.x(), vx1.y(), vx2.x(), vx2.y());
 
 	  line->DrawLine(vx0.x() + sigr*w->y(), vx0.y() - sigr*w->x(),
@@ -1298,12 +1294,11 @@ namespace mu2e {
 //-----------------------------------------------------------------------------
 // Draw StepPointMCCollection.
 //-----------------------------------------------------------------------------
-    if (xStep.size() <= 0) {
-    }
-    else {
+    if (xStep.size() > 0) {
       graph = new TGraph(xStep.size(), &xStep[0], &yStep[0]);
-      graph->SetMarkerStyle(kOpenTriangleUp);
-      graph->SetMarkerSize(0.5);
+      graph->SetMarkerStyle(kFullTriangleUp);
+      graph->SetMarkerColor(kRed-3);
+      graph->SetMarkerSize(0.8);
       graph->Draw("PSAME");
     }
 //-----------------------------------------------------------------------------
@@ -1312,7 +1307,7 @@ namespace mu2e {
     double xf1 = pos1.x();
     double yf1 = pos1.y();
     TGraph genPoint(1, &xf1, &yf1);
-    genPoint.SetMarkerColor(kRed);
+    genPoint.SetMarkerColor(kRed-3);
     genPoint.SetMarkerSize(1.0);
     genPoint.SetMarkerStyle(kFullCircle);
     genPoint.Draw("PSAME");
@@ -1320,7 +1315,7 @@ namespace mu2e {
     double arrowLength(200.);
     double xf2 = xf1 + arrowLength*mom1.x() / mom1.perp();
     double yf2 = yf1 + arrowLength*mom1.y() / mom1.perp();
-    arrow->SetLineColor(kRed);
+    arrow->SetLineColor(kRed-3);
     arrow->DrawArrow(xf1, yf1, xf2, yf2, 0.01, ">");
 
     if (_genParticleColl && (_stepPointMCColl != NULL)) {

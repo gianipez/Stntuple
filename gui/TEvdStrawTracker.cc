@@ -54,7 +54,7 @@ TEvdStrawTracker::TEvdStrawTracker(const mu2e::TTracker* Tracker): TObject() {
   fListOfStations = new TObjArray(fNStations);
 
   for (int i=0; i<fNStations; i++) {
-    station = &fTracker->getStations().at(i);
+    station = &fTracker->getStation(i);
 
     s = new TEvdStation(i,station);
     fListOfStations->Add(s);

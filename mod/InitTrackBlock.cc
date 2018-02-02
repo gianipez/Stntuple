@@ -1064,10 +1064,10 @@ Int_t StntupleInitMu2eTrackBlockLinks(TStnDataBlock* Block, AbsEvent* AnEvent, i
 
   const mu2e::KalSeed*   kseed, *fkseed;
 
-  char                 kseed_module_label   [100], hseed_module_label[100];
+  char                 kseed_block_name     [100], hseed_block_name[100];
   char                 short_seed_block_name[100], short_helix_block_name[100];
 
-  tb->GetModuleLabel("HelixBlockName"     , hseed_module_label    );
+  tb->GetModuleLabel("HelixBlockName"     , hseed_block_name    );
   tb->GetModuleLabel("ShortHelixBlockName", short_helix_block_name);
 
   ev     = Block->GetEvent();
@@ -1076,10 +1076,10 @@ Int_t StntupleInitMu2eTrackBlockLinks(TStnDataBlock* Block, AbsEvent* AnEvent, i
   //  hb     = (TStnHelixBlock*)     ev->GetDataBlock(hseed_module_label    );
   //  fhb    = (TStnHelixBlock*)     ev->GetDataBlock(short_helix_block_name);
 
-  tb->GetModuleLabel("TrackSeedBlockName"     , kseed_module_label);
+  tb->GetModuleLabel("TrackSeedBlockName"     , kseed_block_name);
   tb->GetModuleLabel("ShortTrackSeedBlockName",short_seed_block_name);
 
-  tsb    = (TStnTrackSeedBlock*) ev->GetDataBlock(kseed_module_label);
+  tsb    = (TStnTrackSeedBlock*) ev->GetDataBlock(kseed_block_name);
   ftsb   = (TStnTrackSeedBlock*) ev->GetDataBlock(short_seed_block_name);
 
   int    ntrk     = tb  ->NTracks();

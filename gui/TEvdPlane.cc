@@ -52,7 +52,7 @@ TEvdPlane::TEvdPlane(int ID, const mu2e::Plane* Plane, TEvdStation* Station): TO
   fListOfPanels = new TObjArray(fNPanels);
 
   for (int i=0; i<fNPanels; i++) {
-    const mu2e::Panel* panel = &fPlane->getPanels().at(i);
+    const mu2e::Panel* panel = &fPlane->getPanel(i);
 
     id       = -1; // fNPanels*Plane->id()+i;
     evd_panel = new TEvdPanel(id,panel,this);

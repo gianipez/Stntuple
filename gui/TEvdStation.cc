@@ -46,7 +46,7 @@ TEvdStation::TEvdStation(int ID, const mu2e::Station* Station): TObject() {
   fListOfPlanes = new TObjArray(fNPlanes);
 
   for (int i=0; i<fNPlanes; i++) {
-    const mu2e::Plane* plane = &fStation->getPlanes().at(i);
+    const mu2e::Plane* plane = &fStation->getPlane(i);
 
     id        = fNPlanes*Station->id()+i;
     evd_plane = new TEvdPlane(id,plane,this);
