@@ -46,8 +46,8 @@ StntupleMakerTemplate : { module_type:StntupleMaker
     makeVdetHitsModuleLabel : "g4run"
     generatorModuleLabel    : "generate"
 
-    timeClusterBlockName    : ["TimeClusterBlock" ]
-    timeClusterModuleLabel  : ["CalTimePeakFinder"]
+    timeClusterBlockName    : ["TimePeakBlock"    ]   # to be renamed, *FIXME*
+    timeClusterModuleLabel  : ["CalTimePeakFinder"]   # to be renamed into CalTimeCLusterFinder *FIXME* 
 
     helixBlockName          : ["HelixBlock"]
     helixModuleLabel        : ["CalHelixFinder"]

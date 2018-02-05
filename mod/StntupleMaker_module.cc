@@ -82,7 +82,7 @@ protected:
   int              fMakeStrawData;
   int              fMakeTracks;
   int              fMakeTrackStrawHits;
-  int              fMakeTimeCluster;
+  int              fMakeTimeClusters;
   int              fMakeHelices;
   int              fMakeTrackSeeds;
   int              fMakeTrigger;
@@ -185,26 +185,26 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
   , fMakeStrawData      (PSet.get<int>         ("makeStrawData"  ))
   , fMakeTracks         (PSet.get<int>         ("makeTracks"     ))
   , fMakeTrackStrawHits (PSet.get<int>         ("makeTrackStrawHits"))
-  , fMakeTimeCluster    (PSet.get<int>         ("makeTimeClusters"))
+  , fMakeTimeClusters   (PSet.get<int>         ("makeTimeClusters"  ))
   , fMakeHelices        (PSet.get<int>         ("makeHelices"    ))
   , fMakeTrackSeeds     (PSet.get<int>         ("makeTrackSeeds" ))
   , fMakeTrigger        (PSet.get<int>         ("makeTrigger"    ))
   , fMakeVdetHits       (PSet.get<int>         ("makeVirtualHits"))
   
-  , fG4ModuleLabel           (PSet.get<string>        ("g4ModuleLabel"           ))
-  , fGeneratorModuleLabel    (PSet.get<string>        ("generatorModuleLabel"    ))
-  , fMakeStrawHitModuleLabel (PSet.get<string>        ("makeStrawHitModuleLabel" ))
-  , fMakeStrawDigiModuleLabel(PSet.get<string>        ("makeStrawDigiModuleLabel"))
-  , fMakeSimpModuleLabel     (PSet.get<string>        ("makeSimpModuleLabel"     ))
-  , fVDCollName              (PSet.get<string>        ("vdCollName"              ))
-  , fMakeVdetHitsModuleLabel (PSet.get<string>        ("makeVdetHitsModuleLabel" ))
+  , fG4ModuleLabel            (PSet.get<string>        ("g4ModuleLabel"           ))
+  , fGeneratorModuleLabel     (PSet.get<string>        ("generatorModuleLabel"    ))
+  , fMakeStrawHitModuleLabel  (PSet.get<string>        ("makeStrawHitModuleLabel" ))
+  , fMakeStrawDigiModuleLabel (PSet.get<string>        ("makeStrawDigiModuleLabel"))
+  , fMakeSimpModuleLabel      (PSet.get<string>        ("makeSimpModuleLabel"     ))
+  , fVDCollName               (PSet.get<string>        ("vdCollName"              ))
+  , fMakeVdetHitsModuleLabel  (PSet.get<string>        ("makeVdetHitsModuleLabel" ))
   , fShortHelixBlockName      (PSet.get<vector<string>>("shortHelixBlockName"      ))
   , fShortHelixModuleLabel    (PSet.get<vector<string>>("shortHelixModuleLabel"    ))
   , fShortTrackSeedBlockName  (PSet.get<vector<string>>("shortTrackSeedBlockName"  ))
   , fShortTrackSeedModuleLabel(PSet.get<vector<string>>("shortTrackSeedModuleLabel")) 
-  , fTimeClusterBlockName    (PSet.get<vector<string>>("timeClusterBlockName"    ))
-  , fTimeClusterModuleLabel  (PSet.get<vector<string>>("timeClusterModuleLabel"  ))
-  , fHelixBlockName          (PSet.get<vector<string>>("helixBlockName"          ))
+  , fTimeClusterBlockName     (PSet.get<vector<string>>("timeClusterBlockName"    ))
+  , fTimeClusterModuleLabel   (PSet.get<vector<string>>("timeClusterModuleLabel"  ))
+  , fHelixBlockName           (PSet.get<vector<string>>("helixBlockName"          ))
   , fHelixModuleLabel        (PSet.get<vector<string>>("helixModuleLabel"        ))
   , fTrackSeedBlockName      (PSet.get<vector<string>>("trackSeedBlockName"      ))
   , fTrackSeedModuleLabel    (PSet.get<vector<string>>("trackSeedModuleLabel"    ))
@@ -414,7 +414,7 @@ void StntupleMaker::beginJob() {
 //--------------------------------------------------------------------------------
 // helix data
 //--------------------------------------------------------------------------------
-  if (fMakeTimeCluster) {
+  if (fMakeTimeClusters) {
     TStnDataBlock* timeCluster_data;
     const char    *block_name;
     int            nblocks;
@@ -424,10 +424,10 @@ void StntupleMaker::beginJob() {
     for (int i=0; i<nblocks; i++) {
       
       block_name = fTimeClusterBlockName[i].data();
-
+      
       timeCluster_data = AddDataBlock(block_name, 
-				    "TStnTimeClusterBlock",
-				      StntupleInitMu2eTimePeakBlock,
+				      "TStnTimePeakBlock",
+				      StntupleInitMu2eTimeClusterBlock,
 				      buffer_size,
 				      split_mode,
 				      compression_level);
@@ -465,7 +465,7 @@ void StntupleMaker::beginJob() {
       //      SetResolveLinksMethod(block_name,StntupleInitMu2eHelixBlockLinks);
       
       if (helix_data) {
-	helix_data->AddCollName("mu2e::HelixSeedCollection"  ,fHelixModuleLabel[i].data()      ,"");
+	helix_data->AddCollName("mu2e::HelixSeedCollection"  ,fHelixModuleLabel[i].data()   ,"");
  	helix_data->AddCollName("mu2e::TimeClusterCollection",fTimeClusterModuleLabel[i].data(),"");
      }
     }

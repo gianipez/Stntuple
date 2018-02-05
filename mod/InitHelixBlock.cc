@@ -28,7 +28,6 @@
 
 #include "TTrackerGeom/inc/TTracker.hh"
 #include "CalorimeterGeom/inc/Calorimeter.hh"
-// #include "TrkReco/inc/TrkStrawHit.hh"
 
 #include "RecoDataProducts/inc/TimeCluster.hh"
 #include "RecoDataProducts/inc/HelixSeed.hh"
@@ -37,10 +36,7 @@
 
 #include "RecoDataProducts/inc/CaloCluster.hh"
 
-//#include "CalPatRec/inc/THackData.hh"
-
 #include "CalPatRec/inc/AlgorithmIDCollection.hh"
-//#include "CalPatRec/inc/HelixFitHack.hh"
 #include "CalPatRec/inc/LsqSums4.hh"
 
 
@@ -125,8 +121,6 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
 
   art::Handle<mu2e::HelixSeedCollection>               helix_handle;
   if (helix_module_label[0] != 0){
-    // if (helix_description[0] == 0) Evt->getByLabel(helix_module_label, helix_handle);
-    // else                           Evt->getByLabel(helix_module_label, helix_description, helix_handle);
     Evt->getByLabel(helix_module_label, helix_handle);
     if (helix_handle.isValid()) list_of_helices = helix_handle.product();//(mu2e::HelixSeedCollection*) &(*helix_handle);
   }
@@ -253,7 +247,6 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
     mask = (0x0001 << 16) | 0x0000;
 
     if (list_of_algs) {
-      //      fhicl::ParameterSet const& pset = helix_handle.provenance()->parameterSet();
       std::string         module_type = pset.get<std::string>("module_type");
       
       alg_id = &list_of_algs->at(i);
@@ -283,7 +276,6 @@ Int_t StntupleInitMu2eHelixBlockLinks(TStnDataBlock* Block, AbsEvent* AnEvent, i
   if (Block->LinksInitialized()) return 0;
 
   TStnEvent*           ev;
-  //  char                 kseed_module_label[100];
   TStnHelixBlock*      hb;
   TStnHelix*           helix;
   TStnTrackSeedBlock*  tsb;
@@ -291,11 +283,11 @@ Int_t StntupleInitMu2eHelixBlockLinks(TStnDataBlock* Block, AbsEvent* AnEvent, i
   TStnTimePeakBlock*   tpb;
   TStnTimePeak*        tp;
 
-  const mu2e::HelixSeed*    khelix, *fkhelix;
-  const mu2e::KalSeed*      kseed;
+  const mu2e::HelixSeed*   khelix, *fkhelix;
+  const mu2e::KalSeed*     kseed;
   const mu2e::TimeCluster* ktimepeak, *fktimepeak;
 
-  char                 short_helix_block_name[100], timepeak_block_name[100];
+  char                     short_helix_block_name[100], timepeak_block_name[100];
 
   ev     = Block->GetEvent();
   hb     = (TStnHelixBlock*) Block;

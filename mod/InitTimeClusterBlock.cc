@@ -25,28 +25,19 @@
 
 #include "TTrackerGeom/inc/TTracker.hh"
 #include "CalorimeterGeom/inc/Calorimeter.hh"
-// #include "TrkReco/inc/TrkStrawHit.hh"
 
 #include "RecoDataProducts/inc/TimeCluster.hh"
 #include "RecoDataProducts/inc/HelixSeed.hh"
 
 #include "RecoDataProducts/inc/CaloCluster.hh"
-
-//#include "CalPatRec/inc/THackData.hh"
-
-#include "CalPatRec/inc/AlgorithmIDCollection.hh"
-//#include "CalPatRec/inc/HelixFitHack.hh"
-#include "CalPatRec/inc/LsqSums4.hh"
-
-
 //-----------------------------------------------------------------------------
 // assume that the collection name is set, so we could grab it from the event
 //-----------------------------------------------------------------------------
-int  StntupleInitMu2eTimePeakBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
+int  StntupleInitMu2eTimeClusterBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
 
   const mu2e::TimeClusterCollection*               list_of_tclusters(0);
 
-  char                 tcluster_module_label[100], tcluster_description[100]; 
+  char                       tcluster_module_label[100], tcluster_description[100]; 
 
   TStnTimePeakBlock*         cb = (TStnTimePeakBlock*) Block;
   TStnTimePeak*              tcluster;
@@ -58,15 +49,12 @@ int  StntupleInitMu2eTimePeakBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode
 
   art::Handle<mu2e::TimeClusterCollection>               tcluster_handle;
   if (tcluster_module_label[0] != 0){
-    // if (tcluster_description[0] == 0) Evt->getByLabel(tcluster_module_label, tcluster_handle);
-    // else                           Evt->getByLabel(tcluster_module_label, tcluster_description, tcluster_handle);
     Evt->getByLabel(tcluster_module_label, tcluster_handle);
-    if (tcluster_handle.isValid()) list_of_tclusters = tcluster_handle.product();//(mu2e::TclusterSeedCollection*) &(*tcluster_handle);
+    if (tcluster_handle.isValid()) list_of_tclusters = tcluster_handle.product();
   }
 
   const mu2e::TimeCluster     *tmpTCl(0);
   int                          ntclusters(0);
-  //  const mu2e::RobustHelix   *robustHel(0);
   const mu2e::CaloCluster     *cluster(0);
  
   if (list_of_tclusters) ntclusters = list_of_tclusters->size();
@@ -107,7 +95,7 @@ int  StntupleInitMu2eTimePeakBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode
 }
 
 //_____________________________________________________________________________
-Int_t StntupleInitMu2eTimePeakBlockLinks(TStnDataBlock* Block, AbsEvent* AnEvent, int Mode) 
+Int_t StntupleInitMu2eTimeClusterBlockLinks(TStnDataBlock* Block, AbsEvent* AnEvent, int Mode) 
 {
   // Mu2e version, do nothing
 
@@ -122,10 +110,9 @@ Int_t StntupleInitMu2eTimePeakBlockLinks(TStnDataBlock* Block, AbsEvent* AnEvent
 
   if (Block->LinksInitialized()) return 0;
 
-  TStnEvent*           ev;
-  //  char                 kseed_module_label[100];
-  TStnTimePeakBlock*      hb;
-  TStnTimePeak*           tcluster;
+  TStnEvent*             ev;
+  TStnTimePeakBlock*     hb;
+  TStnTimePeak*          tcluster;
   TStnHelixBlock*        tsb;
   TStnHelix*             helixseed;
 
@@ -170,7 +157,6 @@ Int_t StntupleInitMu2eTimePeakBlockLinks(TStnDataBlock* Block, AbsEvent* AnEvent
 // mark links as initialized
 //-----------------------------------------------------------------------------
   hb->fLinksInitialized = 1;
-
 
   return 0;
 }

@@ -13,8 +13,8 @@
 
 class TStnTimePeakBlock: public TStnDataBlock {
 
-  friend Int_t StntupleInitMu2eTimePeakBlock     (TStnDataBlock*, AbsEvent* , int);
-  friend Int_t StntupleInitMu2eTimePeakBlockLinks(TStnDataBlock*, AbsEvent* , int);
+  friend Int_t StntupleInitMu2eTimeClusterBlock     (TStnDataBlock*, AbsEvent* , int);
+  friend Int_t StntupleInitMu2eTimeClusterBlockLinks(TStnDataBlock*, AbsEvent* , int);
 public:
 //----------------------------------------------------------------------------
 //  data members
