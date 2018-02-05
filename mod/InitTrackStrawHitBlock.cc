@@ -26,6 +26,7 @@ Int_t StntupleInitMu2eTrackStrawHitBlock(TStnDataBlock* Block, AbsEvent* AnEvent
   mu2e::KalRepPtrCollection*               list_of_kreps(0);
 
   static char   strh_module_label[100], strh_description[100];
+  static char   stmc_module_label[100], stmc_description[100];
   static char   krep_module_label[100], krep_description[100];
 
   ev_number = AnEvent->event();
@@ -43,6 +44,9 @@ Int_t StntupleInitMu2eTrackStrawHitBlock(TStnDataBlock* Block, AbsEvent* AnEvent
 
   data->GetModuleLabel("mu2e::KalRepCollection"  ,krep_module_label);
   data->GetDescription("mu2e::KalRepCollection"  ,krep_description );
+
+  data->GetModuleLabel("mu2e::PtrStepPointMCVectorCollection",stmc_module_label);
+  data->GetDescription("mu2e::PtrStepPointMCVectorCollection",stmc_description );
 
   art::Handle<mu2e::StrawHitCollection>       strh_handle;
   const mu2e::StrawHitCollection*             list_of_hits(0);
@@ -63,12 +67,12 @@ Int_t StntupleInitMu2eTrackStrawHitBlock(TStnDataBlock* Block, AbsEvent* AnEvent
 
     if (strh_handle.isValid()) list_of_hits = strh_handle.product();
 
-    AnEvent->getByLabel(strh_module_label,"",mcptr_handle);
+    AnEvent->getByLabel(stmc_module_label,stmc_description,mcptr_handle);
     if (mcptr_handle.isValid()) list_of_steps = mcptr_handle.product();
   }
 
   if (list_of_hits == NULL) {
-    printf(" >>> ERROR in StntupleInitMu2eCalDataBlock: no list_of_hits. BAIL OUT\n");
+    printf(" >>> ERROR in StntupleInitMu2eTrackStrawHitBlock: no list_of_hits. BAIL OUT\n");
     return -1;
   }
 //-----------------------------------------------------------------------------

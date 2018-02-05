@@ -526,11 +526,9 @@ void StntupleMaker::beginJob() {
 					  compression_level);
 
       if (track_straw_hit_data) {
-	// TrkFitDirection fit_dir = TrkFitDirection((TrkFitDirection::FitDirection)fFitDirection[i]);
-	// TrkParticle     part    = TrkParticle    ((TrkParticle::type            )fFitParticle [i]);
-
-	track_straw_hit_data->AddCollName("mu2e::KalRepCollection"   ,fTrkRecoModuleLabel[i].data()  , "");
-	track_straw_hit_data->AddCollName("mu2e::StrawHitCollection" ,fMakeStrawHitModuleLabel.data(), "");
+	track_straw_hit_data->AddCollName("mu2e::KalRepCollection"              ,fTrkRecoModuleLabel[i].data   (),"");
+	track_straw_hit_data->AddCollName("mu2e::StrawHitCollection"            ,fMakeStrawHitModuleLabel.data (),"");
+	track_straw_hit_data->AddCollName("mu2e::PtrStepPointMCVectorCollection",fMakeStrawDigiModuleLabel.data(),"");
 	
 	//      SetResolveLinksMethod(block_name,StntupleInitMu2eTrackBlockLinks);
       }
@@ -576,13 +574,10 @@ void StntupleMaker::beginJob() {
          //      SetResolveLinksMethod(block_name,StntupleInitMu2eTrackBlockLinks);
       int       nshortblocks = fHelixBlockName.size();
       if (track_data) {
-	//	TrkFitDirection fit_dir = TrkFitDirection((TrkFitDirection::FitDirection)fFitDirection[i]);
-	//	TrkParticle     part    = TrkParticle((TrkParticle::type)fFitParticle[i]);
-
 	track_data->AddCollName("mu2e::KalRepCollection"              ,fTrkRecoModuleLabel[i].data()     ,"");
 	track_data->AddCollName("mu2e::StrawHitCollection"            ,fMakeStrawHitModuleLabel.data()   ,"");
-	track_data->AddCollName("mu2e::StrawDigiMCCollection"         ,fMakeStrawDigiModuleLabel.data()   ,"StrawHitMC");
-	track_data->AddCollName("mu2e::PtrStepPointMCVectorCollection",fMakeStrawDigiModuleLabel.data()   ,"StrawHitMCPtr");
+	track_data->AddCollName("mu2e::StrawDigiMCCollection"         ,fMakeStrawDigiModuleLabel.data()  ,"");
+	track_data->AddCollName("mu2e::PtrStepPointMCVectorCollection",fMakeStrawDigiModuleLabel.data()  ,"");
 	track_data->AddCollName("mu2e::TrkCaloIntersectCollection"    ,fTrkExtrapolModuleLabel [i].data(),"");
 	track_data->AddCollName("mu2e::CaloClusterCollection"         ,fCaloClusterMaker.data()          ,"");
 	track_data->AddCollName("mu2e::TrackClusterMatchCollection"   ,fTrkCaloMatchModuleLabel[i].data(),"");
