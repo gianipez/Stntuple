@@ -104,14 +104,14 @@ void TStnCluster::Streamer(TBuffer& R__b) {
     else {
 					// current version: V2
       R__b.ReadFastArray(&fNumber,nwi);
-      R__b.ReadFastArray(&fYMean ,nwf);
+      R__b.ReadFastArray(&fX     ,nwf);
     }
   }
   else {
     R__b.WriteVersion(TStnCluster::IsA());
 
     R__b.WriteFastArray(&fNumber,nwi);
-    R__b.WriteFastArray(&fYMean ,nwf);
+    R__b.WriteFastArray(&fX     ,nwf);
   }
 }
 
