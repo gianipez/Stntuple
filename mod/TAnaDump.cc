@@ -468,7 +468,7 @@ void TAnaDump::printTrackSeed(const mu2e::KalSeed* TrkSeed,	const char* Opt,
   if ((opt == "") || (opt == "banner")) {
     printf("-------------------------------------------------------------");
     printf("---------------------------------------------------------------------------------\n");
-    printf("  TrkID       Address    N      P      pT      T0     T0err  ");
+    printf("  TrkID       Address    N      P      pT      T0     T0err    fmin   fmax");
     printf("      D0       Z0      Phi0   TanDip    radius    caloEnergy     chi2      FitCon\n");
     printf("-------------------------------------------------------------");
     printf("---------------------------------------------------------------------------------\n");
@@ -487,32 +487,35 @@ void TAnaDump::printTrackSeed(const mu2e::KalSeed* TrkSeed,	const char* Opt,
     double t0     = TrkSeed->t0()._t0;
     double t0err  = TrkSeed->t0()._t0err;
 
-    mu2e::KalSegment kalSeg  = TrkSeed->segments().at(0);//take the KalSegment closer to the entrance of the tracker
+    for (const mu2e::KalSegment& kalSeg : TrkSeed->segments()) {
+      //      mu2e::KalSegment kalSeg  = TrkSeed->segments().at(iseg);//take the KalSegment closer to the entrance of the tracker
+      //      mu2e::KalSegment kalSeg  = iseg;
 
-    double d0     = kalSeg.helix().d0();
-    double z0     = kalSeg.helix().z0();
-    double phi0   = kalSeg.helix().phi0();
-    double tandip = kalSeg.helix().tanDip();
-    double mm2MeV = 3/10.;
-    double mom    = kalSeg.mom();
-    double pt     = mom*std::cos( std::atan(tandip));
-    double radius = pt/mm2MeV;
+      double d0     = kalSeg.helix().d0();
+      double z0     = kalSeg.helix().z0();
+      double phi0   = kalSeg.helix().phi0();
+      double tandip = kalSeg.helix().tanDip();
+      double mm2MeV = 3/10.;
+      double mom    = kalSeg.mom();
+      double pt     = mom*std::cos( std::atan(tandip));
+      double radius = pt/mm2MeV;
 
 
-    const mu2e::CaloCluster*cluster = TrkSeed->caloCluster().get();
-    double clusterEnergy(-1);
-    if (cluster != 0) clusterEnergy = cluster->energyDep();
-    printf("%5i %16p %3i %8.3f %8.5f %7.3f %7.3f",
-	   -1,
-	   TrkSeed,
-	   nhits,
-	   mom, pt, t0, t0err );
+      const mu2e::CaloCluster*cluster = TrkSeed->caloCluster().get();
+      double clusterEnergy(-1);
+      if (cluster != 0) clusterEnergy = cluster->energyDep();
+      printf("%5i %16p %3i %8.3f %8.5f %7.3f %7.3f %8.3f %8.3f",
+	     -1,
+	     TrkSeed,
+	     nhits,
+	     mom, pt, t0, t0err,kalSeg.fmin(),kalSeg.fmax() );
 
-    float chi2    = TrkSeed->chisquared()/double(nhits - 5.);
-    float fitCons = TrkSeed->fitConsistency();
-
-    printf(" %8.3f %8.3f %8.3f %8.4f %10.4f %10.3f %12.3f %12.3e\n",
-	   d0,z0,phi0,tandip,radius,clusterEnergy,chi2,fitCons);
+      float chi2    = TrkSeed->chisquared()/double(nhits - 5.);
+      float fitCons = TrkSeed->fitConsistency();
+      
+      printf(" %8.3f %8.3f %8.3f %8.4f %10.4f %10.3f %12.3f %12.3e\n",
+	     d0,z0,phi0,tandip,radius,clusterEnergy,chi2,fitCons);
+    }
   }
 
   if ((opt == "") || (opt.Index("hits") >= 0) ){
