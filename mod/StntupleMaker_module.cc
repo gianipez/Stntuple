@@ -501,6 +501,7 @@ void StntupleMaker::beginJob() {
 	trackSeed_data->AddCollName("ShortTrackSeedBlockName"  ,fShortTrackSeedBlockName[i].data(),"");
       }
 
+      SetResolveLinksMethod(block_name,StntupleInitMu2eTrackSeedBlockLinks);
     }
   }
 
@@ -629,7 +630,7 @@ void StntupleMaker::beginJob() {
       if (trackSeed_data) {
 	trackSeed_data->AddCollName("mu2e::KalRepCollection"   ,fTrkRecoModuleLabel[i].data()  ,"");	
       }
-      SetResolveLinksMethod(block_name,StntupleInitMu2eTrackSeedBlockLinks);
+      //      SetResolveLinksMethod(block_name,StntupleInitMu2eTrackSeedBlockLinks);
     }
   }
 //-----------------------------------------------------------------------------

@@ -335,11 +335,11 @@ Stntuple : {
 	    makePid                    : 0
 	    makeTrackSeeds             : 1
 	    makeTimeClusters           : 1
-#	    makeHelices                : 1
+	    makeHelices                : 1
 	    timeClusterBlockName       : [ "TprTimeClusterBlock"     , "CprTimeClusterBlock"     ]
 	    timeClusterModuleLabel     : [ "TimeClusterFinder"       , "CalTimePeakFinder"       ]
 	    helixBlockName             : [ "TprHelixBlock"           , "CprHelixBlock"           ]
-	    helixModuleLabel           : [ "PosHelixFinder"          , "CalHelixFinder"          ]
+	    helixModuleLabel           : [ "HelixFinder"          , "CalHelixFinder"          ]
 	    trackSeedBlockName         : [ "TprTrackSeedBlock"       , "CprTrackSeedBlock"       ]
 	    trackSeedModuleLabel       : [ "KSFDeM"                  , "CalSeedFit"              ]
 	    shortHelixBlockName        : [ "ShortTprHelixBlock"      , "ShortCprHelixBlock"      , "ShortHelixBlock"        ]

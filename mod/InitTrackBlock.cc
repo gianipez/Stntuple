@@ -1111,7 +1111,7 @@ Int_t StntupleInitMu2eTrackBlockLinks(TStnDataBlock* Block, AbsEvent* AnEvent, i
     //    fhelix  = fhb   ->Helix(trackSeedIndex);
     //    fkhelix = fkseed->helix().get();//fhelix->fHelix;
 
-    int  helixIndex(-1);
+    //    int  helixIndex(-1);
     // 2018-01-12 PM: it is the TrackSeed, not track , which knows explicitly about HelixSeed
     // TStnHelix*        helix;
     // int    nhelix   = hb  ->NHelices();
@@ -1124,12 +1124,12 @@ Int_t StntupleInitMu2eTrackBlockLinks(TStnDataBlock* Block, AbsEvent* AnEvent, i
     //   }
     // }
     
-    if (helixIndex < 0) {
-      printf(">>> ERROR: %s track %i -> no HelixSeed associated\n", krep_module_label, i);
-	  continue;
-    }
+    // if (helixIndex < 0) {
+    //   printf(">>> ERROR: %s track %i -> no HelixSeed associated\n", krep_module_label, i);
+    // 	  continue;
+    // }
     
-    trk->SetHelixIndex(helixIndex);
+    // trk->SetHelixIndex(helixIndex);
   }
 //-----------------------------------------------------------------------------
 // mark links as initialized

@@ -31,26 +31,26 @@ BEGIN_PROLOG
   cprPrepHitSeq : [ CalPatRecFSHP, CalPatRecMakeStrawHitPositions, CalPatRecMakeStereoHits,  
 		    CalPatRecFlagStrawHits, CalPatRecFlagBkgHits ]
 
-  trkPatRecSeq     : [ @sequence::tprPrepHitSeq, TimeClusterFinder, PosHelixFinder, KSFDeM, 
+  trkPatRecSeq     : [ @sequence::tprPrepHitSeq, TimeClusterFinder, HelixFinder, KSFDeM, 
 		       KFFDeM, MergePatRec    ]
 
   calPatRecSeq     : [ @sequence::cprPrepHitSeq, CalPatRec   , MergePatRec    ]
 
-  allPatRecSeq     : [ @sequence::tprPrepHitSeq, TimeClusterFinder, PosHelixFinder, KSFDeM, 
+  allPatRecSeq     : [ @sequence::tprPrepHitSeq, TimeClusterFinder, HelixFinder, KSFDeM, 
 		       KFFDeM, @sequence::cprPrepHitSeq, CalPatRec, MergePatRec ]
 
-  allPatRecNewSeq  : [ TimeClusterFinder, PosHelixFinder, KSFDeM, 
+  allPatRecNewSeq  : [ TimeClusterFinder, HelixFinder, KSFDeM, 
 		       KFFDeM,
 		       CalTimePeakFinder, CalHelixFinder, CalSeedFit, CalTrkFit,
 		       MergePatRec, MergeHelixFinder ]
   
-  allHelixSearchSeq  : [ TimeClusterFinder, PosHelixFinder, 
-			  CalTimePeakFinder, CalHelixFinder, 
-			  MergeHelixFinder ]
+  allHelixSearchSeq  : [ TimeClusterFinder, HelixFinder, 
+			 CalTimePeakFinder, CalHelixFinder, 
+			 MergeHelixFinder ]
 
-  trkPatRecDemSeq  : [ @sequence::tprPrepHitSeq, TimeClusterFinder, PosHelixFinder, KSFDeM, 
+  trkPatRecDemSeq  : [ @sequence::tprPrepHitSeq, TimeClusterFinder, HelixFinder, KSFDeM, 
 		       KFFDeM , MergePatRecDem ]
-  trkPatRecDmmSeq  : [ @sequence::tprPrepHitSeq, TimeClusterFinder, PosHelixFinder, KSFDeM, 
+  trkPatRecDmmSeq  : [ @sequence::tprPrepHitSeq, TimeClusterFinder, HelixFinder, KSFDeM, 
 		       KFFDeM, MergePatRecDmm ]
 
   calPatRecDemSeq  : [ @sequence::cprPrepHitSeq, CalPatRecDem, MergePatRecDem ]
@@ -59,19 +59,19 @@ BEGIN_PROLOG
 # event for the downstream particles, avikPID requires running both electron and muon track reconstruction 
 # hit making - just once, but two modules
 
-  allPatRecDemSeq     : [ @sequence::tprPrepHitSeq, TimeClusterFinder, PosHelixFinder,  KSFDeM, 
+  allPatRecDemSeq     : [ @sequence::tprPrepHitSeq, TimeClusterFinder, HelixFinder,  KSFDeM, 
 			  KFFDeM, 
 			  @sequence::cprPrepHitSeq, CalPatRecDem, 
 			  MergePatRecDem ]
 
-  allPatRecDmmSeq     : [ @sequence::tprPrepHitSeq, TimeClusterFinder, PosHelixFinder,  KSFDeM, 
+  allPatRecDmmSeq     : [ @sequence::tprPrepHitSeq, TimeClusterFinder, HelixFinder,  KSFDeM, 
 			  KFFDeM,
 			  @sequence::cprPrepHitSeq, CalPatRecDmm, 
 			  MergePatRecDmm ]
 #------------------------------------------------------------------------------
 # downstream electron and muon reconstructon together
 #------------------------------------------------------------------------------
-  trkPatRecDemDmmSeq  : [ @sequence::tprPrepHitSeq, TimeClusterFinder, PosHelixFinder, 
+  trkPatRecDemDmmSeq  : [ @sequence::tprPrepHitSeq, TimeClusterFinder, HelixFinder, 
 			  KSFDeM, KFFDeM, KSFDmuM, KFFDmuM, 
 			  MergePatRecDem, MergePatRecDmm ]
 
@@ -79,7 +79,7 @@ BEGIN_PROLOG
 			  CalPatRecDem, CalPatRecDmm, 
 			  MergePatRecDem, MergePatRecDmm ]
 
-  allPatRecDemDmmSeq  : [ @sequence::tprPrepHitSeq, TimeClusterFinder, PosHelixFinder,  
+  allPatRecDemDmmSeq  : [ @sequence::tprPrepHitSeq, TimeClusterFinder, HelixFinder,  
 			  KSFDeM, KFFDeM, KSFDmuM, KFFDmuM, 
 			  @sequence::CalPatRec.dem_reco,
 			  @sequence::CalPatRec.dmm_reco,
@@ -326,8 +326,8 @@ Stntuple : { @table::Stntuple  # defined in Stntuple/fcl/prolog.fcl
 #------------------------------------------------------------------------------
 # hit makers
 #------------------------------------------------------------------------------
-        protonTimeMap          : { @table::protonTimeMap          }
-        muonTimeMap            : { @table::muonTimeMap            }
+        protonTimeMap          : { @table::EventMixing.producers.protonTimeMap          }
+        muonTimeMap            : { @table::EventMixing.producers.muonTimeMap            }
         makeSD                 : { @table::makeSD                 }
         makeSH                 : { @table::makeSHfromSD           }
 

@@ -107,6 +107,12 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
   // 2016-07-11 G. Pezzullo: how do we want to propagate information of each strawhit 
   //  present in the track candidate?
   //------------------------------------------------------------------------------------------
+  // int    ev_number,  rn_number;
+  // ev_number = Evt->event();
+  // rn_number = Evt->run();
+  // cb->f_RunNumber   = rn_number;
+  // cb->f_EventNumber = ev_number;
+
 
 
   return 0;
@@ -117,12 +123,12 @@ Int_t StntupleInitMu2eTrackSeedBlockLinks(TStnDataBlock* Block, AbsEvent* AnEven
 {
   // Mu2e version, do nothing
 
-  Int_t  ev_number, rn_number;
+  // Int_t  ev_number, rn_number;
 
-  ev_number = AnEvent->event();
-  rn_number = AnEvent->run();
+  // ev_number = AnEvent->event();
+  // rn_number = AnEvent->run();
 
-  if (! Block->Initialized(ev_number,rn_number)) return -1;
+  //  if (!Block->Initialized(ev_number,rn_number)) return -1;
 
 					// do not do initialize links 2nd time
 
@@ -197,7 +203,8 @@ Int_t StntupleInitMu2eTrackSeedBlockLinks(TStnDataBlock* Block, AbsEvent* AnEven
 //-----------------------------------------------------------------------------
 // mark links as initialized
 //-----------------------------------------------------------------------------
-  tsb->fLinksInitialized = 1;
+  Block->SetLinksInitialized();
+  //  tsb->fLinksInitialized = 1;
 
 
   return 0;
