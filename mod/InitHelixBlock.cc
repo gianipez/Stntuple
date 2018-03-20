@@ -29,6 +29,7 @@
 #include "TTrackerGeom/inc/TTracker.hh"
 #include "CalorimeterGeom/inc/Calorimeter.hh"
 
+#include "RecoDataProducts/inc/XYZVec.hh"
 #include "RecoDataProducts/inc/TimeCluster.hh"
 #include "RecoDataProducts/inc/HelixSeed.hh"
 #include "RecoDataProducts/inc/HelixHit.hh"
@@ -42,9 +43,9 @@
 
 
 namespace {
-  double evalWeight(CLHEP::Hep3Vector& HitPos   ,
-		    CLHEP::Hep3Vector& StrawDir ,
-		    CLHEP::Hep3Vector& HelCenter, 
+  double evalWeight(XYZVec& HitPos   ,
+		    XYZVec& StrawDir ,
+		    XYZVec& HelCenter, 
 		    double             Radius   ,
 		    int                WeightMode,
 		    fhicl::ParameterSet const& Pset) {//WeightMode = 1 is for XY chi2 , WeightMode = 0 is for Phi-z chi2
@@ -177,7 +178,8 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
     //2017-02-23: gianipez - calculate the chi2
     const mu2e::HelixHitCollection* hits      = &tmpHel->hits();
     const mu2e::HelixHit*           hit(0);
-    CLHEP::Hep3Vector         pos(0), /*helix_pos(0),*/ wdir(0), sdir(0), helix_center(0);
+    // CLHEP::Hep3Vector         pos(0), /*helix_pos(0),*/ wdir(0), sdir(0), helix_center(0);
+    XYZVec                    pos(0,0,0), /*helix_pos(0),*/ wdir(0,0,0), sdir(0,0,0), helix_center(0,0,0);
     double                    phi(0), helix_phi(0);
     double                    radius    = robustHel->radius();
     helix_center = robustHel->center();
@@ -190,7 +192,8 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
     sxy.addPoint(0., 0., 1./900.);
 
     LsqSums4 srphi;
-    static const CLHEP::Hep3Vector zdir(0.0,0.0,1.0);
+    // static const CLHEP::Hep3Vector zdir(0.0,0.0,1.0);
+    static const XYZVec zdir(0.0,0.0,1.0);
 
     fhicl::ParameterSet const& pset = helix_handle.provenance()->parameterSet();
     
@@ -198,7 +201,7 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
       hit       = &hits->at(j);
       pos       = hit->pos();
       wdir      = hit->wdir();
-      sdir      = zdir.cross(wdir);
+      sdir      = zdir.Cross(wdir);
       phi       = hit->phi();
       helix_phi = helix->fFZ0 + pos.z()/helix->fLambda;
       double    weightXY   = evalWeight(pos, sdir, helix_center, radius, 1, pset);
@@ -220,10 +223,10 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
     
     if (cluster != 0){
       double     weight_cl_xy = 1./100.;//FIX ME!
-      pos       = CLHEP::Hep3Vector(helix->fClusterX, helix->fClusterY, helix->fClusterZ);
+      pos       = XYZVec(helix->fClusterX, helix->fClusterY, helix->fClusterZ);
       sxy.addPoint(pos.x(), pos.y(), weight_cl_xy);
       
-      phi       = CLHEP::Hep3Vector(pos - helix_center).phi();
+      phi       = XYZVec(pos - helix_center).phi();
       phi       = TVector2::Phi_0_2pi(phi);
       helix_phi = helix->fFZ0 + pos.z()/helix->fLambda;
       double     dPhi        = helix_phi - phi;

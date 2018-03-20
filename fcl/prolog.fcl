@@ -339,7 +339,7 @@ Stntuple : {
 	    timeClusterBlockName       : [ "TprTimeClusterBlock"     , "CprTimeClusterBlock"     ]
 	    timeClusterModuleLabel     : [ "TimeClusterFinder"       , "CalTimePeakFinder"       ]
 	    helixBlockName             : [ "TprHelixBlock"           , "CprHelixBlock"           ]
-	    helixModuleLabel           : [ "HelixFinder"          , "CalHelixFinder"          ]
+	    helixModuleLabel           : [ "HelixFinder"             , "CalHelixFinder"          ]
 	    trackSeedBlockName         : [ "TprTrackSeedBlock"       , "CprTrackSeedBlock"       ]
 	    trackSeedModuleLabel       : [ "KSFDeM"                  , "CalSeedFit"              ]
 	    shortHelixBlockName        : [ "ShortTprHelixBlock"      , "ShortCprHelixBlock"      , "ShortHelixBlock"        ]

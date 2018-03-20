@@ -82,7 +82,7 @@
 #include "RecoDataProducts/inc/CaloCrystalHitCollection.hh"
 #include "RecoDataProducts/inc/CaloClusterCollection.hh"
 #include "RecoDataProducts/inc/StrawHitCollection.hh"
-#include "RecoDataProducts/inc/StrawHitPositionCollection.hh"
+#include "RecoDataProducts/inc/XYZVec.hh"
 #include "RecoDataProducts/inc/StrawHitFlagCollection.hh"
 #include "RecoDataProducts/inc/CrvRecoPulsesCollection.hh"
 #include "RecoDataProducts/inc/CrvRecoPulses.hh"
@@ -1254,7 +1254,7 @@ namespace mu2e {
 	  sigr = 5.; // in mm
 	}
 				
-	vx0 = hitpos->pos();
+	vx0 = Geom::Hep3Vec(hitpos->pos());
 
 	vx1 = vx0 + sigv*(*w);
 	vx2 = vx0 - sigv*(*w);

@@ -17,6 +17,7 @@
 
 #include "art/Framework/Principal/Event.h"
 #include "MCDataProducts/inc/PtrStepPointMCVectorCollection.hh"
+#include "RecoDataProducts/inc/XYZVec.hh"
 
 #else
 
@@ -34,7 +35,6 @@ class KalRep;
 
 namespace mu2e {
   class StrawHit;
-  class StrawHitPosition;
   class StrawHitMCTruth;
   class CaloCluster;
   class CaloProtoCluster;
@@ -45,8 +45,9 @@ namespace mu2e {
   class CalTimePeak;
   class KalSeed;
   class HelixSeed;
-  class HelixHit;
+  class ComboHit;
   class TrackClusterMatch;
+  class TrkCaloHit;
   class TrkStrawHit;
   class SimParticleTimeOffset;
 }
@@ -90,9 +91,9 @@ public:
   void SetEvent(art::Event& Evt) { fEvent = &Evt; }
   void SetFlagBgrHitsModuleLabel(const char* Label) { fFlagBgrHitsModuleLabel = Label; }
 
-  double evalWeight(CLHEP::Hep3Vector& HitPos   ,
-		    CLHEP::Hep3Vector& StrawDir ,
-		    CLHEP::Hep3Vector& HelCenter, 
+  double evalWeight(XYZVec& HitPos   ,
+		    XYZVec& StrawDir ,
+		    XYZVec& HelCenter, 
 		    double             Radius   ,
 		    int                WeightMode,
 		    fhicl::ParameterSet const& Pset);
@@ -157,6 +158,7 @@ public:
 
 
 
+  void printTrkCaloHit(const KalRep* Krep, mu2e::TrkCaloHit* CaloHit);
 
   void printKalRep(const KalRep* Krep, const char* Opt = "", const char* Prefix = "");
 
@@ -197,7 +199,7 @@ public:
 			   int                      INit  = -1,
 			   int                      Flags = -1);
   
-  void printHelixHit      (const mu2e::HelixHit*    HelHit,
+  void printHelixHit      (const mu2e::ComboHit*    HelHit,
 			   const mu2e::StrawHit*    Hit, 
 			   const mu2e::StepPointMC* Step,
 			   const char*              Opt   = "", 
@@ -222,7 +224,7 @@ public:
 				   const char* ProductName = "", 
 				   const char* ProcessName = "");
 
-  void printStrawHitPosition(const mu2e::StrawHitPosition* Pos, const char* Opt = "");
+  void printStrawHitPosition(const mu2e::ComboHit* Pos, const char* Opt = "");
 
   void printStrawHitPositionCollection (const char* ModuleLabel     , 
 					const char* ProductName = "", 
