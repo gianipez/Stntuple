@@ -108,7 +108,7 @@ MuHitDisplay: { module_type:MuHitDisplay        # the class name;
     strawHitMakerModuleLabel     : makeSH
     strawDigiMakerModuleLabel    : makeSD
     strawHitPosMakerModuleLabel  : makeSH # MakeStrawHitPositions
-    strawHitFlagMakerModuleLabel : makeSH # FlagStrawHits
+    strawHitFlagMakerModuleLabel : DeltaFinder # FlagStrawHits
     
     caloCrystalHitsMaker         : CaloCrystalHitFromHit
     caloClusterModuleLabel       : CaloClusterFromProtoCluster
