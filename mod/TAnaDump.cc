@@ -254,6 +254,12 @@ void TAnaDump::printCaloCluster(const mu2e::CaloCluster* Cl, const char* Opt) {
     const mu2e::CaloCluster::CaloCrystalHitPtrVector caloClusterHits = Cl->caloCrystalHitsPtrVector();
     int nh = caloClusterHits.size();
 
+    printf("-----------------------------------------------------------------------------------------------");
+    printf("-------------------------------\n");
+    printf("    Id       time       i     j      energy       X(loc)     Y(loc)   Z(loc)    energy-tot\n");
+    printf("-----------------------------------------------------------------------------------------------");
+    printf("-------------------------------\n");
+   
     for (int i=0; i<nh; i++) {
       const mu2e::CaloCrystalHit* hit = &(*caloClusterHits.at(i));
       int id = hit->id();
@@ -265,8 +271,8 @@ void TAnaDump::printCaloCluster(const mu2e::CaloCluster* Cl, const char* Opt) {
       iz = -1;
       ir = -1;
 	//      }
-
-      printf("%6i     %10.3f %5i %5i %8.3f %10.3f %10.3f %10.3f %10.3f\n",
+      
+      printf("%6i   %10.3f %5i %5i   %8.3f   %10.3f %10.3f %10.3f %10.3f\n",
 	     id,
 	     hit->time(),
 	     iz,ir,
@@ -284,7 +290,8 @@ void TAnaDump::printCaloCluster(const mu2e::CaloCluster* Cl, const char* Opt) {
 //-----------------------------------------------------------------------------
 void TAnaDump::printCaloClusterCollection(const char* ModuleLabel, 
 					  const char* ProductName,
-					  const char* ProcessName) {
+					  const char* ProcessName,
+					  int   HitOpt) {
 
   printf(">>>> ModuleLabel = %s\n",ModuleLabel);
 
@@ -329,6 +336,7 @@ void TAnaDump::printCaloClusterCollection(const char* ModuleLabel,
       banner_printed = 1;
     }
     printCaloCluster(hit,"data");
+    if(HitOpt>0) printCaloCluster(hit,"hits");
   }
  
 }

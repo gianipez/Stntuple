@@ -123,7 +123,8 @@ public:
   
   void printCaloClusterCollection (const char* ModuleLabel, 
 				   const char* ProductName,
-				   const char* ProcessName);
+				   const char* ProcessName,
+				   int   hitOpt=0);
   
   void printCaloProtoCluster      (const mu2e::CaloProtoCluster* Clu     ,
 				   const char*                   Opt = "");
