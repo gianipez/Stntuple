@@ -13,7 +13,7 @@ Rint.Logoff:
 # Root.MemStat:  1
 Root.ObjectStat:  1
 #
-Gui.IconPath:  $(PWD)/Stntuple/icons
+# Gui.IconPath:  $(PWD)/Stntuple/icons
 # Record session commands, set to "-" to turn off command recording
 Rint.History:            $(PWD)/.root_hist
 #------------------------------------------------------------------------------

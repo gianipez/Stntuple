@@ -47,6 +47,8 @@
 #include "MCDataProducts/inc/StrawHitMCTruthCollection.hh"
 #include "MCDataProducts/inc/PhysicalVolumeInfo.hh"
 #include "MCDataProducts/inc/PhysicalVolumeInfoCollection.hh"
+#include "CaloMC/inc/ClusterContentMC.hh"
+#include "CaloMC/inc/CrystalContentMC.hh"
 
 #include "BTrkData/inc/TrkCaloHit.hh"
 #include "BTrkData/inc/TrkStrawHit.hh"
@@ -194,7 +196,9 @@ void* TAnaDump::FindNamedObject(const char* Name) {
 //-----------------------------------------------------------------------------
 // print position of the cluster in the tracker system
 //-----------------------------------------------------------------------------
-void TAnaDump::printCaloCluster(const mu2e::CaloCluster* Cl, const char* Opt) {
+void TAnaDump::printCaloCluster(const mu2e::CaloCluster* Cl, 
+				const char* Opt, 
+				const mu2e::CaloHitMCTruthAssns* CaloHitTruth) {
   int row, col;
   TString opt = Opt;
 
@@ -247,16 +251,18 @@ void TAnaDump::printCaloCluster(const mu2e::CaloCluster* Cl, const char* Opt) {
 
     const mu2e::Crystal           *cr;
     const CLHEP::Hep3Vector       *pos;
-    int  iz, ir;
+    // int  iz, ir;
 //-----------------------------------------------------------------------------
 // print individual crystals in local vane coordinate system
 //-----------------------------------------------------------------------------
     const mu2e::CaloCluster::CaloCrystalHitPtrVector caloClusterHits = Cl->caloCrystalHitsPtrVector();
     int nh = caloClusterHits.size();
+    
+    mu2e::Calorimeter const & calo = *(mu2e::GeomHandle<mu2e::Calorimeter>());
 
     printf("-----------------------------------------------------------------------------------------------");
     printf("-------------------------------\n");
-    printf("    Id       time       i     j      energy       X(loc)     Y(loc)   Z(loc)    energy-tot\n");
+    printf("    Id       time      Gen-Code     ID   PDG  PDG(M)      energy       X(loc)     Y(loc)   Z(loc)    energy-MC     nSimP\n");
     printf("-----------------------------------------------------------------------------------------------");
     printf("-------------------------------\n");
    
@@ -268,19 +274,50 @@ void TAnaDump::printCaloCluster(const mu2e::CaloCluster* Cl, const char* Opt) {
 
       pos = &cr->localPosition();
   
-      iz = -1;
-      ir = -1;
-	//      }
+      mu2e::CrystalContentMC contentMC(calo, *CaloHitTruth, *hit);
+      double                 simMaxEdep(0);
+      int                    simPDGId(9999), simPDGM(9999), simCreationCode(9999), /*simTime(9999),*/ simID(9999);
+
+      //search the simParticle that gave the largest energy contribution
+      int  nSimPart(0);
+      for (const auto& contentMap : contentMC.simContentMap() )	{	       
+	art::Ptr<mu2e::SimParticle> sim  = contentMap.first;
+	mu2e::CaloContentSim        data = contentMap.second;
+               
+	auto parent(sim);
+	while ( parent->hasParent()) parent = parent->parent();               
+               
+	if (data.edep() > simMaxEdep){
+	  simMaxEdep = data.edep();
+	    
+	  simID            = sim->id().asInt();
+	  simPDGId         = sim->pdgId();
+	  simCreationCode  = parent->creationCode();
+	  // simTime          = data.time();
+	  simPDGM          = parent->pdgId(); 
+	  // = data.mom();
+	  // = parent->startPosition().x();
+	  // = parent->startPosition().y();
+	  // = parent->startPosition().z();
+	}
+	++nSimPart;
+      }
       
-      printf("%6i   %10.3f %5i %5i   %8.3f   %10.3f %10.3f %10.3f %10.3f\n",
+      // iz = -1;
+      // ir = -1;
+      //      }
+      
+      printf("%6i   %10.3f %8i %8i %5i %5i    %10.3f   %10.3f %10.3f %10.3f %10.3f %8i\n",
 	     id,
 	     hit->time(),
-	     iz,ir,
+	     simCreationCode, simID,simPDGId,simPDGM,
+	     // iz,ir,
 	     hit->energyDep(),
 	     pos->x(),
 	     pos->y(),
 	     pos->z(),
-	     hit->energyDepTot()
+	     simMaxEdep,//hit->energyDepTot()
+	     nSimPart
 	     );
     }
   }
@@ -291,7 +328,8 @@ void TAnaDump::printCaloCluster(const mu2e::CaloCluster* Cl, const char* Opt) {
 void TAnaDump::printCaloClusterCollection(const char* ModuleLabel, 
 					  const char* ProductName,
 					  const char* ProcessName,
-					  int   HitOpt) {
+					  int   HitOpt,
+					  const char* MCModuleLabel) {
 
   printf(">>>> ModuleLabel = %s\n",ModuleLabel);
 
@@ -300,16 +338,27 @@ void TAnaDump::printCaloClusterCollection(const char* ModuleLabel,
   art::Handle<mu2e::CaloClusterCollection> handle;
   const mu2e::CaloClusterCollection* caloCluster;
 
+  art::Handle<mu2e::CaloHitMCTruthAssns> caloHitTruthHandle;
+  const mu2e::CaloHitMCTruthAssns* caloHitTruth(0);
+  
   if (ProductName[0] != 0) {
     art::Selector  selector(art::ProductInstanceNameSelector(ProductName) &&
 			    art::ProcessNameSelector(ProcessName)         && 
 			    art::ModuleLabelSelector(ModuleLabel)            );
     fEvent->get(selector,handle);
+    art::Selector  selectorMC(art::ProductInstanceNameSelector(ProductName) &&
+			      art::ProcessNameSelector(ProcessName)         && 
+			      art::ModuleLabelSelector(MCModuleLabel)            );
+   
+    fEvent->get(selectorMC,caloHitTruthHandle);
   }
   else {
     art::Selector  selector(art::ProcessNameSelector(ProcessName)         && 
 			    art::ModuleLabelSelector(ModuleLabel)            );
     fEvent->get(selector,handle);
+    art::Selector  selectorMC(art::ProcessNameSelector(ProcessName)         && 
+			      art::ModuleLabelSelector(MCModuleLabel)            );
+    fEvent->get(selectorMC,caloHitTruthHandle);
   }
 //-----------------------------------------------------------------------------
 // make sure collection exists
@@ -325,6 +374,8 @@ void TAnaDump::printCaloClusterCollection(const char* ModuleLabel,
 
   int nhits = caloCluster->size();
 
+  if (caloHitTruthHandle.isValid()) caloHitTruth = caloHitTruthHandle.product();
+
   const mu2e::CaloCluster* hit;
 
 
@@ -336,7 +387,7 @@ void TAnaDump::printCaloClusterCollection(const char* ModuleLabel,
       banner_printed = 1;
     }
     printCaloCluster(hit,"data");
-    if(HitOpt>0) printCaloCluster(hit,"hits");
+    if(HitOpt>0) printCaloCluster(hit,"hits",caloHitTruth);
   }
  
 }

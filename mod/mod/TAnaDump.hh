@@ -18,6 +18,8 @@
 #include "art/Framework/Principal/Event.h"
 #include "MCDataProducts/inc/PtrStepPointMCVectorCollection.hh"
 #include "RecoDataProducts/inc/XYZVec.hh"
+#include "MCDataProducts/inc/CaloClusterMCTruthAssn.hh"
+#include "MCDataProducts/inc/CaloHitMCTruthAssn.hh"
 
 #else
 
@@ -119,12 +121,14 @@ public:
   void printDiskCalorimeter();
 
   void printCaloCluster          (const mu2e::CaloCluster* Cluster ,
-				  const char*              Opt = "");
+				  const char*              Opt = "",
+				  const mu2e::CaloHitMCTruthAssns* CaloHitTruth=NULL);
   
   void printCaloClusterCollection (const char* ModuleLabel, 
-				   const char* ProductName,
-				   const char* ProcessName,
-				   int   hitOpt=0);
+				   const char* ProductName= "",
+				   const char* ProcessName= "",
+				   int   hitOpt=0,
+				   const char* MCModuleLabel= "");
   
   void printCaloProtoCluster      (const mu2e::CaloProtoCluster* Clu     ,
 				   const char*                   Opt = "");
