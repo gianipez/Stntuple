@@ -37,6 +37,7 @@ class KalRep;
 
 namespace mu2e {
   class StrawHit;
+  class StrawHitPosition;
   class StrawHitMCTruth;
   class CaloCluster;
   class CaloProtoCluster;
@@ -46,8 +47,9 @@ namespace mu2e {
   class SimParticle;
   class CalTimePeak;
   class KalSeed;
-  class HelixSeed;
   class ComboHit;
+  class HelixSeed;
+  class HelixHit;
   class TrackClusterMatch;
   class TrkCaloHit;
   class TrkStrawHit;
@@ -204,7 +206,7 @@ public:
 			   int                      INit  = -1,
 			   int                      Flags = -1);
   
-  void printHelixHit      (const mu2e::ComboHit*    HelHit,
+  void printHelixHit      (const mu2e::HelixHit*    HelHit,
 			   const mu2e::StrawHit*    Hit, 
 			   const mu2e::StepPointMC* Step,
 			   const char*              Opt   = "", 
@@ -229,7 +231,7 @@ public:
 				   const char* ProductName = "", 
 				   const char* ProcessName = "");
 
-  void printStrawHitPosition(const mu2e::ComboHit* Pos, const char* Opt = "");
+  void printStrawHitPosition(const mu2e::StrawHitPosition* Pos, const char* Opt = "");
 
   void printStrawHitPositionCollection (const char* ModuleLabel     , 
 					const char* ProductName = "", 

@@ -755,7 +755,7 @@ void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix,	const char* Opt,
 
     int nsh = Helix->hits().size();
     const mu2e::HelixHitCollection* hits      = &Helix->hits();
-    const mu2e::ComboHit*           hit(0);
+    const mu2e::HelixHit*           hit(0);
     XYZVec                    pos(0,0,0), /*helix_pos(0),*/ wdir(0,0,0), sdir(0,0,0), helix_center(0,0,0);
     double                    phi(0), helix_phi(0);
 
@@ -851,7 +851,7 @@ void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix,	const char* Opt,
 
     int banner_printed(0);
     for (int i=0; i<nsh; ++i){
-      const mu2e::ComboHit*  helHit  = &Helix->hits().at(i);
+      const mu2e::HelixHit*  helHit  = &Helix->hits().at(i);
       int  hitIndex                 = helHit->index();
       const mu2e::StrawHit*  hit    = &shcol->at(hitIndex);
 
@@ -2140,7 +2140,7 @@ void TAnaDump::printHelixHit(const mu2e::HelixHit*    HelHit, const mu2e::StrawH
     double   mc_mom(-1.);
     double   x(0), y(0), z(0), phi(0);
 
-    XYZVec   shPos = HelHit->pos();
+    CLHEP::Hep3Vector shPos = HelHit->pos();
     x      = shPos.x();
     y      = shPos.y();
     z      = shPos.z();    
@@ -2642,7 +2642,7 @@ void TAnaDump::printStrawHitMCTruthCollection(const char* ModuleLabel,
 }
 
 //-----------------------------------------------------------------------------
-void TAnaDump::printStrawHitPosition(const mu2e::ComboHit* Hit, const char* Opt) {
+void TAnaDump::printStrawHitPosition(const mu2e::StrawHitPosition* Hit, const char* Opt) {
   TString opt = Opt;
   
   if ((opt == "") || (opt == "banner")) {
@@ -2653,13 +2653,14 @@ void TAnaDump::printStrawHitPosition(const mu2e::ComboHit* Hit, const char* Opt)
 
   int flag = *((int*) &Hit->flag());
 
-  double wres = Hit->posRes(mu2e::ComboHit::wire);
+  double wres = Hit->posRes(mu2e::StrawHitPosition::wire);
   if (wres > 999.) wres = 999.;
 
-  double rres = Hit->posRes(mu2e::ComboHit::trans);
+  double rres = Hit->posRes(mu2e::StrawHitPosition::trans);
   if (rres > 999.) rres = 999.;
 
   if ((opt == "") || (opt == "data")) {
+
     printf("   %6i %8.3f %8.3f %9.3f %8.3f  %7.2f  %7.2f  0x%08x\n",
 	   -1,//Hit->stereoHitIndex(),
 	   Hit->pos().x(),
@@ -2678,37 +2679,37 @@ void TAnaDump::printStrawHitPositionCollection(const char* ModuleLabel,
 					       const char* ProductName,
 					       const char* ProcessName) {
 
-  art::Handle<mu2e::ComboHitCollection>   spcHandle;
-  const mu2e::ComboHitCollection*         spc;
+  // art::Handle<mu2e::ComboHitCollection>   spcHandle;
+  // const mu2e::ComboHitCollection*         spc;
 
-  if (ProductName[0] != 0) {
-    art::Selector  selector(art::ProductInstanceNameSelector(ProductName) &&
-			    art::ProcessNameSelector(ProcessName)         && 
-			    art::ModuleLabelSelector(ModuleLabel)            );
-    fEvent->get(selector, spcHandle);
-  }
-  else {
-    art::Selector  selector(art::ProcessNameSelector(ProcessName)         && 
-			    art::ModuleLabelSelector(ModuleLabel)            );
-    fEvent->get(selector, spcHandle);
-  }
+  // if (ProductName[0] != 0) {
+  //   art::Selector  selector(art::ProductInstanceNameSelector(ProductName) &&
+  // 			    art::ProcessNameSelector(ProcessName)         && 
+  // 			    art::ModuleLabelSelector(ModuleLabel)            );
+  //   fEvent->get(selector, spcHandle);
+  // }
+  // else {
+  //   art::Selector  selector(art::ProcessNameSelector(ProcessName)         && 
+  // 			    art::ModuleLabelSelector(ModuleLabel)            );
+  //   fEvent->get(selector, spcHandle);
+  // }
 
-  spc = spcHandle.product();
+  // spc = spcHandle.product();
 
-  int nhits = spc->size();
+  // int nhits = spc->size();
 
-  const mu2e::ComboHit* pos;
+  // const mu2e::ComboHit* pos;
 
 
-  int banner_printed = 0;
-  for (int i=0; i<nhits; i++) {
-    pos = &spc->at(i);
-    if (banner_printed == 0) {
-      printStrawHitPosition(pos, "banner");
-      banner_printed = 1;
-    }
-    printStrawHitPosition(pos,"data");
-  }
+  // int banner_printed = 0;
+  // for (int i=0; i<nhits; i++) {
+  //   pos = &spc->at(i);
+  //   if (banner_printed == 0) {
+  //     printStrawHitPosition(pos, "banner");
+  //     banner_printed = 1;
+  //   }
+  //   printStrawHitPosition(pos,"data");
+  // }
  
 }
 

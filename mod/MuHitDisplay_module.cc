@@ -1254,7 +1254,7 @@ namespace mu2e {
 	  sigr = 5.; // in mm
 	}
 				
-	vx0 = Geom::Hep3Vec(hitpos->pos());
+	vx0 = CLHEP::Hep3Vector(hitpos->pos());
 
 	vx1 = vx0 + sigv*(*w);
 	vx2 = vx0 - sigv*(*w);
