@@ -25,10 +25,8 @@
 #include "RecoDataProducts/inc/CaloCrystalHit.hh"
 #include "RecoDataProducts/inc/CaloHitCollection.hh"
 #include "RecoDataProducts/inc/StrawHitCollection.hh"
-//#include "RecoDataProducts/inc/StrawHitPositionCollection.hh"
 #include "RecoDataProducts/inc/StrawHitFlagCollection.hh"
 #include "RecoDataProducts/inc/KalSeed.hh"
-// #include "RecoDataProducts/inc/HelixHit.hh"
 #include "RecoDataProducts/inc/HelixSeed.hh"
 #include "RecoDataProducts/inc/ComboHit.hh"
 
@@ -2140,7 +2138,7 @@ void TAnaDump::printHelixHit(const mu2e::HelixHit*    HelHit, const mu2e::StrawH
     double   mc_mom(-1.);
     double   x(0), y(0), z(0), phi(0);
 
-    CLHEP::Hep3Vector shPos = HelHit->pos();
+    XYZVec shPos = HelHit->pos();
     x      = shPos.x();
     y      = shPos.y();
     z      = shPos.z();    

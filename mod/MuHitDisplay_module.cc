@@ -1177,10 +1177,9 @@ namespace mu2e {
     const StrawHit*              hit;
     const StrawHitPosition*      hitpos;
     const StrawHitFlag*          hit_id_word;
-    const CLHEP::Hep3Vector      *w;
     const Straw*                 straw;
     const PtrStepPointMCVector*  mcptr;
-    CLHEP::Hep3Vector            vx0, vx1, vx2;
+    XYZVec                       vx0, vx1, vx2, w;
 
     n_displayed_hits = 0;
 
@@ -1207,7 +1206,7 @@ namespace mu2e {
 	// Get the straw information:
 	straw = &fTracker->getStraw(hit->strawIndex());
 
-	w = &straw->getDirection();
+	w = Geom::toXYZVec(straw->getDirection());
 
 	isFromConversion = false;
 
@@ -1254,10 +1253,10 @@ namespace mu2e {
 	  sigr = 5.; // in mm
 	}
 				
-	vx0 = CLHEP::Hep3Vector(hitpos->pos());
+	vx0 = hitpos->pos();
 
-	vx1 = vx0 + sigv*(*w);
-	vx2 = vx0 - sigv*(*w);
+	vx1 = vx0 + sigv*w;
+	vx2 = vx0 - sigv*w;
 
 	intime = fabs(hit->time() - event_time) < _timeWindow;
 //-----------------------------------------------------------------------------
@@ -1284,8 +1283,8 @@ namespace mu2e {
 	  line->SetLineWidth(width);
 	  line->DrawLine(vx1.x(), vx1.y(), vx2.x(), vx2.y());
 
-	  line->DrawLine(vx0.x() + sigr*w->y(), vx0.y() - sigr*w->x(),
-			 vx0.x() - sigr*w->y(), vx0.y() + sigr*w->x());
+	  line->DrawLine(vx0.x() + sigr*w.y(), vx0.y() - sigr*w.x(),
+			 vx0.x() - sigr*w.y(), vx0.y() + sigr*w.x());
 
 	  n_displayed_hits++;
 	}

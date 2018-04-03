@@ -20,6 +20,8 @@
 #include "RecoDataProducts/inc/XYZVec.hh"
 #include "MCDataProducts/inc/CaloClusterMCTruthAssn.hh"
 #include "MCDataProducts/inc/CaloHitMCTruthAssn.hh"
+#include "RecoDataProducts/inc/HelixHit.hh"
+#include "RecoDataProducts/inc/StrawHitPositionCollection.hh"
 
 #else
 
@@ -37,7 +39,6 @@ class KalRep;
 
 namespace mu2e {
   class StrawHit;
-  class StrawHitPosition;
   class StrawHitMCTruth;
   class CaloCluster;
   class CaloProtoCluster;
@@ -49,7 +50,7 @@ namespace mu2e {
   class KalSeed;
   class ComboHit;
   class HelixSeed;
-  class HelixHit;
+  //  class HelixHit;
   class TrackClusterMatch;
   class TrkCaloHit;
   class TrkStrawHit;
