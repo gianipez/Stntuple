@@ -49,17 +49,17 @@ StntupleMakerTemplate : { module_type:StntupleMaker
     timeClusterBlockName    : ["TimePeakBlock"    ]   # to be renamed, *FIXME*
     timeClusterModuleLabel  : ["CalTimePeakFinder"]   # to be renamed into CalTimeCLusterFinder *FIXME* 
 
-    helixBlockName          : ["HelixBlock"]
-    helixModuleLabel        : ["CalHelixFinder"]
+    helixBlockName          : []
+    helixModuleLabel        : []
 
-    trackSeedBlockName      : ["TrackSeedBlock"]
-    trackSeedModuleLabel    : ["CalSeedFit"  ]
+    trackSeedBlockName      : []
+    trackSeedModuleLabel    : []
 
-    shortHelixBlockName       : ["ShortHelixBlock"]
-    shortHelixModuleLabel     : ["CalSeedFit"]
+    shortHelixBlockName       : []
+    shortHelixModuleLabel     : []
 
-    shortTrackSeedBlockName   : ["ShortTrackSeedBlock"]
-    shortTrackSeedModuleLabel : ["MergePatRec"  ]
+    shortTrackSeedBlockName   : []
+    shortTrackSeedModuleLabel : []
 
     trackBlockName          : [ "TrackBlock"   ]
     trkRecoModuleLabel      : [ "MergePatRec"  ]
@@ -206,8 +206,6 @@ Stntuple : {
 
 	StntupleMakerDem  : { @table::StntupleMakerTemplate 
 	    makePid                 : 1
-	    trackSeedBlockName      : [ "TrackSeedBlockDem"        ]
-	    trackSeedModuleLabel    : [ "MergePatRecDem"           ]
 	    trackBlockName          : [ "TrackBlockDem"            ] 
 	    trackStrawHitBlockName  : [ "TrackHitBlockDem"         ] 
 	    trkRecoModuleLabel      : [ "MergePatRecDem"           ]
@@ -223,8 +221,6 @@ Stntuple : {
 #------------------------------------------------------------------------------
 	StntupleMakerDmm  : { @table::StntupleMakerTemplate 
 	    makePid                 : 1
-	    trackSeedBlockName      : [ "TrackSeedBlockDmm"        ]
-	    trackSeedModuleLabel    : [ "MergePatRecDmm"           ]
 	    trackBlockName          : [ "TrackBlockDmm"            ] 
 	    trackStrawHitBlockName  : [ "TrackHitBlockDmm"         ] 
 	    trkRecoModuleLabel      : [ "MergePatRecDmm"           ]
