@@ -206,6 +206,8 @@ Stntuple : {
 
 	StntupleMakerDem  : { @table::StntupleMakerTemplate 
 	    makePid                 : 1
+	    trackSeedBlockName      : [ "TrackSeedBlockDem"        ]
+	    trackSeedModuleLabel    : [ "MergePatRecDem"           ]
 	    trackBlockName          : [ "TrackBlockDem"            ] 
 	    trackStrawHitBlockName  : [ "TrackHitBlockDem"         ] 
 	    trkRecoModuleLabel      : [ "MergePatRecDem"           ]
@@ -221,6 +223,8 @@ Stntuple : {
 #------------------------------------------------------------------------------
 	StntupleMakerDmm  : { @table::StntupleMakerTemplate 
 	    makePid                 : 1
+	    trackSeedBlockName      : [ "TrackSeedBlockDmm"        ]
+	    trackSeedModuleLabel    : [ "MergePatRecDmm"           ]
 	    trackBlockName          : [ "TrackBlockDmm"            ] 
 	    trackStrawHitBlockName  : [ "TrackHitBlockDmm"         ] 
 	    trkRecoModuleLabel      : [ "MergePatRecDmm"           ]
