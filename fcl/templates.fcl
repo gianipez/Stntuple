@@ -13,9 +13,9 @@ BEGIN_PROLOG
 
   mix_seq       : [ @sequence::EventMixing.CD3Mixers, @sequence::EventMixing.TimeMaps ]
 
-  hitMakerSeq   : [ @sequence::CaloDigiMC.DigiSim, @sequence::CaloReco.Reco, @sequence::TrackerMC.DigiSim, makeSH ]
+  hitMakerSeq   : [ @sequence::CaloDigiMC.DigiSim, @sequence::CaloReco.Reco, @sequence::TrackerMC.DigiSim, makeSH, makePH ]
 
-  digiMakerSeq  : [ @sequence::CaloDigiMC.DigiSim, @sequence::CaloReco.Reco, @sequence::TrackerMC.DigiSim, makeSH ]
+  digiMakerSeq  : [ @sequence::CaloDigiMC.DigiSim, @sequence::CaloReco.Reco, @sequence::TrackerMC.DigiSim, makeSH, makePH ]
  
 # MC generator and hit makers
 
@@ -24,12 +24,11 @@ BEGIN_PROLOG
 # calorimeter cluster reconstruction
   calRecoSeq    : [ @sequence::CaloCluster.Reco ]
 
-# hit pre-making for TrkPatRec; FSHPreStereo is needed to flag straw hits
-  tprPrepHitSeq : [ FSHPreStereo, MakeStrawHitPositions, MakeStereoHits, FlagStrawHits, FlagBkgHits ]
+# hit pre-making for TrkPatRec;
+  tprPrepHitSeq : [ FlagBkgHits ]
 
 # CalPatRec
-  cprPrepHitSeq : [ CalPatRecFSHP, CalPatRecMakeStrawHitPositions, CalPatRecMakeStereoHits,  
-		    CalPatRecFlagStrawHits, CalPatRecFlagBkgHits ]
+  cprPrepHitSeq : [ DeltaFinder ]
 
   trkPatRecSeq     : [ @sequence::tprPrepHitSeq, TimeClusterFinder, HelixFinder, KSFDeM, 
 		       KFFDeM, MergePatRec    ]
@@ -414,6 +413,7 @@ Stntuple.mix                 : [ dioMixer, protonMixer, neutronMixer, photonMixe
 Stntuple.mix_time_map        : [ @sequence::Stntuple.mix, @sequence::EventMixing.TimeMaps ]
 Stntuple.gen_g4_mix_time_map : [ @sequence::Stntuple.gen_g4, @sequence::Stntuple.mix, @sequence::EventMixing.TimeMaps ]
 Stntuple.digis               : [ @sequence::CaloDigiMC.DigiSim, @sequence::TrackerMC.DigiSim ]
+Stntuple.trk_reco            : [ makeSH, makePH, FlagBkgHits]
 
 Stntuple.cal_reco        : [ CaloRecoDigiFromDigi ,CaloCrystalHitFromHit, 
 			     CaloProtoClusterFromCrystalHit, CaloClusterFromProtoCluster ]
@@ -454,6 +454,7 @@ Stntuple.paths : {
 
     path_gen_digi_tcm_reco_stn : [ @sequence::Stntuple.gen_g4_time_map,
 				   @sequence::Stntuple.digis          ,
+				   @sequence::Stntuple.trk_reco       ,
 				   @sequence::Stntuple.cal_reco       ,
 				   @sequence::Stntuple.tpr_reco       ,
 				   @sequence::Stntuple.cpr_reco       ,
@@ -463,6 +464,7 @@ Stntuple.paths : {
     
     path_gen_digi_reco_stn_dem : [ @sequence::Stntuple.gen_g4_time_map,
 				   @sequence::Stntuple.digis          ,
+				   @sequence::Stntuple.trk_reco       ,
 				   @sequence::Stntuple.cal_reco       ,
 				   @sequence::Stntuple.dem_reco       ,
 				   @sequence::Stntuple.stnmaker_dem
@@ -470,6 +472,7 @@ Stntuple.paths : {
     
     path_gen_digi_reco_stn_dmm : [ @sequence::Stntuple.gen_g4_time_map,
 				   @sequence::Stntuple.digis          ,
+				   @sequence::Stntuple.trk_reco       ,
 				   @sequence::Stntuple.cal_reco       ,
 				   @sequence::Stntuple.dmm_reco       ,
 				   @sequence::Stntuple.stnmaker_dmm
@@ -477,6 +480,7 @@ Stntuple.paths : {
 
     path_gen_digi_reco_stn_uep : [ @sequence::Stntuple.gen_g4_time_map,
 				   @sequence::Stntuple.digis          ,
+				   @sequence::Stntuple.trk_reco       ,				   
 				   @sequence::Stntuple.cal_reco       ,
 				   @sequence::Stntuple.uep_reco       ,
 				   @sequence::Stntuple.stnmaker
@@ -484,6 +488,7 @@ Stntuple.paths : {
 
     path_gen_digi_reco_stn_ump : [ @sequence::Stntuple.gen_g4_time_map,
 				   @sequence::Stntuple.digis          ,
+				   @sequence::Stntuple.trk_reco       ,
 				   @sequence::Stntuple.cal_reco       ,
 				   @sequence::Stntuple.ump_reco       ,
 				   @sequence::Stntuple.stnmaker
@@ -491,6 +496,7 @@ Stntuple.paths : {
 
     path_gen_digi_reco_stn_dem_dmm : [ @sequence::Stntuple.gen_g4_time_map,
 				       @sequence::Stntuple.digis          ,
+				       @sequence::Stntuple.trk_reco       ,
 				       @sequence::Stntuple.cal_reco       ,
 				       @sequence::Stntuple.dem_reco       ,
 				       @sequence::Stntuple.dmm_reco       ,
@@ -499,6 +505,7 @@ Stntuple.paths : {
 
     path_gen_digi_reco_stn_dem_umm : [ @sequence::Stntuple.gen_g4_time_map,
 				       @sequence::Stntuple.digis          ,
+				       @sequence::Stntuple.trk_reco       ,
 				       @sequence::Stntuple.cal_reco       ,
 				       @sequence::Stntuple.dem_reco       ,
 				       @sequence::Stntuple.umm_reco       ,
@@ -507,6 +514,7 @@ Stntuple.paths : {
     
     path_gen_digi_reco_stn_dem_ump : [ @sequence::Stntuple.gen_g4_time_map,
 				       @sequence::Stntuple.digis          ,
+				       @sequence::Stntuple.trk_reco       ,				       
 				       @sequence::Stntuple.cal_reco       ,
 				       @sequence::Stntuple.dem_reco       ,
 				       @sequence::Stntuple.ump_reco       ,
@@ -515,6 +523,7 @@ Stntuple.paths : {
 
     path_gen_digi_reco_stn_dem_dmp_ump : [ @sequence::Stntuple.gen_g4_time_map,
 					   @sequence::Stntuple.digis          ,
+					   @sequence::Stntuple.trk_reco       ,
 					   @sequence::Stntuple.cal_reco       ,
 					   @sequence::Stntuple.dem_reco       ,
 					   @sequence::Stntuple.dmp_reco       ,
@@ -524,6 +533,7 @@ Stntuple.paths : {
 
     path_gen_digi_reco_stn_dem_dmm_umm : [ @sequence::Stntuple.gen_g4_time_map,
 					   @sequence::Stntuple.digis          ,
+					   @sequence::Stntuple.trk_reco       ,
 					   @sequence::Stntuple.cal_reco       ,
 					   @sequence::Stntuple.dem_reco       ,
 					   @sequence::Stntuple.dmm_reco       ,
@@ -535,6 +545,7 @@ Stntuple.paths : {
 #------------------------------------------------------------------------------
     path_mix_digi_calo_apr_stn : [ @sequence::Stntuple.mix_time_map   , 
 				   @sequence::Stntuple.digis          ,
+				   @sequence::Stntuple.trk_reco       ,
 				   @sequence::Stntuple.cal_reco       , 
 				   @sequence::Stntuple.tpr_reco       ,
 				   @sequence::Stntuple.cpr_reco       ,
@@ -548,6 +559,7 @@ Stntuple.paths : {
 #------------------------------------------------------------------------------
     path_gen_digi_all_reco_ump : [ @sequence::Stntuple.gen_g4_time_map,
 				   @sequence::Stntuple.digis          ,
+				   @sequence::Stntuple.trk_reco       ,
 				   @sequence::Stntuple.cal_reco       ,
 				   @sequence::Stntuple.dem_reco       ,
 				   @sequence::Stntuple.dmm_reco       ,
