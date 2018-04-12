@@ -3,9 +3,9 @@
 # use /mu2e/data/tdr/beam/g4s3p5/mergedMuonStops for muon stops
 #  Andrei Gaponenko, 2014
 
-#include "minimalMessageService.fcl"
-#include "standardProducers.fcl"
-#include "standardServices.fcl"
+#include "fcl/minimalMessageService.fcl"
+#include "fcl/standardProducers.fcl"
+#include "fcl/standardServices.fcl"
 
 #include "Stntuple/fcl/prolog.fcl"
 

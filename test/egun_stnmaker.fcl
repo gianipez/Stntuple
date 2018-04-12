@@ -62,3 +62,4 @@ outputs.detectorOutput.fileName           : "sim.user.egun_stnmaker.xxx.000001.a
 #------------------------------------------------------------------------------
 # everything below is appended by murat/scripts/submit_mu2e_job
 #------------------------------------------------------------------------------
+physics.producers.g4run.physics.physicsListName: "Minimal"

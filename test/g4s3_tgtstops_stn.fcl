@@ -2,9 +2,9 @@
 #------------------------------------------------------------------------------
 # make STNTUPLE from the output of the stage 3 simulation - stopped muons (tgtStopFilter)
 #------------------------------------------------------------------------------
-#include "minimalMessageService.fcl"
-#include "standardProducers.fcl"
-#include "standardServices.fcl"
+#include "fcl/minimalMessageService.fcl"
+#include "fcl/standardProducers.fcl"
+#include "fcl/standardServices.fcl"
 
 #include "Stntuple/fcl/prolog.fcl"
 

@@ -47,6 +47,7 @@ namespace mu2e {
   class GenParticle;
   class SimParticle;
   class CalTimePeak;
+  class TimeCluster;
   class KalSeed;
   class ComboHit;
   class HelixSeed;
@@ -130,7 +131,8 @@ public:
   void printCaloClusterCollection (const char* ModuleLabel, 
 				   const char* ProductName= "",
 				   const char* ProcessName= "",
-				   int   hitOpt=0,
+				   double      Emin=50.,
+				   int         hitOpt=0,
 				   const char* MCModuleLabel= "");
   
   void printCaloProtoCluster      (const mu2e::CaloProtoCluster* Clu     ,
@@ -182,12 +184,14 @@ public:
 					 const char* ProductName = "", 
 					 const char* ProcessName = "");
 
-  void printCalTimePeak   (const mu2e::CalTimePeak* TimePeak, const char* Opt = "");
+  void printTimeCluster   (const mu2e::TimeCluster* TimePeak, const char* Opt = "", 
+			   const mu2e::ComboHitCollection* ChColl=0);
 
-  void printCalTimePeakCollection(const char* ModuleLabel     , 
+  void printTimeClusterCollection(const char* ModuleLabel     , 
 				  const char* ProductName = "", 
 				  const char* ProcessName = "",
-				  int         hitOpt      = 0);
+				  int         hitOpt      = 0 ,
+				  const char* ChModuleLabel="");
 
 //   void printCaloCrystalHit(const CaloCrystalHit* Hit, const char* Opt = "");
 //   void printCaloHit       (const CaloHit*        Hit, const char* Opt = "");
@@ -207,6 +211,18 @@ public:
 			   int                      INit  = -1,
 			   int                      Flags = -1);
   
+  void printComboHit      (const mu2e::ComboHit*    Hit, 
+			   const mu2e::StepPointMC* Step,
+			   const char*              Opt   = "", 
+			   int                      INit  = -1,
+			   int                      Flags = -1);
+  
+  void printComboHitCollection (const char* ModuleLabel, 
+				const char* ProductName = "", 
+				const char* ProcessName = "",
+				double TMin = -1.e6,
+				double TMax =  1.e6);
+ 
   void printHelixHit      (const mu2e::HelixHit*    HelHit,
 			   const mu2e::StrawHit*    Hit, 
 			   const mu2e::StepPointMC* Step,

@@ -108,7 +108,7 @@ void catalog_dataset(const char* Book,
   FILE* f = gSystem->OpenPipe(cmd,"r");
 
   int i = 0;
-  while (fscanf(f,"%s",fn) > 0) {
+  while (fscanf(f,"%s",fn)>0) {
     printf("------------------- %s --------------------\n", fn);
     catalog_file(fn,11,RemoteDir,DfcDsID,DfcBook);
     i++;
@@ -216,7 +216,7 @@ void catalog_directory(const char* Dir,
 
   FILE* pipe = gSystem->OpenPipe(cmd,"r");
   int nFiles = 0;
-  while (fscanf(pipe,"%s",fn) > 0) { nFiles++; }
+  while (fscanf(pipe,"%s",fn)>0) { nFiles++; }
   gSystem->ClosePipe(pipe);
   printf("NFiles found:   %d\n",nFiles);
   printf("NFiles per Set: %d\n",nFilesPerSet);
@@ -293,7 +293,7 @@ void catalog_directory(const char* Dir,
      char line[1000];
      FILE* cat = fopen("AAA_CATALOG.html","r");
      //while (fscanf(cat,"%s\n",line) > 0) {
-     while (fgets(line,1000,cat) > 0) {
+     while (fgets(line,1000,cat) != 0) {
        if(line[0]!='#' && line[0]!='<') {
 	 //printf("processing input line: %20s\n",line);
 	 begfs++;
@@ -301,7 +301,7 @@ void catalog_directory(const char* Dir,
      }
      fclose(cat);
      FILE* fil = fopen("AAA_FILES.txt","r");
-     while (fgets(line,1000,fil) > 0) {
+     while (fgets(line,1000,fil) != 0) {
        if(line[0]!='#' && line[0]!='<') {
 	 //printf("processing input file line: %20s\n",line);
 	 sscanf(line,"%s %s",tempstr,fn);

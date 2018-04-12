@@ -413,7 +413,8 @@ Stntuple.mix                 : [ dioMixer, protonMixer, neutronMixer, photonMixe
 Stntuple.mix_time_map        : [ @sequence::Stntuple.mix, @sequence::EventMixing.TimeMaps ]
 Stntuple.gen_g4_mix_time_map : [ @sequence::Stntuple.gen_g4, @sequence::Stntuple.mix, @sequence::EventMixing.TimeMaps ]
 Stntuple.digis               : [ @sequence::CaloDigiMC.DigiSim, @sequence::TrackerMC.DigiSim ]
-Stntuple.trk_reco            : [ makeSH, makePH, FlagBkgHits]
+
+Stntuple.trk_reco        : [ makeSH, makePH, FlagBkgHits]
 
 Stntuple.cal_reco        : [ CaloRecoDigiFromDigi ,CaloCrystalHitFromHit, 
 			     CaloProtoClusterFromCrystalHit, CaloClusterFromProtoCluster ]

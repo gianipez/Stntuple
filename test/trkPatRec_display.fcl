@@ -6,9 +6,9 @@
 # to move to the next event: '.q'
 # to exit                  : Ctrl-C Ctrl-C (two times)
 #------------------------------------------------------------------------------
-#include "minimalMessageService.fcl"
-#include "standardProducers.fcl"
-#include "standardServices.fcl"
+#include "fcl/minimalMessageService.fcl"
+#include "fcl/standardProducers.fcl"
+#include "fcl/standardServices.fcl"
 
 #include "Stntuple/fcl/prolog.fcl"
 
@@ -29,7 +29,7 @@ services : {
     message : @local::mf_debugging
 
     # Adjust configuration of message logger:
-    # Load the standard message logger configuration:
+    # Load the fcl/standard message logger configuration:
     # Threshold=Info (from using mf_interactive). 
     # Limit of 5 per category; then exponential backoff.
     #  message.destinations.log.default.limit : 5
