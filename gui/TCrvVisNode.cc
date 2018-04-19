@@ -25,7 +25,7 @@
 #include "CosmicRayShieldGeom/inc/CRSScintillatorBar.hh"
 #include "DataProducts/inc/CRSScintillatorBarIndex.hh"
 
-#include "RecoDataProducts/inc/CrvRecoPulsesCollection.hh"
+#include "RecoDataProducts/inc/CrvRecoPulseCollection.hh"
 
 
 ClassImp(TCrvVisNode)
@@ -213,51 +213,61 @@ TCrvVisNode::~TCrvVisNode()
 
 int TCrvVisNode::InitEvent()
 {	
-	ftimeLow = 400;
-	ftimeHigh = 1695;
+  ftimeLow = 400;
+  ftimeHigh = 1695;
 
-	TEvdCrvBar*              evd_bar;
-	mu2e::GeomHandle<mu2e::CosmicRayShield> CRS;
+  TEvdCrvBar*              evd_bar;
+  mu2e::GeomHandle<mu2e::CosmicRayShield> CRS;
 
-	Clear();
+  Clear();
 
-	if (fCrvRecoPulsesCollection) //If we have a valid pointer to a collection (non-empty), then proceed to fill
+  if (fCrvRecoPulsesCollection) //If we have a valid pointer to a collection (non-empty), then proceed to fill
+    {
+      //Loop over the RecoPulses in the collection
+      for (mu2e::CrvRecoPulseCollection::const_iterator icrpc = (*fCrvRecoPulsesCollection)->begin(), ecrpc = (*fCrvRecoPulsesCollection)->end(); icrpc != ecrpc; ++icrpc)
 	{
-		//Loop over the RecoPulses in the collection
-		for (mu2e::CrvRecoPulsesCollection::const_iterator icrpc = (*fCrvRecoPulsesCollection)->begin(), ecrpc = (*fCrvRecoPulsesCollection)->end(); icrpc != ecrpc; ++icrpc)
-		{
-			const mu2e::CRSScintillatorBar &CRVCounterBar = CRS->getBar(icrpc->first);
+	  const mu2e::CRSScintillatorBar &CRVCounterBar = CRS->getBar(icrpc->GetScintillatorBarIndex());
 
-			if (getCRVSection(CRVCounterBar.id().getShieldNumber()) != fSectionID) //If the bar that we are looking at it is not a bar in this CRV Section, skip it
-				continue;
+	  if (getCRVSection(CRVCounterBar.id().getShieldNumber()) != fSectionID) //If the bar that we are looking at it is not a bar in this CRV Section, skip it
+	    continue;
 
-			evd_bar = EvdCrvBar(icrpc->first.asInt());			//Set the bar pointer to the bar with map bar index
+	  evd_bar = EvdCrvBar(icrpc->GetScintillatorBarIndex().asInt());			//Set the bar pointer to the bar with map bar index
 
-			const mu2e::CrvRecoPulses &crvRecoPulses = icrpc->second; //The set of pulses for this bar
+	  //	  const mu2e::CrvRecoPulse &crvRecoPulses = icrpc->second; //The set of pulses for this bar
 
-			//Loop over each SiPM for this bar
-			for (unsigned int SiPM = 0; SiPM < 4; SiPM++)
-			{
-			  const std::vector<mu2e::CrvRecoPulses::CrvSingleRecoPulse> &pulseVector = crvRecoPulses.GetRecoPulses(SiPM);
+	  int SiPM = icrpc->GetSiPMNumber();
+	  evd_bar->AddPulse(*icrpc, SiPM); // Add the pulse to the bar
+	  if ((icrpc->GetPEs() > fMinPulsePEs  ) && 
+	      (icrpc->GetPulseTime() > ftimeLow) && 
+	      (icrpc->GetPulseTime() < ftimeHigh)) //If the pulse is above the threshold and within the initial time window, color the sipm
+	    {						
+	      evd_bar->SetFillStyle(1001, SiPM);
+	      evd_bar->SetFillColor(colorPalette[(int) ((icrpc->GetPulseTime() - ftimeLow) / (ftimeHigh - ftimeLow) * 999)], SiPM);
+	    }
+	   
+	  //Loop over each SiPM for this bar
+	  // for (unsigned int SiPM = 0; SiPM < 4; SiPM++)
+	  //   {
+	  //     const std::vector<mu2e::CrvRecoPulse> &pulseVector = crvRecoPulses.GetRecoPulses(SiPM);
 
-				//Loop over single pulses
-				for (unsigned int i = 0; i < pulseVector.size(); i++)
-				{
-				  const mu2e::CrvRecoPulses::CrvSingleRecoPulse &pulse = pulseVector[i];
-				  evd_bar->AddPulse(pulse, SiPM); // Add the pulse to the bar
+	  //     //Loop over single pulses
+	  //     for (unsigned int i = 0; i < pulseVector.size(); i++)
+	  // 	{
+	  // 	  const mu2e::CrvRecoPulse &pulse = pulseVector[i];
+	  // 	  evd_bar->AddPulse(pulse, SiPM); // Add the pulse to the bar
 
-				  if ((pulse._PEs > fMinPulsePEs) && (pulse._pulseTime > ftimeLow) && (pulse._pulseTime < ftimeHigh)) //If the pulse is above the threshold and within the initial time window, color the sipm
-					{						
-						evd_bar->SetFillStyle(1001, SiPM);
-						evd_bar->SetFillColor(colorPalette[(int) ((pulse._pulseTime - ftimeLow) / (ftimeHigh - ftimeLow) * 999)], SiPM);
-					}
-				} // Loop over single pulses
-			} // Loop over SiPMs
-		} // Loop over RecoPulses
-	}
-	printf("Finished TCrvVisNode::InitEvent() for section %i \n", fSectionID);
+	  // 	  if ((pulse._PEs > fMinPulsePEs) && (pulse._pulseTime > ftimeLow) && (pulse._pulseTime < ftimeHigh)) //If the pulse is above the threshold and within the initial time window, color the sipm
+	  // 	    {						
+	  // 	      evd_bar->SetFillStyle(1001, SiPM);
+	  // 	      evd_bar->SetFillColor(colorPalette[(int) ((pulse._pulseTime - ftimeLow) / (ftimeHigh - ftimeLow) * 999)], SiPM);
+	  // 	    }
+	  // 	} // Loop over single pulses
+	  //   } // Loop over SiPMs
+	} // Loop over RecoPulses
+    }
+  printf("Finished TCrvVisNode::InitEvent() for section %i \n", fSectionID);
 
-	return 0;
+  return 0;
 }
 
 void TCrvVisNode::UpdateEvent()
@@ -275,9 +285,9 @@ void TCrvVisNode::UpdateEvent()
 	  evd_bar->SetTimeHigh (ftimeHigh);
 	  
 	  for (int SiPM = 0; SiPM < 4; SiPM++) {
-	    const mu2e::CrvRecoPulses::CrvSingleRecoPulse* barPulse = evd_bar->lastPulseInWindow(SiPM);
+	    const mu2e::CrvRecoPulse* barPulse = evd_bar->lastPulseInWindow(SiPM);
 	    if (barPulse) { //If we have a valid pulse for the bar
-	      evd_bar->SetFillColor(colorPalette[(int) ((barPulse->_pulseTime - ftimeLow) / (ftimeHigh - ftimeLow) * 999)], SiPM);
+	      evd_bar->SetFillColor(colorPalette[(int) ((barPulse->GetPulseTime() - ftimeLow) / (ftimeHigh - ftimeLow) * 999)], SiPM);
 	    }
 	    else { // Make the SiPM white since no pulses fall within the window
 	      evd_bar->SetFillColor(kWhite, SiPM);

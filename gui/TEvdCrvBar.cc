@@ -13,7 +13,7 @@
 #include "CosmicRayShieldGeom/inc/CRSScintillatorBar.hh"
 #include "CosmicRayShieldGeom/inc/CRSScintillatorShield.hh"
 #include "CosmicRayShieldGeom/inc/CosmicRayShield.hh"
-#include "RecoDataProducts/inc/CrvRecoPulses.hh"
+#include "RecoDataProducts/inc/CrvRecoPulse.hh"
 
 ClassImp(TEvdCrvBar)
 
@@ -208,8 +208,8 @@ Int_t TEvdCrvBar::DistancetoPrimitiveRZ(Int_t px, Int_t py) {
 }
 
 //_____________________________________________________________________________
-void TEvdCrvBar::AddPulse(const mu2e::CrvRecoPulses::CrvSingleRecoPulse &BarPulse, int SiPM) {
-        const mu2e::CrvRecoPulses::CrvSingleRecoPulse *barPulsePtr;
+void TEvdCrvBar::AddPulse(const mu2e::CrvRecoPulse &BarPulse, int SiPM) {
+        const mu2e::CrvRecoPulse *barPulsePtr;
 	barPulsePtr = &BarPulse;
 	
 	sipmPulses[SiPM].push_back(barPulsePtr);
@@ -227,9 +227,9 @@ void TEvdCrvBar::Clear(Option_t* Opt) {
 	//fEnergy = 0.;
 }
 
-const mu2e::CrvRecoPulses::CrvSingleRecoPulse* TEvdCrvBar::lastPulseInWindow(int SiPM) const 
+const mu2e::CrvRecoPulse* TEvdCrvBar::lastPulseInWindow(int SiPM) const 
 {
-	const mu2e::CrvRecoPulses::CrvSingleRecoPulse* tempPulse = 0; //Create a pointer to a 'null' pulse
+	const mu2e::CrvRecoPulse* tempPulse = 0; //Create a pointer to a 'null' pulse
 
 	for (unsigned int i = 0; i < sipmPulses[SiPM].size(); i++)
 	{
@@ -237,10 +237,10 @@ const mu2e::CrvRecoPulses::CrvSingleRecoPulse* TEvdCrvBar::lastPulseInWindow(int
 		//					And they are...
 
 		//Skip until we get to a pulse in the time window
-		if (sipmPulses[SiPM][i]->_pulseTime < ftimeLow || sipmPulses[SiPM][i]->_PEs < fthreshold)
+	        if (sipmPulses[SiPM][i]->GetPulseTime() < ftimeLow || sipmPulses[SiPM][i]->GetPEs() < fthreshold)
 			continue;
 		//if the pulse occurs beyond the time window then break and return the previous pulse, if not then set the buffer (lastpulse)
-		if (sipmPulses[SiPM][i]->_pulseTime > ftimeHigh)
+		if (sipmPulses[SiPM][i]->GetPulseTime() > ftimeHigh)
 			break;
 
 		tempPulse = sipmPulses[SiPM][i];		
@@ -252,7 +252,7 @@ const mu2e::CrvRecoPulses::CrvSingleRecoPulse* TEvdCrvBar::lastPulseInWindow(int
 
 //_____________________________________________________________________________
 void TEvdCrvBar::Print(Option_t* Opt) const {
-	const mu2e::CrvRecoPulses::CrvSingleRecoPulse* tempPulse = 0;
+	const mu2e::CrvRecoPulse* tempPulse = 0;
 
 	printf("----------------------------------------------------------------\n");
 	printf("Bar	SiPM	Section	Time	PEs	\n");
@@ -267,7 +267,7 @@ void TEvdCrvBar::Print(Option_t* Opt) const {
 		if (tempPulse)
 		{
 			printf("thresh %f , tL %f , tH %f , %p \n", fthreshold, ftimeLow, ftimeHigh, tempPulse);
-			printf("%i	%i	%i	%f	%i \n", barIndex.asInt(), SiPM, fSectionID, tempPulse->_pulseTime, tempPulse->_PEs);
+			printf("%i	%i	%i	%f	%i \n", barIndex.asInt(), SiPM, fSectionID, tempPulse->GetPulseTime(), tempPulse->GetPEs());
 		}
 	}
 

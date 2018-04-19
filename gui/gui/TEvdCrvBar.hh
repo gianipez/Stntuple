@@ -20,9 +20,9 @@
 #include "CosmicRayShieldGeom/inc/CRSScintillatorBar.hh"
 #include "DataProducts/inc/CRSScintillatorBarIndex.hh"
 //#include "CosmicRayShieldGeom/inc/CRSScintillatorShield.hh"
-//#include "RecoDataProducts/inc/CrvRecoPulses.hh"
+//#include "RecoDataProducts/inc/CrvRecoPulse.hh"
 
-#include "RecoDataProducts/inc/CrvRecoPulsesCollection.hh" //
+#include "RecoDataProducts/inc/CrvRecoPulseCollection.hh" //
 
 
 #else
@@ -30,8 +30,8 @@ namespace mu2e
 {
 	class CRSScintillatorBar;
 	class CRSScintillatorBarIndex;
-	class CrvRecoPulses;
-    struct CrvRecoPulses::CrvSingleRecoPulse;
+	class CrvRecoPulse;
+    struct CrvRecoPulse::CrvSingleRecoPulse;
 };
 #endif
 
@@ -60,7 +60,7 @@ public:
 	TBox*	Box()	const	{ return fBox; }
 	mu2e::CRSScintillatorBarIndex	Bar()	const	{ return barIndex; }
 
-	const mu2e::CrvRecoPulses::CrvSingleRecoPulse* lastPulseInWindow(int SiPM) const;
+  const mu2e::CrvRecoPulse* lastPulseInWindow(int SiPM) const;
 
   void SetThreshold(float Threshold) { fthreshold = Threshold; }
   void SetTimeLow  (float Time     ) { ftimeLow   = Time; }
@@ -71,7 +71,7 @@ public:
 	// Modifiers
 	//-----------------------------------------------------------------------------
 	
-  void   AddPulse(const mu2e::CrvRecoPulses::CrvSingleRecoPulse &BarPulse, int SiPM);
+  void   AddPulse(const mu2e::CrvRecoPulse &BarPulse, int SiPM);
 	
 	//void  SetFillStyle(int Style) { fBox->fFillStyle(Style); }
 	//void  SetFillColor(int Color) { fBox->fFillColor(Color); }
@@ -100,8 +100,8 @@ protected:
 	mu2e::CRSScintillatorBarIndex barIndex; //Index of the bar
 	int fSectionID; //Section to which the bar belongs
 	//int fNHits[4]; // Number of pulses for each SiPM
-	std::vector<const mu2e::CrvRecoPulses::CrvSingleRecoPulse*> sipmPulses[4];	//Vector of pulses for each SiPM  // Read as a vector of pointers to constant objects
-	const mu2e::CrvRecoPulses::CrvSingleRecoPulse* lastPulse[4];
+	std::vector<const mu2e::CrvRecoPulse*> sipmPulses[4];	//Vector of pulses for each SiPM  // Read as a vector of pointers to constant objects
+	const mu2e::CrvRecoPulse* lastPulse[4];
 
 	double xDispLoc;
 	double yDispLoc;

@@ -84,8 +84,8 @@
 #include "RecoDataProducts/inc/StrawHitCollection.hh"
 #include "RecoDataProducts/inc/XYZVec.hh"
 #include "RecoDataProducts/inc/StrawHitFlagCollection.hh"
-#include "RecoDataProducts/inc/CrvRecoPulsesCollection.hh"
-#include "RecoDataProducts/inc/CrvRecoPulses.hh"
+#include "RecoDataProducts/inc/CrvRecoPulseCollection.hh"
+#include "RecoDataProducts/inc/CrvRecoPulse.hh"
 
 #include "BTrkData/inc/TrkStrawHit.hh"
 #include "RecoDataProducts/inc/KalRepPtrCollection.hh"
@@ -222,12 +222,12 @@ namespace mu2e {
 
     const mu2e::CalTimePeakCollection*          fCalTimePeakColl;  //
 
-    mu2e::CrvRecoPulsesCollection*		fCrvPulseColl_Right;
-    mu2e::CrvRecoPulsesCollection*		fCrvPulseColl_Left;
-    mu2e::CrvRecoPulsesCollection*		fCrvPulseColl_TopDS;
-    mu2e::CrvRecoPulsesCollection*		fCrvPulseColl_TopTS;
-    mu2e::CrvRecoPulsesCollection*		fCrvPulseColl_Dwnstrm;
-    mu2e::CrvRecoPulsesCollection*		fCrvPulseColl_Upstrm;
+    mu2e::CrvRecoPulseCollection*		fCrvPulseColl_Right;
+    mu2e::CrvRecoPulseCollection*		fCrvPulseColl_Left;
+    mu2e::CrvRecoPulseCollection*		fCrvPulseColl_TopDS;
+    mu2e::CrvRecoPulseCollection*		fCrvPulseColl_TopTS;
+    mu2e::CrvRecoPulseCollection*		fCrvPulseColl_Dwnstrm;
+    mu2e::CrvRecoPulseCollection*		fCrvPulseColl_Upstrm;
 		
     const mu2e::KalRepPtrCollection*            _kalRepPtrColl;
 
@@ -343,12 +343,12 @@ namespace mu2e {
     foundTrkr = false;
     foundCalo = false;
 
-    fCrvPulseColl_Right   = new CrvRecoPulsesCollection();
-    fCrvPulseColl_Left    = new CrvRecoPulsesCollection();
-    fCrvPulseColl_TopDS   = new CrvRecoPulsesCollection();
-    fCrvPulseColl_TopTS   = new CrvRecoPulsesCollection();
-    fCrvPulseColl_Dwnstrm = new CrvRecoPulsesCollection();
-    fCrvPulseColl_Upstrm  = new CrvRecoPulsesCollection();
+    fCrvPulseColl_Right   = new CrvRecoPulseCollection();
+    fCrvPulseColl_Left    = new CrvRecoPulseCollection();
+    fCrvPulseColl_TopDS   = new CrvRecoPulseCollection();
+    fCrvPulseColl_TopTS   = new CrvRecoPulseCollection();
+    fCrvPulseColl_Dwnstrm = new CrvRecoPulseCollection();
+    fCrvPulseColl_Upstrm  = new CrvRecoPulseCollection();
 
     fDar           = new DoubletAmbigResolver (pset.get<fhicl::ParameterSet>("DoubletAmbigResolver"),0.,0,0);
     fDarHandle     = new TNamedHandle("DarHandle",fDar);
@@ -537,13 +537,13 @@ namespace mu2e {
 //-----------------------------------------------------------------------------
 //  CRV pulse information
 //-----------------------------------------------------------------------------
-    art::Handle<CrvRecoPulsesCollection> pulsesHandle;
+    art::Handle<CrvRecoPulseCollection> pulsesHandle;
     Evt->getByLabel(_crvRecoPulsesModuleLabel, pulsesHandle);
     
     if (pulsesHandle.isValid()) {
       foundCRV = true;
       printf(">>> [%s] MSG: CrvRecoPulsesCollection by %s, found. CONTINUE\n", oname, _crvRecoPulsesModuleLabel.data());
-      const mu2e::CrvRecoPulsesCollection* fCrvPulseColl = (CrvRecoPulsesCollection*) pulsesHandle.product();
+      const mu2e::CrvRecoPulseCollection* fCrvPulseColl = (CrvRecoPulseCollection*) pulsesHandle.product();
       
       // Clear the map pointers in preperation to (re)fill them with new information
       fCrvPulseColl_Right->clear();
@@ -557,32 +557,35 @@ namespace mu2e {
       mu2e::GeomHandle<mu2e::CosmicRayShield> CRS;
       
       // Loop over the RecoPulses in the collection and sort each pulse/bar into its appropriate section
-      for (mu2e::CrvRecoPulsesCollection::const_iterator icrpc = fCrvPulseColl->begin(), ecrpc = fCrvPulseColl->end(); icrpc != ecrpc; ++icrpc) {
-	const mu2e::CRSScintillatorBarIndex &CRVBarIndex = icrpc->first;
+      // for (mu2e::CrvRecoPulseCollection::const_iterator icrpc = fCrvPulseColl->begin(), ecrpc = fCrvPulseColl->end(); icrpc != ecrpc; ++icrpc) {
+      int    crvCollSize = fCrvPulseColl->size();
+      for (int ic=0; ic < crvCollSize; ++ic) {
+	mu2e::CrvRecoPulse                   icprc       = fCrvPulseColl->at(ic);
+	const mu2e::CRSScintillatorBarIndex &CRVBarIndex = icprc.GetScintillatorBarIndex();
 	
 	switch (getCRVSection(CRS->getBar(CRVBarIndex).id().getShieldNumber()))
 	  {
 	  case 0:
-	    fCrvPulseColl_Right->insert(std::pair<const mu2e::CRSScintillatorBarIndex, mu2e::CrvRecoPulses>(icrpc->first, icrpc->second));
+	    fCrvPulseColl_Right->  push_back(icprc);
 	    break;
 	  case 1:
-	    fCrvPulseColl_Left->insert(std::pair<const mu2e::CRSScintillatorBarIndex, mu2e::CrvRecoPulses>(icrpc->first, icrpc->second));
+	    fCrvPulseColl_Left->   push_back(icprc);
 	    break;
 	  case 2:
-	    fCrvPulseColl_TopDS->insert(std::pair<const mu2e::CRSScintillatorBarIndex, mu2e::CrvRecoPulses>(icrpc->first, icrpc->second));
+	    fCrvPulseColl_TopDS->  push_back(icprc);
 	    break;
 	  case 3:
-	    fCrvPulseColl_Dwnstrm->insert(std::pair<const mu2e::CRSScintillatorBarIndex, mu2e::CrvRecoPulses>(icrpc->first, icrpc->second));
+	    fCrvPulseColl_Dwnstrm->push_back(icprc);
 	    break;
 	  case 4:
-	    fCrvPulseColl_Upstrm->insert(std::pair<const mu2e::CRSScintillatorBarIndex, mu2e::CrvRecoPulses>(icrpc->first, icrpc->second));
+	    fCrvPulseColl_Upstrm-> push_back(icprc);
 	    break;
 	  case 5:
 	  case 6:
 	  case 7:
 	    break;
 	  case 8:
-	    fCrvPulseColl_TopTS->insert(std::pair<const mu2e::CRSScintillatorBarIndex, mu2e::CrvRecoPulses>(icrpc->first, icrpc->second));
+	    fCrvPulseColl_TopTS->push_back(icprc);
 	    break;
 	  }
       }

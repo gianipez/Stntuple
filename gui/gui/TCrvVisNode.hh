@@ -18,7 +18,7 @@
 #include "CosmicRayShieldGeom/inc/CRSScintillatorLayer.hh"
 #include "CosmicRayShieldGeom/inc/CRSScintillatorModule.hh"
 #include "CosmicRayShieldGeom/inc/CRSScintillatorShield.hh"
-#include "RecoDataProducts/inc/CrvRecoPulsesCollection.hh"
+#include "RecoDataProducts/inc/CrvRecoPulseCollection.hh"
 #include "DataProducts/inc/CRSScintillatorBarIndex.hh"
 
 #else
@@ -30,10 +30,10 @@ namespace mu2e
 	class CRSScintillatorLayer;
 	class CRSScintillatorModule;
 	class CRSScintillatorShield;
-	class CrvRecoPulsesCollection;
+	class CrvRecoPulseCollection;
 	class CRSScintillatorBarIndex;
-	class CrvRecoPulses;
-	struct CrvRecoPulses::CrvSingleRecoPulse;
+	class CrvRecoPulse;
+	struct CrvRecoPulse::CrvSingleRecoPulse;
 };
 
 #endif
@@ -60,7 +60,7 @@ public:
 	//-----------------------------------------------------------------------------
 	// Modifiers
 	//-----------------------------------------------------------------------------
-	void	SetRecoPulsesCollection(mu2e::CrvRecoPulsesCollection** List) { fCrvRecoPulsesCollection = List; }
+	void	SetRecoPulsesCollection(mu2e::CrvRecoPulseCollection** List) { fCrvRecoPulsesCollection = List; }
 
 	//void	SetMinPulseHeight(float PulseHeight) { fMinPulseHeight = PulseHeight; }
 	void	SetMinPulsePEs(float minPulsePEs){ fMinPulsePEs = minPulsePEs; }
@@ -87,7 +87,7 @@ public:
 	virtual Int_t	DistancetoPrimitiveRZ(Int_t px, Int_t py);
 
 protected:
-	mu2e::CrvRecoPulsesCollection**	fCrvRecoPulsesCollection;
+	mu2e::CrvRecoPulseCollection**	fCrvRecoPulsesCollection;
 
 	int				fSectionID;
 	
