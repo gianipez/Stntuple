@@ -1207,7 +1207,7 @@ namespace mu2e {
 	mcptr = &_hits_mcptr->at(ihit);
 
 	// Get the straw information:
-	straw = &fTracker->getStraw(hit->strawIndex());
+	straw = &fTracker->getStraw(hit->strawId());//ndex());
 
 	w = Geom::toXYZVec(straw->getDirection());
 

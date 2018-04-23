@@ -101,7 +101,7 @@ Int_t StntupleInitMu2eStrawDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent, in
       mc_mom        = -1.;
     }
 
-    hit->Set(sh->strawIndex().asInt(), sh->time(), sh->dt(), sh->energyDep(),
+    hit->Set(sh->strawId().asUint16(), sh->time(), sh->dt(), sh->energyDep(),
 	     pdg_id, mother_pdg_id, gen_index, sim_id, mc_mom);
     
   }

@@ -164,7 +164,7 @@ Int_t StntupleInitMu2eTrackStrawHitBlock(TStnDataBlock* Block, AbsEvent* AnEvent
 	  mcdoca        = 1.e6;
 	}
       
-	hit->Set(sh->strawIndex().asInt(), sh->time(), sh->dt(), sh->energyDep(),
+	hit->Set(sh->strawId().asUint16(), sh->time(), sh->dt(), sh->energyDep(),
 		 tsh->isActive(),tsh->ambig(),tsh->driftRadius(),
 		 pdg_id, mother_pdg_id, gen_index, sim_id, 
 		 mcdoca, mc_mom);

@@ -2073,7 +2073,7 @@ void TAnaDump::printStrawHit(const mu2e::StrawHit* Hit, const mu2e::StepPointMC*
 
     const mu2e::Straw* straw;
 
-    straw = &tracker->getStraw(Hit->strawIndex());
+    straw = &tracker->getStraw(Hit->strawId());//ndex());
 
 // 12 - 11 -2013 giani added some MC info of the straws
     //Hep3Vector mom = Step->momentum();
@@ -2108,7 +2108,7 @@ void TAnaDump::printStrawHit(const mu2e::StrawHit* Hit, const mu2e::StepPointMC*
       if (IHit  >= 0) printf("%5i " ,IHit);
       else            printf("    ");
 
-      printf("%5i",Hit->strawIndex().asInt());
+      printf("%5i",Hit->strawId().asUint16());
 
       if (Flags >= 0) printf(" %08x",Flags);
       else            printf("        ");
@@ -2228,7 +2228,7 @@ void TAnaDump::printHelixHit(const mu2e::HelixHit*    HelHit, const mu2e::StrawH
 
     const mu2e::Straw* straw;
 
-    straw = &tracker->getStraw(Hit->strawIndex());
+    straw = &tracker->getStraw(Hit->strawId());//ndex());
 
 // 12 - 11 -2013 giani added some MC info of the straws
     //Hep3Vector mom = Step->momentum();
@@ -2270,7 +2270,7 @@ void TAnaDump::printHelixHit(const mu2e::HelixHit*    HelHit, const mu2e::StrawH
       if (IHit  >= 0) printf("%5i " ,IHit);
       else            printf("    ");
 
-      printf("%5i",Hit->strawIndex().asInt());
+      printf("%5i",Hit->strawId().asUint16());
 
       if (Flags >= 0) printf(" %08x",Flags);
       else            printf("        ");
@@ -2600,7 +2600,7 @@ void TAnaDump::printStepPointMC(const mu2e::StepPointMC* Step, const char* Opt) 
 
     double doca = -9999.;
     if (tracker) {
-      const mu2e::Straw* straw = &tracker->getStraw(mu2e::StrawIndex(Step->volumeId()));
+      const mu2e::Straw* straw = &tracker->getStraw(mu2e::StrawId(Step->volumeId()));
 
       const Hep3Vector* v1 = &straw->getMidPoint();
       HepPoint p1(v1->x(),v1->y(),v1->z());

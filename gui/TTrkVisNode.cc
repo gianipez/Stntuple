@@ -165,7 +165,7 @@ int TTrkVisNode::InitEvent() {
     if ((*fStrawDigiMCColl)->size() > 0) hit_digi_mc = &(*fStrawDigiMCColl)->at(ihit);
     else                                 hit_digi_mc = NULL; // normally, should not be happening, but it does
 
-    straw       = &tracker->getStraw(hit->strawIndex());
+    straw       = &tracker->getStraw(hit->strawId());//strawIndex());
     display_hit = 1;
 
     if (! display_hit)                                      continue;
@@ -345,7 +345,7 @@ void TTrkVisNode::PaintXY(Option_t* Option) {
   for (int i=0; i<nhits; i++) {
     hit       = (TEvdStrawHit*) fListOfStrawHits->At(i);
     straw_hit = hit->StrawHit();
-    straw     = &tracker->getStraw(straw_hit->strawIndex());
+    straw     = &tracker->getStraw(straw_hit->strawId());//strawIndex());
     station   = straw->id().getStation();
     time      = straw_hit->time();
 
