@@ -84,13 +84,14 @@
 #include "RecoDataProducts/inc/StrawHitCollection.hh"
 #include "RecoDataProducts/inc/XYZVec.hh"
 #include "RecoDataProducts/inc/StrawHitFlagCollection.hh"
+
 #include "RecoDataProducts/inc/CrvRecoPulseCollection.hh"
 #include "RecoDataProducts/inc/CrvRecoPulse.hh"
+#include "RecoDataProducts/inc/TimeCluster.hh"
 
 #include "BTrkData/inc/TrkStrawHit.hh"
 #include "RecoDataProducts/inc/KalRepPtrCollection.hh"
 
-#include "CalPatRec/inc/CalTimePeak.hh"
 
 #include "TrkReco/inc/DoubletAmbigResolver.hh"
 #include "TrkDiag/inc/KalDiag.hh"
@@ -130,6 +131,8 @@
 #include "Stntuple/obj/TStnTrackBlock.hh"
 #include "Stntuple/obj/TStnClusterBlock.hh"
 
+#include "CalPatRec/inc/McUtilsToolBase.hh"
+
 using namespace std;
 using CLHEP::Hep3Vector;
 
@@ -150,8 +153,9 @@ namespace mu2e {
     std::string        _producerName;
 
     std::string        _makeStrawHitModuleLabel;
+    std::string        _makeComboHitModuleLabel;
     std::string        _makeStrawDigiModuleLabel;
-    std::string        fStrawHitPosMaker;
+    // std::string        fStrawHitPosMaker;
     std::string        fStrawHitFlagMaker;
 
     std::string        fTrkRecoModuleLabel;
@@ -208,8 +212,10 @@ namespace mu2e {
     const mu2e::GenParticleCollection*          _genParticleColl;         // 
 
     const mu2e::StrawHitCollection*             fStrawHitColl;     // 
+    const mu2e::ComboHitCollection*             fShComboHitColl;     // 
+    const mu2e::ComboHitCollection*             fComboHitColl;     // 
 
-    const mu2e::StrawHitPositionCollection*     fStrawHitPosColl;  //
+    // const mu2e::StrawHitPositionCollection*     fStrawHitPosColl;  //
     const mu2e::StrawHitFlagCollection*         fStrawHitFlagColl; //
     const mu2e::StrawDigiMCCollection*         _strawDigiMCColl; //
 
@@ -220,7 +226,7 @@ namespace mu2e {
 
     const mu2e::StepPointMCCollection*          _stepPointMCColl;  //
 
-    const mu2e::CalTimePeakCollection*          fCalTimePeakColl;  //
+    const mu2e::TimeClusterCollection*          fTimeClusterColl;  //
 
     mu2e::CrvRecoPulseCollection*		fCrvPulseColl_Right;
     mu2e::CrvRecoPulseCollection*		fCrvPulseColl_Left;
@@ -232,6 +238,9 @@ namespace mu2e {
     const mu2e::KalRepPtrCollection*            _kalRepPtrColl;
 
     mu2e::SimParticlesWithHits*                 _simParticlesWithHits; // 
+    
+    std::unique_ptr<McUtilsToolBase>            _mcUtils;
+
 
     int                    fNClusters;
     // 4 hypotheses: dem, uep, dmm, ump
@@ -249,7 +258,7 @@ namespace mu2e {
     double                 fTrackerP;   	// CE momentum on entrance to the straw tracker
     double                 fTrackerPt;	// CE Pt on entrance to the straw tracker
 
-    const CalTimePeak*     fTimePeak;
+    const TimeCluster*     fTimeCluster;
 
     const TTracker*        fTracker;    // straw tracker geometry
 
@@ -291,8 +300,9 @@ namespace mu2e {
     _producerName(""),
 
     _makeStrawHitModuleLabel(pset.get<std::string>("strawHitMakerModuleLabel")),
+    _makeComboHitModuleLabel(pset.get<std::string>("comboHitMakerModuleLabel")),
     _makeStrawDigiModuleLabel(pset.get<std::string>("strawDigiMakerModuleLabel")),
-    fStrawHitPosMaker(pset.get<std::string>("strawHitPosMakerModuleLabel")),
+    // fStrawHitPosMaker(pset.get<std::string>("strawHitPosMakerModuleLabel")),
     fStrawHitFlagMaker(pset.get<std::string>("strawHitFlagMakerModuleLabel")),
 
     fTrkRecoModuleLabel(pset.get<std::string>("trkRecoModuleLabel")),
@@ -334,7 +344,9 @@ namespace mu2e {
     fVisManager = TStnVisManager::Instance();
 
     _simParticlesWithHits = NULL;
-
+    
+    _mcUtils = std::make_unique<McUtilsToolBase>();
+    
     fTrackID = new TStnTrackID();
 
     fDirectionAndParticle = fTrkDirection.name() + fParticleHypo.name();
@@ -492,13 +504,13 @@ namespace mu2e {
 	cal_node[0] = new TCalVisNode("CalVisNode#0", &dc->disk(0), 0);
 	cal_node[0]->SetListOfClusters(&fListOfClusters);
 	cal_node[0]->SetListOfCrystalHits(&fListOfCrystalHits);
-	cal_node[0]->SetCalTimePeakColl(&fCalTimePeakColl);
+	cal_node[0]->SetTimeClusterColl(&fTimeClusterColl);
 	fVisManager->AddNode(cal_node[0]);
 
 	cal_node[1] = new TCalVisNode("CalVisNode#1", &dc->disk(1), 1);
 	cal_node[1]->SetListOfClusters(&fListOfClusters);
 	cal_node[1]->SetListOfCrystalHits(&fListOfCrystalHits);
-	cal_node[1]->SetCalTimePeakColl(&fCalTimePeakColl);
+	cal_node[1]->SetTimeClusterColl(&fTimeClusterColl);
 	fVisManager->AddNode(cal_node[1]);
       }
       else {
@@ -510,9 +522,9 @@ namespace mu2e {
 //-----------------------------------------------------------------------------
       trk_node = new TTrkVisNode("TrkVisNode", fTracker, NULL);
       trk_node->SetStrawHitColl(&fStrawHitColl);
-      trk_node->SetStrawHitPosColl(&fStrawHitPosColl);
+      trk_node->SetStrawHitPosColl(&fShComboHitColl);//fStrawHitPosColl);
       trk_node->SetStrawHitFlagColl(&fStrawHitFlagColl);
-      trk_node->SetCalTimePeakColl(&fCalTimePeakColl);
+      trk_node->SetTimeClusterColl(&fTimeClusterColl);
       trk_node->SetKalRepPtrColl(&_kalRepPtrColl);
       trk_node->SetMcPtrColl(&_hits_mcptr);
       trk_node->SetStrawDigiMCColl(&_strawDigiMCColl);
@@ -655,6 +667,28 @@ namespace mu2e {
 	return -1;
       }
 
+      art::Handle<mu2e::ComboHitCollection> schH;
+      Evt->getByLabel(_makeStrawHitModuleLabel, schH);
+
+
+      if (shH.isValid()) fShComboHitColl = schH.product();
+      else {
+	printf(">>> [%s] ERROR: ComboHitCollection by %s is missing. BAIL OUT\n",
+	       oname, _makeStrawHitModuleLabel.data());
+	return -1;
+      }
+
+      art::Handle<mu2e::ComboHitCollection> chH;
+      Evt->getByLabel(_makeComboHitModuleLabel, chH);
+
+
+      if (chH.isValid()) fComboHitColl = chH.product();
+      else {
+	printf(">>> [%s] ERROR: ComboHitCollection by %s is missing. BAIL OUT\n",
+	       oname, _makeStrawHitModuleLabel.data());
+	return -1;
+      }
+
       art::Handle<StrawDigiMCCollection> handle;
       art::Selector sel_straw_digi_mc(art::ProductInstanceNameSelector("") &&
 				      art::ProcessNameSelector(_processName) &&
@@ -673,16 +707,16 @@ namespace mu2e {
 	return -1;
       }
 
-      art::Handle<mu2e::StrawHitPositionCollection> shpH;
-      Evt->getByLabel(fStrawHitPosMaker, shpH);
+      // art::Handle<mu2e::StrawHitPositionCollection> shpH;
+      // Evt->getByLabel(fStrawHitPosMaker, shpH);
 
 
-      if (shpH.isValid()) fStrawHitPosColl = shpH.product();
-      else {
-	printf(">>> [%s] ERROR:StrawHitPositionCollection by %s is missing. BAIL OUT\n",
-	       oname, fStrawHitPosMaker.data());
-	return -1;
-      }
+      // if (shpH.isValid()) fStrawHitPosColl = shpH.product();
+      // else {
+      // 	printf(">>> [%s] ERROR:StrawHitPositionCollection by %s is missing. BAIL OUT\n",
+      // 	       oname, fStrawHitPosMaker.data());
+      // 	return -1;
+      // }
 
       art::Handle<mu2e::StrawHitFlagCollection> shfH;
       Evt->getByLabel(fStrawHitFlagMaker, shfH);
@@ -726,10 +760,10 @@ namespace mu2e {
 //-----------------------------------------------------------------------------
 // timepeaks 
 //-----------------------------------------------------------------------------
-      fCalTimePeakColl = NULL;
-      fTimePeak = NULL;
+      fTimeClusterColl = NULL;
+      fTimeCluster = NULL;
 
-      art::Handle<CalTimePeakCollection> tpch;
+      art::Handle<TimeClusterCollection> tpch;
       //      const char* charDirectionAndParticle = fDirectionAndParticle.c_str();
 
       if (_showTracks){
@@ -742,24 +776,24 @@ namespace mu2e {
 	Evt->getByLabel("CalTimePeakFinder", tpch);
       }
       if (tpch.isValid()) {
-	fCalTimePeakColl = tpch.product();
+	fTimeClusterColl = tpch.product();
 //-----------------------------------------------------------------------------
 // find the right time peak to display - display the first one with the track
 //-----------------------------------------------------------------------------
-	const CalTimePeak* tp;
+	const TimeCluster* tp;
 	int ipeak = -1;
-	if (fCalTimePeakColl != NULL) {
-	  int ntp = fCalTimePeakColl->size();
+	if (fTimeClusterColl != NULL) {
+	  int ntp = fTimeClusterColl->size();
 	  for (int i = 0; i<ntp; i++) {
-	    tp = &fCalTimePeakColl->at(i);
-	    if (tp->CprIndex() >= 0) {
-	      fTimePeak = tp;
-	      ipeak = i;
-	      break;
-	    }
+	    tp = &fTimeClusterColl->at(i);
+	    // if (tp->CprIndex() >= 0) {
+	    fTimeCluster = tp;
+	    ipeak = i;
+	    break;
+	    // }
 	  }
 	}
-	fVisManager->SetTimePeak(ipeak);
+	fVisManager->SetTimeCluster(ipeak);
       }
 //-----------------------------------------------------------------------------
 // tracking data - downstream moving electrons
@@ -870,7 +904,7 @@ namespace mu2e {
 
     TObjArray           list_of_ellipses;
     int                 n_displayed_hits, color(1), intime;
-    size_t              nmc;
+    // size_t              nmc;
 
     const int           module_color[2] = { kRed, kMagenta };
 
@@ -1174,53 +1208,64 @@ namespace mu2e {
 //-----------------------------------------------------------------------------
 // Loop over straw hits. If flagBackgroundHits = true, filter them out
 //-----------------------------------------------------------------------------
-    int                          ihit, n_straw_hits, display_hit;
+    int                          ihit, n_straw_hits, display_hit, index_sh(0);
     bool                         isFromConversion;
-    double                       sigv, vnorm, v, sigr;
-    const StrawHit*              hit;
-    const StrawHitPosition*      hitpos;
+    double                       sigv, /*vnorm, v,*/ sigr;
+    const ComboHit*              hit;
+    const ComboHit*              sh;
+    // const StrawHitPosition*      hitpos;
     const StrawHitFlag*          hit_id_word;
-    const Straw*                 straw;
-    const PtrStepPointMCVector*  mcptr;
+    // const Straw*                 straw;
+    // const PtrStepPointMCVector*  mcptr;
     XYZVec                       vx0, vx1, vx2, w;
 
     n_displayed_hits = 0;
 
-    if (fTimePeak != NULL) n_straw_hits = fTimePeak->NHits();
-    else                   n_straw_hits = fStrawHitColl->size();
+    if (fTimeCluster != NULL) n_straw_hits = fTimeCluster->nhits();//NHits();
+    else                      n_straw_hits = fComboHitColl->size();//fStrawHitColl->size();
 
     for (int ih = 0; ih<n_straw_hits; ++ih) {
 
-      if (fTimePeak != NULL) ihit = fTimePeak->HitIndex(ih);
-      else                   ihit = ih;
+      if (fTimeCluster != NULL) ihit = fTimeCluster->hits().at(ih);//HitIndex(ih);
+      else                      ihit = ih;
 
-      hit         = &fStrawHitColl->at(ihit);
-      hitpos      = &fStrawHitPosColl->at(ihit);
+      hit         = &fComboHitColl->at(ihit);//fStrawHitColl->at(ihit);
       hit_id_word = &fStrawHitFlagColl->at(ihit);
 
-      display_hit = 1;
+      int    nsh = hit->nStrawHits();
+      
+      for (int ish=0; ish<nsh; ++ish){
+	// hitpos      = &fStrawHitPosColl->at(ihit);
+	index_sh    = hit->index(ish);
+	sh          = &fShComboHitColl->at(index_sh);
 
-      if (display_hit && (_hits_mcptr->size() > 0)) {
+	display_hit = 1;
 
-	mu2e::GenId gen_id(fGeneratorID);
+	if (display_hit && (_hits_mcptr->size() > 0)) {
 
-	mcptr = &_hits_mcptr->at(ihit);
+	  mu2e::GenId gen_id(fGeneratorID);
 
-	// Get the straw information:
-	straw = &fTracker->getStraw(hit->strawId());//ndex());
+	  std::vector<StrawDigiIndex> shids;
+	  fShComboHitColl->fillStrawDigiIndices(Evt,ish,shids);
+	  const mu2e::SimParticle* sim = _mcUtils->getSimParticle(_hits_mcptr,shids[0]);//ish);
+	
+	  // mcptr = &_hits_mcptr->at(ihit);
 
-	w = Geom::toXYZVec(straw->getDirection());
+	  // Get the straw information:
+	  // straw = &fTracker->getStraw(hit->strawIndex());
 
-	isFromConversion = false;
+	  w = sh->wdir();//Geom::toXYZVec(straw->getDirection());
 
-	nmc = mcptr->size();
-	for (size_t j = 0; j<nmc; ++j){
-	  const art::Ptr<mu2e::StepPointMC>& sptr = mcptr->at(j);
-	  const mu2e::StepPointMC* step = sptr.get();
+	  isFromConversion = false;
 
-	  //	  SimParticleCollection::key_type trackId(step->trackId());
-	  art::Ptr<SimParticle> const& simptr = step->simParticle();
-	  const SimParticle* sim = simptr.operator ->();
+	  // nmc = mcptr->size();
+	  // // for (size_t j = 0; j<nmc; ++j){
+	  //   const art::Ptr<mu2e::StepPointMC>& sptr = mcptr->at(j);
+	  //   const mu2e::StepPointMC* step = sptr.get();
+
+	  //   //	  SimParticleCollection::key_type trackId(step->trackId());
+	  //   art::Ptr<SimParticle> const& simptr = step->simParticle();
+	  //   const SimParticle* sim = simptr.operator ->();
 	  if (sim == NULL) {
 	    printf(">>> ERROR: %s sim == NULL\n", oname);
 	  }
@@ -1234,64 +1279,65 @@ namespace mu2e {
 	      }
 	    }
 	  }
-	}
-//-----------------------------------------------------------------------------
-// Position along the wire comes from time division - but we are only displaying
-// StrawHitPositions
-//-----------------------------------------------------------------------------
-	v = trackCal->TimeDiffToDistance(straw->index(), hit->dt());
-	vnorm = v / straw->getHalfLength();
-	if (fUseStereoHits) {
-//-----------------------------------------------------------------------------
-// new default, hit position errors come from StrawHitPositionCollection
-//-----------------------------------------------------------------------------
-	  sigv = hitpos->posRes(StrawHitPosition::wire);
-	  sigr = hitpos->posRes(StrawHitPosition::trans);
-	}
-	else {
-//-----------------------------------------------------------------------------
-// old default, draw semi-random errors
-//-----------------------------------------------------------------------------
-	  sigv = trackCal->TimeDivisionResolution(straw->index(), vnorm) / 2.; // P.Murat
-	  sigr = 5.; // in mm
-	}
+	  // }
+	  //-----------------------------------------------------------------------------
+	  // Position along the wire comes from time division - but we are only displaying
+	  // StrawHitPositions
+	  //-----------------------------------------------------------------------------
+	  // v = trackCal->TimeDiffToDistance(straw->index(), hit->dt());
+	  // vnorm = v / straw->getHalfLength();
+	  // if (fUseStereoHits) {
+	    //-----------------------------------------------------------------------------
+	    // new default, hit position errors come from StrawHitPositionCollection
+	    //-----------------------------------------------------------------------------
+	  sigv = sh->posRes(ComboHit::wire);//hitpos->posRes(StrawHitPosition::wire);
+	  sigr = sh->posRes(ComboHit::trans);//hitpos->posRes(StrawHitPosition::trans);
+	  // }
+	  // else {
+	  //   //-----------------------------------------------------------------------------
+	  //   // old default, draw semi-random errors
+	  //   //-----------------------------------------------------------------------------
+	  //   sigv = trackCal->TimeDivisionResolution(sh->sid().asUint16(), vnorm) / 2.; // P.Murat
+	  //   sigr = 5.; // in mm
+	  // }
 				
-	vx0 = hitpos->pos();
+	  vx0 = sh->pos();//hitpos->pos();
 
-	vx1 = vx0 + sigv*w;
-	vx2 = vx0 - sigv*w;
+	  vx1 = vx0 + sigv*w;
+	  vx2 = vx0 - sigv*w;
 
-	intime = fabs(hit->time() - event_time) < _timeWindow;
-//-----------------------------------------------------------------------------
-// hit colors:
-// -----------
-// CE hits : red (in time), blue (out-of-time)
-// the rest: cyan+3 (if any bad bit), otherwise - black 
-//-----------------------------------------------------------------------------
-	int width(1);
-	if (isFromConversion) {
-	  if (intime) color = kRed-3;
-	  else        color = kBlue;
-	  width = 2;
+	  intime = fabs(sh->time() - event_time) < _timeWindow;
+	  //-----------------------------------------------------------------------------
+	  // hit colors:
+	  // -----------
+	  // CE hits : red (in time), blue (out-of-time)
+	  // the rest: cyan+3 (if any bad bit), otherwise - black 
+	  //-----------------------------------------------------------------------------
+	  int width(1);
+	  if (isFromConversion) {
+	    if (intime) color = kRed-3;
+	    else        color = kBlue;
+	    width = 2;
+	  }
+	  else {
+	    if (hit_id_word->hasAnyProperty(fBadHitMask)) color = kCyan+3;
+	    else                                          color = kBlack;
+	  }
+	  //-----------------------------------------------------------------------------
+	  // not sure why the logic is that complicated
+	  //-----------------------------------------------------------------------------
+	  if ((isFromConversion) || (intime)) {
+	    line->SetLineColor(color);
+	    line->SetLineWidth(width);
+	    line->DrawLine(vx1.x(), vx1.y(), vx2.x(), vx2.y());
+
+	    line->DrawLine(vx0.x() + sigr*w.y(), vx0.y() - sigr*w.x(),
+			   vx0.x() - sigr*w.y(), vx0.y() + sigr*w.x());
+
+	    n_displayed_hits++;
+	  }
 	}
-	else {
-	  if (hit_id_word->hasAnyProperty(fBadHitMask)) color = kCyan+3;
-	  else                                          color = kBlack;
-	}
-//-----------------------------------------------------------------------------
-// not sure why the logic is that complicated
-//-----------------------------------------------------------------------------
-	if ((isFromConversion) || (intime)) {
-	  line->SetLineColor(color);
-	  line->SetLineWidth(width);
-	  line->DrawLine(vx1.x(), vx1.y(), vx2.x(), vx2.y());
-
-	  line->DrawLine(vx0.x() + sigr*w.y(), vx0.y() - sigr*w.x(),
-			 vx0.x() - sigr*w.y(), vx0.y() + sigr*w.x());
-
-	  n_displayed_hits++;
-	}
-      }
+      }//end loop over the strawHits associated to the ComboHit
     }
 //-----------------------------------------------------------------------------
 // Draw StepPointMCCollection.
