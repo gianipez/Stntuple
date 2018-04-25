@@ -106,7 +106,7 @@ protected:
 
 	int                 fMinStation;
 	int                 fMaxStation;
-	int                 fTimePeak;
+	int                 fTimeCluster;
 	int                 fDebugLevel;
 	// to display all the data in a given time window
 	double              fTMin;
@@ -144,7 +144,7 @@ public:
 
 	int    MinStation() { return fMinStation; }
 	int    MaxStation() { return fMaxStation; }
-	int    TimePeak() { return fTimePeak; }
+	int    TimeCluster() { return fTimeCluster; }
 
 	double TMin() { return fTMin; }
 	double TMax() { return fTMax; }
@@ -166,7 +166,7 @@ public:
 	}
 
 	void SetStations(int IMin, int IMax);
-	void SetTimePeak(int I);
+	void SetTimeCluster(int I);
 
 	void UpdateViews();
 

@@ -14,6 +14,71 @@ namespace {
 //namespace murat {
 
 ClassImp(TStnHelix)
+void TStnHelix::ReadV1(TBuffer &R__b) {
+
+  struct TStnHelixDataV1_t {
+    int                       fNHits;
+    int                       fAlgorithmID;     // bit-packed : (alg_mask << 16 ) | best
+    int                       fTimeClusterIndex;
+    int                       fTrackSeedIndex;
+    //-----------------------------------------------------------------------------
+    // floats
+    //-----------------------------------------------------------------------------
+    float                     fT0;    
+    float                     fT0Err; 
+
+    float                     fRCent;  // radius of circle center
+    float                     fFCent;  // azimuth of circle center
+    float                     fRadius; // transverse radius of the helix (mm).  Always positive
+    float                     fLambda; // dz/dphi (mm/radian)
+    float                     fFZ0;    // azimuth (phi) at the center z position (radians)
+    float                     fD0;     // impact paramter 
+    float                     fChi2XYNDof;
+    float                     fChi2PhiZNDof;
+
+    float                     fClusterTime;   
+    float		      fClusterEnergy; 
+    float                     fClusterX;      
+    float		      fClusterY;      
+    float		      fClusterZ;      
+
+    const mu2e::HelixSeed*    fHelix;  //!
+ };
+
+  TStnHelixDataV1_t data;
+
+  int            nwi, nwf;
+  
+  nwi      = ((int*  ) &data.fT0            ) - &data.fNHits;
+  nwf      = ((float*) &data.fHelix         ) - &data.fT0;
+    
+  R__b.ReadFastArray(&data.fNHits ,nwi);
+  R__b.ReadFastArray(&data.fT0    ,nwf);
+
+  fNHits             = data.fNHits;	     
+  fAlgorithmID       = data.fAlgorithmID;    
+  fTimeClusterIndex  = data.fTimeClusterIndex;
+  fTrackSeedIndex    = data.fTrackSeedIndex; 
+
+  fT0                = data.fT0;    	  
+  fT0Err             = data.fT0Err; 	  
+                
+  fRCent             = data.fRCent;
+  fFCent             = data.fFCent;
+  fRadius            = data.fRadius;
+  fLambda            = data.fLambda;
+  fFZ0               = data.fFZ0;   
+  fD0                = data.fD0;    
+  fChi2XYNDof        = data.fChi2XYNDof;  
+  fChi2PhiZNDof      = data.fChi2PhiZNDof;
+                
+  fClusterTime       = data.fClusterTime; 
+  fClusterEnergy     = data.fClusterEnergy; 
+  fClusterX          = data.fClusterX;      
+  fClusterY          = data.fClusterY;    
+  fClusterZ          = data.fClusterZ;    
+}
+
 
 void TStnHelix::Streamer(TBuffer& R__b) {
   int   nwi, nwf;
@@ -22,17 +87,20 @@ void TStnHelix::Streamer(TBuffer& R__b) {
   nwf      = ((float*) &fHelix         ) - &fT0;
 
   if (R__b.IsReading()) {
-    //    Version_t R__v = R__b.ReadVersion(); 
-    R__b.ReadVersion(); 
-					// current version: V1
-    R__b.ReadFastArray(&fNHits, nwi);
-    R__b.ReadFastArray(&fT0    , nwf);
-   }
+    Version_t R__v = R__b.ReadVersion(); 
+
+    if (R__v == 1) ReadV1 (R__b);
+    else {
+					// current version: V2
+      R__b.ReadFastArray(&fNHits, nwi);
+      R__b.ReadFastArray(&fT0    , nwf);
+    }
+  }
   else {
     R__b.WriteVersion(TStnHelix::IsA());
 
     R__b.WriteFastArray(&fNHits, nwi);
-    R__b.WriteFastArray(&fT0    , nwf);
+    R__b.WriteFastArray(&fT0   , nwf);
     
     
   }
@@ -41,6 +109,8 @@ void TStnHelix::Streamer(TBuffer& R__b) {
 TStnHelix::TStnHelix(int i) {
 
   fNHits  = 0;
+
+  fNComboHits = -1;
 
   fAlgorithmID = -1;
 

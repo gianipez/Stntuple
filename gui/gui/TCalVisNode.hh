@@ -18,9 +18,10 @@
 #include "RecoDataProducts/inc/CaloCluster.hh"
 #include "RecoDataProducts/inc/CaloClusterCollection.hh"
 #include "RecoDataProducts/inc/CaloCrystalHitCollection.hh"
+#include "RecoDataProducts/inc/TimeCluster.hh"
 #include "CalorimeterGeom/inc/Disk.hh"
 #include "CalorimeterGeom/inc/DiskCalorimeter.hh"
-#include "CalPatRec/inc/CalTimePeak.hh"
+
 
 #else
 
@@ -30,8 +31,6 @@ namespace mu2e {
   class CaloSection;
   class DiskCalorimeter;
   class Disk;
-  class CalTimePeakCollection;
-  class CalTimePeak;
 };
 
 #endif
@@ -53,7 +52,7 @@ protected:
   const mu2e::CaloClusterCollection**     fListOfClusters;
   const mu2e::CaloCrystalHitCollection**  fListOfCrystalHits;
 
-  const mu2e::CalTimePeakCollection**          fCalTimePeakColl;  //
+  const mu2e::TimeClusterCollection**     fTimeClusterColl;  //
 
   TObjArray**        fListOfTracks;
   int                fSectionID;
@@ -64,7 +63,7 @@ protected:
   int                fNClusters;
   TObjArray*         fListOfEvdCrystals;
 
-  const mu2e::CalTimePeak*  fTimePeak;
+  const mu2e::TimeCluster*  fTimeCluster;
   
   Int_t              fDisplayHits;
   Int_t              fPickMode;
@@ -111,8 +110,8 @@ public:
     fListOfCrystalHits  = List; 
   }
 
-  void SetCalTimePeakColl(const mu2e::CalTimePeakCollection** Coll) { 
-    fCalTimePeakColl = Coll;
+  void SetTimeClusterColl(const mu2e::TimeClusterCollection** Coll) { 
+    fTimeClusterColl = Coll;
   }
 
   void SetMinClusterEnergy(float MinEnergy) { fMinClusterEnergy = MinEnergy; }

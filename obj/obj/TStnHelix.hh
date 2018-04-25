@@ -31,42 +31,45 @@ namespace mu2e {
 
 class TStnHelix : public TObject {
 
-  // enum {
-  //   kNFreeIntsV1   = 10,		// V1
-  //   kNFreeFloatsV1 = 10,		// V1
+  enum {
+    kNFreeIntsV2   = 10,		// V2
+    kNFreeFloatsV2 = 10  		// V2
 
-  //   kNFreeInts     = 10,		// V2
-  //   kNFreeFloats   =  3			// V2
-  // };
+    // kNFreeInts     = 10,		// V2
+    // kNFreeFloats   =  3			// V2
+  };
 
 public:
 //-----------------------------------------------------------------------------
 // integers
 //-----------------------------------------------------------------------------
-  int                       fNHits;
+  int                       fNHits;	     
   int                       fAlgorithmID;     // bit-packed : (alg_mask << 16 ) | best
   int                       fTimeClusterIndex;
-  int                       fTrackSeedIndex;
+  int                       fTrackSeedIndex; 
+  int                       fNComboHits;     
+  int                       fInt[kNFreeIntsV2]; // provision for future I/O expansion
 //-----------------------------------------------------------------------------
 // floats
 //-----------------------------------------------------------------------------
-  float                     fT0;    
-  float                     fT0Err; 
-
+  float                     fT0;    	  
+  float                     fT0Err; 	  
+			                  
   float                     fRCent;  // radius of circle center
   float                     fFCent;  // azimuth of circle center
   float                     fRadius; // transverse radius of the helix (mm).  Always positive
   float                     fLambda; // dz/dphi (mm/radian)
   float                     fFZ0;    // azimuth (phi) at the center z position (radians)
   float                     fD0;     // impact paramter 
-  float                     fChi2XYNDof;
+  float                     fChi2XYNDof;  
   float                     fChi2PhiZNDof;
-
+			                  
   float                     fClusterTime;   
   float			    fClusterEnergy; 
   float			    fClusterX;      
   float			    fClusterY;      
   float			    fClusterZ;      
+  float                     fFloat[kNFreeFloatsV2]; // provision for future I/O expansion
 
 //-----------------------------------------------------------------------------
 // transients
@@ -80,7 +83,8 @@ public:
 //-----------------------------------------------------------------------------
 // accessors
 //-----------------------------------------------------------------------------
-  int     NHits           () { return  fNHits;  }
+  int     NHits           () { return fNHits;  }
+  int     NComboHits      () { return fNComboHits; }
   int     AlgorithmID     () { return fAlgorithmID; }
   int     AlgMask         () { return (fAlgorithmID >> 16) & 0xffff; }
   int     BestAlg         () { return fAlgorithmID & 0xffff; }
@@ -122,9 +126,10 @@ public:
 //-----------------------------------------------------------------------------
 // schema evolution
 //-----------------------------------------------------------------------------
-//  void ReadV1(TBuffer& R__b);
+  void ReadV1(TBuffer& R__b);
+  // void ReadV2(TBuffer& R__b);
 
-  ClassDef(TStnHelix,1);
+  ClassDef(TStnHelix,2);
 };
 
 #endif

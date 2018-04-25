@@ -10,6 +10,7 @@
 
 #include "Stntuple/loop/TStnModule.hh"
 
+#include "Stntuple/obj/TStnTimeClusterBlock.hh"
 #include "Stntuple/obj/TStnHelixBlock.hh"
 #include "Stntuple/obj/TStnTrackSeedBlock.hh"
 #include "Stntuple/obj/TStnTrackBlock.hh"
@@ -127,6 +128,15 @@ public:
     TH1F*    fECalOverEKin;
       
   };
+
+  struct TimeClusterHist_t {
+    TH1F*    fNHits;
+    TH1F*    fNComboHits;
+    TH1F*    fT0;
+    TH1F*    fClusterEnergy;
+  
+  };
+
 
   struct TrackSeedHist_t {
     TH1F*    fNHits;	 
@@ -295,6 +305,7 @@ public:
   enum { kNHelixHistSets   = 100 };
   enum { kNTrackSeedHistSets = 100 };
   enum { kNTrackHistSets   = 400 };
+  enum { kNTimeClusterHistSets = 100};
   enum { kNClusterHistSets = 100 };
   enum { kNCaloHistSets    = 100 };
   enum { kNGenpHistSets    = 100 };
@@ -304,7 +315,7 @@ public:
     TH1F*            fCrystalR  [2];	          // crystal radius
     EventHist_t*     fEvent     [kNEventHistSets];
     TrackHist_t*     fTrack     [kNTrackHistSets];
-    TrackSeedHist_t* fTimePeak  [kNTrackSeedHistSets];
+    TimeClusterHist_t* fTimeCluster  [kNTimeClusterHistSets];
     TrackSeedHist_t* fTrackSeed [kNTrackSeedHistSets];
     HelixHist_t*     fHelix     [kNHelixHistSets];
     ClusterHist_t*   fCluster   [kNClusterHistSets];
@@ -317,15 +328,15 @@ public:
 //-----------------------------------------------------------------------------
 public:
 					// pointers to the data blocks used
-  TStnTrackSeedBlock*  fTimePeakBlock;
-  TStnTrackSeedBlock*  fTrackSeedBlock;
-  TStnHelixBlock*      fHelixBlock;
-  TStnTrackBlock*      fTrackBlock;
-  TStnClusterBlock*    fClusterBlock;
-  TCalDataBlock*       fCalDataBlock;
-  TStrawDataBlock*     fStrawDataBlock;
-  TGenpBlock*          fGenpBlock;
-  TSimpBlock*          fSimpBlock;
+  TStnTimeClusterBlock*  fTimeClusterBlock;
+  TStnTrackSeedBlock*    fTrackSeedBlock;
+  TStnHelixBlock*        fHelixBlock;
+  TStnTrackBlock*        fTrackBlock;
+  TStnClusterBlock*      fClusterBlock;
+  TCalDataBlock*         fCalDataBlock;
+  TStrawDataBlock*       fStrawDataBlock;
+  TGenpBlock*            fGenpBlock;
+  TSimpBlock*            fSimpBlock;
 					// additional track parameters (assume ntracks < 20)
   TrackPar_t        fTrackPar[20];
 					// histograms filled
@@ -343,7 +354,7 @@ public:
   int               fCalorimeterType;
 
   int               fNClusters;
-  int               fNTimePeaks [5];
+  int               fNTimeClusters [5];
   int               fNTrackSeeds[5];
   int               fNHelices[5];
   int               fNTracks[10];
@@ -408,6 +419,7 @@ public:
   void    BookSimpHistograms    (SimpHist_t*    Hist, const char* Folder);
   void    BookTrackHistograms   (TrackHist_t*   Hist, const char* Folder);
 
+  void    BookTimeClusterHistograms (TimeClusterHist_t* Hist, const char* Folder);
   void    BookHelixHistograms       (HelixHist_t*       Hist, const char* Folder);
   void    BookTrackSeedHistograms   (TrackSeedHist_t*   Hist, const char* Folder);
 
@@ -418,8 +430,9 @@ public:
   void    FillSimpHistograms     (SimpHist_t*    Hist, TSimParticle* Simp   );
   void    FillTrackHistograms    (TrackHist_t*   Hist, TStnTrack*    Trk    );
 
-  void    FillTrackSeedHistograms(TrackSeedHist_t*   Hist, TStnTrackSeed*    TrkSeed);
-  void    FillHelixHistograms    (HelixHist_t*       Hist, TStnHelix*        Helix  );
+  void    FillTrackSeedHistograms  (TrackSeedHist_t*   Hist, TStnTrackSeed*    TrkSeed);
+  void    FillHelixHistograms      (HelixHist_t*       Hist, TStnHelix*        Helix  );
+  void    FillTimeClusterHistograms(TimeClusterHist_t* Hist, TStnTimeCluster*  TimeCluster);
 
   void    BookHistograms();
   void    FillHistograms();

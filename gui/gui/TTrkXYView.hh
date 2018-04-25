@@ -23,7 +23,7 @@ public:
   virtual Int_t DistancetoPrimitive(Int_t px, Int_t py);
 
   void    SetStations(int I1, int I2);   // *MENU* 
-  void    SetTimePeak(int I);            // *MENU* 
+  void    SetTimeCluster(int I);            // *MENU* 
 
   ClassDef(TTrkXYView,0)
 };

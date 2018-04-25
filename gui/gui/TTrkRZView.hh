@@ -30,7 +30,7 @@ public:
   virtual char* GetObjectInfo(Int_t Px, Int_t Py) const ;
 
   void    SetStations(int I1, int I2);   // *MENU* 
-  void    SetTimePeak(int I);            // *MENU* 
+  void    SetTimeCluster(int I);            // *MENU* 
 
   ClassDef(TTrkRZView,0)
 };

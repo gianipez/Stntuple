@@ -76,7 +76,7 @@ ClassImp(TCalVisNode)
     fListOfEvdCrystals->Add(evd_cr);
   }
 
-  fTimePeak = NULL;
+  fTimeCluster = NULL;
 }
 
 //_____________________________________________________________________________
@@ -246,13 +246,13 @@ void TCalVisNode::PaintXY(Option_t* Option) {
    
   TStnVisManager* vm = TStnVisManager::Instance();
 
-  int ipeak = vm->TimePeak();
+  int ipeak = vm->TimeCluster();
 
   if (ipeak >= 0) {
-    if ((*fCalTimePeakColl) != NULL) {
-      int ntp = (*fCalTimePeakColl)->size();
-      if (ipeak < ntp) fTimePeak = &(*fCalTimePeakColl)->at(ipeak);
-      else             fTimePeak = NULL;
+    if ((*fTimeClusterColl) != NULL) {
+      int ntp = (*fTimeClusterColl)->size();
+      if (ipeak < ntp) fTimeCluster = &(*fTimeClusterColl)->at(ipeak);
+      else             fTimeCluster = NULL;
     }
   }
 
@@ -262,12 +262,13 @@ void TCalVisNode::PaintXY(Option_t* Option) {
     for (int i=0; i<ncl; i++) {
       cl = EvdCluster(i);
       //      TAnaDump::Instance()->printCaloCluster(cl,"data");
-
+      double tMin = fTimeCluster->t0().t0() - 30;//FIXME!
+      double tMax = fTimeCluster->t0().t0() + 20;//FIXME!
       time = cl->Cluster()->time();
       display_cluster = 1;
 
-      if (fTimePeak != NULL) {
-	if ((time < fTimePeak->TMin()) || (time > fTimePeak->TMax())) display_cluster = 0;
+      if (fTimeCluster != NULL) {
+	if ((time < tMin) || (time > tMax)) display_cluster = 0;
       }
 
       if (display_cluster) {

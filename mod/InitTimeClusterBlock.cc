@@ -11,8 +11,8 @@
 #include "Stntuple/obj/TStnDataBlock.hh"
 #include "Stntuple/obj/TStnEvent.hh"
 
-#include "Stntuple/obj/TStnTimePeak.hh"
-#include "Stntuple/obj/TStnTimePeakBlock.hh"
+#include "Stntuple/obj/TStnTimeCluster.hh"
+#include "Stntuple/obj/TStnTimeClusterBlock.hh"
 
 #include "Stntuple/obj/TStnHelix.hh"
 #include "Stntuple/obj/TStnHelixBlock.hh"
@@ -39,8 +39,8 @@ int  StntupleInitMu2eTimeClusterBlock(TStnDataBlock* Block, AbsEvent* Evt, int M
 
   char                       tcluster_module_label[100], tcluster_description[100]; 
 
-  TStnTimePeakBlock*         cb = (TStnTimePeakBlock*) Block;
-  TStnTimePeak*              tcluster;
+  TStnTimeClusterBlock*         cb = (TStnTimeClusterBlock*) Block;
+  TStnTimeCluster*              tcluster;
 
   cb->Clear();
 
@@ -60,7 +60,7 @@ int  StntupleInitMu2eTimeClusterBlock(TStnDataBlock* Block, AbsEvent* Evt, int M
   if (list_of_tclusters) ntclusters = list_of_tclusters->size();
   
   for (int i=0; i<ntclusters; i++) {
-    tcluster               = cb->NewTimePeak();
+    tcluster               = cb->NewTimeCluster();
     tmpTCl                 = &list_of_tclusters->at(i);
     cluster                = tmpTCl->caloCluster().get();
     if (cluster != 0){
@@ -81,9 +81,10 @@ int  StntupleInitMu2eTimeClusterBlock(TStnDataBlock* Block, AbsEvent* Evt, int M
       tcluster->fClusterY       = 0; 
       tcluster->fClusterZ       = 0; 
     }
-    
+
     tcluster->fTimeCluster  = tmpTCl;
-    tcluster->fNHits        = tmpTCl->hits().size();
+    tcluster->fNComboHits   = tmpTCl->hits().size();
+    tcluster->fNHits        = tmpTCl->nStrawHits();
     tcluster->fT0           = tmpTCl->t0()._t0;
     tcluster->fT0Err        = tmpTCl->t0()._t0err;     
     tcluster->fPosX         = tmpTCl->position().x();     
@@ -110,11 +111,11 @@ Int_t StntupleInitMu2eTimeClusterBlockLinks(TStnDataBlock* Block, AbsEvent* AnEv
 
   if (Block->LinksInitialized()) return 0;
 
-  TStnEvent*             ev;
-  TStnTimePeakBlock*     hb;
-  TStnTimePeak*          tcluster;
-  TStnHelixBlock*        tsb;
-  TStnHelix*             helixseed;
+  TStnEvent*                 ev;
+  TStnTimeClusterBlock*      hb;
+  TStnTimeCluster*           tcluster;
+  TStnHelixBlock*            tsb;
+  TStnHelix*                 helixseed;
 
   const mu2e::TimeCluster*   ktcluster, *fktcluster;
   const mu2e::HelixSeed*     kseed;
@@ -122,17 +123,17 @@ Int_t StntupleInitMu2eTimeClusterBlockLinks(TStnDataBlock* Block, AbsEvent* AnEv
   char                       short_tcluster_block_name[100];
 
   ev     = Block->GetEvent();
-  hb     = (TStnTimePeakBlock*) Block;
+  hb     = (TStnTimeClusterBlock*) Block;
   
   hb->GetModuleLabel("mu2e::TimeClusterCollection"  , short_tcluster_block_name);
 
   tsb    = (TStnHelixBlock*) ev->GetDataBlock(short_tcluster_block_name);
   
-  int    ntcluster   = hb ->NTimePeaks();
+  int    ntcluster   = hb ->NTimeClusters();
   int    nhelixseed    = tsb->NHelices();
 
   for (int i=0; i<ntcluster; ++i){
-    tcluster  = hb   ->TimePeak(i);
+    tcluster  = hb   ->TimeCluster(i);
     ktcluster = tcluster->fTimeCluster;
     int      helixseedIndex(-1);
     for (int j=0; j<nhelixseed; ++j){

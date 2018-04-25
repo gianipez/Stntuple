@@ -16,16 +16,15 @@
 #include "RecoDataProducts/inc/StrawHitCollection.hh"
 #include "RecoDataProducts/inc/StrawHitPositionCollection.hh"
 #include "RecoDataProducts/inc/StrawHitFlagCollection.hh"
+#include "RecoDataProducts/inc/TimeCluster.hh"
 #include "MCDataProducts/inc/PtrStepPointMCVectorCollection.hh"
-#include "CalPatRec/inc/CalTimePeak.hh"
+
 #else
 namespace mu2e {
   class StrawHitCollection;
   class StrawHitPositionCollection;
   class StrawHitFlagCollection;
   class PtrStepPointMCVectorCollection;
-  class CalTimePeakCollection;
-  class CalTimePeak;
 };
 #endif
 
@@ -43,14 +42,14 @@ protected:
   const mu2e::StrawHitCollection**             fStrawHitColl;
   const mu2e::StrawHitPositionCollection**     fStrawHitPosColl;  //
   const mu2e::StrawHitFlagCollection**         fStrawHitFlagColl; //
-  const mu2e::CalTimePeakCollection**          fCalTimePeakColl;  //
+  const mu2e::TimeClusterCollection**          fTimeClusterColl;  //
   const mu2e::PtrStepPointMCVectorCollection** fMcPtrColl; 
  
   TArc*         fArc;
 
   TObjArray*    fListOfStrawHits;
 
-  const mu2e::CalTimePeak*  fTimePeak;
+  const mu2e::TimeCluster*  fTimePeak;
 
   Int_t         fDisplayBackgroundHits;
   Int_t         fTimeWindow;
@@ -105,8 +104,8 @@ public:
     fMcPtrColl = Coll;
   }
 
-  void SetCalTimePeakColl(const mu2e::CalTimePeakCollection** Coll) { 
-    fCalTimePeakColl = Coll;
+  void SetTimeClusterColl(const mu2e::TimeClusterCollection** Coll) { 
+    fTimeClusterColl = Coll;
   }
 
   void  SetPickMode   (Int_t Mode) { fPickMode    = Mode; }

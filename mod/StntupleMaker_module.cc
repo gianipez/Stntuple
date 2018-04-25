@@ -426,7 +426,7 @@ void StntupleMaker::beginJob() {
       block_name = fTimeClusterBlockName[i].data();
       
       timeCluster_data = AddDataBlock(block_name, 
-				      "TStnTimePeakBlock",
+				      "TStnTimeClusterBlock",
 				      StntupleInitMu2eTimeClusterBlock,
 				      buffer_size,
 				      split_mode,

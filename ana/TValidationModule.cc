@@ -72,6 +72,15 @@ TValidationModule::TValidationModule(const char* name, const char* title):
 TValidationModule::~TValidationModule() {
 }
 
+
+//-----------------------------------------------------------------------------
+void TValidationModule::BookTimeClusterHistograms   (TimeClusterHist_t*   Hist, const char* Folder){
+  
+    HBook1F(Hist->fNHits         ,"nhits"      ,Form("%s: # of straw hits"              ,Folder), 150,   0,   150,Folder);
+    HBook1F(Hist->fNComboHits    ,"ncombohits" ,Form("%s: # of combo hits"              ,Folder), 150,   0,   150,Folder);
+    HBook1F(Hist->fT0            ,"t0"         ,Form("%s: TimeCluster; t_{0}[ns]"       ,Folder), 800, 400,  1700,Folder);
+    HBook1F(Hist->fClusterEnergy ,"clusterE"   ,Form("%s: cluster energy; E [MeV]      ",Folder), 400,   0,  200,Folder);  
+}
 //-----------------------------------------------------------------------------
 void TValidationModule::BookHelixHistograms   (HelixHist_t*   Hist, const char* Folder){
   
@@ -352,22 +361,22 @@ void TValidationModule::BookHistograms() {
   HBook1F(fHist.fCrystalR[1],"rc_1"     ,Form("disk [1] crystal radius"),100,0,1000,"Hist");
 
 //--------------------------------------------------------------------------------
-// book timePeak histograms
+// book timecluster histograms
 //--------------------------------------------------------------------------------
-  int book_timepeak_histset[kNTrackSeedHistSets];
-  for (int i=0; i<kNTrackSeedHistSets; ++i)  book_timepeak_histset[i] = 0;
+  int book_timecluster_histset[kNTimeClusterHistSets];
+  for (int i=0; i<kNTimeClusterHistSets; ++i)  book_timecluster_histset[i] = 0;
 
-  book_timepeak_histset[0] = 1;   // all events
-  book_timepeak_histset[1] = 1;   // timePeaks with NHits>10
-  book_timepeak_histset[2] = 1;   // timePeaks with NHits>15
+  book_timecluster_histset[0] = 1;   // all events
+  book_timecluster_histset[1] = 1;   // timeclusters with NHits>10
+  book_timecluster_histset[2] = 1;   // timeclusters with NHits>15
 
    for (int i=0; i<kNTrackSeedHistSets; i++) {
-    if (book_timepeak_histset[i] != 0) {
-      sprintf(folder_name,"timepeak_%i",i);
+    if (book_timecluster_histset[i] != 0) {
+      sprintf(folder_name,"timecluster_%i",i);
       fol = (TFolder*) hist_folder->FindObject(folder_name);
       if (! fol) fol = hist_folder->AddFolder(folder_name,folder_name);
-      fHist.fTimePeak[i] = new TrackSeedHist_t;
-      BookTrackSeedHistograms(fHist.fTimePeak[i],Form("Hist/%s",folder_name));
+      fHist.fTimeCluster[i] = new TimeClusterHist_t;
+      BookTimeClusterHistograms(fHist.fTimeCluster[i],Form("Hist/%s",folder_name));
     }
   }
 
@@ -889,7 +898,25 @@ void TValidationModule::FillTrackSeedHistograms(TrackSeedHist_t*   Hist, TStnTra
 }
 
 //--------------------------------------------------------------------------------
-// function to fill TrasckSeedHit block
+// function to fill Helix block
+//--------------------------------------------------------------------------------
+void TValidationModule::FillTimeClusterHistograms(TimeClusterHist_t*   Hist, TStnTimeCluster*    TimeCluster){
+  
+  int         nhits      = TimeCluster->NHits      ();
+  int         ncombohits = TimeCluster->NComboHits ();
+
+  double      time       = TimeCluster->T0();
+  double      clusterE   = TimeCluster->ClusterEnergy();
+
+  Hist->fNHits         ->Fill(nhits);	 
+  Hist->fNComboHits    ->Fill(ncombohits);	 
+  Hist->fT0            ->Fill(time);
+  Hist->fClusterEnergy ->Fill(clusterE);
+
+}
+
+//--------------------------------------------------------------------------------
+// function to fill Helix block
 //--------------------------------------------------------------------------------
 void TValidationModule::FillHelixHistograms(HelixHist_t*   Hist, TStnHelix*    Helix){
   
@@ -1262,7 +1289,7 @@ int TValidationModule::BeginJob() {
 //-----------------------------------------------------------------------------
 // register data blocks
 //-----------------------------------------------------------------------------
-  RegisterDataBlock("TimePeakBlock" ,"TStnTrackSeedBlock",&fTimePeakBlock);
+  RegisterDataBlock("TimeClusterBlock" ,"TStnTrackSeedBlock",&fTimeClusterBlock);
   RegisterDataBlock("CalTrackSeedBlock","TStnTrackSeedBlock",&fTrackSeedBlock);
   RegisterDataBlock("HelixBlock"    ,"TStnHelixBlock"    ,&fHelixBlock);
   RegisterDataBlock("TrackBlock"    ,"TStnTrackBlock"    ,&fTrackBlock  );
@@ -1446,24 +1473,25 @@ void TValidationModule::FillHistograms() {
   }
 
 //--------------------------------------------------------------------------------
-// TimePeak histograms
+// TimeCluster histograms
 //--------------------------------------------------------------------------------
-  TStnTrackSeed* trkSeed;
-  for (int i=0; i<fNTimePeaks[0]; ++i){
+  TStnTimeCluster* tCluster;
+  for (int i=0; i<fNTimeClusters[0]; ++i){
     
-    trkSeed = fTimePeakBlock->TrackSeed(i);
+    tCluster = fTimeClusterBlock->TimeCluster(i);
     
-    FillTrackSeedHistograms(fHist.fTimePeak[0], trkSeed);
+    FillTimeClusterHistograms(fHist.fTimeCluster[0], tCluster);
     
-    int         nhits    = trkSeed->NHits();
-    if (nhits >= 10 ) FillTrackSeedHistograms(fHist.fTimePeak[1], trkSeed);
+    int         nhits    = tCluster->NHits();
+    if (nhits >= 10 ) FillTimeClusterHistograms(fHist.fTimeCluster[1], tCluster);
 
-    if (nhits >= 15 ) FillTrackSeedHistograms(fHist.fTimePeak[2], trkSeed);
+    if (nhits >= 15 ) FillTimeClusterHistograms(fHist.fTimeCluster[2], tCluster);
   }  
 
 //--------------------------------------------------------------------------------
 // trackseed histograms
 //--------------------------------------------------------------------------------
+  TStnTrackSeed* trkSeed;
   for (int i=0; i<fNTrackSeeds[0]; ++i){
     
     trkSeed = fTrackSeedBlock->TrackSeed(i);
@@ -1973,6 +2001,8 @@ int TValidationModule::Event(int ientry) {
     fDiskCalorimeter->Init(&disk_geom);
   }
 
+  fNTimeClusters[0] = fTimeClusterBlock->NTimeClusters();
+  
   fNTracks[0] = fTrackBlock->NTracks();
   fNClusters  = fClusterBlock->NClusters();
   fNCalHits   = fCalDataBlock->NHits();

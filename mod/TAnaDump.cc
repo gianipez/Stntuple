@@ -57,7 +57,6 @@
 #include "RecoDataProducts/inc/TrkCaloIntersectCollection.hh"
 #include "TrackCaloMatching/inc/TrackClusterMatch.hh"
 
-#include "CalPatRec/inc/CalTimePeak.hh"
 #include "CalPatRec/inc/LsqSums4.hh"
 
 #include "Stntuple/base/TNamedHandle.hh"
@@ -1614,7 +1613,7 @@ void TAnaDump::printKalRepCollection(const char* ModuleLabel,
     art::Ptr<KalRep> kptr = krepsHandle->at(i);
     //    fEvent->get(kptr.id(), krepsHandle);
     fhicl::ParameterSet const& pset = krepsHandle.provenance()->parameterSet();
-    string module_type = pset.get<std::string>("module_type");
+    std::string module_type = pset.get<std::string>("module_type");
  
     trk = kptr.get();
     if (banner_printed == 0) {

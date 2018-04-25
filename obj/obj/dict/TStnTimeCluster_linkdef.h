@@ -6,5 +6,5 @@
 #pragma link C++  nestedclasses;
 #pragma link C++  nestedtypedefs;
 #
-#pragma link C++  class  TStnTimePeak-;
+#pragma link C++  class  TStnTimeCluster-;
 #endif

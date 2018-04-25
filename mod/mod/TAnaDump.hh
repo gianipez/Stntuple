@@ -46,7 +46,6 @@ namespace mu2e {
   class StepPointMC;
   class GenParticle;
   class SimParticle;
-  class CalTimePeak;
   class TimeCluster;
   class KalSeed;
   class ComboHit;

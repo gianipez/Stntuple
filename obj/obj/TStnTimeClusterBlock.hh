@@ -1,5 +1,5 @@
-#ifndef STNTUPLE_TStnTimePeakBlock
-#define STNTUPLE_TStnTimePeakBlock
+#ifndef STNTUPLE_TStnTimeClusterBlock
+#define STNTUPLE_TStnTimeClusterBlock
 //-----------------------------------------------------------------------------
 //  definition of the cluster block for MU2E analysis
 //  Author:    G. Pezzullo
@@ -8,10 +8,10 @@
 #include "TClonesArray.h"
 
 #include "Stntuple/obj/TStnDataBlock.hh"
-#include "Stntuple/obj/TStnTimePeak.hh"
+#include "Stntuple/obj/TStnTimeCluster.hh"
 #include "TBuffer.h"
 
-class TStnTimePeakBlock: public TStnDataBlock {
+class TStnTimeClusterBlock: public TStnDataBlock {
 
   friend Int_t StntupleInitMu2eTimeClusterBlock     (TStnDataBlock*, AbsEvent* , int);
   friend Int_t StntupleInitMu2eTimeClusterBlockLinks(TStnDataBlock*, AbsEvent* , int);
@@ -19,29 +19,29 @@ public:
 //----------------------------------------------------------------------------
 //  data members
 //-----------------------------------------------------------------------------
-  Int_t          fNTimePeaks;
-  TClonesArray*  fListOfTimePeaks;
+  Int_t          fNTimeClusters;
+  TClonesArray*  fListOfTimeClusters;
 //----------------------------------------------------------------------------
 //  functions
 //----------------------------------------------------------------------------
 public:
 					// ****** constructors and destructor
-  TStnTimePeakBlock();
-  virtual ~TStnTimePeakBlock();
+  TStnTimeClusterBlock();
+  virtual ~TStnTimeClusterBlock();
 
-  TStnTimePeak* NewTimePeak() {
-    TStnTimePeak* trackSeed = new ((*fListOfTimePeaks)[fNTimePeaks]) TStnTimePeak();
-    fNTimePeaks++;
+  TStnTimeCluster* NewTimeCluster() {
+    TStnTimeCluster* trackSeed = new ((*fListOfTimeClusters)[fNTimeClusters]) TStnTimeCluster();
+    fNTimeClusters++;
     return trackSeed;
   }
 //-----------------------------------------------------------------------------
 // accessors
 //-----------------------------------------------------------------------------
-  Int_t              NTimePeaks     () { return fNTimePeaks;   }
-  TClonesArray*      ListOfTimePeaks() { return fListOfTimePeaks; }
+  Int_t              NTimeClusters     () { return fNTimeClusters;   }
+  TClonesArray*      ListOfTimeClusters() { return fListOfTimeClusters; }
 
-  TStnTimePeak*   TimePeak(int I) {
-    return (TStnTimePeak*) fListOfTimePeaks->UncheckedAt(I); 
+  TStnTimeCluster*   TimeCluster(int I) {
+    return (TStnTimeCluster*) fListOfTimeClusters->UncheckedAt(I); 
   }
 
 //-----------------------------------------------------------------------------
@@ -50,7 +50,7 @@ public:
   void Clear(Option_t* opt="");
   void Print(Option_t* opt="") const;
 
-  ClassDef(TStnTimePeakBlock,1)
+  ClassDef(TStnTimeClusterBlock,1)
 };
 
 #endif

@@ -312,10 +312,10 @@ void    TTrkRZView::SetStations(int I1, int I2) {
 }
 
 //-----------------------------------------------------------------------------
-void    TTrkRZView::SetTimePeak(int I) {
+void    TTrkRZView::SetTimeCluster(int I) {
   TStnVisManager* vm = TStnVisManager::Instance();
 
-  vm->SetTimePeak(I);
+  vm->SetTimeCluster(I);
 }
 
 

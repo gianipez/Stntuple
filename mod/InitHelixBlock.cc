@@ -11,8 +11,8 @@
 #include "Stntuple/obj/TStnDataBlock.hh"
 #include "Stntuple/obj/TStnEvent.hh"
 
-#include "Stntuple/obj/TStnTimePeak.hh"
-#include "Stntuple/obj/TStnTimePeakBlock.hh"
+#include "Stntuple/obj/TStnTimeCluster.hh"
+#include "Stntuple/obj/TStnTimeClusterBlock.hh"
 
 #include "Stntuple/obj/TStnHelix.hh"
 #include "Stntuple/obj/TStnHelixBlock.hh"
@@ -43,18 +43,21 @@
 
 
 namespace {
-  double evalWeight(XYZVec& HitPos   ,
+  double evalWeight(const mu2e::HelixHit*  Hit   ,
 		    XYZVec& StrawDir ,
 		    XYZVec& HelCenter, 
 		    double             Radius   ,
 		    int                WeightMode,
 		    fhicl::ParameterSet const& Pset) {//WeightMode = 1 is for XY chi2 , WeightMode = 0 is for Phi-z chi2
   
-    double    rs(2.5);   // straw radius, mm
-    double    ew(30.0);  // assumed resolution along the wire, mm
-  
-    double x  = HitPos.x();
-    double y  = HitPos.y();
+    //    double    rs(2.5);   // straw radius, mm
+    double    transErr = 5./sqrt(12.);
+    if (Hit->nStrawHits() > 1) transErr *= 1.5;
+    double    transErr2 = transErr*transErr;
+    // double    ew(30.0);  // assumed resolution along the wire, mm
+
+    double x  = Hit->pos().x();
+    double y  = Hit->pos().y();
     double dx = x-HelCenter.x();
     double dy = y-HelCenter.y();
   
@@ -73,11 +76,11 @@ namespace {
     }
     //scale the weight for having chi2/ndof distribution peaking at 1
     if ( WeightMode == 1){//XY-Fit
-      double e2     = ew*ew*sinth2+rs*rs*costh*costh;
+      double e2     = Hit->wireErr2()*sinth2+transErr2*costh*costh; //ew*ew*sinth2+rs*rs*costh*costh;
       wt  = 1./e2;
       wt *= wtXY;
     } else if (WeightMode ==0 ){//Phi-Z Fit
-      double e2     = ew*ew*costh*costh+rs*rs*sinth2;
+      double e2     = Hit->wireErr2()*costh*costh+transErr2*sinth2; //ew*ew*costh*costh+rs*rs*sinth2;
       wt     = Radius*Radius/e2;
       wt    *= wtPhiZ;
     }
@@ -165,7 +168,6 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
     }
     
     helix->fHelix        = tmpHel;
-    helix->fNHits        = tmpHel->hits().size();
     helix->fT0           = tmpHel->t0()._t0;
     helix->fT0Err        = tmpHel->t0()._t0err;     
     helix->fRCent        = robustHel->rcent  ();
@@ -197,14 +199,15 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
 
     fhicl::ParameterSet const& pset = helix_handle.provenance()->parameterSet();
     
-    for (int j=0; j<nhits; ++j){
+    int      nStrawHits(0);
+    for (int j=0; j<nhits; ++j){      //this loop is made over the ComboHits
       hit       = &hits->at(j);
       pos       = hit->pos();
       wdir      = hit->wdir();
       sdir      = zdir.Cross(wdir);
       phi       = hit->phi();
       helix_phi = helix->fFZ0 + pos.z()/helix->fLambda;
-      double    weightXY   = evalWeight(pos, sdir, helix_center, radius, 1, pset);
+      double    weightXY   = evalWeight(hit, sdir, helix_center, radius, 1, pset);
 
       sxy.addPoint(pos.x(), pos.y(), weightXY);
 
@@ -217,10 +220,16 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
 	phi   -= 2*M_PI; 
 	dPhi  = helix_phi - phi;
       }
-      double weight    = evalWeight(pos, sdir, helix_center, radius, 0, pset);
+      double weight    = evalWeight(hit, sdir, helix_center, radius, 0, pset);
       srphi.addPoint(pos.z(), phi, weight);
+
+      //increase the counter of the StrawHits
+      nStrawHits += hit->nStrawHits();
     } 
     
+    helix->fNComboHits = tmpHel->hits().size();
+    helix->fNHits      = nStrawHits;
+
     if (cluster != 0){
       double     weight_cl_xy = 1./100.;//FIX ME!
       pos       = XYZVec(helix->fClusterX, helix->fClusterY, helix->fClusterZ);
@@ -283,8 +292,8 @@ Int_t StntupleInitMu2eHelixBlockLinks(TStnDataBlock* Block, AbsEvent* AnEvent, i
   TStnHelix*           helix;
   TStnTrackSeedBlock*  tsb;
   TStnTrackSeed*       trkseed;
-  TStnTimePeakBlock*   tpb;
-  TStnTimePeak*        tp;
+  TStnTimeClusterBlock*   tpb;
+  TStnTimeCluster*        tp;
 
   const mu2e::HelixSeed*   khelix, *fkhelix;
   const mu2e::KalSeed*     kseed;
@@ -299,11 +308,11 @@ Int_t StntupleInitMu2eHelixBlockLinks(TStnDataBlock* Block, AbsEvent* AnEvent, i
   hb->GetModuleLabel("mu2e::TimeClusterCollection", timepeak_block_name   );
 
   tsb    = (TStnTrackSeedBlock*) ev->GetDataBlock(short_helix_block_name);
-  tpb    = (TStnTimePeakBlock* ) ev->GetDataBlock(timepeak_block_name   );
+  tpb    = (TStnTimeClusterBlock* ) ev->GetDataBlock(timepeak_block_name   );
 
   int    nhelix   = hb ->NHelices();
   int    ntrkseed = tsb->NTrackSeeds();
-  int    ntpeak   = tpb->NTimePeaks();
+  int    ntpeak   = tpb->NTimeClusters();
 
   for (int i=0; i<nhelix; ++i){
     helix  = hb   ->Helix(i);
@@ -328,7 +337,7 @@ Int_t StntupleInitMu2eHelixBlockLinks(TStnDataBlock* Block, AbsEvent* AnEvent, i
     ktimepeak = khelix->timeCluster().get();
     int      timepeakIndex(-1);
     for (int j=0; j<ntpeak;++j){
-      tp         = tpb->TimePeak(j);
+      tp         = tpb->TimeCluster(j);
       fktimepeak = tp->fTimeCluster;
       if (fktimepeak == ktimepeak){
 	timepeakIndex = j;

@@ -46,7 +46,7 @@ StntupleMakerTemplate : { module_type:StntupleMaker
     makeVdetHitsModuleLabel : "g4run"
     generatorModuleLabel    : "generate"
 
-    timeClusterBlockName    : ["TimePeakBlock"    ]   # to be renamed, *FIXME*
+    timeClusterBlockName    : ["TimeClusterBlock"    ]   # to be renamed, *FIXME*
     timeClusterModuleLabel  : ["CalTimePeakFinder"]   # to be renamed into CalTimeCLusterFinder *FIXME* 
 
     helixBlockName          : []
@@ -107,9 +107,10 @@ MuHitDisplay: { module_type:MuHitDisplay        # the class name;
     g4ModuleLabel                : g4run
     strawHitMakerModuleLabel     : makeSH
     strawDigiMakerModuleLabel    : makeSD
-    strawHitPosMakerModuleLabel  : makeSH # MakeStrawHitPositions
+#    strawHitPosMakerModuleLabel  : makeSH 
     strawHitFlagMakerModuleLabel : "DeltaFinder:StrawHits"
-    
+    comboHitMakerModuleLabel     : makePH
+
     caloCrystalHitsMaker         : CaloCrystalHitFromHit
     caloClusterModuleLabel       : CaloClusterFromProtoCluster
 
@@ -339,7 +340,7 @@ Stntuple : {
 	    timeClusterBlockName       : [ "TprTimeClusterBlock"     , "CprTimeClusterBlock"     ]
 	    timeClusterModuleLabel     : [ "TimeClusterFinder"       , "CalTimePeakFinder"       ]
 	    helixBlockName             : [ "TprHelixBlock"           , "CprHelixBlock"           ]
-	    helixModuleLabel           : [ "HelixFinder"             , "CalHelixFinder"          ]
+	    helixModuleLabel           : [ "HelixFinder:Positive"    , "CalHelixFinder"          ]
 	    trackSeedBlockName         : [ "TprTrackSeedBlock"       , "CprTrackSeedBlock"       ]
 	    trackSeedModuleLabel       : [ "KSFDeM"                  , "CalSeedFit"              ]
 	    shortHelixBlockName        : [ "ShortTprHelixBlock"      , "ShortCprHelixBlock"      , "ShortHelixBlock"        ]

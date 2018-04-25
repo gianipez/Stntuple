@@ -7,8 +7,8 @@
 //
 // Contact person Pavel Murat
 //
-#ifndef Stntuple_obj_TStnTimePeak_hh
-#define Stntuple_obj_TStnTimePeak_hh
+#ifndef Stntuple_obj_TStnTimeCluster_hh
+#define Stntuple_obj_TStnTimeCluster_hh
 
 // storable objects (data products)
 // 
@@ -27,15 +27,15 @@ namespace mu2e {
   class TimeCluster;
 }
 
-class TStnTimePeak : public TObject {
+class TStnTimeCluster : public TObject {
 
-  // enum {
-  //   kNFreeIntsV1   = 10,		// V1
-  //   kNFreeFloatsV1 = 10,		// V1
+  enum {
+    kNFreeIntsV2   = 10,		// V2
+    kNFreeFloatsV2 = 10 		// V2
 
   //   kNFreeInts     = 10,		// V2
   //   kNFreeFloats   =  3			// V2
-  // };
+  };
 
 public:
 //-----------------------------------------------------------------------------
@@ -43,6 +43,8 @@ public:
 //-----------------------------------------------------------------------------
   int                       fNHits;
   int                       fHelixSeedIndex;
+  int                       fNComboHits;
+  int                       fInt[kNFreeIntsV2]; // provision for future I/O expansion
 //-----------------------------------------------------------------------------
 // floats
 //-----------------------------------------------------------------------------
@@ -58,6 +60,7 @@ public:
   float			    fClusterX;      
   float			    fClusterY;      
   float			    fClusterZ;      
+  float                     fFloat[kNFreeFloatsV2]; // provision for future I/O expansion
 
 //-----------------------------------------------------------------------------
 // transients
@@ -66,12 +69,13 @@ public:
 //-----------------------------------------------------------------------------
 // methods
 //-----------------------------------------------------------------------------
-  TStnTimePeak(int i = -1);
-  ~TStnTimePeak();
+  TStnTimeCluster(int i = -1);
+  ~TStnTimeCluster();
 //-----------------------------------------------------------------------------
 // accessors
 //-----------------------------------------------------------------------------
   int     NHits         () { return  fNHits;  }
+  int     NComboHits    () { return  fNComboHits;  }
   int     HelixSeedIndex() { return  fHelixSeedIndex; }
 
   float   T0            () { return  fT0;     }
@@ -100,9 +104,9 @@ public:
 //-----------------------------------------------------------------------------
 // schema evolution
 //-----------------------------------------------------------------------------
-//  void ReadV1(TBuffer& R__b);
+  void ReadV1(TBuffer& R__b);
 
-  ClassDef(TStnTimePeak,1)
+  ClassDef(TStnTimeCluster,2)
 };
 
 #endif

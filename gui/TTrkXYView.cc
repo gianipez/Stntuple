@@ -192,9 +192,9 @@ void    TTrkXYView::SetStations(int I1, int I2) {
 }
 
 //-----------------------------------------------------------------------------
-void    TTrkXYView::SetTimePeak(int I) {
+void    TTrkXYView::SetTimeCluster(int I) {
   TStnVisManager* vm = TStnVisManager::Instance();
 
-  vm->SetTimePeak(I);
+  vm->SetTimeCluster(I);
 }
 

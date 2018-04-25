@@ -54,7 +54,7 @@ TTrkVisNode::TTrkVisNode(const char* name, const mu2e::TTracker* Tracker, TStnTr
   fTimeWindow = 1.e6;
 
   fListOfStrawHits = new TObjArray();
-  fTimePeak        = NULL;
+  fTimeCluster        = NULL;
   fUseStereoHits   = 0;
 
   fListOfTracks    = new TObjArray();
@@ -331,16 +331,19 @@ void TTrkVisNode::PaintXY(Option_t* Option) {
 
   TStnVisManager* vm = TStnVisManager::Instance();
 
-  int ipeak = vm->TimePeak();
+  int ipeak = vm->TimeCluster();
 
   if (ipeak >= 0) {
-    if ((*fCalTimePeakColl) != NULL) {
-      int ntp = (*fCalTimePeakColl)->size();
-      if (ipeak < ntp) fTimePeak = &(*fCalTimePeakColl)->at(ipeak);
-      else             fTimePeak = NULL;
+    if ((*fTimeClusterColl) != NULL) {
+      int ntp = (*fTimeClusterColl)->size();
+      if (ipeak < ntp) fTimeCluster = &(*fTimeClusterColl)->at(ipeak);
+      else             fTimeCluster = NULL;
     }
   }
 
+  double tMin = fTimeCluster->t0().t0() - 30;//FIXME!
+  double tMax = fTimeCluster->t0().t0() + 20;//FIXME!
+  
   int nhits = fListOfStrawHits->GetEntries();
   for (int i=0; i<nhits; i++) {
     hit       = (TEvdStrawHit*) fListOfStrawHits->At(i);
@@ -351,8 +354,8 @@ void TTrkVisNode::PaintXY(Option_t* Option) {
 
     if ((station >= vm->MinStation()) && (station <= vm->MaxStation())) { 
       display_hit = 1;
-      if (fTimePeak != NULL) {
-	if ((time < fTimePeak->TMin()) || (time > fTimePeak->TMax())) display_hit = 0;
+      if (fTimeCluster != NULL) {
+	if ((time < tMin) || (time > tMax)) display_hit = 0;
       }
       if (display_hit) {
 	hit->Paint(Option);

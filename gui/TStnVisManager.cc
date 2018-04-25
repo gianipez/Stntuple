@@ -169,7 +169,7 @@ TVisManager(Name, Title)
 	fTMin = 0;
 	fTMax = 1.e5;
 
-	fTimePeak = -1;
+	fTimeCluster = -1;
 }
 
 //_____________________________________________________________________________
@@ -700,8 +700,8 @@ void TStnVisManager::SetStations(int IMin, int IMax) {
 }
 
 //-----------------------------------------------------------------------------
-void TStnVisManager::SetTimePeak(int I) {
-	fTimePeak = I;
+void TStnVisManager::SetTimeCluster(int I) {
+	fTimeCluster = I;
 }
 
 //_____________________________________________________________________________

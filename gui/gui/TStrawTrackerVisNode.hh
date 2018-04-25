@@ -35,7 +35,7 @@ public:
   };
 protected:
 
-  const mu2e::CalTimePeakCollection**          fCalTimePeakColl;  //
+  const mu2e::TimeClusterCollection**          fTimeClusterColl;  //
 
   TObjArray**        fListOfTracks;
 
@@ -43,7 +43,7 @@ protected:
 
   TObjArray*         fListOfStrawHits;
 
-  const mu2e::CalTimePeak*  fTimePeak;
+  const mu2e::TimeCluster*  fTimeCluster;
   
   Int_t              fDisplayHits;
   Int_t              fPickMode;
