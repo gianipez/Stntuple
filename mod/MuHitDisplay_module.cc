@@ -1247,7 +1247,9 @@ namespace mu2e {
 
 	  std::vector<StrawDigiIndex> shids;
 	  fShComboHitColl->fillStrawDigiIndices(Evt,ish,shids);
-	  const mu2e::SimParticle* sim = _mcUtils->getSimParticle(_hits_mcptr,shids[0]);//ish);
+	  mu2e::StrawDigiMC     const& mcd1  = _strawDigiMCColl->at(shids[0]);
+	  art::Ptr<StepPointMC> const& spmcp = mcd1.stepPointMC(TrkTypes::cal);
+	  const mu2e::SimParticle*     sim   = spmcp->simParticle().get();//_mcUtils->getSimParticle(_hits_mcptr,shids[0]);//ish);
 	
 	  // mcptr = &_hits_mcptr->at(ihit);
 
