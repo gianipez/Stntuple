@@ -1289,7 +1289,7 @@ int TValidationModule::BeginJob() {
 //-----------------------------------------------------------------------------
 // register data blocks
 //-----------------------------------------------------------------------------
-  RegisterDataBlock("TimeClusterBlock" ,"TStnTrackSeedBlock",&fTimeClusterBlock);
+  RegisterDataBlock("CprTimeClusterBlock" ,"TStnTimeClusterBlock",&fTimeClusterBlock);
   RegisterDataBlock("CalTrackSeedBlock","TStnTrackSeedBlock",&fTrackSeedBlock);
   RegisterDataBlock("HelixBlock"    ,"TStnHelixBlock"    ,&fHelixBlock);
   RegisterDataBlock("TrackBlock"    ,"TStnTrackBlock"    ,&fTrackBlock  );
