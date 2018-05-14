@@ -1,4 +1,4 @@
-# -*- mode: tcl -*-
+g# -*- mode: tcl -*-
 #------------------------------------------------------------------------------
 # defines templates, assume that standardProducers.fcl has been included 
 #------------------------------------------------------------------------------
@@ -327,8 +327,8 @@ Stntuple : { @table::Stntuple  # defined in Stntuple/fcl/prolog.fcl
 #------------------------------------------------------------------------------
         protonTimeMap          : { @table::EventMixing.producers.protonTimeMap          }
         muonTimeMap            : { @table::EventMixing.producers.muonTimeMap            }
-        makeSD                 : { @table::makeSD                 }
-        makeSH                 : { @table::makeSH                 }
+#        makeSD                 : { @table::makeSD                 }
+#        makeSH                 : { @table::makeSH                 }
 
 #------------------------------------------------------------------------------
 # calorimeter digi maker
@@ -343,6 +343,7 @@ Stntuple : { @table::Stntuple  # defined in Stntuple/fcl/prolog.fcl
 #------------------------------------------------------------------------------
 # TrkPatRec and CalPatRec modules
 #------------------------------------------------------------------------------
+	@table::TrackerMC.producers     # defined in TrackerMC
 	@table::TrkHitReco.producers    # defined in TrkHitReco
 	@table::Tracking.producers      # defined in TrkPatRec
 	@table::CaloCluster.producers   # defined in CaloCluster

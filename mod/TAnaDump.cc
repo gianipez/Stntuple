@@ -2302,10 +2302,12 @@ void TAnaDump::printStrawHitCollection(const char* ModuleLabel,
   art::Handle<mu2e::StrawHitCollection> shcHandle;
   const mu2e::StrawHitCollection*       shc;
 
-  art::Handle<mu2e::StrawHitFlagCollection> shflagH;
-  const mu2e::StrawHitFlagCollection*       shfcol;
+  // art::Handle<mu2e::StrawHitFlagCollection> shflagH;
+  // const mu2e::StrawHitFlagCollection*       shfcol;
   
 
+  art::Handle<mu2e::ComboHitCollection> chcHandle;
+  const mu2e::ComboHitCollection*       chcol;
 //-----------------------------------------------------------------------------
 // get straw hits
 //-----------------------------------------------------------------------------
@@ -2314,11 +2316,13 @@ void TAnaDump::printStrawHitCollection(const char* ModuleLabel,
 			    art::ProcessNameSelector(ProcessName)         && 
 			    art::ModuleLabelSelector(ModuleLabel)            );
     fEvent->get(selector, shcHandle);
+    fEvent->get(selector, chcHandle);
   }
   else {
     art::Selector  selector(art::ProcessNameSelector(ProcessName)         && 
 			    art::ModuleLabelSelector(ModuleLabel)            );
     fEvent->get(selector, shcHandle);
+    fEvent->get(selector, chcHandle);
   }
 
   if (shcHandle.isValid()) shc = shcHandle.product();
@@ -2330,12 +2334,11 @@ void TAnaDump::printStrawHitCollection(const char* ModuleLabel,
 //-----------------------------------------------------------------------------
 // get straw hit flags (half-hack)
 //-----------------------------------------------------------------------------
-  fEvent->getByLabel(fFlagBgrHitsModuleLabel.Data(),shflagH);
 
-  if (shflagH.isValid()) shfcol = shflagH.product();
+  if (chcHandle.isValid()) chcol = chcHandle.product();
   else {
-    printf(">>> ERROR in %s: Straw Hit Flag Collection by \"%s\" doesn't exist. Bail Out.\n",
-	   oname,fFlagBgrHitsModuleLabel.Data());
+    printf(">>> ERROR in %s: ComboHit Collection by \"%s\" doesn't exist. Bail Out.\n",
+ 	   oname,ModuleLabel);
     return;
   }
 
@@ -2345,8 +2348,7 @@ void TAnaDump::printStrawHitCollection(const char* ModuleLabel,
   fEvent->getByLabel("makeSD","",mcptrHandleStraw);
   mu2e::PtrStepPointMCVectorCollection const* hits_mcptrStraw = mcptrHandleStraw.product();
  
-  //------------------------------------------------------------
-
+//------------------------------------------------------------
   int nhits = shc->size();
 
   const mu2e::StrawHit* hit;
@@ -2360,7 +2362,7 @@ void TAnaDump::printStrawHitCollection(const char* ModuleLabel,
     
     hit   = &shc->at(i);
 					// assuming it doesn't move beyond 32 bits
-    flags = *((int*) &shfcol->at(i));
+    flags = *((int*) &chcol->at(i).flag());
     if (banner_printed == 0) {
       printStrawHit(hit, Step, "banner");
       banner_printed = 1;

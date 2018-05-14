@@ -1221,8 +1221,8 @@ namespace mu2e {
 
     n_displayed_hits = 0;
 
-    if (fTimeCluster != NULL) n_straw_hits = fTimeCluster->nhits();//NHits();
-    else                      n_straw_hits = fComboHitColl->size();//fStrawHitColl->size();
+    if (fTimeCluster != NULL) n_straw_hits = fTimeCluster->nhits();// NHits();
+    else                      n_straw_hits = fComboHitColl->size();// fStrawHitColl->size();
 
     for (int ih = 0; ih<n_straw_hits; ++ih) {
 
