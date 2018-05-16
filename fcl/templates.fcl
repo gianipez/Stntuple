@@ -267,7 +267,6 @@ services : {
     message               : @local::default_message
     TFileService          : { fileName : "nts.stntuple.jobtype.offver.sequencer.root" }
     RandomNumberGenerator : { }
-    #   Timing                : { }fcl/
 
     GeometryService        : { inputFile      : "JobConfig/common/geom_baseline.txt"      }
     ConditionsService      : { conditionsfile : "Mu2eG4/test/conditions_01.txt"        }
@@ -277,6 +276,14 @@ services : {
     SeedService            : { @table::automaticSeeds
 	baseSeed         :  0
 	maxUniqueEngines :  20
+    }
+
+    TimeTracker : {
+	printSummary : true
+	dbOutput : {
+	    filename  : ""
+	    overwrite : false
+	}
     }
 }
 services.scheduler.wantSummary: true
@@ -290,63 +297,21 @@ Stntuple : { @table::Stntuple  # defined in Stntuple/fcl/prolog.fcl
 # add modules defined in other packages
 #------------------------------------------------------------------------------
         generate             : { @table::StoppedMuonConversionGun }
-	g4run                : { @table::mu2eg4runDefaultSingleStage }
-	@table::EventMixing.producers 
-
-  	egun : { @table::StoppedParticleReactionGun # p(e)=105 MeV/c
-	    physics : {
-		pdgId            :  11
-		elow             : 105.0010
-		ehi              : 105.0015
-		spectrumVariable : "totalEnergy"
-		spectrumShape    : "flat"
-	    }
-	}
-
-  	mgun : { @table::StoppedParticleReactionGun # p(mu)=105 MeV/c
-	    physics : {
-		pdgId            :  13
-		elow             : 148.9583      
-		ehi              : 148.9585
-		spectrumVariable : "totalEnergy"
-		spectrumShape    : "flat"
-	    }
-	}
-
-  	pgun : { @table::StoppedParticleReactionGun # p(proton)=105 MeV/c
-	    physics : {
-		pdgId            : 2212
-		elow             : 943.3154297476534
-		ehi              : 944.4278691355946
-		spectrumVariable : "totalEnergy"
-		spectrumShape    : "flat"
-	    }
-	}
-#------------------------------------------------------------------------------
-# hit makers
-#------------------------------------------------------------------------------
-        protonTimeMap          : { @table::EventMixing.producers.protonTimeMap          }
-        muonTimeMap            : { @table::EventMixing.producers.muonTimeMap            }
-#        makeSD                 : { @table::makeSD                 }
-#        makeSH                 : { @table::makeSH                 }
-
-#------------------------------------------------------------------------------
-# calorimeter digi maker
-#------------------------------------------------------------------------------
-	CaloShowerStepFromStepPt          :{ @table::CaloShowerStepFromStepPt}
-	CaloShowerStepROFromShowerStep    :{ @table::CaloShowerStepROFromShowerStep}
-	CaloDigiFromShower                :{ @table::CaloDigiFromShower}
-
-	CaloRecoDigiFromDigi              :{ @table::CaloRecoDigiFromDigi}
-	CaloCrystalHitFromHit             :{ @table::CaloCrystalHitFromHit}
-
+	g4run                : { @table::Mu2eG4.producers.g4run   }
 #------------------------------------------------------------------------------
 # TrkPatRec and CalPatRec modules
 #------------------------------------------------------------------------------
-	@table::TrackerMC.producers     # defined in TrackerMC
-	@table::TrkHitReco.producers    # defined in TrkHitReco
-	@table::Tracking.producers      # defined in TrkPatRec
-	@table::CaloCluster.producers   # defined in CaloCluster
+	@table::EventGenerator.producers  # defined in EventGenerator
+	@table::EventMixing.producers
+	@table::TrackerMC.producers       # defined in TrackerMC
+	@table::TrkHitReco.producers      # defined in TrkHitReco
+	@table::Tracking.producers        # defined in TrkPatRec
+	@table::CaloDigiMC.producers      # defined in CaloDigiMC
+	@table::CaloDigiMC.producersMC    # defined in CaloDigiMC
+	@table::CaloReco.producers        # defined in CaloReco
+	@table::CaloCluster.producers     # defined in CaloCluster
+	@table::CaloCluster.producersMC   # defined in CaloCluster
+	@table::CaloClusterFast.producers # defined in CaloCluster
 	@table::CalPatRec.producers
 	@table::TrackCaloMatching.producers
 	@table::ParticleID.producers
