@@ -54,6 +54,11 @@ services.TFileService.fileName            : "nts.user.egun_stnmaker.xxx.000001.r
 # outputs.detectorOutput.SelectEvents       : [ path_gen_digi_reco_stn_dem_dmm ]
 outputs.detectorOutput.fileName           : "sim.user.egun_stnmaker.xxx.000001.art"
 #------------------------------------------------------------------------------
+# uncomment to avoid waisting time on the initialization of detailed neutron 
+# cross sections - that shouldn't affect the CE simulation 
+#------------------------------------------------------------------------------
+# physics.producers.g4run.physics.physicsListName : "QGSP_BERT"
+#------------------------------------------------------------------------------
 # debugging
 #------------------------------------------------------------------------------
 # physics.producers.CalPatRecDem.diagLevel : 1
@@ -62,4 +67,4 @@ outputs.detectorOutput.fileName           : "sim.user.egun_stnmaker.xxx.000001.a
 #------------------------------------------------------------------------------
 # everything below is appended by murat/scripts/submit_mu2e_job
 #------------------------------------------------------------------------------
-physics.producers.g4run.physics.physicsListName: "Minimal"
+
