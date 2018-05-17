@@ -1208,7 +1208,7 @@ namespace mu2e {
 //-----------------------------------------------------------------------------
 // Loop over straw hits. If flagBackgroundHits = true, filter them out
 //-----------------------------------------------------------------------------
-    int                          ihit, n_straw_hits, display_hit, index_sh(0);
+    int                          ihit, n_combo_hits, display_hit, index_sh(0);
     bool                         isFromConversion;
     double                       sigv, /*vnorm, v,*/ sigr;
     const ComboHit*              hit;
@@ -1221,10 +1221,10 @@ namespace mu2e {
 
     n_displayed_hits = 0;
 
-    if (fTimeCluster != NULL) n_straw_hits = fTimeCluster->nhits();// NHits();
-    else                      n_straw_hits = fComboHitColl->size();// fStrawHitColl->size();
+    if (fTimeCluster != NULL) n_combo_hits = fTimeCluster->nhits();// NHits();
+    else                      n_combo_hits = fComboHitColl->size();// fStrawHitColl->size();
 
-    for (int ih = 0; ih<n_straw_hits; ++ih) {
+    for (int ih = 0; ih<n_combo_hits; ++ih) {
 
       if (fTimeCluster != NULL) ihit = fTimeCluster->hits().at(ih);//HitIndex(ih);
       else                      ihit = ih;
@@ -1277,7 +1277,6 @@ namespace mu2e {
 	      //	      if ( gen->generatorId() == gen_id /*GenId::conversionGun*/ ){
 	      if (gen == gen_signal) {
 		isFromConversion = true;
-		break;
 	      }
 	    }
 	  }
@@ -1391,7 +1390,7 @@ namespace mu2e {
     fCanvas->Modified();
     fCanvas->Update();
 
-    printf("N(hits) = %5i, N(displayed hits): %5i\n", n_straw_hits, n_displayed_hits);
+    printf("N(combo hits) = %5i, N(displayed straw hits): %5i\n", n_combo_hits, n_displayed_hits);
 
     fVisManager->SetEvent(Evt);
     fVisManager->DisplayEvent();
