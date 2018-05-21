@@ -380,6 +380,8 @@ void DrawMu2eGeometry::HideBuilding(int KeepOriginalColors) {
     "EMFPlane"          ,  // ExtMon
     "coll2Shielding",
     "pBendType22",         // who knows what it is ?
+    "pBendType2",          // who knows what it is ?
+    "dsAreaTrenchCover", 
     "ProtonBeam",
     "collimatorFOV",
     "FOVliner",
