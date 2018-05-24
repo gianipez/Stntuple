@@ -217,7 +217,7 @@ void TSimParticle::Print(Option_t* Opt) const {
     printf("%11.3f",fStartMom.Energy());
     printf("%11.3f",fStartPos.X());
     printf("%11.3f",fStartPos.Y());
-    printf("%11.3f",fStartPos.X());
+    printf("%11.3f",fStartPos.Z());
     printf("%11.3f",fStartPos.T());
     printf("\n");
   }
