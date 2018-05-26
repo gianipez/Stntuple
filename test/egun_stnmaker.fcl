@@ -40,7 +40,7 @@ physics : {
 
     @table::paths
 
-    trigger_paths : [ path_gen_digi_reco_stn_dem_dmm ]
+    trigger_paths : [ path_gen_digi_reco_stn_tcm ]
     #    out : [detectorOutput]  # detectorOutput is defined in Stntuple/fcl/templates.fcl
     out           : [     ]
     end_paths     : [ out ]

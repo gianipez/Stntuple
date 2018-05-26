@@ -69,7 +69,7 @@ mu2e.GdmlGeometry              /projects/murat/figures/mu2e/gdml/mu2e_geometry_v
 # stnana packages
 #------------------------------------------------------------------------------
 Stnana.Package                 Stntuple
-+Stnana.Package                murat
+# +Stnana.Package               murat
 # +Stnana.Package               zzx
 #------------------------------------------------------------------------------
 TVisManager.DebugLevel         1

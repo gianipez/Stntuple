@@ -419,7 +419,7 @@ Stntuple.ump_reco : [ @sequence::Tracking.TPRUmuP  , MergePatRecUmp, @sequence::
 
 Stntuple.paths : {
 
-    path_gen_digi_tcm_reco_stn : [ @sequence::Stntuple.gen_g4_time_map,
+    path_gen_digi_reco_stn_tcm : [ @sequence::Stntuple.gen_g4_time_map,
 				   @sequence::Stntuple.digis          ,
 				   @sequence::Stntuple.trk_reco       ,
 				   @sequence::Stntuple.cal_reco       ,
@@ -522,7 +522,7 @@ Stntuple.paths : {
 
 
 #------------------------------------------------------------------------------
-# run all 8 reconstruction passes
+# run all 8 reconstruction passes - never tried
 #------------------------------------------------------------------------------
     path_gen_digi_all_reco_ump : [ @sequence::Stntuple.gen_g4_time_map,
 				   @sequence::Stntuple.digis          ,

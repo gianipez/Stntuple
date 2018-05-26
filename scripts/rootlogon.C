@@ -1,10 +1,9 @@
 //------------------------------------------------------------------------------
 //  rootlogon.C: a sample ROOT logon macro allowing use of ROOT script 
-//               compiler in CDF RunII environment. The name of this macro file
+//               compiler in Mu2e environment. The name of this macro file
 //               is defined by the .rootrc file
 //
-// assume that the environment variable MU2E_TEST_RELEASE points to the 
-//  Jul 08 2014 P.Murat
+// Jul 08 2014 P.Murat
 //------------------------------------------------------------------------------
 {
                                 // the line below tells rootcling where to look for 
@@ -72,19 +71,11 @@
       gSystem->Load("$MU2E_BASE_RELEASE/lib/libStntuple_ana.so");
       gSystem->Load("$MU2E_BASE_RELEASE/lib/libStntuple_val.so");
       
-      gSystem->Load("$MU2E_BASE_RELEASE/lib/libmurat_obj.so");
-      gSystem->Load("$MU2E_BASE_RELEASE/lib/libmurat_ana.so");
-      
 					// print overflows/underflows in the stat box
       gStyle->SetOptStat(11111111);
 					// print fit results in the stat box
       gStyle->SetOptFit(1110);
       TArrow::SetDefaultArrowSize(0.015);
-    }
-    else if (strstr(exec_name,"mu2e.NNN") != 0) {
-      gSystem->Load("$MU2E_BASE_RELEASE/lib/libmurat_obj.so");
-      gSystem->Load("$MU2E_BASE_RELEASE/lib/libStntuple_val.so");
-      gSystem->Load("$MU2E_BASE_RELEASE/lib/libmurat_plot.so");
     }
 //-----------------------------------------------------------------------------
 //  databases
