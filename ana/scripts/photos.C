@@ -6,7 +6,7 @@
 //        5 : mu --> e nu nu decay modeled as X --> e Al
 //        6 : mu --> e nu nu decay modeled as X --> e Y
 ///////////////////////////////////////////////////////////////////////////////
-#include "murat/ana/scripts/modules.hh"
+#include "Stntuple/ana/scripts/modules.hh"
 
 def_name photos_001("photos");
 def_name photos_002("photos_no_isec");
@@ -25,7 +25,7 @@ void  photos(int Mode = 1, int DebugLevel = 0) {
   ph->SetXPHCUT(1.e-6);
   printf("XPHCUT = %12.5f\n",ph->GetPhocop()->XPHCUT);
   
-  m_pho = (TPhotosAnaModule*) g.x->AddModule("TPhotosAnaModule",0);
+  stntuple::m_pho = (TPhotosAnaModule*) g.x->AddModule("TPhotosAnaModule",0);
   g.x->SetNEventsToReport(10000);
 }
 
@@ -44,7 +44,7 @@ void  photos_no_isec(int Mode = 2, int DebugLevel = 0) {
 
   ph->SetISEC(0);
   
-  m_pho = (TPhotosAnaModule*) g.x->AddModule("TPhotosAnaModule",0);
+  stntuple::m_pho = (TPhotosAnaModule*) g.x->AddModule("TPhotosAnaModule",0);
   g.x->SetNEventsToReport(10000);
 }
 
@@ -63,7 +63,7 @@ void  photos_iexp(int Mode = 2, int DebugLevel = 0) {
 
   ph->SetIEXP(1);
   
-  m_pho = (TPhotosAnaModule*) g.x->AddModule("TPhotosAnaModule",0);
+  stntuple::m_pho = (TPhotosAnaModule*) g.x->AddModule("TPhotosAnaModule",0);
   g.x->SetNEventsToReport(10000);
 }
 
