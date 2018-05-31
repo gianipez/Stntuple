@@ -80,7 +80,7 @@ Int_t TStntuple::Init(Int_t RunNumber) {
 }
 
 //-----------------------------------------------------------------------------
-// parameterization of the DIO spectrum for Aluminum
+// parameterization of the DIO spectrum on Al
 // from Czarnecki et al, Phys.Rev.D84:013006,2011 (http://www.arxiv.org/abs/1106.4756)
 // the weights are normalized to the unit integral, so the histogram used has to 
 // be divided by the number of events and, then, scaled to the expected number 
@@ -98,6 +98,54 @@ double TStntuple::DioWeightAl(double E) {
   de5 = de*de*de*de*de;
 
   w   = 1.e-17*de5*(a5 + de*(a6+de*(a7+a8*de)));
+
+  if (de < 0) w = 0;
+
+  return w;
+}
+
+//-----------------------------------------------------------------------------
+// parameterization of the LO DIO spectrum on Al 
+// from mu2e-6309 (by R.Szafron)
+//-----------------------------------------------------------------------------
+double TStntuple::DioWeightAl_LO(double E) {
+
+  double a5(8.99879), a6(1.17169), a7(-1.06599e-2), a8(8.14251e-3);
+  double emu(105.194), mAl(25133.);
+  
+  double de, de5, w;
+
+  de  = emu-E-E*E/(2*mAl);
+
+  de5 = de*de*de*de*de;
+
+  w   = 1.e-17*de5*(a5 + de*(a6+de*(a7+a8*de)));
+
+  if (de < 0) w = 0;
+
+  return w;
+}
+
+//-----------------------------------------------------------------------------
+// parameterization of the DIO spectrum on Al with LL radiative corrections 
+// from mu2e-6309 (by R.Szafron)
+// 'emu' - energy of the muon bound in Al nucleus, not the muon mass
+//-----------------------------------------------------------------------------
+double TStntuple::DioWeightAl_LL(double E) {
+
+  double a5(8.9), a6(1.17169), a7(-1.06599e-2), a8(8.14251e-3);
+  double emu(105.194), mAl(25133.), mmu(105.658), me(0.511);
+  double alpha(1./137.036) ;  // alpha EM
+  
+  double de, de5, w;
+
+  de  = emu-E-E*E/(2*mAl);
+
+  de5 = de*de*de*de*de;
+
+  double f = 2.*log((mmu/me)*(1-de/mmu))-2+2.*log(2);
+
+  w   = 1.e-17*pow(de/mmu,(alpha/M_PI)*f)*de5*(a5 + de*(a6+de*(a7+a8*de)));
 
   if (de < 0) w = 0;
 

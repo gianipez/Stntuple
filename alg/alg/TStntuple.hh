@@ -36,8 +36,20 @@ public:
 
   static Int_t     Init(Int_t RunNumber);
 
-  static double DioWeightAl(double P);
-  static double DioWeightTi(double P);
+//-----------------------------------------------------------------------------
+// parameterization of the DIO spectrum on Al from 
+// Czarnecki et al, Phys.Rev.D84:013006,2011 (http://www.arxiv.org/abs/1106.4756)
+//-----------------------------------------------------------------------------
+  static double DioWeightAl   (double P);
+
+//-----------------------------------------------------------------------------
+// parameterization of the LO and LL DIO spectra on Al from 
+// from mu2e-6309 (by R.Szafron)
+//-----------------------------------------------------------------------------
+  static double DioWeightAl_LO(double P);
+  static double DioWeightAl_LL(double P);
+
+  static double DioWeightTi   (double P);
 //-----------------------------------------------------------------------------
 // print routines - sometimes it is not possible to do it from a single block
 //-----------------------------------------------------------------------------
