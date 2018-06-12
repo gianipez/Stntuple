@@ -189,7 +189,7 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
     }
     
     //look for the second most frequent hit
-    if (max != nsh){
+    if (max != nsh && max > 0){
       int   secondmostvalueindex(-1);
       max = 0;//reset max
 
@@ -205,7 +205,7 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
       //      trackSeed->fSimpId2     = secondmostvalue;
       trackSeed->fSimpId2Hits = max;
 
-
+      if (secondmostvalueindex >=0){
       mu2e::PtrStepPointMCVector const& mcptr(hits_mcptrStraw->at(secondmostvalueindex) );
       const mu2e::StepPointMC* Step = mcptr[0].get();
       const mu2e::SimParticle * sim (0);
@@ -238,7 +238,7 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
 	// trackSeed->fSimp2P      = Step->momentum().mag();
 	// trackSeed->fSimp2Pt     = sqrt(pow(Step->momentum().x(),2.) + pow(Step->momentum().y(),2.));
       }      
-      
+    }
     }
     
     
