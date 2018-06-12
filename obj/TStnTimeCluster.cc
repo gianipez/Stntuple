@@ -66,7 +66,7 @@ void TStnTimeCluster::Streamer(TBuffer& R__b) {
   int   nwi, nwf;
   
   nwi      = ((int*  ) &fT0            ) - &fNHits;
-  nwf      = ((float*) &fTimeCluster         ) - &fT0;
+  nwf      = ((float*) &fTimeCluster   ) - &fT0;
 
   if (R__b.IsReading()) {
     Version_t R__v = R__b.ReadVersion(); 
@@ -75,14 +75,14 @@ void TStnTimeCluster::Streamer(TBuffer& R__b) {
     else {
                                         // current version: V2
       R__b.ReadFastArray(&fNHits, nwi);
-      R__b.ReadFastArray(&fT0    , nwf);
+      R__b.ReadFastArray(&fT0   , nwf);
     }
   }
   else {
     R__b.WriteVersion(TStnTimeCluster::IsA());
 
     R__b.WriteFastArray(&fNHits, nwi);
-    R__b.WriteFastArray(&fT0    , nwf);
+    R__b.WriteFastArray(&fT0   , nwf);
     
     
   }

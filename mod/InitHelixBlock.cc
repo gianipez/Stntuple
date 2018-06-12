@@ -7,6 +7,9 @@
 #include "TFolder.h"
 #include "TLorentzVector.h"
 #include "TVector2.h"
+#include "TDatabasePDG.h"
+#include "TParticlePDG.h"
+
 
 #include "Stntuple/obj/TStnDataBlock.hh"
 #include "Stntuple/obj/TStnEvent.hh"
@@ -36,6 +39,12 @@
 #include "RecoDataProducts/inc/KalSeed.hh"
 
 #include "RecoDataProducts/inc/CaloCluster.hh"
+
+#include "MCDataProducts/inc/PtrStepPointMCVectorCollection.hh"
+#include "MCDataProducts/inc/SimParticle.hh"
+#include "MCDataProducts/inc/SimParticleCollection.hh"
+#include "MCDataProducts/inc/StepPointMC.hh"
+#include "MCDataProducts/inc/StepPointMCCollection.hh"
 
 #include "CalPatRec/inc/AlgorithmIDCollection.hh"
 #include "CalPatRec/inc/LsqSums4.hh"
@@ -129,6 +138,32 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
     if (helix_handle.isValid()) list_of_helices = helix_handle.product();//(mu2e::HelixSeedCollection*) &(*helix_handle);
   }
 
+  // art::Handle<mu2e::StrawHitCollection>         shcHandle;
+  // const mu2e::StrawHitCollection*               shcol;
+
+  // const char* ProductName = "";
+  // const char* ProcessName = "";
+
+  // //now get the strawhitcollection
+  // if (ProductName[0] != 0) {
+  //   art::Selector  selector(art::ProductInstanceNameSelector(ProductName) &&
+  // 			    art::ProcessNameSelector(ProcessName)         && 
+  // 			    art::ModuleLabelSelector("makeSH")           );
+  //   fEvent->get(selector, shcHandle);
+  // }
+  // else {
+  //   art::Selector  selector(art::ProcessNameSelector(ProcessName)         && 
+  // 			    art::ModuleLabelSelector("makeSH")           );
+  //   fEvent->get(selector, shcHandle);
+  // }
+    
+  // shcol = shcHandle.product();
+
+  art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandleStraw;
+  Evt->getByLabel("makeSD","",mcptrHandleStraw);
+  mu2e::PtrStepPointMCVectorCollection const* hits_mcptrStraw = mcptrHandleStraw.product();
+
+
   const mu2e::HelixSeed     *tmpHel(0);
   int                        nhelices(0);
   const mu2e::RobustHelix   *robustHel(0);
@@ -141,9 +176,16 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
 
   if (list_of_helices) nhelices = list_of_helices->size();
   
+  std::vector<int>     hits_simp_id, hits_simp_index;
 
-  
+  TParticlePDG* part;
+  TDatabasePDG* pdg_db = TDatabasePDG::Instance();
+ 
   for (int i=0; i<nhelices; i++) {
+    //clear vector content
+    hits_simp_id.clear();
+    hits_simp_index.clear();
+
     helix                  = cb->NewHelix();
     tmpHel                 = &list_of_helices->at(i);
     cluster                = tmpHel->caloCluster().get();
@@ -198,10 +240,24 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
     static const XYZVec zdir(0.0,0.0,1.0);
 
     fhicl::ParameterSet const& pset = helix_handle.provenance()->parameterSet();
-    
+
     int      nStrawHits(0);
     for (int j=0; j<nhits; ++j){      //this loop is made over the ComboHits
       hit       = &hits->at(j);
+      //get the MC truth info
+      int  hitIndex                = hit->index();
+      
+      mu2e::PtrStepPointMCVector const& mcptr(hits_mcptrStraw->at(hitIndex) );
+      const mu2e::StepPointMC* Step = mcptr[0].get();
+      
+      if (Step) {
+	art::Ptr<mu2e::SimParticle> const& simptr = Step->simParticle(); 
+	int sim_id        = simptr->id().asInt();
+
+	hits_simp_id.push_back   (sim_id); 
+	hits_simp_index.push_back(hitIndex);
+      }
+
       pos       = hit->pos();
       wdir      = hit->wdir();
       sdir      = zdir.Cross(wdir);
@@ -226,6 +282,109 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
       //increase the counter of the StrawHits
       nStrawHits += hit->nStrawHits();
     } 
+
+    //find the simparticle that created the majority of the hits
+    int     max(0), mostvalueindex(-1), mostvalue= hits_simp_id[0];
+    for (int k=0; k<nhits; ++k){
+      int co = (int)std::count(hits_simp_id.begin(), hits_simp_id.end(), hits_simp_id[k]);
+      if ( co>max) {
+	max            = co;
+	mostvalue      = hits_simp_id[k];
+	mostvalueindex = hits_simp_index[k];
+      }
+    }
+
+    //    helix->fSimpId1     = mostvalue;
+    helix->fSimpId1Hits = max;
+    //set defaults
+    // helix->fSimpId2     = -1;
+    helix->fSimpId2Hits = -1;
+
+    mu2e::PtrStepPointMCVector const& mcptr(hits_mcptrStraw->at(mostvalueindex) );
+    const mu2e::StepPointMC* Step = mcptr[0].get();
+    const mu2e::SimParticle * sim (0);
+
+    if (Step) {
+      art::Ptr<mu2e::SimParticle> const& simptr = Step->simParticle(); 
+      helix->fSimpPDG1    = simptr->pdgId();
+      art::Ptr<mu2e::SimParticle> mother = simptr;
+      part   = pdg_db->GetParticle(helix->fSimpPDG1);
+
+      while(mother->hasParent()) mother = mother->parent();
+      sim = mother.operator ->();
+
+      helix->fSimpPDGM1   = sim->pdgId();
+      
+      double   px = simptr->startMomentum().x();
+      double   py = simptr->startMomentum().y();
+      double   pz = simptr->startMomentum().z();
+      double   mass(-1.);//  = part->Mass();
+      double   energy(-1.);// = sqrt(px*px+py*py+pz*pz+mass*mass);
+      if (part) {
+	mass   = part->Mass();
+	energy = sqrt(px*px+py*py+pz*pz+mass*mass);
+      }
+      helix->fMom1.SetPxPyPzE(px,py,pz,energy);
+
+      const CLHEP::Hep3Vector* sp = &simptr->startPosition();
+      helix->fOrigin1.SetXYZT(sp->x(),sp->y(),sp->z(),simptr->startGlobalTime());
+  
+      // helix->fSimp1P      = Step->momentum().mag();
+      // helix->fSimp1Pt     = sqrt(pow(Step->momentum().x(),2.) + pow(Step->momentum().y(),2.));
+    }
+    
+    //look for the second most frequent hit
+    if (max != nhits){
+      int   secondmostvalueindex(-1);
+      max = 0;//reset max
+
+      for (int k=0; k<nhits; ++k){
+	int value = hits_simp_id[k];
+	int co = (int)std::count(hits_simp_id.begin(), hits_simp_id.end(), value);
+	if ( (co>max) && (value != mostvalue)) {
+	  max                  = co;
+	  // secondmostvalue      = value;
+	  secondmostvalueindex = hits_simp_index[k];
+	}
+      }
+      //      helix->fSimpId2     = secondmostvalue;
+      helix->fSimpId2Hits = max;
+
+
+      mu2e::PtrStepPointMCVector const& mcptr(hits_mcptrStraw->at(secondmostvalueindex) );
+      const mu2e::StepPointMC* Step = mcptr[0].get();
+      const mu2e::SimParticle * sim (0);
+
+      if (Step) {
+	art::Ptr<mu2e::SimParticle> const& simptr = Step->simParticle(); 
+	helix->fSimpPDG2    = simptr->pdgId();
+	art::Ptr<mu2e::SimParticle> mother = simptr;
+	part   = pdg_db->GetParticle(helix->fSimpPDG2);
+
+	while(mother->hasParent()) mother = mother->parent();
+	sim = mother.operator ->();
+
+	helix->fSimpPDGM2   = sim->pdgId();
+      
+	double   px = simptr->startMomentum().x();
+	double   py = simptr->startMomentum().y();
+	double   pz = simptr->startMomentum().z();
+	double   mass(-1.);//  = part->Mass();
+	double   energy(-1.);// = sqrt(px*px+py*py+pz*pz+mass*mass);
+	if (part) {
+	  mass   = part->Mass();
+	  energy = sqrt(px*px+py*py+pz*pz+mass*mass);
+	}
+	helix->fMom2.SetPxPyPzE(px,py,pz,energy);
+
+	const CLHEP::Hep3Vector* sp = &simptr->startPosition();
+	helix->fOrigin2.SetXYZT(sp->x(),sp->y(),sp->z(),simptr->startGlobalTime());
+  
+	// helix->fSimp2P      = Step->momentum().mag();
+	// helix->fSimp2Pt     = sqrt(pow(Step->momentum().x(),2.) + pow(Step->momentum().y(),2.));
+      }      
+      
+    }
     
     helix->fNComboHits = tmpHel->hits().size();
     helix->fNHits      = nStrawHits;

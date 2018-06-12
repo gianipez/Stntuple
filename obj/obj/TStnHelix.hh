@@ -20,6 +20,7 @@
 #include "TFolder.h"
 #include "TFile.h"
 #include "TBuffer.h"
+#include "TLorentzVector.h"
 
 //namespace murat {
 
@@ -33,13 +34,20 @@ class TStnHelix : public TObject {
 
   enum {
     kNFreeIntsV2   = 10,		// V2
-    kNFreeFloatsV2 = 10  		// V2
+    kNFreeFloatsV2 = 10,  		// V2
 
-    // kNFreeInts     = 10,		// V2
-    // kNFreeFloats   =  3			// V2
+    kNFreeInts     = 4,		        // v3: added the indices of the two SimParticles contributing 
+                                        //     the most and their fraction of hits within the helix, 
+    kNFreeFloats   = 10			//     also added the p and pT of the SimParticles.
   };
 
 public:
+  TLorentzVector            fMom1;  
+  TLorentzVector            fOrigin1;
+  TLorentzVector            fMom2;  
+  TLorentzVector            fOrigin2;
+
+  
 //-----------------------------------------------------------------------------
 // integers
 //-----------------------------------------------------------------------------
@@ -48,7 +56,13 @@ public:
   int                       fTimeClusterIndex;
   int                       fTrackSeedIndex; 
   int                       fNComboHits;     
-  int                       fInt[kNFreeIntsV2]; // provision for future I/O expansion
+  int                       fSimpPDG1;          // added in v3
+  int                       fSimpPDGM1;         // added in v3
+  int                       fSimpId1Hits;       // added in v3
+  int                       fSimpPDG2;          // added in v3
+  int                       fSimpPDGM2;         // added in v3
+  int                       fSimpId2Hits;       // added in v3
+  int                       fInt[kNFreeInts]; // provision for future I/O expansion
 //-----------------------------------------------------------------------------
 // floats
 //-----------------------------------------------------------------------------
@@ -69,7 +83,7 @@ public:
   float			    fClusterX;      
   float			    fClusterY;      
   float			    fClusterZ;      
-  float                     fFloat[kNFreeFloatsV2]; // provision for future I/O expansion
+  float                     fFloat[kNFreeFloats]; // provision for future I/O expansion
 
 //-----------------------------------------------------------------------------
 // transients
@@ -90,6 +104,12 @@ public:
   int     BestAlg         () { return fAlgorithmID & 0xffff; }
   int     TimeClusterIndex() { return fTimeClusterIndex; }
   int     TrackSeedIndex  () { return fTrackSeedIndex;   }
+  int     PDG1            () { return fSimpPDG1; }
+  int     PDGMother1      () { return fSimpPDGM1; }
+  int     ComboHitsFrom1  () { return fSimpId1Hits; }
+  int     PDG2            () { return fSimpPDG2; }
+  int     PDGMother2      () { return fSimpPDGM2; }
+  int     ComboHitsFrom2  () { return fSimpId2Hits; }
 
   float   T0         () { return  fT0;     }
   float   T0Err      () { return  fT0Err;  }
@@ -112,6 +132,11 @@ public:
   float   ClusterY      () { return fClusterY;     }
   float   ClusterZ      () { return fClusterZ;     }
 
+  TLorentzVector  Mom1     () { return fMom1; }
+  TLorentzVector  Origin1  () { return fOrigin1; }
+  TLorentzVector  Mom2     () { return fMom2; }
+  TLorentzVector  Origin2  () { return fOrigin2; }
+
 //----------------------------------------------------------------------------
 // setters
 //----------------------------------------------------------------------------
@@ -127,9 +152,9 @@ public:
 // schema evolution
 //-----------------------------------------------------------------------------
   void ReadV1(TBuffer& R__b);
-  // void ReadV2(TBuffer& R__b);
+  void ReadV2(TBuffer& R__b);
 
-  ClassDef(TStnHelix,2);
+  ClassDef(TStnHelix,3);
 };
 
 #endif

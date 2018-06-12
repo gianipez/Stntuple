@@ -19,6 +19,7 @@
 #include "TString.h"
 #include "TFolder.h"
 #include "TFile.h"
+#include "TLorentzVector.h"
 
 //namespace murat {
 
@@ -30,21 +31,29 @@ namespace mu2e {
 
 class TStnTrackSeed : public TObject {
 
-  // enum {
-  //   kNFreeIntsV1   = 10,		// V1
-  //   kNFreeFloatsV1 = 10,		// V1
-
-  //   kNFreeInts     = 10,		// V2
-  //   kNFreeFloats   =  3			// V2
-  // };
+  enum {
+    kNFreeInts     = 10,		// V2
+    kNFreeFloats   = 10			// V2
+  };
 
 public:
+  TLorentzVector            fMom1;  
+  TLorentzVector            fOrigin1;
+  TLorentzVector            fMom2;  
+  TLorentzVector            fOrigin2;
 //-----------------------------------------------------------------------------
 // integers
 //-----------------------------------------------------------------------------
   int                       fNHits;
   int                       fHelixIndex;
   int                       fTrackIndex;
+  int                       fSimpPDG1;          // added in v2
+  int                       fSimpPDGM1;         // added in v2
+  int                       fSimpId1Hits;       // added in v2
+  int                       fSimpPDG2;          // added in v2
+  int                       fSimpPDGM2;         // added in v2
+  int                       fSimpId2Hits;       // added in v2
+  int                       fInt[kNFreeInts]; // provision for future I/O expansion
 //-----------------------------------------------------------------------------
 // floats
 //-----------------------------------------------------------------------------
@@ -64,7 +73,7 @@ public:
   float			    fClusterX;      
   float			    fClusterY;      
   float			    fClusterZ;      
-
+  float                     fFloat[kNFreeFloats]; // provision for future I/O expansion
 //-----------------------------------------------------------------------------
 // transients
 //-----------------------------------------------------------------------------
@@ -82,6 +91,12 @@ public:
   int     NHits      () { return  fNHits;      }
   int     HelixIndex () { return  fHelixIndex; }
   int     TrackIndex () { return  fTrackIndex; }
+  int     PDG1       () { return  fSimpPDG1; }
+  int     PDGMother1 () { return  fSimpPDGM1; }
+  int     NHitsFrom1 () { return  fSimpId1Hits; }
+  int     PDG2       () { return  fSimpPDG2; }
+  int     PDGMother2 () { return  fSimpPDGM2; }
+  int     NHitsFrom2 () { return  fSimpId2Hits; }
 
   float   T0         () { return  fT0;    }
   float   T0Err      () { return  fT0Err; }
@@ -101,6 +116,12 @@ public:
   float   ClusterY      () { return fClusterY;     }
   float   ClusterZ      () { return fClusterZ;     }
 
+  TLorentzVector  Mom1     () { return fMom1; }
+  TLorentzVector  Origin1  () { return fOrigin1; }
+  TLorentzVector  Mom2     () { return fMom2; }
+  TLorentzVector  Origin2  () { return fOrigin2; }
+
+
 //-----------------------------------------------------------------------------
 // setters
 //-----------------------------------------------------------------------------
@@ -115,9 +136,9 @@ public:
 //-----------------------------------------------------------------------------
 // schema evolution
 //-----------------------------------------------------------------------------
-//  void ReadV1(TBuffer& R__b);
+  void ReadV1(TBuffer& R__b);
 
-  ClassDef(TStnTrackSeed,1);
+  ClassDef(TStnTrackSeed,2);
 };
 
 #endif

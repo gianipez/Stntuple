@@ -6,6 +6,9 @@
 #include "TROOT.h"
 #include "TFolder.h"
 #include "TLorentzVector.h"
+#include "TDatabasePDG.h"
+#include "TParticlePDG.h"
+
 
 #include "Stntuple/obj/TStnDataBlock.hh"
 #include "Stntuple/obj/TStnEvent.hh"
@@ -28,6 +31,17 @@
 #include "RecoDataProducts/inc/KalSeed.hh"
 
 #include "RecoDataProducts/inc/CaloCluster.hh"
+#include "RecoDataProducts/inc/StrawHitCollection.hh"
+#include "RecoDataProducts/inc/StrawHit.hh"
+//#include "RecoDataProducts/inc/TrkStrawHitSeed.hh"
+
+
+#include "MCDataProducts/inc/PtrStepPointMCVectorCollection.hh"
+#include "MCDataProducts/inc/SimParticle.hh"
+#include "MCDataProducts/inc/SimParticleCollection.hh"
+#include "MCDataProducts/inc/StepPointMC.hh"
+#include "MCDataProducts/inc/StepPointMCCollection.hh"
+
 
 // #include "CalPatRec/inc/THackData.hh"
 
@@ -62,10 +76,16 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
   
   const mu2e::CaloCluster       *cluster(0);
  
-  ntrkseeds = list_of_trackSeeds->size();
-  
+  ntrkseeds = list_of_trackSeeds->size();    
 
-  
+  art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandleStraw;
+  Evt->getByLabel("makeSD","",mcptrHandleStraw);
+  mu2e::PtrStepPointMCVectorCollection const* hits_mcptrStraw = mcptrHandleStraw.product();
+
+  std::vector<int>     hits_simp_id, hits_simp_index;
+  TParticlePDG*        part;
+  TDatabasePDG*        pdg_db = TDatabasePDG::Instance();
+ 
   for (int i=0; i<ntrkseeds; i++) {
     trackSeed                  = cb->NewTrackSeed();
     trkSeed                    = &list_of_trackSeeds->at(i);
@@ -100,8 +120,129 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
     trackSeed->fChi2         = trkSeed->chisquared();
     trackSeed->fFitCons      = trkSeed->fitConsistency();
 
+    //now loop over the hits to search the particle that generated the track
+    int nsh = trkSeed->hits().size();
     
-  }
+    for (int j=0; j<nsh; ++j){
+      int  hitIndex  = int(trkSeed->hits().at(j).index());
+
+      mu2e::PtrStepPointMCVector const& mcptr(hits_mcptrStraw->at(hitIndex));
+      const mu2e::StepPointMC* Step = mcptr[0].get();
+      if (Step) {
+	art::Ptr<mu2e::SimParticle> const& simptr = Step->simParticle(); 
+	int sim_id        = simptr->id().asInt();
+
+	hits_simp_id.push_back   (sim_id); 
+	hits_simp_index.push_back(hitIndex);
+      }
+    }//end loop over the hits
+    
+
+ //find the simparticle that created the majority of the hits
+    int     max(0), mostvalueindex(-1), mostvalue= hits_simp_id[0];
+    for (int k=0; k<nsh; ++k){
+      int co = (int)std::count(hits_simp_id.begin(), hits_simp_id.end(), hits_simp_id[k]);
+      if ( co>max) {
+	max            = co;
+	mostvalue      = hits_simp_id[k];
+	mostvalueindex = hits_simp_index[k];
+      }
+    }
+
+    //    trackSeed->fSimpId1     = mostvalue;
+    trackSeed->fSimpId1Hits = max;
+    //set defaults
+    // trackSeed->fSimpId2     = -1;
+    trackSeed->fSimpId2Hits = -1;
+
+    mu2e::PtrStepPointMCVector const& mcptr(hits_mcptrStraw->at(mostvalueindex) );
+    const mu2e::StepPointMC* Step = mcptr[0].get();
+    const mu2e::SimParticle * sim (0);
+
+    if (Step) {
+      art::Ptr<mu2e::SimParticle> const& simptr = Step->simParticle(); 
+      trackSeed->fSimpPDG1    = simptr->pdgId();
+      art::Ptr<mu2e::SimParticle> mother = simptr;
+      part   = pdg_db->GetParticle(trackSeed->fSimpPDG1);
+
+      while(mother->hasParent()) mother = mother->parent();
+      sim = mother.operator ->();
+
+      trackSeed->fSimpPDGM1   = sim->pdgId();
+      
+      double   px = simptr->startMomentum().x();
+      double   py = simptr->startMomentum().y();
+      double   pz = simptr->startMomentum().z();
+      double   mass(-1.);//  = part->Mass();
+      double   energy(-1.);// = sqrt(px*px+py*py+pz*pz+mass*mass);
+      if (part) {
+	mass   = part->Mass();
+	energy = sqrt(px*px+py*py+pz*pz+mass*mass);
+      }
+      trackSeed->fMom1.SetPxPyPzE(px,py,pz,energy);
+
+      const CLHEP::Hep3Vector* sp = &simptr->startPosition();
+      trackSeed->fOrigin1.SetXYZT(sp->x(),sp->y(),sp->z(),simptr->startGlobalTime());
+  
+      // trackSeed->fSimp1P      = Step->momentum().mag();
+      // trackSeed->fSimp1Pt     = sqrt(pow(Step->momentum().x(),2.) + pow(Step->momentum().y(),2.));
+    }
+    
+    //look for the second most frequent hit
+    if (max != nsh){
+      int   secondmostvalueindex(-1);
+      max = 0;//reset max
+
+      for (int k=0; k<nsh; ++k){
+	int value = hits_simp_id[k];
+	int co = (int)std::count(hits_simp_id.begin(), hits_simp_id.end(), value);
+	if ( (co>max) && (value != mostvalue)) {
+	  max                  = co;
+	  // secondmostvalue      = value;
+	  secondmostvalueindex = hits_simp_index[k];
+	}
+      }
+      //      trackSeed->fSimpId2     = secondmostvalue;
+      trackSeed->fSimpId2Hits = max;
+
+
+      mu2e::PtrStepPointMCVector const& mcptr(hits_mcptrStraw->at(secondmostvalueindex) );
+      const mu2e::StepPointMC* Step = mcptr[0].get();
+      const mu2e::SimParticle * sim (0);
+
+      if (Step) {
+	art::Ptr<mu2e::SimParticle> const& simptr = Step->simParticle(); 
+	trackSeed->fSimpPDG2    = simptr->pdgId();
+	art::Ptr<mu2e::SimParticle> mother = simptr;
+	part   = pdg_db->GetParticle(trackSeed->fSimpPDG2);
+
+	while(mother->hasParent()) mother = mother->parent();
+	sim = mother.operator ->();
+
+	trackSeed->fSimpPDGM2   = sim->pdgId();
+      
+	double   px = simptr->startMomentum().x();
+	double   py = simptr->startMomentum().y();
+	double   pz = simptr->startMomentum().z();
+	double   mass(-1.);//  = part->Mass();
+	double   energy(-1.);// = sqrt(px*px+py*py+pz*pz+mass*mass);
+	if (part) {
+	  mass   = part->Mass();
+	  energy = sqrt(px*px+py*py+pz*pz+mass*mass);
+	}
+	trackSeed->fMom2.SetPxPyPzE(px,py,pz,energy);
+
+	const CLHEP::Hep3Vector* sp = &simptr->startPosition();
+	trackSeed->fOrigin2.SetXYZT(sp->x(),sp->y(),sp->z(),simptr->startGlobalTime());
+  
+	// trackSeed->fSimp2P      = Step->momentum().mag();
+	// trackSeed->fSimp2Pt     = sqrt(pow(Step->momentum().x(),2.) + pow(Step->momentum().y(),2.));
+      }      
+      
+    }
+    
+    
+  }//end loop over the trackSeeds
 
   //------------------------------------------------------------------------------------------
   // 2016-07-11 G. Pezzullo: how do we want to propagate information of each strawhit 
