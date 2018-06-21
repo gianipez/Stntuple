@@ -56,6 +56,7 @@
 #include "TrackCaloMatching/inc/TrkToCaloExtrapolCollection.hh"
 #include "RecoDataProducts/inc/TrkCaloIntersectCollection.hh"
 #include "TrackCaloMatching/inc/TrackClusterMatch.hh"
+#include "TrkDiag/inc/TrkMCTools.hh"
 
 #include "CalPatRec/inc/LsqSums4.hh"
 
@@ -714,11 +715,14 @@ void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix,	const char* Opt,
     printf("---------------------------------------------------------------------------------------------------------\n");
   }
  
-
-  art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandleStraw;
-  //  fEvent->getByLabel("makeSH","StrawHitMCPtr",mcptrHandleStraw);
-  fEvent->getByLabel("makeSD","",mcptrHandleStraw);
-  mu2e::PtrStepPointMCVectorCollection const* hits_mcptrStraw = mcptrHandleStraw.product();
+  const mu2e::StrawDigiMCCollection* mcdigis(0);
+  art::Handle<mu2e::StrawDigiMCCollection> mcdH;
+  fEvent->getByLabel("makeSD", mcdH);
+  mcdigis = mcdH.product();
+  // art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandleStraw;
+  // //  fEvent->getByLabel("makeSH","StrawHitMCPtr",mcptrHandleStraw);
+  // fEvent->getByLabel("makeSD","",mcptrHandleStraw);
+  // mu2e::PtrStepPointMCVectorCollection const* hits_mcptrStraw = mcptrHandleStraw.product();
 
   const mu2e::RobustHelix*robustHel = &Helix->helix();
 
@@ -835,8 +839,19 @@ void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix,	const char* Opt,
     art::Handle<mu2e::StrawHitCollection>         shcHandle;
     const mu2e::StrawHitCollection*               shcol;
 
+    // art::Handle<mu2e::ComboHitCollection>     chHandle;
+    // const mu2e::ComboHitCollection*           chColl(0);
+
+
     const char* ProductName = "";
     const char* ProcessName = "";
+    // const char* ComboHitMouduleLabel = "makePH";
+    
+    // art::Selector  selectorCombo(art::ProcessNameSelector(ProcessName)         && 
+    // 				 art::ModuleLabelSelector(ComboHitMouduleLabel)  );
+    // fEvent->get(selectorCombo, chHandle);
+    
+    // if (chHandle.isValid()) chColl = (mu2e::ComboHitCollection* )chHandle.product();
 
                            //now get the strawhitcollection
     if (ProductName[0] != 0) {
@@ -855,19 +870,27 @@ void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix,	const char* Opt,
 
     int banner_printed(0);
     for (int i=0; i<nsh; ++i){
-      const mu2e::HelixHit*  helHit  = &Helix->hits().at(i);
-      int  hitIndex                 = helHit->index();
-      const mu2e::StrawHit*  hit    = &shcol->at(hitIndex);
+      const mu2e::ComboHit*  helHit = &Helix->hits().at(i);
+      int  hitIndex                 = helHit->index(0);//Helix->indices().at(i);
+      
+      std::vector<StrawDigiIndex> shids;
+      //      chColl->fillStrawDigiIndices(*(fEvent),hitIndex,shids);
+      Helix->hits().fillStrawDigiIndices(*(fEvent),i,shids);
 
-      mu2e::PtrStepPointMCVector const& mcptr(hits_mcptrStraw->at(hitIndex) );
-      const mu2e::StepPointMC* Step = mcptr[0].get();
+      const mu2e::StrawHit*  hit    = &shcol->at(hitIndex);
+ 
+      mu2e::StrawDigiMC const&     mcdigi = mcdigis->at(shids[0]);
+      art::Ptr<mu2e::StepPointMC>  spmcp;
+      mu2e::TrkMCTools::stepPoint(spmcp,mcdigi);
+
+      const mu2e::StepPointMC* Step = spmcp.get();
     
       if (banner_printed == 0) {
 	printHelixHit(helHit, hit, Step, "banner", -1, 0);
 	banner_printed = 1;
-      } else {
-	printHelixHit(helHit, hit, Step, "data", -1, 0);
-      }
+      } 
+      printHelixHit(helHit, hit, Step, "data", -1, 0);
+      
     }
     
     
@@ -2213,11 +2236,11 @@ void TAnaDump::printHelixHit(const mu2e::HelixHit*    HelHit, const mu2e::StrawH
 
     if ((opt == "") || (opt.Index("banner") >= 0)) {
       printf("-----------------------------------------------------------------------------------");
-      printf("---------------------------------------------------------------------------------------------------------\n");
+      printf("---------------------------------------------------------------------------------------------------------------\n");
       printf("   I   SHID  Flags      Plane   Panel  Layer Straw     x          y           z          phi      Time          dt       eDep ");
-      printf("           PDG       PDG(M)   Generator         ID       p   \n");
+      printf("           PDG       PDG(M)   Generator         ID       p      pT\n");
       printf("-----------------------------------------------------------------------------------");
-      printf("---------------------------------------------------------------------------------------------------------\n");
+      printf("---------------------------------------------------------------------------------------------------------------\n");
     }
 
     if (opt == "banner") return;
@@ -2236,7 +2259,7 @@ void TAnaDump::printHelixHit(const mu2e::HelixHit*    HelHit, const mu2e::StrawH
     const mu2e::SimParticle * sim (0);
     
     int      pdg_id(-1), mother_pdg_id(-1), generator_id(-1), sim_id(-1);
-    double   mc_mom(-1.);
+    double   mc_mom(-1.), mc_pT(-1.);
     double   x(0), y(0), z(0), phi(0);
 
     XYZVec shPos = HelHit->pos();
@@ -2263,6 +2286,7 @@ void TAnaDump::printHelixHit(const mu2e::HelixHit*    HelHit, const mu2e::StrawH
 
       sim_id        = simptr->id().asInt();
       mc_mom        = Step->momentum().mag();
+      mc_pT         = sqrt(Step->momentum().x()*Step->momentum().x() + Step->momentum().y()*Step->momentum().y());
     }
     
     if ((opt == "") || (opt == "data")) {
@@ -2273,7 +2297,7 @@ void TAnaDump::printHelixHit(const mu2e::HelixHit*    HelHit, const mu2e::StrawH
 
       if (Flags >= 0) printf(" %08x",Flags);
       else            printf("        ");
-      printf("  %5i  %5i   %5i   %5i   %8.3f   %8.3f    %10.3f    %6.3f   %8.3f   %8.3f   %9.6f   %10i   %10i  %10i  %10i %8.3f\n",
+      printf("  %5i  %5i   %5i   %5i   %8.3f   %8.3f    %10.3f    %6.3f   %8.3f   %8.3f   %9.6f   %10i   %10i  %10i  %10i %8.3f %8.3f\n",
 	     straw->id().getPlane(),
 	     straw->id().getPanel(),
 	     straw->id().getLayer(),
@@ -2286,7 +2310,8 @@ void TAnaDump::printHelixHit(const mu2e::HelixHit*    HelHit, const mu2e::StrawH
 	     mother_pdg_id,
 	     generator_id,
 	     sim_id,
-	     mc_mom);
+	     mc_mom,
+	     mc_pT);
     }
   }
 

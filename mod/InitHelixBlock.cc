@@ -41,10 +41,13 @@
 #include "RecoDataProducts/inc/CaloCluster.hh"
 
 #include "MCDataProducts/inc/PtrStepPointMCVectorCollection.hh"
+#include "MCDataProducts/inc/StrawDigiMC.hh"
 #include "MCDataProducts/inc/SimParticle.hh"
 #include "MCDataProducts/inc/SimParticleCollection.hh"
 #include "MCDataProducts/inc/StepPointMC.hh"
 #include "MCDataProducts/inc/StepPointMCCollection.hh"
+#include "MCDataProducts/inc/StrawDigiMCCollection.hh"
+#include "TrkDiag/inc/TrkMCTools.hh"
 
 #include "CalPatRec/inc/AlgorithmIDCollection.hh"
 #include "CalPatRec/inc/LsqSums4.hh"
@@ -159,11 +162,15 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
     
   // shcol = shcHandle.product();
 
-  art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandleStraw;
-  Evt->getByLabel("makeSD","",mcptrHandleStraw);
-  mu2e::PtrStepPointMCVectorCollection const* hits_mcptrStraw = mcptrHandleStraw.product();
+  // art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandleStraw;
+  // Evt->getByLabel("makeSD","",mcptrHandleStraw);
+  // mu2e::PtrStepPointMCVectorCollection const* hits_mcptrStraw = mcptrHandleStraw.product();
 
-
+  const mu2e::StrawDigiMCCollection* mcdigis(0);
+  art::Handle<mu2e::StrawDigiMCCollection> mcdH;
+  Evt->getByLabel("makeSD", mcdH);
+  mcdigis = mcdH.product();
+  
   const mu2e::HelixSeed     *tmpHel(0);
   int                        nhelices(0);
   const mu2e::RobustHelix   *robustHel(0);
@@ -221,7 +228,7 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
     
     //2017-02-23: gianipez - calculate the chi2
     const mu2e::HelixHitCollection* hits      = &tmpHel->hits();
-    const mu2e::HelixHit*           hit(0);
+    const mu2e::ComboHit*           hit(0);
     // CLHEP::Hep3Vector         pos(0), /*helix_pos(0),*/ wdir(0), sdir(0), helix_center(0);
     XYZVec                    pos(0,0,0), /*helix_pos(0),*/ wdir(0,0,0), sdir(0,0,0), helix_center(0,0,0);
     double                    phi(0), helix_phi(0);
@@ -245,17 +252,22 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
     for (int j=0; j<nhits; ++j){      //this loop is made over the ComboHits
       hit       = &hits->at(j);
       //get the MC truth info
-      int  hitIndex                = hit->index();
+      //      int  hitIndex                = tmpHel->indices().at(j);//hit->index();
       
-      mu2e::PtrStepPointMCVector const& mcptr(hits_mcptrStraw->at(hitIndex) );
-      const mu2e::StepPointMC* Step = mcptr[0].get();
+      std::vector<StrawDigiIndex> shids;
+      tmpHel->hits().fillStrawDigiIndices(*(Evt),j,shids);
+
+      mu2e::StrawDigiMC const&     mcdigi = mcdigis->at(shids[0]);
+      art::Ptr<mu2e::StepPointMC>  spmcp;
+      mu2e::TrkMCTools::stepPoint(spmcp,mcdigi);
+      const mu2e::StepPointMC* Step = spmcp.get();
       
       if (Step) {
 	art::Ptr<mu2e::SimParticle> const& simptr = Step->simParticle(); 
 	int sim_id        = simptr->id().asInt();
 
 	hits_simp_id.push_back   (sim_id); 
-	hits_simp_index.push_back(hitIndex);
+	hits_simp_index.push_back(shids[0]);
       }
 
       pos       = hit->pos();
@@ -300,8 +312,12 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
     // helix->fSimpId2     = -1;
     helix->fSimpId2Hits = -1;
 
-    mu2e::PtrStepPointMCVector const& mcptr(hits_mcptrStraw->at(mostvalueindex) );
-    const mu2e::StepPointMC* Step = mcptr[0].get();
+    mu2e::StrawDigiMC const&     mcdigi = mcdigis->at(mostvalueindex);
+    art::Ptr<mu2e::StepPointMC>  spmcp;
+    mu2e::TrkMCTools::stepPoint(spmcp,mcdigi);
+    const mu2e::StepPointMC* Step = spmcp.get();
+    // mu2e::PtrStepPointMCVector const& mcptr(hits_mcptrStraw->at(mostvalueindex) );
+    // const mu2e::StepPointMC* Step = mcptr[0].get();
     const mu2e::SimParticle * sim (0);
 
     if (Step) {
@@ -315,9 +331,9 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
 
       helix->fSimpPDGM1   = sim->pdgId();
       
-      double   px = simptr->startMomentum().x();
-      double   py = simptr->startMomentum().y();
-      double   pz = simptr->startMomentum().z();
+      double   px = Step->momentum().x();//simptr->startMomentum().x();
+      double   py = Step->momentum().y();//simptr->startMomentum().y();
+      double   pz = Step->momentum().z();//simptr->startMomentum().z();
       double   mass(-1.);//  = part->Mass();
       double   energy(-1.);// = sqrt(px*px+py*py+pz*pz+mass*mass);
       if (part) {
@@ -351,8 +367,10 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
       helix->fSimpId2Hits = max;
 
 
-      mu2e::PtrStepPointMCVector const& mcptr(hits_mcptrStraw->at(secondmostvalueindex) );
-      const mu2e::StepPointMC* Step = mcptr[0].get();
+      mu2e::StrawDigiMC const&     mcdigi = mcdigis->at(secondmostvalueindex);
+      art::Ptr<mu2e::StepPointMC>  spmcp;
+      mu2e::TrkMCTools::stepPoint(spmcp,mcdigi);
+      const mu2e::StepPointMC* Step = spmcp.get();
       const mu2e::SimParticle * sim (0);
 
       if (Step) {
