@@ -18,6 +18,7 @@
 #include "art/Framework/Principal/Event.h"
 #include "MCDataProducts/inc/PtrStepPointMCVectorCollection.hh"
 #include "RecoDataProducts/inc/XYZVec.hh"
+#include "RecoDataProducts/inc/ComboHit.hh"
 #include "MCDataProducts/inc/CaloClusterMCTruthAssn.hh"
 #include "MCDataProducts/inc/CaloHitMCTruthAssn.hh"
 #include "RecoDataProducts/inc/HelixHit.hh"
@@ -96,7 +97,7 @@ public:
   void SetEvent(art::Event& Evt) { fEvent = &Evt; }
   void SetFlagBgrHitsModuleLabel(const char* Label) { fFlagBgrHitsModuleLabel = Label; }
 
-  double evalWeight(XYZVec& HitPos   ,
+  double evalWeight(const mu2e::ComboHit* Hit   ,
 		    XYZVec& StrawDir ,
 		    XYZVec& HelCenter, 
 		    double             Radius   ,

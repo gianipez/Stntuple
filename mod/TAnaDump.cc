@@ -79,23 +79,28 @@ ClassImp(TAnaDump)
 
 TAnaDump* TAnaDump::fgInstance = 0;
 
-double TAnaDump::evalWeight(XYZVec& HitPos   ,
-			    XYZVec& StrawDir ,
-			    XYZVec& HelCenter, 
+double TAnaDump::evalWeight(const mu2e::ComboHit* Hit   ,
+			    XYZVec&   StrawDir ,
+			    XYZVec&   HelCenter, 
 			    double             Radius   ,
 			    int                WeightMode,
 			    fhicl::ParameterSet const& Pset) {//WeightMode = 1 is for XY chi2 , WeightMode = 0 is for Phi-z chi2
   
-  double    rs(2.5);   // straw radius, mm
-  double    ew(30.0);  // assumed resolution along the wire, mm
-  
-  double x  = HitPos.x();
-  double y  = HitPos.y();
+  // double    rs(2.5);   // straw radius, mm
+  // double    ew(30.0);  // assumed resolution along the wire, mm
+  double    transErr = 5./sqrt(12.);
+  //scale the error based on the number of the strawHits that are within teh ComboHit
+  if (Hit->nStrawHits() > 1) transErr *= 1.5;
+  double    transErr2 = transErr*transErr;
+
+  double x  = Hit->pos().x();
+  double y  = Hit->pos().y();
   double dx = x-HelCenter.x();
   double dy = y-HelCenter.y();
   
   double costh  = (dx*StrawDir.x()+dy*StrawDir.y())/sqrt(dx*dx+dy*dy);
-  double sinth2 = 1-costh*costh;
+  double costh2 = costh*costh;
+  double sinth2 = 1-costh2;
   
   double wt(0), wtXY(1), wtPhiZ(1);
 
@@ -109,11 +114,13 @@ double TAnaDump::evalWeight(XYZVec& HitPos   ,
   }
                                             //scale the weight for having chi2/ndof distribution peaking at 1
   if ( WeightMode == 1){//XY-Fit
-    double e2     = ew*ew*sinth2+rs*rs*costh*costh;
+    // double e2     = ew*ew*sinth2+rs*rs*costh*costh;
+    double e2     = Hit->wireErr2()*sinth2+transErr2*costh2;
     wt  = 1./e2;
     wt *= wtXY;
   } else if (WeightMode ==0 ){//Phi-Z Fit
-    double e2     = ew*ew*costh*costh+rs*rs*sinth2;
+    // double e2     = ew*ew*costh*costh+rs*rs*sinth2;
+    double e2     = Hit->wireErr2()*costh2+transErr2*sinth2;
     wt     = Radius*Radius/e2;
     wt    *= wtPhiZ;
   }
@@ -763,7 +770,7 @@ void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix,	const char* Opt,
 
     int nsh = Helix->hits().size();
     const mu2e::HelixHitCollection* hits      = &Helix->hits();
-    const mu2e::HelixHit*           hit(0);
+    const mu2e::ComboHit*           hit(0);
     XYZVec                    pos(0,0,0), /*helix_pos(0),*/ wdir(0,0,0), sdir(0,0,0), helix_center(0,0,0);
     double                    phi(0), helix_phi(0);
 
@@ -782,8 +789,8 @@ void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix,	const char* Opt,
       sdir      = zdir.Cross(wdir);
       phi       = hit->phi();
       helix_phi = fz0 + pos.z()/lambda;
-      double    weightXY   = evalWeight(pos, sdir, helix_center, radius, 1, pset);
-      
+      double    weightXY   = evalWeight(hit, sdir, helix_center, radius, 1, pset);
+
       sxy.addPoint(pos.x(), pos.y(), weightXY);
 
       double    dPhi     = helix_phi - phi- M_PI/2.;
@@ -795,7 +802,7 @@ void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix,	const char* Opt,
 	phi   -= 2*M_PI; 
 	dPhi  = helix_phi - phi;
       }
-      double weight    = evalWeight(pos, sdir, helix_center, radius, 0, pset);
+      double weight    = evalWeight(hit, sdir, helix_center, radius, 0, pset);
       srphi.addPoint(pos.z(), phi, weight);
     }
     if (cluster != 0){
