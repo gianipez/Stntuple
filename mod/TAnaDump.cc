@@ -2273,7 +2273,7 @@ void TAnaDump::printHelixHit(const mu2e::HelixHit*    HelHit, const mu2e::StrawH
     x      = shPos.x();
     y      = shPos.y();
     z      = shPos.z();    
-    phi    = HelHit->phi();
+    phi    = HelHit->helixPhi();
     
     mu2e::GenId gen_id;
 
