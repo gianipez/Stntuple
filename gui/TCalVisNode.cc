@@ -56,7 +56,7 @@ ClassImp(TCalVisNode)
   fMinClusterEnergy = 5.;
   fMinCrystalEnergy = 0.;
 
-  double crystal_size = dc->caloInfo().crystalHalfTrans();
+  double crystal_size = dc->caloInfo().getDouble("crystalXYLength")/2.; // crystalHalfTrans();
   int    nedges       = 4;//dc->caloInfo().crystalNedges();
 
   fSectionID         = SectionID;

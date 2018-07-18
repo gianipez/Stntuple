@@ -52,7 +52,8 @@
 
 // Mu2e includes.
 #include "ConditionsService/inc/ConditionsHandle.hh"
-#include "ConditionsService/inc/TrackerCalibrations.hh"
+// #include "ConditionsService/inc/TrackerCalibrations.hh"
+#include "TrackerConditions/inc/StrawResponse.hh"
 
 #include "GeometryService/inc/GeometryService.hh"
 #include "GeometryService/inc/GeomHandle.hh"
@@ -81,7 +82,7 @@
 #include "RecoDataProducts/inc/CaloCrystalHit.hh"
 #include "RecoDataProducts/inc/CaloCrystalHitCollection.hh"
 #include "RecoDataProducts/inc/CaloClusterCollection.hh"
-#include "RecoDataProducts/inc/StrawHitCollection.hh"
+#include "RecoDataProducts/inc/ComboHit.hh"
 #include "RecoDataProducts/inc/XYZVec.hh"
 #include "RecoDataProducts/inc/StrawHitFlagCollection.hh"
 
@@ -211,7 +212,7 @@ namespace mu2e {
 
     const mu2e::GenParticleCollection*          _genParticleColl;         // 
 
-    const mu2e::StrawHitCollection*             fStrawHitColl;     // 
+    // const mu2e::StrawHitCollection*             fStrawHitColl;     // 
     const mu2e::ComboHitCollection*             fShComboHitColl;     // 
     const mu2e::ComboHitCollection*             fComboHitColl;     // 
 
@@ -422,7 +423,7 @@ namespace mu2e {
     fClusterBlock->AddCollName("mu2e::CaloClusterCollection"       ,_caloClusterModuleLabel.data()    ,"");
 
     fTrackBlock->AddCollName("mu2e::KalRepCollection"              ,fTrkRecoModuleLabel.data()        ,"");
-    fTrackBlock->AddCollName("mu2e::StrawHitCollection"            ,_makeStrawHitModuleLabel.data()   ,"");
+    fTrackBlock->AddCollName("mu2e::ComboHitCollection"            ,_makeStrawHitModuleLabel.data()   ,"");
     fTrackBlock->AddCollName("mu2e::StrawDigiMCCollection"         ,_makeStrawDigiModuleLabel.data()   ,"");
     fTrackBlock->AddCollName("mu2e::PtrStepPointMCVectorCollection",_makeStrawDigiModuleLabel.data()   ,"");
     fTrackBlock->AddCollName("mu2e::TrkCaloIntersectCollection"    ,fTrkExtrapol.data()               ,"");
@@ -521,8 +522,8 @@ namespace mu2e {
 // TrkVisNode: tracker, tracks and straw hits
 //-----------------------------------------------------------------------------
       trk_node = new TTrkVisNode("TrkVisNode", fTracker, NULL);
-      trk_node->SetStrawHitColl(&fStrawHitColl);
-      trk_node->SetStrawHitPosColl(&fShComboHitColl);//fStrawHitPosColl);
+      trk_node->SetStrawHitColl(&fComboHitColl);
+      //      trk_node->SetStrawHitPosColl(&fShComboHitColl);//fStrawHitPosColl);
       trk_node->SetStrawHitFlagColl(&fStrawHitFlagColl);
       trk_node->SetTimeClusterColl(&fTimeClusterColl);
       trk_node->SetKalRepPtrColl(&_kalRepPtrColl);
@@ -656,36 +657,14 @@ namespace mu2e {
 //-----------------------------------------------------------------------------
 //  straw hit information
 //-----------------------------------------------------------------------------
-      art::Handle<StrawHitCollection> shH;
-      Evt->getByLabel(_makeStrawHitModuleLabel, shH);
-
-
-      if (shH.isValid()) fStrawHitColl = shH.product();
-      else {
-	printf(">>> [%s] ERROR: StrawHitCollection by %s is missing. BAIL OUT\n",
-	       oname, _makeStrawHitModuleLabel.data());
-	return -1;
-      }
-
-      art::Handle<mu2e::ComboHitCollection> schH;
-      Evt->getByLabel(_makeStrawHitModuleLabel, schH);
-
-
-      if (shH.isValid()) fShComboHitColl = schH.product();
-      else {
-	printf(">>> [%s] ERROR: ComboHitCollection by %s is missing. BAIL OUT\n",
-	       oname, _makeStrawHitModuleLabel.data());
-	return -1;
-      }
-
-      art::Handle<mu2e::ComboHitCollection> chH;
+      art::Handle<ComboHitCollection> chH;
       Evt->getByLabel(_makeComboHitModuleLabel, chH);
 
 
       if (chH.isValid()) fComboHitColl = chH.product();
       else {
 	printf(">>> [%s] ERROR: ComboHitCollection by %s is missing. BAIL OUT\n",
-	       oname, _makeStrawHitModuleLabel.data());
+	       oname, _makeComboHitModuleLabel.data());
 	return -1;
       }
 
@@ -706,17 +685,6 @@ namespace mu2e {
 	       oname, _makeStrawDigiModuleLabel.data());
 	return -1;
       }
-
-      // art::Handle<mu2e::StrawHitPositionCollection> shpH;
-      // Evt->getByLabel(fStrawHitPosMaker, shpH);
-
-
-      // if (shpH.isValid()) fStrawHitPosColl = shpH.product();
-      // else {
-      // 	printf(">>> [%s] ERROR:StrawHitPositionCollection by %s is missing. BAIL OUT\n",
-      // 	       oname, fStrawHitPosMaker.data());
-      // 	return -1;
-      // }
 
       art::Handle<mu2e::StrawHitFlagCollection> shfH;
       Evt->getByLabel(fStrawHitFlagMaker, shfH);
@@ -959,7 +927,8 @@ namespace mu2e {
     TubsParams envelope(fTracker->getInnerTrackerEnvelopeParams());
 
     // Tracker calibration object.
-    mu2e::ConditionsHandle<mu2e::TrackerCalibrations> trackCal("ignored");
+    //    mu2e::ConditionsHandle<mu2e::TrackerCalibrations> trackCal("ignored");
+    mu2e::ConditionsHandle<mu2e::StrawResponse> srep("ignored");
 //-----------------------------------------------------------------------------
 // init VisManager - failed to do it in beginJob - what is the right place for doing it?
 //-----------------------------------------------------------------------------

@@ -67,7 +67,7 @@ TEvdPanel::TEvdPanel(int ID, const mu2e::Panel* Panel, TEvdPlane* Plane): TObjec
 
     //    const mu2e::Layer* layer = &fPanel->getLayer(il);
 
-    id        = straw->index().asInt();
+    id        = straw->id().asUint16();
     
     int ill      = straw->id().getLayer();
     int iss      = straw->id().getStraw();

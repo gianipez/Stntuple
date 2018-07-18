@@ -19,7 +19,7 @@
 
 #else
 namespace mu2e {
-  class StrawHitCollection;
+  class ComboHitCollection;
   class StrawHitPositionCollection;
   class StrawHitFlagCollection;
   class PtrStepPointMCVectorCollection;
@@ -44,8 +44,8 @@ public:
   
 protected:
 
-  const mu2e::StrawHitCollection**             fStrawHitColl;
-  const mu2e::StrawHitPositionCollection**     fStrawHitPosColl;  //
+  const mu2e::ComboHitCollection**             fStrawHitColl;
+  //  const mu2e::StrawHitPositionCollection**     fStrawHitPosColl;  //
   const mu2e::StrawHitFlagCollection**         fStrawHitFlagColl; //
   const mu2e::TimeClusterCollection**          fTimeClusterColl;  //
   const mu2e::PtrStepPointMCVectorCollection** fMcPtrColl; 
@@ -83,13 +83,13 @@ public:
   TObjArray* GetListOfTracks() { return fListOfTracks; }
   Color_t    GetTrackColor  () { return fTrackColor;   }
 
-  const mu2e::StrawHitCollection* GetStrawHitColl() { 
+  const mu2e::ComboHitCollection* GetStrawHitColl() { 
     return *fStrawHitColl; 
   }
 
-  const mu2e::StrawHitPositionCollection* GetStrawHitPosColl() { 
-    return *fStrawHitPosColl;
-  }
+  // const mu2e::StrawHitPositionCollection* GetStrawHitPosColl() { 
+  //   return *fStrawHitPosColl;
+  // }
 
   const mu2e::StrawHitFlagCollection* GetStrawHitFlagColl() { 
     return *fStrawHitFlagColl;
@@ -110,13 +110,13 @@ public:
   void  SetListOfTracks(TObjArray* List) { fListOfTracks = List; }
   void  SetTrackColor  (Color_t      c ) { fTrackColor   = c   ; }
 
-  void SetStrawHitColl(const mu2e::StrawHitCollection** Coll) { 
+  void SetStrawHitColl(const mu2e::ComboHitCollection** Coll) { 
     fStrawHitColl = Coll;
   }
 
-  void SetStrawHitPosColl (const mu2e::StrawHitPositionCollection** Coll) { 
-    fStrawHitPosColl = Coll;
-  }
+  // void SetStrawHitPosColl (const mu2e::StrawHitPositionCollection** Coll) { 
+  //   fStrawHitPosColl = Coll;
+  // }
 
   void SetStrawHitFlagColl(const mu2e::StrawHitFlagCollection** Coll) { 
     fStrawHitFlagColl = Coll;

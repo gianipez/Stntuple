@@ -1482,7 +1482,8 @@ void TAnaDump::printKalRep(const KalRep* Krep, const char* Opt, const char* Pref
 	continue;
       }
       const mu2e::ComboHit* sh = &hit->comboHit();
-      mu2e::Straw*   straw = (mu2e::Straw*) &hit->straw();
+      mu2e::Straw*       straw = (mu2e::Straw*) &hit->straw();
+      int                  sid = straw->id().asUint16();
 
       hit->hitPosition(pos);
 
@@ -1501,7 +1502,8 @@ void TAnaDump::printKalRep(const KalRep* Krep, const char* Opt, const char* Pref
 	mu2e::PtrStepPointMCVector  const& mcptr(fListOfMCStrawHits->at(i));
 	step = &(*mcptr.at(0));
 	vol_id = step->volumeId();
- 	if (vol_id == straw->index().asInt()) {
+	// 	if (vol_id == straw->index().asInt()) {
+ 	if (vol_id == sid) {
  					// step found - use the first one in the straw
  	  break;
  	}
@@ -1527,7 +1529,7 @@ void TAnaDump::printKalRep(const KalRep* Krep, const char* Opt, const char* Pref
       //      printf("%3i %5i %1i %1i %9.3f %8.3f %8.3f %9.3f %8.3f %7.3f",
       printf("%3i %5i 0x%08x %1i %9.3f %8.3f %8.3f %9.3f %8.3f %7.3f",
 	     ++i,
-	     straw->index().asInt(), 
+	     sid, 
 	      hit->hitFlag(),
 	     //	     hit->isUsable(),
 	     hit->isActive(),
@@ -1815,8 +1817,8 @@ void TAnaDump::printDiskCalorimeter() {
 
   int nd = cal->nDisk();
   printf(" ndisks = %i\n", nd);
-  printf(" crystal size  : %10.3f\n", 2*cal->caloInfo().crystalHalfTrans());
-  printf(" crystal length: %10.3f\n", 2*cal->caloInfo().crystalHalfLength());
+  printf(" crystal size  : %10.3f\n", cal->caloInfo().getDouble("crystalXYLength"));
+  printf(" crystal length: %10.3f\n", cal->caloInfo().getDouble("crystalZLength"));
 
   for (int i=0; i<nd; i++) {
     disk = &cal->disk(i);

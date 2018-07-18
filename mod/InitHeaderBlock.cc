@@ -78,16 +78,14 @@ Int_t StntupleInitMu2eHeaderBlock(TStnDataBlock* block, AbsEvent* AnEvent, int m
 	first = false;
       } 
       else {
-	//	if (pbi != pbihandle.product()) {
-	if ((pbi->intensity()     != pbihandle->intensity()    ) || 
-	    (pbi->meanIntensity() != pbihandle->meanIntensity())    ) {
+	if (pbi->intensity()     != pbihandle->intensity()    ) {
 	  throw cet::exception("SIM")<<"Inconsistent ProtonBunchIntensity objects found" << std::endl;
 	}
       }
     }
 
     data->fInstLum = pbi->intensity();
-    data->fMeanLum = pbi->meanIntensity();
+    data->fMeanLum = -1. ; // pbi->meanIntensity();
   }
 //-----------------------------------------------------------------------------
 //  STNTUPLE version

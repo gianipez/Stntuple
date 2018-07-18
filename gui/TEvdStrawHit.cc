@@ -36,7 +36,7 @@ TEvdStrawHit::TEvdStrawHit() {
 }
 
 //-----------------------------------------------------------------------------
-TEvdStrawHit::TEvdStrawHit(const mu2e::StrawHit*    Hit,
+TEvdStrawHit::TEvdStrawHit(const mu2e::ComboHit*    Hit,
 			   TEvdStraw*               Straw,
 			   const mu2e::StrawDigiMC* StrawDigiMC,
 			   double X, double Y, double Z, 

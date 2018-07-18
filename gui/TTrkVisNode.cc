@@ -18,7 +18,7 @@
 #include "GeometryService/inc/GeometryService.hh"
 #include "GeometryService/inc/GeomHandle.hh"
 #include "ConditionsService/inc/ConditionsHandle.hh"
-#include "ConditionsService/inc/TrackerCalibrations.hh"
+#include "TrackerConditions/inc/StrawResponse.hh"
 
 #include "Stntuple/gui/TEvdTrack.hh"
 #include "Stntuple/gui/TTrkVisNode.hh"
@@ -34,6 +34,8 @@
 
 #include "RecoDataProducts/inc/StrawHitCollection.hh"
 #include "RecoDataProducts/inc/StrawHitPositionCollection.hh"
+
+#include "RecoDataProducts/inc/XYZVec.hh"
 
 // #include "Stntuple/mod/TAnaDump.hh"
 
@@ -97,14 +99,16 @@ int TTrkVisNode::InitEvent() {
   const mu2e::TTracker* tracker = ttHandle.get();
 
   // Tracker calibration object.
-  mu2e::ConditionsHandle<mu2e::TrackerCalibrations> trackCal("ignored");
+
+  // mu2e::ConditionsHandle<mu2e::TrackerCalibrations> trackCal("ignored");
+  mu2e::ConditionsHandle<mu2e::StrawResponse> srep = mu2e::ConditionsHandle<mu2e::StrawResponse>("ignored");
 
   fListOfStrawHits->Delete();
 
   fListOfTracks->Delete();
 
-  const mu2e::StrawHit              *hit;
-  const mu2e::StrawHitPosition      *hit_pos;
+  const mu2e::ComboHit              *hit;
+  //  const XYZVec                      *hit_pos;
   //  const mu2e::StrawHitFlag          *hit_id_word;
   const mu2e::PtrStepPointMCVector  *mcptr;
   const mu2e::StrawDigiMC           *hit_digi_mc;
@@ -116,7 +120,7 @@ int TTrkVisNode::InitEvent() {
   int                               n_straw_hits, display_hit, color, nl, ns; // , ipeak, ihit;
   bool                              isFromConversion, intime;
   size_t                            nmc;
-  double                            sigw, vnorm, v, sigr; 
+  double                            sigw, /*vnorm, v,*/ sigr; 
   CLHEP::Hep3Vector                 vx0, vx1, vx2;
 //-----------------------------------------------------------------------------
 // first, clear the cached hit information from the previous event
@@ -159,7 +163,8 @@ int TTrkVisNode::InitEvent() {
   for (int ihit=0; ihit<n_straw_hits; ihit++ ) {
 
     hit         = &(*fStrawHitColl)    ->at(ihit);
-    hit_pos     = &(*fStrawHitPosColl) ->at(ihit);
+    //    hit_pos     = &hit->pos();
+    //    hit_pos     = &(*fStrawHitPosColl) ->at(ihit);
     //    hit_id_word = &(*fStrawHitFlagColl)->at(ihit);
 
     if ((*fStrawDigiMCColl)->size() > 0) hit_digi_mc = &(*fStrawDigiMCColl)->at(ihit);
@@ -206,21 +211,21 @@ int TTrkVisNode::InitEvent() {
 //-----------------------------------------------------------------------------
 // Position along wire displayed are StrawHitPosition's
 //-----------------------------------------------------------------------------	
-    v     = trackCal->TimeDiffToDistance( straw->index(), hit->dt() );
-    vnorm = v/straw->getHalfLength();
+    // v     = trackCal->TimeDiffToDistance( straw->index(), hit->dt() );
+    // vnorm = v/straw->getHalfLength();
 
     if (fUseStereoHits) {
 //-----------------------------------------------------------------------------
 // new default, hit position errors come from StrawHitPositionCollection
 //-----------------------------------------------------------------------------
-      sigw  = hit_pos->posRes(mu2e::StrawHitPosition::wire); 
-      sigr  = hit_pos->posRes(mu2e::StrawHitPosition::trans); 
+      sigw  = hit->wireRes(); 
+      sigr  = hit->transRes(); 
     }
     else {
 //-----------------------------------------------------------------------------
 // old default, draw semi-random errors
 //-----------------------------------------------------------------------------
-      sigw  = trackCal->TimeDivisionResolution( straw->index(), vnorm )/2.; // P.Murat
+      sigw  = hit->wireRes()/2.; // P.Murat
       sigr  = 5.; // in mm
     }
 	
@@ -267,9 +272,9 @@ int TTrkVisNode::InitEvent() {
     evd_straw_hit = new TEvdStrawHit(hit,
 				     evd_straw,
 				     hit_digi_mc,
-				     hit_pos->pos().x(),
-				     hit_pos->pos().y(),
-				     hit_pos->pos().z(),
+				     hit->pos().x(),
+				     hit->pos().y(),
+				     hit->pos().z(),
 				     w->x(),w->y(),
 				     sigw,sigr,
 				     mask,color);
@@ -321,7 +326,7 @@ void TTrkVisNode::PaintXY(Option_t* Option) {
   int           station, display_hit, ntrk(0);
   TEvdStrawHit  *hit;
 
-  const mu2e::StrawHit   *straw_hit;
+  const mu2e::ComboHit   *straw_hit;
   const mu2e::Straw      *straw; 
 
   //  const char* view = TVisManager::Instance()->GetCurrentView();

@@ -16,13 +16,13 @@
 
 #ifndef __CINT__
 
-#include "RecoDataProducts/inc/StrawHit.hh"
+#include "RecoDataProducts/inc/ComboHit.hh"
 #include "MCDataProducts/inc/StrawDigiMC.hh"
 #include "MCDataProducts/inc/PtrStepPointMCVectorCollection.hh"
 
 #else
 namespace mu2e {
-  class StrawHit;
+  class ComboHit;
   class StrawDigiMC;
   class PtrStepPointMCVector;
 };
@@ -41,7 +41,7 @@ public:
 protected:
 					// backward pointers to the reconstruction objects
 
-  const mu2e::StrawHit*             fHit;
+  const mu2e::ComboHit*             fHit;
   const mu2e::StrawDigiMC*          fStrawDigiMC;
   const mu2e::PtrStepPointMCVector* fListOfStepPointMCs;
 
@@ -63,7 +63,7 @@ public:
 //-----------------------------------------------------------------------------
   TEvdStrawHit();
 
-  TEvdStrawHit(const mu2e::StrawHit*        Hit,
+  TEvdStrawHit(const mu2e::ComboHit*        Hit,
 	       TEvdStraw*                   Straw,
 	       const mu2e::StrawDigiMC*     StrawDigiMC,
 	       double X, double Y, double Z, 
@@ -78,7 +78,7 @@ public:
 //-----------------------------------------------------------------------------
 // accessors
 //-----------------------------------------------------------------------------
-  const mu2e::StrawHit*        StrawHit()    { return fHit; }
+  const mu2e::ComboHit*        StrawHit()    { return fHit; }
   const mu2e::StrawDigiMC*     StrawDigiMC() { return fStrawDigiMC; }
 //-----------------------------------------------------------------------------
 // modifiers

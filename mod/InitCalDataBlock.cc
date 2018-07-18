@@ -97,12 +97,13 @@ Int_t StntupleInitMu2eCalDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int 
     data->fRMax     [i] = disk->outerRadius();
     data->fZ0       [i] = disk->geomInfo().origin().z();
   }
-  data->fCrystalSize = cal->caloInfo().crystalHalfTrans();
+
+  data->fCrystalSize = cal->caloInfo().getDouble("crystalXYLength")/2.; // crystalHalfTrans();
 
 				        // also a dummy line
   data->fMinFraction      = 1.0;
-  data->fWrapperThickness = cal->caloInfo().wrapperThickness();
-  data->fShellThickness   = cal->caloInfo().caseThickness  ();
+  data->fWrapperThickness = cal->caloInfo().getDouble("wrapperThickness");      // wrapperThickness();
+  data->fShellThickness   = cal->caloInfo().getDouble("crystalFrameThickness"); // caseThickness  ();
 
 					// on return set event and run numbers
 					// to mark block as initialized
