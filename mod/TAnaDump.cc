@@ -2598,7 +2598,7 @@ void TAnaDump::printSimParticleCollection(const char* ModuleLabel,
 
 
 //-----------------------------------------------------------------------------
-void TAnaDump::printStepPointMC(const mu2e::StepPointMC* Step, const char* Opt) {
+void TAnaDump::printStepPointMC(const mu2e::StepPointMC* Step, const char* Detector, const char* Opt) {
   const char* oname = "TAnaDump::printStepPointMC";
     TString opt = Opt;
 
@@ -2634,7 +2634,7 @@ void TAnaDump::printStepPointMC(const mu2e::StepPointMC* Step, const char* Opt) 
     }
 
     double doca = -9999.;
-    if (tracker) {
+    if ((strcmp(Detector,"tracker") == 0) && tracker) {
       const mu2e::Straw* straw = &tracker->getStraw(mu2e::StrawId(Step->volumeId()));
 
       const Hep3Vector* v1 = &straw->getMidPoint();
@@ -2752,10 +2752,10 @@ void TAnaDump::printStepPointMCCollection(const char* ModuleLabel,
   for (int i=0; i<nsteps; i++) {
     step = &coll->at(i);
     if (banner_printed == 0) {
-      printStepPointMC(step, "banner");
+      printStepPointMC(step,ProductName,"banner");
       banner_printed = 1;
     }
-    printStepPointMC(step,"data");
+    printStepPointMC(step,ProductName,"data");
   }
  
 }

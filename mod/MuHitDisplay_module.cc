@@ -156,7 +156,6 @@ namespace mu2e {
     std::string        _makeStrawHitModuleLabel;
     std::string        _makeComboHitModuleLabel;
     std::string        _makeStrawDigiModuleLabel;
-    // std::string        fStrawHitPosMaker;
     std::string        fStrawHitFlagMaker;
 
     std::string        fTrkRecoModuleLabel;
@@ -212,11 +211,9 @@ namespace mu2e {
 
     const mu2e::GenParticleCollection*          _genParticleColl;         // 
 
-    // const mu2e::StrawHitCollection*             fStrawHitColl;     // 
     const mu2e::ComboHitCollection*             fShComboHitColl;     // 
     const mu2e::ComboHitCollection*             fComboHitColl;     // 
 
-    // const mu2e::StrawHitPositionCollection*     fStrawHitPosColl;  //
     const mu2e::StrawHitFlagCollection*         fStrawHitFlagColl; //
     const mu2e::StrawDigiMCCollection*         _strawDigiMCColl; //
 
@@ -303,7 +300,6 @@ namespace mu2e {
     _makeStrawHitModuleLabel(pset.get<std::string>("strawHitMakerModuleLabel")),
     _makeComboHitModuleLabel(pset.get<std::string>("comboHitMakerModuleLabel")),
     _makeStrawDigiModuleLabel(pset.get<std::string>("strawDigiMakerModuleLabel")),
-    // fStrawHitPosMaker(pset.get<std::string>("strawHitPosMakerModuleLabel")),
     fStrawHitFlagMaker(pset.get<std::string>("strawHitFlagMakerModuleLabel")),
 
     fTrkRecoModuleLabel(pset.get<std::string>("trkRecoModuleLabel")),
@@ -658,15 +654,25 @@ namespace mu2e {
 //  straw hit information
 //-----------------------------------------------------------------------------
       art::Handle<ComboHitCollection> chH;
+
       Evt->getByLabel(_makeComboHitModuleLabel, chH);
-
-
       if (chH.isValid()) fComboHitColl = chH.product();
       else {
 	printf(">>> [%s] ERROR: ComboHitCollection by %s is missing. BAIL OUT\n",
 	       oname, _makeComboHitModuleLabel.data());
 	return -1;
       }
+
+      Evt->getByLabel(_makeStrawHitModuleLabel, chH);
+      if (chH.isValid()) fShComboHitColl = chH.product();
+      else {
+	printf(">>> [%s] ERROR: ComboHitCollection by %s is missing. BAIL OUT\n",
+	       oname, _makeStrawHitModuleLabel.data());
+	return -1;
+      }
+
+
+
 
       art::Handle<StrawDigiMCCollection> handle;
       art::Selector sel_straw_digi_mc(art::ProductInstanceNameSelector("") &&
@@ -836,12 +842,14 @@ namespace mu2e {
 
     fTrackerP = -1.;
     fTrackerPt = -1.;
-
+//-----------------------------------------------------------------------------
+// print particle parameters at the tracker front (VOLUME_ID = 13)
+//-----------------------------------------------------------------------------
     for (int i = 0; i<nsteps; i++) {
       step = &coll->at(i);
       if (step->volumeId() == 13) {
 	mom = &step->momentum();
-	fDump->printStepPointMC(step, "banner+data");
+	fDump->printStepPointMC(step,"virtualdetector","banner+data");
 
 	px = mom->x();
 	py = mom->x();
@@ -1204,7 +1212,6 @@ namespace mu2e {
       int    nsh = hit->nStrawHits();
       
       for (int ish=0; ish<nsh; ++ish){
-	// hitpos      = &fStrawHitPosColl->at(ihit);
 	index_sh    = hit->index(ish);
 	sh          = &fShComboHitColl->at(index_sh);
 

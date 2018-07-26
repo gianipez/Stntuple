@@ -242,7 +242,8 @@ public:
 				       const char* ProductName = "", 
 				       const char* ProcessName = "");
 
-  void printStepPointMC(const mu2e::StepPointMC* Step, const char* Opt = "");
+  // pass the detector name to know what to print for different detectors
+  void printStepPointMC(const mu2e::StepPointMC* Step, const char* Detector, const char* Opt = "");
 
   void printStepPointMCCollection (const char* ModuleLabel     , 
 				   const char* ProductName = "", 

@@ -311,7 +311,8 @@ void DrawMu2eGeometry::SetRecursiveColorTransp(TGeoVolume *Vol, Int_t Color, Int
 // production tsrget is kRed+3
 //-----------------------------------------------------------------------------
 void DrawMu2eGeometry::SetDefaultColorTransp() {
-  SetRecursiveColorTransp(fTop->GetVolume(),kCyan-10,fTransp);
+  int default_color = kCyan-10;
+  SetRecursiveColorTransp(fTop->GetVolume(),default_color,fTransp);
 
 //-----------------------------------------------------------------------------
 // color production target
@@ -331,18 +332,38 @@ void DrawMu2eGeometry::SetDefaultColorTransp() {
     SetRecursiveColorTransp(vd,col,fTransp);
   }
 //-----------------------------------------------------------------------------
-// color proton absorber
+// color proton absorbers, start from TS1
+//-----------------------------------------------------------------------------
+  TGeoVolume* ts1_vacuum = gm->GetVolume("TS1Vacuum");
+  col             = kRed+2;
+  nd              = ts1_vacuum->GetNdaughters();
+  
+  int ts1_coll_transp = 60;
+  for (int i=0; i<nd; i++) {
+    TGeoVolume* vd = ts1_vacuum->GetNode(i)->GetVolume();
+    name = vd->GetName();
+    printf(" TS1Vacuum daughter: %s\n",name);
+    if      (strcmp(name,"PbarAbsTS1Out") == 0) SetRecursiveColorTransp(vd,kRed+1       ,fTransp        );
+    if      (strcmp(name,"Coll11"       ) == 0) SetRecursiveColorTransp(vd,kRed+3       ,ts1_coll_transp);
+    else if (strcmp(name,"Coll12"       ) == 0) SetRecursiveColorTransp(vd,default_color,ts1_coll_transp);
+    else if (strcmp(name,"Coll13"       ) == 0) SetRecursiveColorTransp(vd,kRed+3       ,ts1_coll_transp);
+  }
+//-----------------------------------------------------------------------------
+// proceed with TS3
 //-----------------------------------------------------------------------------
   TGeoVolume* ts3_vacuum = gm->GetVolume("TS3Vacuum");
   col             = kRed+2;
   nd              = ts3_vacuum->GetNdaughters();
   
+  int ts3_coll_transp = 60;
   for (int i=0; i<nd; i++) {
     TGeoVolume* vd = ts3_vacuum->GetNode(i)->GetVolume();
     name = vd->GetName();
     printf(" TS3Vacuum daughter: %s\n",name);
     if      (strcmp(name,"PbarAbs"     ) == 0) SetRecursiveColorTransp(vd,kRed+1,fTransp);
     else if (strcmp(name,"PbarAbsWedge") == 0) SetRecursiveColorTransp(vd,kRed+3,fTransp);
+    if      (strcmp(name,"Coll31") == 0) SetRecursiveColorTransp(vd,kRed+1,ts3_coll_transp);
+    else if (strcmp(name,"Coll32") == 0) SetRecursiveColorTransp(vd,kRed+3,ts3_coll_transp);
   }
 //-----------------------------------------------------------------------------
 // color TS5 collimator
@@ -350,12 +371,13 @@ void DrawMu2eGeometry::SetDefaultColorTransp() {
   TGeoVolume* ts5_vacuum = gm->GetVolume("TS5Vacuum");
   nd              = ts5_vacuum->GetNdaughters();
   
+  int ts5_coll_transp = 60;
   for (int i=0; i<nd; i++) {
     TGeoVolume* vd = ts5_vacuum->GetNode(i)->GetVolume();
     name = vd->GetName();
     printf(" TS5Vacuum daughter: %s\n",name);
-    if      (strcmp(name,"Coll51") == 0) SetRecursiveColorTransp(vd,kRed+1,fTransp);
-    else if (strcmp(name,"Coll52") == 0) SetRecursiveColorTransp(vd,kRed+3,fTransp);
+    if      (strcmp(name,"Coll51") == 0) SetRecursiveColorTransp(vd,kRed+1,ts5_coll_transp);
+    else if (strcmp(name,"Coll52") == 0) SetRecursiveColorTransp(vd,kRed+3,ts5_coll_transp);
   }
 }
 
