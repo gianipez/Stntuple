@@ -7,12 +7,12 @@ BEGIN_PROLOG
 # declarations of sequences do not require the sequence elements to be defined
 #------------------------------------------------------------------------------
 #  generatorSeq  : [ generate, g4run, detectorFilter, @sequence::EventMixing.TimeMaps ]
-  generatorSeq  : [ generate, g4run, detectorFilter, @sequence::CommonDigiSim.DigiSim ]
+  generatorSeq  : [ generate, g4run, detectorFilter, @sequence::CommonMC.DigiSim ]
 
 #  gen_mix_seq   : [ generate, g4run, detectorFilter,
-#		    @sequence::EventMixing.CD3Mixers, @sequence::CommonDigiSim.DigiSim ]   # FIXME
+#		    @sequence::EventMixing.CD3Mixers, @sequence::CommonMC.DigiSim ]   # FIXME
 
-#  mix_seq       : [ @sequence::EventMixing.CD3Mixers, @sequence::CommonDigiSim.DigiSim ]  # FIXME
+#  mix_seq       : [ @sequence::EventMixing.CD3Mixers, @sequence::CommonMC.DigiSim ]  # FIXME
 
   hitMakerSeq   : [ @sequence::CaloDigiMC.DigiSim, @sequence::CaloReco.Reco, @sequence::TrackerMC.DigiSim, makeSH, makePH ]
 
@@ -114,14 +114,14 @@ BEGIN_PROLOG
 #------------------------------------------------------------------------------
 # *** path sequences
 #------------------------------------------------------------------------------
-  hits_calo_apr_stnmaker_seq : [ @sequence::CommonDigiSim.DigiSim, @sequence::hitMakerSeq, 
+  hits_calo_apr_stnmaker_seq : [ @sequence::CommonMC.DigiSim, @sequence::hitMakerSeq, 
 				 @sequence::CaloCluster.Reco, 
 				 @sequence::allPatRecSeq,
 				 @sequence::trkCaloMatchingSeq,
 #				 AvikPID, 
 				 @sequence::stnmaker_seq ]
 
-  hits_calo_tprdem_stnmaker_seq : [ @sequence::CommonDigiSim.DigiSim, @sequence::hitMakerSeq, 
+  hits_calo_tprdem_stnmaker_seq : [ @sequence::CommonMC.DigiSim, @sequence::hitMakerSeq, 
 				    @sequence::CaloCluster.Reco,
 				    @sequence::trkPatRecDemSeq,
 				    @sequence::trkCaloMatchingDemSeq,
@@ -168,7 +168,7 @@ BEGIN_PROLOG
 #------------------------------------------------------------------------------
 # read signal files and run full reconstruction
 #------------------------------------------------------------------------------
-  path_hits_calo_apr_vpid_stnm     : [ @sequence::CommonDigiSim.DigiSim  , @sequence::hitMakerSeq ,
+  path_hits_calo_apr_vpid_stnm     : [ @sequence::CommonMC.DigiSim  , @sequence::hitMakerSeq ,
 				       @sequence::CaloCluster.Reco  , @sequence::allPatRecSeq,
 				       @sequence::trkCaloMatchingSeq,
 				       ParticleID, 
@@ -303,7 +303,7 @@ Stntuple : { @table::Stntuple  # defined in Stntuple/fcl/prolog.fcl
 # TrkPatRec and CalPatRec modules
 #------------------------------------------------------------------------------
 	@table::EventGenerator.producers  # defined in EventGenerator
-	@table::CommonDigiSim.producers    # FIXME
+	@table::CommonMC.producers    # FIXME
 	@table::TrackerMC.producers       # defined in TrackerMC
 	@table::TrkHitReco.producers      # defined in TrkHitReco
 	@table::Tracking.producers        # defined in TrkPatRec
@@ -375,10 +375,10 @@ Stntuple : { @table::Stntuple  # defined in Stntuple/fcl/prolog.fcl
 # sequences: can't define recursively within one namespace
 #------------------------------------------------------------------------------
 Stntuple.gen_g4              : [ generate, g4run, detectorFilter]
-Stntuple.gen_g4_time_map     : [ @sequence::Stntuple.gen_g4, @sequence::CommonDigiSim.DigiSim ]
+Stntuple.gen_g4_time_map     : [ @sequence::Stntuple.gen_g4, @sequence::CommonMC.DigiSim ]
 Stntuple.mix                 : [ dioMixer, protonMixer, neutronMixer, photonMixer, ootMixer, flashMixer ]
-Stntuple.mix_time_map        : [ @sequence::Stntuple.mix, @sequence::CommonDigiSim.DigiSim ]
-Stntuple.gen_g4_mix_time_map : [ @sequence::Stntuple.gen_g4, @sequence::Stntuple.mix, @sequence::CommonDigiSim.DigiSim ]
+Stntuple.mix_time_map        : [ @sequence::Stntuple.mix, @sequence::CommonMC.DigiSim ]
+Stntuple.gen_g4_mix_time_map : [ @sequence::Stntuple.gen_g4, @sequence::Stntuple.mix, @sequence::CommonMC.DigiSim ]
 Stntuple.digis               : [ @sequence::CaloDigiMC.DigiSim, @sequence::TrackerMC.DigiSim ]
 
 Stntuple.trk_reco        : [ makeSH, makePH, FlagBkgHits]
@@ -436,6 +436,14 @@ Stntuple.paths : {
 				   @sequence::Stntuple.cal_reco       ,
 				   @sequence::Stntuple.dem_reco       ,
 				   @sequence::Stntuple.stnmaker_dem
+				  ]
+    
+    path_gen_digi_reco_stn_dep : [ @sequence::Stntuple.gen_g4_time_map,
+				   @sequence::Stntuple.digis          ,
+				   @sequence::Stntuple.trk_reco       ,
+				   @sequence::Stntuple.cal_reco       ,
+				   @sequence::Stntuple.dep_reco       ,
+				   @sequence::Stntuple.stnmaker_dep
 				  ]
     
     path_gen_digi_reco_stn_dmm : [ @sequence::Stntuple.gen_g4_time_map,
@@ -626,7 +634,7 @@ physics : {
 				    @sequence::vadimPidSeq, 
 				    MuHitDisplay ]
 
-    hit_reco_display_dem        : [ @sequence::CommonDigiSim.DigiSim, 
+    hit_reco_display_dem        : [ @sequence::CommonMC.DigiSim, 
 				    @sequence::hitMakerSeq,
 				    @sequence::CaloCluster.Reco, 
 				    @sequence::allPatRecSeq,

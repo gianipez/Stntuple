@@ -67,7 +67,6 @@
 #include "Mu2eUtilities/inc/SortedStepPoints.hh"
 #include "Mu2eUtilities/inc/TrackTool.hh"
 
-#include "MCDataProducts/inc/PtrStepPointMCVectorCollection.hh"
 #include "MCDataProducts/inc/GenParticleCollection.hh"
 #include "MCDataProducts/inc/SimParticleCollection.hh"
 #include "MCDataProducts/inc/StepPointMCCollection.hh"
@@ -220,7 +219,7 @@ namespace mu2e {
     const mu2e::CaloCrystalHitCollection*       fListOfCrystalHits;//
     const mu2e::CaloClusterCollection*          fListOfClusters;   //
 
-    const mu2e::PtrStepPointMCVectorCollection* _hits_mcptr;        //
+    //    const mu2e::StrawDigiMCCollection*           _hits_mcptr;        //
 
     const mu2e::StepPointMCCollection*          _stepPointMCColl;  //
 
@@ -421,7 +420,7 @@ namespace mu2e {
     fTrackBlock->AddCollName("mu2e::KalRepCollection"              ,fTrkRecoModuleLabel.data()        ,"");
     fTrackBlock->AddCollName("mu2e::ComboHitCollection"            ,_makeStrawHitModuleLabel.data()   ,"");
     fTrackBlock->AddCollName("mu2e::StrawDigiMCCollection"         ,_makeStrawDigiModuleLabel.data()   ,"");
-    fTrackBlock->AddCollName("mu2e::PtrStepPointMCVectorCollection",_makeStrawDigiModuleLabel.data()   ,"");
+    //    fTrackBlock->AddCollName("mu2e::PtrStepPointMCVectorCollection",_makeStrawDigiModuleLabel.data()   ,"");
     fTrackBlock->AddCollName("mu2e::TrkCaloIntersectCollection"    ,fTrkExtrapol.data()               ,"");
     fTrackBlock->AddCollName("mu2e::CaloClusterCollection"         ,_caloClusterModuleLabel.data()    ,"");
     fTrackBlock->AddCollName("mu2e::TrackClusterMatchCollection"   ,fTrkCalMatch.data()               ,"");
@@ -523,14 +522,14 @@ namespace mu2e {
       trk_node->SetStrawHitFlagColl(&fStrawHitFlagColl);
       trk_node->SetTimeClusterColl(&fTimeClusterColl);
       trk_node->SetKalRepPtrColl(&_kalRepPtrColl);
-      trk_node->SetMcPtrColl(&_hits_mcptr);
+      //      trk_node->SetMcPtrColl(&_hits_mcptr);
       trk_node->SetStrawDigiMCColl(&_strawDigiMCColl);
       fVisManager->AddNode(trk_node);
 //-----------------------------------------------------------------------------
 // MC truth: StepPointMC's and something else - not entirely sure
 //-----------------------------------------------------------------------------
       mctr_node = new TMcTruthVisNode("McTruthVisNode");
-      mctr_node->SetListOfHitsMcPtr(&_hits_mcptr);
+      //      mctr_node->SetListOfHitsMcPtr(&_hits_mcptr);
       mctr_node->SetStepPointMCCollection(&_stepPointMCColl);
       mctr_node->SetSimParticlesWithHits(&_simParticlesWithHits);
       mctr_node->SetGenpColl(&_genParticleColl);
@@ -624,22 +623,22 @@ namespace mu2e {
 	       oname, _generatorModuleLabel.data());
       }
 
-      art::Handle<PtrStepPointMCVectorCollection> mcptrHandle;
-      Evt->getByLabel(_makeStrawDigiModuleLabel, "", mcptrHandle);
+      // art::Handle<PtrStepPointMCVectorCollection> mcptrHandle;
+      // Evt->getByLabel(_makeStrawDigiModuleLabel, "", mcptrHandle);
 
 
-      if (mcptrHandle.isValid()) {
-	_hits_mcptr = mcptrHandle.product();
-	if (_hits_mcptr->size() <= 0) {
-	  printf(">>> [%s] WARNING: PtrStepPointMCVectorCollection by %s has zero length. CONTINUE\n",
-		 oname, _makeStrawDigiModuleLabel.data());
-	}
-      }
-      else {
-	printf(">>> [%s] ERROR: PtrStepPointMCVectorCollection by %s is missing. BAIL OUT\n",
-	       oname, _makeStrawDigiModuleLabel.data());
-	return -1;
-      }
+      // if (mcptrHandle.isValid()) {
+      // 	_hits_mcptr = mcptrHandle.product();
+      // 	if (_hits_mcptr->size() <= 0) {
+      // 	  printf(">>> [%s] WARNING: PtrStepPointMCVectorCollection by %s has zero length. CONTINUE\n",
+      // 		 oname, _makeStrawDigiModuleLabel.data());
+      // 	}
+      // }
+      // else {
+      // 	printf(">>> [%s] ERROR: PtrStepPointMCVectorCollection by %s is missing. BAIL OUT\n",
+      // 	       oname, _makeStrawDigiModuleLabel.data());
+      // 	return -1;
+      //      }
 
       art::Handle<StepPointMCCollection> stepsHandle;
       art::Selector getTrackerSteps(art::ProductInstanceNameSelector(_trackerStepPoints) &&
@@ -1217,7 +1216,7 @@ namespace mu2e {
 
 	display_hit = 1;
 
-	if (display_hit && (_hits_mcptr->size() > 0)) {
+	if (display_hit && (_strawDigiMCColl->size() > 0)) {
 
 	  mu2e::GenId gen_id(fGeneratorID);
 

@@ -243,6 +243,7 @@ public:
 				       const char* ProcessName = "");
 
   // pass the detector name to know what to print for different detectors
+  // tested for Detector = 'tracker', 'calorimeter'
   void printStepPointMC(const mu2e::StepPointMC* Step, const char* Detector, const char* Opt = "");
 
   void printStepPointMCCollection (const char* ModuleLabel     , 

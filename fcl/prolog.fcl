@@ -217,6 +217,19 @@ Stntuple : {
 	    fitParticle             : [                         11 ]
 	    fitDirection            : [                          0 ]
 	}
+
+	StntupleMakerDep  : { @table::StntupleMakerTemplate 
+	    makePid                 : 1
+	    trackBlockName          : [ "TrackBlockDep"            ] 
+	    trackStrawHitBlockName  : [ "TrackHitBlockDep"         ] 
+	    trkRecoModuleLabel      : [ "MergePatRecDep"           ]
+	    trkExtrapolModuleLabel  : [ "TrackCaloIntersectionDep" ]
+	    trkCaloMatchModuleLabel : [ "TrackCaloMatchingDep"     ]
+	    pidBlockName            : [ "PidBlockDep"              ] 
+	    pidModuleLabel          : [ "AvikPIDNewDep"            ]
+	    fitParticle             : [                        -11 ]
+	    fitDirection            : [                          0 ]
+	}
 #------------------------------------------------------------------------------
 # downstream mu- reco
 #------------------------------------------------------------------------------
@@ -444,6 +457,7 @@ Stntuple : {
 Stntuple.stnmaker         : [ InitStntuple, StntupleMaker   ,                   FillStntuple ]
 Stntuple.stnmaker_cpr     : [ InitStntuple, StntupleMakerCpr,                   FillStntuple ]
 Stntuple.stnmaker_dem     : [ InitStntuple, StntupleMakerDem,                   FillStntuple ]
+Stntuple.stnmaker_dep     : [ InitStntuple, StntupleMakerDep,                   FillStntuple ]
 Stntuple.stnmaker_dmm     : [ InitStntuple, StntupleMakerDmm,                   FillStntuple ]
 Stntuple.stnmaker_ump     : [ InitStntuple, StntupleMakerUmp,                   FillStntuple ]
 Stntuple.stnmaker_dem_dmm : [ InitStntuple, StntupleMakerDem, StntupleMakerDmm, FillStntuple ]

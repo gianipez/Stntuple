@@ -93,7 +93,7 @@ void TTrkVisNode::Paint(Option_t* Option) {
 //-----------------------------------------------------------------------------
 int TTrkVisNode::InitEvent() {
 
-  const char* oname = "TTrkVisNode::InitEvent";
+  //  const char* oname = "TTrkVisNode::InitEvent";
 
   mu2e::GeomHandle<mu2e::TTracker> ttHandle;
   const mu2e::TTracker* tracker = ttHandle.get();
@@ -110,7 +110,6 @@ int TTrkVisNode::InitEvent() {
   const mu2e::ComboHit              *hit;
   //  const XYZVec                      *hit_pos;
   //  const mu2e::StrawHitFlag          *hit_id_word;
-  const mu2e::PtrStepPointMCVector  *mcptr;
   const mu2e::StrawDigiMC           *hit_digi_mc;
 
   TEvdStrawHit                      *evd_straw_hit; 
@@ -119,7 +118,6 @@ int TTrkVisNode::InitEvent() {
 
   int                               n_straw_hits, display_hit, color, nl, ns; // , ipeak, ihit;
   bool                              isFromConversion, intime;
-  size_t                            nmc;
   double                            sigw, /*vnorm, v,*/ sigr; 
   CLHEP::Hep3Vector                 vx0, vx1, vx2;
 //-----------------------------------------------------------------------------
@@ -177,42 +175,32 @@ int TTrkVisNode::InitEvent() {
 //-----------------------------------------------------------------------------
 // deal with MC information - later
 //-----------------------------------------------------------------------------
-    if ((*fStrawDigiMCColl)->size() > 0) mcptr = &(*fMcPtrColl)->at(ihit); // this seems to be wrong
-    else                                 mcptr = NULL;
+    const mu2e::StrawDigiMC             *mcdigi(0);
+    if ((*fStrawDigiMCColl)->size() > 0) mcdigi = &(*fStrawDigiMCColl)->at(ihit); // this seems to be wrong
     // Get the straw information:
 
-    //    mid   = &straw->getMidPoint();
     w     = &straw->getDirection();
 
     isFromConversion = false;
 
-    if (mcptr != NULL) nmc = mcptr->size();
-    else               nmc = 0;
+    const mu2e::StepPointMC   *stmc;
+    if (mcdigi->wireEndTime(mu2e::StrawEnd::cal) < mcdigi->wireEndTime(mu2e::StrawEnd::hv)) {
+      stmc = mcdigi->stepPointMC(mu2e::StrawEnd::cal).get();
+    }
+    else {
+      stmc = mcdigi->stepPointMC(mu2e::StrawEnd::hv ).get();
+    }
 
-    for (size_t j=0; j<nmc; ++j ){
-      const mu2e::StepPointMC& step = *mcptr->at(j);
-      art::Ptr<mu2e::SimParticle> const& simptr = step.simParticle();
-      mu2e::SimParticleCollection::key_type trackId(step.trackId());
-      const mu2e::SimParticle* sim  = simptr.get();
-      if (sim == NULL) {
-	printf(">>> ERROR: %s sim == NULL\n",oname);
-      }
-      else {
-	if ( sim->fromGenerator() ){
-	  mu2e::GenParticle* gen = (mu2e::GenParticle*) &(*sim->genParticle());
-	  //	    if ( gen->generatorId() == mu2e::GenId::conversionGun ){
-	  if ( gen->generatorId() == mu2e::GenId::StoppedParticleReactionGun ){
-	    isFromConversion = true;
-	    break;
-	  }
-	}
+    const mu2e::SimParticle* sim = &(*stmc->simParticle());
+    
+    if ( sim->fromGenerator() ){
+      mu2e::GenParticle* gen = (mu2e::GenParticle*) &(*sim->genParticle());
+      //	    if ( gen->generatorId() == mu2e::GenId::conversionGun ){
+      if ( gen->generatorId() == mu2e::GenId::StoppedParticleReactionGun ){
+	isFromConversion = true;
+	break;
       }
     }
-//-----------------------------------------------------------------------------
-// Position along wire displayed are StrawHitPosition's
-//-----------------------------------------------------------------------------	
-    // v     = trackCal->TimeDiffToDistance( straw->index(), hit->dt() );
-    // vnorm = v/straw->getHalfLength();
 
     if (fUseStereoHits) {
 //-----------------------------------------------------------------------------

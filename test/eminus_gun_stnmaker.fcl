@@ -1,9 +1,6 @@
 # -*- mode:tcl -*-
 #------------------------------------------------------------------------------
-# generate 105 MeV/c electrons
-# make STNTUPLE in one go, without creating an intermediate file
-# for 105 MeV/c electron : E = 105.00124           MeV
-# for 105 MeV/c muon     : E = 148.9584269653785   MeV
+# generate 105 MeV/c electrons and make STNTUPLE
 #------------------------------------------------------------------------------
 #include "fcl/minimalMessageService.fcl"
 #include "fcl/standardProducers.fcl"
@@ -18,7 +15,7 @@ END_PROLOG
 
 #include "Stntuple/fcl/templates.fcl"
 
-process_name : EPlusGunStnmaker
+process_name : EMinusGunStnmaker
 
 source       : { module_type : EmptyEvent   }
 
@@ -29,34 +26,30 @@ paths        : { @table::Stntuple.paths     }
 
 physics : {
     producers: { @table::producers 
-	generate                 : { @table::producers.egun 
-	    physics : { @table::producers.egun.physics
-		pdgId  : -11
-	    }
-	}
+	generate                 : { @table::producers.egun }
     }
     
     filters  : { @table::filters 
-	InitStntuple : { @table::filters.InitStntuple histFileName : "nts.user.egun_eplus_stnmaker.xxx.000001.stn" }
+	InitStntuple : { @table::filters.InitStntuple histFileName : "nts.user.eminus_gun_stnmaker.xxx.000001.stn" }
     }
 
     @table::paths
 
-    trigger_paths : [ path_gen_digi_reco_stn_dep ]
+    trigger_paths : [ path_gen_digi_reco_stn_tcm ]
     out           : [     ]
     end_paths     : [ out ]
 }
 
-services.TFileService.fileName            : "nts.user.egun_eplus_stnmaker.xxx.000001.root"
+services.TFileService.fileName            : "nts.user.eminus_gun_stnmaker.xxx.000001.root"
 #------------------------------------------------------------------------------
-# uncomment the next 2 lines if you want the DST file to be written out
+# uncomment the next 2 lines if you want the DST (.art) file to be written out
 #-----------------------------------------------------------------------------
 # physics.out                               : [ detectorOutput ]
 # outputs.detectorOutput.SelectEvents       : [ path_gen_digi_reco_stn_dem_dmm ]
-outputs.detectorOutput.fileName           : "sim.user.egun_eplus_stnmaker.xxx.000001.art"
+outputs.detectorOutput.fileName           : "sim.user.eminus_gun_stnmaker.xxx.000001.art"
 #------------------------------------------------------------------------------
 # uncomment to avoid waisting time on the initialization of detailed neutron 
-# cross sections - that shouldn't affect the CE simulation 
+# cross sections - that shouldn't affect the electron simulation 
 #------------------------------------------------------------------------------
 # physics.producers.g4run.physics.physicsListName : "QGSP_BERT"
 #------------------------------------------------------------------------------
@@ -68,3 +61,4 @@ outputs.detectorOutput.fileName           : "sim.user.egun_eplus_stnmaker.xxx.00
 #------------------------------------------------------------------------------
 # everything below is appended by murat/scripts/submit_mu2e_job
 #------------------------------------------------------------------------------
+physics.producers.generate.muonStops.inputFiles : [ "mergedMuonStops/nts.mu2e.DS-TGTstops.MDC2018a.001002_00000000.root" ]

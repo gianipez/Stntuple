@@ -18,9 +18,9 @@ END_PROLOG
 
 #include "Stntuple/fcl/templates.fcl"
 
-process_name : EPlusGunStnmaker
+process_name : DigiRecoDisplay
 
-source       : { module_type : EmptyEvent   }
+source       : { module_type : RootInput   }
 
 outputs      : { @table::Stntuple.outputs   }
 producers    : { @table::Stntuple.producers }
@@ -29,31 +29,41 @@ paths        : { @table::Stntuple.paths     }
 
 physics : {
     producers: { @table::producers 
-	generate                 : { @table::producers.egun 
-	    physics : { @table::producers.egun.physics
-		pdgId  : -11
-	    }
-	}
+	generate                 : { @table::producers.photonGun }
+# for CE, not old background mixing - default: 'compressPVDetector'
+	CaloShowerStepFromStepPt : { @table::producers.CaloShowerStepFromStepPt  physVolInfoInput: "g4run" }
     }
     
     filters  : { @table::filters 
-	InitStntuple : { @table::filters.InitStntuple histFileName : "nts.user.egun_eplus_stnmaker.xxx.000001.stn" }
+	InitStntuple : { @table::filters.InitStntuple histFileName : "nts.user.egun_stnmaker.xxx.000001.stn" }
     }
 
     @table::paths
 
-    trigger_paths : [ path_gen_digi_reco_stn_dep ]
+    p1 : [ 
+	  #		     @sequence::Stntuple.gen_g4_time_map,
+	  @sequence::Stntuple.digis          ,
+#	  EventFilter                        , 
+   	  @sequence::Stntuple.trk_reco       ,
+	  @sequence::Stntuple.cal_reco       ,
+	  @sequence::Stntuple.dem_reco       ,
+	  #		     @sequence::Stntuple.stnmaker_dem
+	  MuHitDisplayDem
+	 ]
+
+    trigger_paths : [ p1 ]
+    #    out : [detectorOutput]  # detectorOutput is defined in Stntuple/fcl/templates.fcl
     out           : [     ]
     end_paths     : [ out ]
 }
 
-services.TFileService.fileName            : "nts.user.egun_eplus_stnmaker.xxx.000001.root"
+services.TFileService.fileName            : "nts.user.egun_stnmaker.xxx.000001.root"
 #------------------------------------------------------------------------------
 # uncomment the next 2 lines if you want the DST file to be written out
 #-----------------------------------------------------------------------------
 # physics.out                               : [ detectorOutput ]
-# outputs.detectorOutput.SelectEvents       : [ path_gen_digi_reco_stn_dem_dmm ]
-outputs.detectorOutput.fileName           : "sim.user.egun_eplus_stnmaker.xxx.000001.art"
+# outputs.detectorOutput.SelectEvents       : [ path_gen_digi_reco_stn_dem ]
+outputs.detectorOutput.fileName           : "sim.user.photon_stnmaker.xxx.000001.art"
 #------------------------------------------------------------------------------
 # uncomment to avoid waisting time on the initialization of detailed neutron 
 # cross sections - that shouldn't affect the CE simulation 
@@ -68,3 +78,29 @@ outputs.detectorOutput.fileName           : "sim.user.egun_eplus_stnmaker.xxx.00
 #------------------------------------------------------------------------------
 # everything below is appended by murat/scripts/submit_mu2e_job
 #------------------------------------------------------------------------------
+physics.producers.generate.muonStops.inputFiles : [ "mergedMuonStops/nts.mu2e.DS-TGTstops.MDC2018a.001002_00000000.root" ]
+
+# physics.filters.EventFilter.eventList : [ 
+# 					 1,0,851    ,
+# 					 1,0,1895   ,
+# 					 1,0,4538   ,
+# 					 1,0,8490   ,
+# 					 1,0,13577  ,
+# 					 1,0,18555  ,
+# 					 1,0,28448  ,
+# 					 1,0,32832  ,
+# 					 1,0,33693  ,
+# 					 1,0,40053  ,
+# 					 1,0,40450  ,
+# 					 1,0,41322  ,
+# 					 1,0,43047  ,
+# 					 1,0,45890  ,
+# 					 1,0,49808  ,
+# 					 1,0,50765  ,
+# 					 1,0,51492  ,
+# 					 1,0,62203  ,
+# 					 1,0,70185  ,
+# 					 1,0,72675  ,
+# 					 1,0,75299  
+# 					]
+
