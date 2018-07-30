@@ -187,11 +187,11 @@ public:
   void printTimeCluster   (const mu2e::TimeCluster* TimePeak, const char* Opt = "", 
 			   const mu2e::ComboHitCollection* ChColl=0);
 
-  void printTimeClusterCollection(const char* ModuleLabel     , 
-				  const char* ProductName = "", 
-				  const char* ProcessName = "",
-				  int         hitOpt      = 0 ,
-				  const char* ChModuleLabel="");
+  void printTimeClusterCollection(const char* ModuleLabel        , 
+				  const char* ComboHitModuleLabel,
+				  const char* ProductName = ""   , 
+				  const char* ProcessName = ""   ,
+				  int         PrintHits   = 0    );
 
 //   void printCaloCrystalHit(const CaloCrystalHit* Hit, const char* Opt = "");
 //   void printCaloHit       (const CaloHit*        Hit, const char* Opt = "");
@@ -218,6 +218,7 @@ public:
 			   int                      Flags = -1);
   
   void printComboHitCollection (const char* ModuleLabel, 
+				const char* FlagBgrHitsCollName,  // 'StrawHits' or 'ComboHits'
 				const char* ProductName = "", 
 				const char* ProcessName = "",
 				double TMin = -1.e6,

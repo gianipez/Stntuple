@@ -199,7 +199,7 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
   const mu2e::KalRepPtrCollection*         list_of_kreps              (0);
   const mu2e::TrkQualCollection*           list_of_trkqual            (0);
   const mu2e::StrawDigiMCCollection*       list_of_mc_straw_hits      (0);
-  const mu2e::ComboHitCollection*          list_of_straw_hits         (0);
+  const mu2e::ComboHitCollection*          list_of_combo_hits         (0);
   const mu2e::TrkCaloIntersectCollection*  list_of_extrapolated_tracks(0);
   const mu2e::PIDProductCollection*        list_of_pidp               (0);
 
@@ -207,7 +207,7 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
   char   krep_module_label[100], krep_description[100];
   char   trex_module_label[100], trex_description[100];
   char   trcl_module_label[100], trcl_description[100];
-  char   strh_module_label[100], strh_description[100];
+  char   cmbh_module_label[100], cmbh_description[100];
   char   sdmc_module_label[100], sdmc_description[100];
   char   stmc_module_label[100], stmc_description[100];
   char   calo_module_label[100], calo_description[100];
@@ -262,8 +262,8 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
   data->GetModuleLabel("mu2e::TrackClusterMatchCollection",trcl_module_label);
   data->GetDescription("mu2e::TrackClusterMatchCollection",trcl_description );
 
-  data->GetModuleLabel("mu2e::StrawHitCollection",strh_module_label);
-  data->GetDescription("mu2e::StrawHitCollection",strh_description );
+  data->GetModuleLabel("mu2e::ComboHitCollection",cmbh_module_label);
+  data->GetDescription("mu2e::ComboHitCollection",cmbh_description );
   
   data->GetModuleLabel("mu2e::PtrStepPointMCVectorCollection",stmc_module_label);
   data->GetDescription("mu2e::PtrStepPointMCVectorCollection",stmc_description );
@@ -311,10 +311,10 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
   }
 
   art::Handle<mu2e::ComboHitCollection> shHandle;
-  if (strh_module_label[0] != 0) {
-    if (strh_description[0] == 0) AnEvent->getByLabel(strh_module_label,shHandle);
-    else                          AnEvent->getByLabel(strh_module_label,strh_description,shHandle);
-    if (shHandle.isValid()) list_of_straw_hits = shHandle.product();
+  if (cmbh_module_label[0] != 0) {
+    if (cmbh_description[0] == 0) AnEvent->getByLabel(cmbh_module_label,shHandle);
+    else                          AnEvent->getByLabel(cmbh_module_label,cmbh_description,shHandle);
+    if (shHandle.isValid()) list_of_combo_hits = shHandle.product();
   }
 
   art::Handle<mu2e::StrawDigiMCCollection> sdmcHandle;
@@ -494,14 +494,14 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
     const mu2e::StepPointMC   *stmc[2];
     const mu2e::Straw         *straw;
 
-    n_straw_hits = list_of_straw_hits->size();
+    n_straw_hits = list_of_combo_hits->size();
 
     if (n_straw_hits <= 0) {
-      printf(">>> ERROR in StntupleInitMu2eTrackBlock: Straw hit collection by module %s is empty, NHITS = %i\n",
-	     strh_module_label,n_straw_hits);
+      printf(">>> ERROR in StntupleInitMu2eTrackBlock: ComboHitCollection by module %s is empty, NHITS = %i\n",
+	     cmbh_module_label,n_straw_hits);
     }
     else {
-      s_hit0 = &list_of_straw_hits->at(0);
+      s_hit0 = &list_of_combo_hits->at(0);
 
       for (auto it=krep_hits->begin(); it!=krep_hits->end(); it++) {
 	++ntrkhits;

@@ -41,14 +41,14 @@ physics : {
     @table::paths
 
     p1 : [ 
-	  #		     @sequence::Stntuple.gen_g4_time_map,
-	  @sequence::Stntuple.digis          ,
+#		     @sequence::Stntuple.gen_g4_time_map,
+#	  @sequence::Stntuple.digis          ,
 #	  EventFilter                        , 
    	  @sequence::Stntuple.trk_hit_reco   ,
 	  @sequence::Stntuple.cal_reco       ,
-	  @sequence::Stntuple.dem_reco       ,
+	  @sequence::Stntuple.dep_reco       ,
 	  #		     @sequence::Stntuple.stnmaker_dem
-	  MuHitDisplayDem
+	  MuHitDisplayDep
 	 ]
 
     trigger_paths : [ p1 ]

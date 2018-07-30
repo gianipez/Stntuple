@@ -62,8 +62,6 @@
 
 #include "Stntuple/base/TNamedHandle.hh"
 
-// #include "Stntuple/mod/StntupleGlobals.hh"
-
 #include "Mu2eUtilities/inc/SimParticleTimeOffset.hh"
 
 
@@ -1192,21 +1190,32 @@ void TAnaDump::printTimeCluster(const mu2e::TimeCluster* TPeak, const char* Opt,
   opt.ToLower();
 
   if ((opt == "") || (opt.Index("banner") >= 0)) {
-    printf("----------------------------------------------------------------\n");
-    printf("    Energy       X          Y          Z        T0        Nhits \n");
-    printf("----------------------------------------------------------------\n");
+    printf("-------------------------------------------------------------------\n");
+    printf("    Energy       X          Y          Z        T0       NCH   NSH \n");
+    printf("-------------------------------------------------------------------\n");
   }
   double caloClusterEnergy(-1);
   if (TPeak->caloCluster().get()!=0)  caloClusterEnergy = TPeak->caloCluster()->energyDep();
 
   if ((opt == "") || (opt.Index("data") >= 0)) {
-    printf("%10.3f %10.3f %10.3f %10.3f %10.3f  %5i \n",
+
+    int  nhits, nsh(0), loc;
+    nhits = TPeak->nhits();
+
+    for (int i=0; i<nhits; i++) {
+      loc  = TPeak->hits().at(i);
+      hit  = &(ChColl->at(loc));
+      nsh += hit->nStrawHits();
+    }
+
+    printf("%10.3f %10.3f %10.3f %10.3f %10.3f %5i %5i\n",
 	   caloClusterEnergy, 
 	   TPeak->position().x(),
 	   TPeak->position().y(),
 	   TPeak->position().z(),
 	   TPeak->t0().t0(),
-	   int(TPeak->nhits()));
+	   nhits           ,
+	   nsh             );
 
     if (opt.Index("hits") >= 0) {
 //-----------------------------------------------------------------------------
@@ -1217,12 +1226,9 @@ void TAnaDump::printTimeCluster(const mu2e::TimeCluster* TPeak, const char* Opt,
       int  nhits, loc;
       nhits = TPeak->nhits();
 
-      // const mu2e::ComboHit* hit0 = &ChColl->at(0);
-      
       for (int i=0; i<nhits; i++) {
 	loc         = int(TPeak->hits().at(i));
 	hit         = &(ChColl->at(loc));
-	// size_t ish  = hit-hit0;
 	std::vector<StrawDigiIndex> shids;
 	ChColl->fillStrawDigiIndices(*(fEvent),loc,shids);
 	mu2e::PtrStepPointMCVector           const& mcptr(hits_mcptrStraw->at(shids[0]) );
@@ -1240,11 +1246,11 @@ void TAnaDump::printTimeCluster(const mu2e::TimeCluster* TPeak, const char* Opt,
 
 
 //-----------------------------------------------------------------------------
-void TAnaDump::printTimeClusterCollection(const char* ModuleLabel, 
-					  const char* ProductName, 
-					  const char* ProcessName,
-					  int         hitOpt     ,
-					  const char* ComboHitMouduleLabel) {
+void TAnaDump::printTimeClusterCollection(const char* ModuleLabel         , 
+					  const char* ComboHitMouduleLabel,
+					  const char* ProductName         , 
+					  const char* ProcessName         ,
+					  int         hitOpt              ) {
 
   art::Handle<mu2e::TimeClusterCollection>  handle;
   const mu2e::TimeClusterCollection*        coll(0);
@@ -2166,11 +2172,11 @@ void TAnaDump::printComboHit(const mu2e::ComboHit* Hit, const mu2e::StepPointMC*
     opt.ToLower();
 
     if ((opt == "") || (opt.Index("banner") >= 0)) {
-      printf("-----------------------------------------------------------------------------------");
+      printf("-----------------------------------------------------------------------------");
       printf("------------------------------------------------------------\n");
-      printf("   I   SHID    Flags  Plane   Panel  Layer   Straw     Time          dt       eDep ");
+      printf("    I nsh  SHID    Flags  Plane   Panel  Layer   Straw     Time         eDep ");
       printf("           PDG       PDG(M)   Generator          ID      p  \n");
-      printf("-----------------------------------------------------------------------------------");
+      printf("-----------------------------------------------------------------------------");
       printf("------------------------------------------------------------\n");
     }
 
@@ -2216,17 +2222,18 @@ void TAnaDump::printComboHit(const mu2e::ComboHit* Hit, const mu2e::StepPointMC*
       if (IHit  >= 0) printf("%5i " ,IHit);
       else            printf("    ");
 
+      printf("%3i ",Hit->nStrawHits());
+
       printf("%5u",Hit->strawId().straw());
 
       if (Flags >= 0) printf(" %08x",Flags);
       else            printf("        ");
-      printf("  %5i  %5i   %5i   %5i   %8.3f   %8.3f   %9.6f   %10i   %10i  %10i  %10i %8.3f\n",
-	     Hit->strawId().plane(), //straw->id().getPlane(),
-	     Hit->strawId().panel(), //straw->id().getPanel(),
-	     Hit->strawId().layer(), //straw->id().getLayer(),
-	     Hit->strawId().straw(), //straw->id().getStraw(),
+      printf("  %5i  %5i   %5i   %5i   %8.3f    %9.6f   %10i   %10i  %10i  %10i %8.3f\n",
+	     Hit->strawId().plane(),
+	     Hit->strawId().panel(),
+	     Hit->strawId().layer(),
+	     Hit->strawId().straw(),
 	     Hit->time(),
-	     -1., //Hit->dt(),
 	     Hit->energyDep(),
 	     pdg_id,
 	     mother_pdg_id,
@@ -2411,7 +2418,10 @@ void TAnaDump::printStrawHitCollection(const char* ModuleLabel,
 
 
 //-----------------------------------------------------------------------------
+// FlagBgrHitsCollName = 'StrawHits' or 'ComboHits'. Very unfortunate choice!
+//-----------------------------------------------------------------------------
 void TAnaDump::printComboHitCollection(const char* ModuleLabel, 
+				       const char* FlagBgrHitsCollName,
 				       const char* ProductName,
 				       const char* ProcessName,
 				       double TMin, double TMax) {
@@ -2449,7 +2459,10 @@ void TAnaDump::printComboHitCollection(const char* ModuleLabel,
 //-----------------------------------------------------------------------------
 // get straw hit flags (half-hack)
 //-----------------------------------------------------------------------------
-  fEvent->getByLabel(fFlagBgrHitsModuleLabel.Data(),shflagH);
+  art::Selector  sel_flags(art::ProductInstanceNameSelector(FlagBgrHitsCollName)     &&
+			   art::ProcessNameSelector(ProcessName)                     && 
+			   art::ModuleLabelSelector(fFlagBgrHitsModuleLabel.Data()));
+  fEvent->get(sel_flags,shflagH);
 
   if (shflagH.isValid()) shfcol = shflagH.product();
   else {

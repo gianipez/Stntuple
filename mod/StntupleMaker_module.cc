@@ -576,7 +576,7 @@ void StntupleMaker::beginJob() {
       int       nshortblocks = fHelixBlockName.size();
       if (track_data) {
 	track_data->AddCollName("mu2e::KalRepCollection"              ,fTrkRecoModuleLabel[i].data()     ,"");
-	track_data->AddCollName("mu2e::StrawHitCollection"            ,fMakeStrawHitModuleLabel.data()   ,"");
+	track_data->AddCollName("mu2e::ComboHitCollection"            ,fMakeStrawHitModuleLabel.data()   ,"");
 	track_data->AddCollName("mu2e::StrawDigiMCCollection"         ,fMakeStrawDigiModuleLabel.data()  ,"");
 	track_data->AddCollName("mu2e::PtrStepPointMCVectorCollection",fMakeStrawDigiModuleLabel.data()  ,"");
 	track_data->AddCollName("mu2e::TrkCaloIntersectCollection"    ,fTrkExtrapolModuleLabel [i].data(),"");

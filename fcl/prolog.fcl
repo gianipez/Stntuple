@@ -371,6 +371,66 @@ Stntuple : {
 	    fitDirection               : [                          0,                          0,                        0 ]
 	}
 #------------------------------------------------------------------------------
+# track reconstruction studies: 
+# make 3 track blocks, for the moment need to specify all other labels
+# default (in prolog): just one track block "TrackBlock" with output of MergePatRec
+#------------------------------------------------------------------------------
+	StntupleMakerTcmDem : { @table::StntupleMakerTemplate 
+	    makePid                    : 0
+	    makeTrackSeeds             : 1
+	    makeTimeClusters           : 1
+	    makeHelices                : 1
+	    timeClusterBlockName       : [ "TimeClusterBlockTpr"        , "TimeClusterBlockCpr"     ]
+	    timeClusterModuleLabel     : [ "TimeClusterFinder"          , "CalTimePeakFinder"       ]
+	    helixBlockName             : [ "HelixBlockTpr"              , "HelixBlockCpr"           ]
+	    helixModuleLabel           : [ "HelixFinder:Positive"       , "CalHelixFinder"          ]
+	    trackSeedBlockName         : [ "TrackSeedBlockTpr"          , "TrackSeedBlockCpr"       ]
+	    trackSeedModuleLabel       : [ "KSFDeM"                     , "CalSeedFit"              ]
+	    shortHelixBlockName        : [ "ShortTprHelixBlock"         , "ShortCprHelixBlock"         , "ShortHelixBlock"          ]
+	    shortHelixModuleLabel      : [ "KSFDeM"                     , "CalSeedFitDem"              , "MergePatRecDem"           ]
+	    shortTrackSeedBlockName    : [ "ShortTrackSeedBlockTpr"     , "ShortTrackSeedBlockCpr"     , "ShortTrackSeedBlock"      ]
+	    shortTrackSeedModuleLabel  : [ "MergePatRecTprDem"          , "MergePatRecCprDem"          , "MergePatRecDem"           ]
+	    trackBlockName             : [ "TrackBlockTpr"              , "TrackBlockCpr"              , "TrackBlock"               ]
+	    trkRecoModuleLabel         : [ "MergePatRecTprDem"          , "MergePatRecCprDem"          , "MergePatRecDem"           ]
+	    trkExtrapolModuleLabel     : [ "TrackCaloIntersectionTprDem", "TrackCaloIntersectionCprDem", "TrackCaloIntersectionDem" ]
+	    trkCaloMatchModuleLabel    : [ "TrackCaloMatchingTprDem"    , "TrackCaloMatchingCprDem"    , "TrackCaloMatchingDem"     ]
+	    trackStrawHitBlockName     : [ "TrackHitBlockTpr"           , "TrackHitBlockCpr"           , "TrackHitBlock"            ] 
+	    pidBlockName               : [ ""                           , ""                           , "PidBlock"                 ] 
+	    pidModuleLabel             : [                        ""    ,                         ""   , "AvikPIDNew"               ]
+	    fitParticle                : [                         11   ,                         11   ,                       11   ]
+	    fitDirection               : [                          0   ,                          0   ,                        0   ]
+	}
+#------------------------------------------------------------------------------
+# track reconstruction studies: 
+# make 3 track blocks, for the moment need to specify all other labels
+# default (in prolog): just one track block "TrackBlock" with output of MergePatRec
+#------------------------------------------------------------------------------
+	StntupleMakerTcmDep : { @table::StntupleMakerTemplate 
+	    makePid                    : 0
+	    makeTrackSeeds             : 1
+	    makeTimeClusters           : 1
+	    makeHelices                : 1
+	    timeClusterBlockName       : [ "TimeClusterBlockTpr"        , "TimeClusterBlockCpr"     ]
+	    timeClusterModuleLabel     : [ "TimeClusterFinder"          , "CalTimePeakFinder"       ]
+	    helixBlockName             : [ "HelixBlockTpr"              , "HelixBlockCpr"           ]
+	    helixModuleLabel           : [ "HelixFinder:Negative"       , "CalHelixFinder"          ]
+	    trackSeedBlockName         : [ "TrackSeedBlockTpr"          , "TrackSeedBlockCpr"       ]
+	    trackSeedModuleLabel       : [ "KSFDeP"                     , "CalSeedFitDep"           ]
+	    shortHelixBlockName        : [ "ShortHelixBlockTpr"         , "CprHelixBlockShort"         , "ShortHelixBlock"          ]
+	    shortHelixModuleLabel      : [ "KSFDeP"                     , "CalSeedFitDep"              , "MergePatRecDep"           ]
+	    shortTrackSeedBlockName    : [ "ShortTrackSeedBlockTpr"     , "ShortTrackSeedBlockCpr"     , "ShortTrackSeedBlock"      ]
+	    shortTrackSeedModuleLabel  : [ "MergePatRecTprDep"          , "MergePatRecCprDep"          , "MergePatRecDep"           ]
+	    trackBlockName             : [ "TrackBlockTpr"              , "TrackBlockCpr"              , "TrackBlock"               ]
+	    trkRecoModuleLabel         : [ "MergePatRecTprDep"          , "MergePatRecCprDep"          , "MergePatRecDep"           ]
+	    trkExtrapolModuleLabel     : [ "TrackCaloIntersectionTprDep", "TrackCaloIntersectionCprDep", "TrackCaloIntersectionDep" ]
+	    trkCaloMatchModuleLabel    : [ "TrackCaloMatchingTprDep"    , "TrackCaloMatchingCprDep"    , "TrackCaloMatchingDep"     ]
+	    trackStrawHitBlockName     : [ "TrackHitBlockTpr"           , "TrackHitBlockCpr"           , "TrackHitBlock"            ] 
+	    pidBlockName               : [ ""                           , ""                           , "PidBlock"                 ] 
+	    pidModuleLabel             : [                        ""    ,                         ""   , "AvikPIDNew"               ]
+	    fitParticle                : [                         11   ,                         11   ,                       11   ]
+	    fitDirection               : [                          0   ,                          0   ,                        0   ]
+	}
+#------------------------------------------------------------------------------
 # make 4 track blocks: train PID
 #------------------------------------------------------------------------------
 	StntupleMaker4 : { @table::StntupleMakerTemplate 
@@ -464,6 +524,8 @@ Stntuple.stnmaker_dem_dmm : [ InitStntuple, StntupleMakerDem, StntupleMakerDmm, 
 Stntuple.stnmaker_dem_umm : [ InitStntuple, StntupleMakerDem, StntupleMakerUmm, FillStntuple ]
 Stntuple.stnmaker_dem_ump : [ InitStntuple, StntupleMakerDem, StntupleMakerUmp, FillStntuple ]
 Stntuple.stnmaker_tcm     : [ InitStntuple, StntupleMakerTcm,                   FillStntuple ]
+Stntuple.stnmaker_tcm_dem : [ InitStntuple, StntupleMakerTcmDem,                FillStntuple ]
+Stntuple.stnmaker_tcm_dep : [ InitStntuple, StntupleMakerTcmDep,                FillStntuple ]
 Stntuple.stnmaker4        : [ InitStntuple, StntupleMaker4  ,                   FillStntuple ]
 Stntuple.stnmaker_all     : [ InitStntuple, StntupleMakerAll,                   FillStntuple ]
 
