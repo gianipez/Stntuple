@@ -131,7 +131,7 @@
 #include "Stntuple/obj/TStnTrackBlock.hh"
 #include "Stntuple/obj/TStnClusterBlock.hh"
 
-#include "CalPatRec/inc/McUtilsToolBase.hh"
+#include "Mu2eUtilities/inc/McUtilsToolBase.hh"
 
 using namespace std;
 using CLHEP::Hep3Vector;

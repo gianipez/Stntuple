@@ -49,8 +49,8 @@
 #include "MCDataProducts/inc/StrawDigiMCCollection.hh"
 #include "TrkDiag/inc/TrkMCTools.hh"
 
-#include "CalPatRec/inc/AlgorithmIDCollection.hh"
-#include "CalPatRec/inc/LsqSums4.hh"
+#include "RecoDataProducts/inc/AlgorithmIDCollection.hh"
+#include "Mu2eUtilities/inc/LsqSums4.hh"
 
 
 

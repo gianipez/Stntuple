@@ -57,7 +57,7 @@
 #include "RecoDataProducts/inc/CaloClusterCollection.hh"
 #include "RecoDataProducts/inc/PIDProductCollection.hh"
 
-#include "CalPatRec/inc/AlgorithmIDCollection.hh"
+#include "RecoDataProducts/inc/AlgorithmIDCollection.hh"
 					          // BaBar 
 #include "BTrk/ProbTools/ChisqConsistency.hh"
 #include "BTrk/BbrGeom/BbrVectorErr.hh"
@@ -360,18 +360,18 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 
   ntrk = list_of_kreps->size();
   
-  int xxx(0);
+  // int xxx(0);
 
   for (int itrk=0; itrk<ntrk; itrk++) {
     track          = data->NewTrack();
     art::Handle<mu2e::KalRepCollection> handle;
     art::Ptr<KalRep> const& ptr = list_of_kreps->at(itrk);
     AnEvent->get(ptr.id(), handle);
-    fhicl::ParameterSet const& pset = handle.provenance()->parameterSet();
-    string module_type = pset.get<std::string>("module_type");
-    if      (module_type == "CalTrkFit"  ) xxx =  1;
-    else if (module_type == "KalFinalFit") xxx =  0;
-    else                                   xxx = -1;
+    // fhicl::ParameterSet const& pset = handle.provenance()->parameterSet();
+    // string module_type = pset.get<std::string>("module_type");
+    // if      (module_type == "CalTrkFit"  ) xxx =  1;
+    // else if (module_type == "KalFinalFit") xxx =  0;
+    // else                                   xxx = -1;
 
 //-----------------------------------------------------------------------------
 // track-only-based particle ID, initialization ahs already happened in the constructor
@@ -392,9 +392,9 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
       alg_id = &list_of_algs->at(itrk);
       mask   = alg_id->BestID() | (alg_id->AlgMask() << 16);
 
-      if (xxx != alg_id->BestID()) { 
-	printf (" *** InitTrackBlock ERROR: we are in alg_id trouble: xxx = %2i best = %i\n",xxx,alg_id->BestID());
-      }
+      // if (xxx != alg_id->BestID()) { 
+      // 	printf (" *** InitTrackBlock ERROR: we are in alg_id trouble: xxx = %2i best = %i\n",xxx,alg_id->BestID());
+      // }
     }
 
     track->fAlgorithmID = mask;
