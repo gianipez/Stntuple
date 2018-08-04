@@ -12,7 +12,7 @@
 #include "Stntuple/fcl/prolog.fcl"
 
 BEGIN_PROLOG
-  pdgCode    : @local::Particle.eminus
+  pdgCode    : @local::Particle.eplus
   bgHitFiles : @nil
 END_PROLOG
 
@@ -37,7 +37,7 @@ physics : {
     }
     
     filters  : { @table::filters 
-	InitStntuple : { @table::filters.InitStntuple histFileName : "nts.user.egun_eplus_stnmaker.xxx.000001.stn" }
+	InitStntuple : { @table::filters.InitStntuple histFileName : "nts.user.eplus_gun_stnmaker.xxx.000001.stn" }
     }
 
     @table::paths
@@ -47,13 +47,13 @@ physics : {
     end_paths     : [ out ]
 }
 
-services.TFileService.fileName            : "nts.user.egun_eplus_stnmaker.xxx.000001.root"
+services.TFileService.fileName            : "nts.user.eplus_gun_stnmaker.xxx.000001.root"
 #------------------------------------------------------------------------------
 # uncomment the next 2 lines if you want the DST file to be written out
 #-----------------------------------------------------------------------------
 # physics.out                               : [ detectorOutput ]
 # outputs.detectorOutput.SelectEvents       : [ path_gen_digi_reco_stn_tcm_dep ]
-outputs.detectorOutput.fileName           : "sim.user.egun_eplus_stnmaker.xxx.000001.art"
+outputs.detectorOutput.fileName           : "sim.user.eplus_gun_stnmaker.xxx.000001.art"
 #------------------------------------------------------------------------------
 # uncomment to avoid waisting time on the initialization of detailed neutron 
 # cross sections - that shouldn't affect the CE simulation 

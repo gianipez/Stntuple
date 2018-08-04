@@ -45,7 +45,7 @@ services.TFileService.fileName            : "nts.user.eminus_gun_stnmaker.xxx.00
 # uncomment the next 2 lines if you want the DST (.art) file to be written out
 #-----------------------------------------------------------------------------
 #physics.out                               : [ detectorOutput ]
-#outputs.detectorOutput.SelectEvents       : [ path_gen_digi_reco_stn_tcm]
+#outputs.detectorOutput.SelectEvents       : [ path_gen_digi_reco_stn_tcm_dem]
 outputs.detectorOutput.fileName           : "sim.user.eminus_gun_stnmaker.xxx.000001.art"
 #------------------------------------------------------------------------------
 # uncomment to avoid waisting time on the initialization of detailed neutron 

@@ -153,14 +153,15 @@ public:
 				const char* ModuleLabelStrawHit ="makeSH"); 
 
   void printHelixSeed          (const mu2e::HelixSeed*         Helix, 
-				const char* Opt = ""                ,
-				const char* ModuleLabelStrawHit="makeSH" );
+				const char* ModuleLabel             ,
+				const char* ModuleLabelStrawHit     ,  // usually - "makeSH"
+				const char* Opt = ""                );
 
   void printHelixSeedCollection(const char* ModuleLabel             , 
+				const char* ModuleLabelStrawHit     ,  // usually - "makeSH"
 				const char* ProductName         = "", 
 				const char* ProcessName         = "",
-				int         hitOpt              = 0,
-				const char* ModuleLabelStrawHit ="makeSH"); 
+				int         hitOpt              = 0 ); 
 
 //   void plotTrackSeed           (int Index                      , 
 // 				const char* ModuleLabelTrkSeeds,
@@ -225,7 +226,7 @@ public:
 				double TMax =  1.e6);
  
   void printHelixHit      (const mu2e::HelixHit*    HelHit,
-			   const mu2e::StrawHit*    Hit, 
+			   const mu2e::ComboHit*    Hit, 
 			   const mu2e::StepPointMC* Step,
 			   const char*              Opt   = "", 
 			   int                      INit  = -1,

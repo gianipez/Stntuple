@@ -56,8 +56,8 @@
 #include "RecoDataProducts/inc/CaloHitCollection.hh"
 #include "RecoDataProducts/inc/CaloClusterCollection.hh"
 #include "RecoDataProducts/inc/PIDProductCollection.hh"
+#include "RecoDataProducts/inc/AlgorithmIDCollection.hh"
 
-#include "CalPatRec/inc/AlgorithmIDCollection.hh"
 					          // BaBar 
 #include "BTrk/ProbTools/ChisqConsistency.hh"
 #include "BTrk/BbrGeom/BbrVectorErr.hh"

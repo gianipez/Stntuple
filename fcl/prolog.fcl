@@ -107,7 +107,6 @@ MuHitDisplay: { module_type:MuHitDisplay        # the class name;
     g4ModuleLabel                : g4run
     strawHitMakerModuleLabel     : makeSH
     strawDigiMakerModuleLabel    : makeSD
-#    strawHitPosMakerModuleLabel  : makeSH 
     strawHitFlagMakerModuleLabel : "DeltaFinder:StrawHits"
     comboHitMakerModuleLabel     : makePH
 
@@ -138,14 +137,14 @@ MuHitDisplay: { module_type:MuHitDisplay        # the class name;
     printHits                    : false
     timeWindow                   : 100000.
     #      timeWindow           : 50.
-    #------------------------------------------------------------------------------
-    # kalDiag and Doublet Resolver
-    #------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
+# kalDiag and Doublet Resolver
+#------------------------------------------------------------------------------
     KalDiag                 : { @table::KalDiagDirect    }
     DoubletAmbigResolver    : { @table::TrkReco.DoubletAmbigResolver }
-    #------------------------------------------------------------------------------
-    # configuration of the underlying visualization manager 
-    #------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
+# configuration of the underlying visualization manager 
+#------------------------------------------------------------------------------
     visManager: {
 	debugLevel         : 0
 	displayStrawDigiMC : 1
@@ -343,7 +342,6 @@ Stntuple : {
 #------------------------------------------------------------------------------
 # track reconstruction studies: 
 # make 3 track blocks, for the moment need to specify all other labels
-# default (in prolog): just one track block "TrackBlock" with output of MergePatRec
 #------------------------------------------------------------------------------
 	StntupleMakerTcm : { @table::StntupleMakerTemplate 
 	    makePid                    : 0
@@ -373,7 +371,6 @@ Stntuple : {
 #------------------------------------------------------------------------------
 # track reconstruction studies: 
 # make 3 track blocks, for the moment need to specify all other labels
-# default (in prolog): just one track block "TrackBlock" with output of MergePatRec
 #------------------------------------------------------------------------------
 	StntupleMakerTcmDem : { @table::StntupleMakerTemplate 
 	    makePid                    : 0
@@ -383,9 +380,9 @@ Stntuple : {
 	    timeClusterBlockName       : [ "TimeClusterBlockTpr"        , "TimeClusterBlockCpr"     ]
 	    timeClusterModuleLabel     : [ "TimeClusterFinder"          , "CalTimePeakFinder"       ]
 	    helixBlockName             : [ "HelixBlockTpr"              , "HelixBlockCpr"           ]
-	    helixModuleLabel           : [ "HelixFinder:Positive"       , "CalHelixFinder"          ]
+	    helixModuleLabel           : [ "HelixFinder:Positive"       , "CalHelixFinderDem"       ]
 	    trackSeedBlockName         : [ "TrackSeedBlockTpr"          , "TrackSeedBlockCpr"       ]
-	    trackSeedModuleLabel       : [ "KSFDeM"                     , "CalSeedFit"              ]
+	    trackSeedModuleLabel       : [ "KSFDeM"                     , "CalSeedFitDem"           ]
 	    shortHelixBlockName        : [ "ShortTprHelixBlock"         , "ShortCprHelixBlock"         , "ShortHelixBlock"          ]
 	    shortHelixModuleLabel      : [ "KSFDeM"                     , "CalSeedFitDem"              , "MergePatRecDem"           ]
 	    shortTrackSeedBlockName    : [ "ShortTrackSeedBlockTpr"     , "ShortTrackSeedBlockCpr"     , "ShortTrackSeedBlock"      ]
@@ -403,7 +400,6 @@ Stntuple : {
 #------------------------------------------------------------------------------
 # track reconstruction studies: 
 # make 3 track blocks, for the moment need to specify all other labels
-# default (in prolog): just one track block "TrackBlock" with output of MergePatRec
 #------------------------------------------------------------------------------
 	StntupleMakerTcmDep : { @table::StntupleMakerTemplate 
 	    makePid                    : 0
@@ -413,7 +409,7 @@ Stntuple : {
 	    timeClusterBlockName       : [ "TimeClusterBlockTpr"        , "TimeClusterBlockCpr"     ]
 	    timeClusterModuleLabel     : [ "TimeClusterFinder"          , "CalTimePeakFinder"       ]
 	    helixBlockName             : [ "HelixBlockTpr"              , "HelixBlockCpr"           ]
-	    helixModuleLabel           : [ "HelixFinder:Negative"       , "CalHelixFinder"          ]
+	    helixModuleLabel           : [ "HelixFinder:Negative"       , "CalHelixFinderDep"       ]
 	    trackSeedBlockName         : [ "TrackSeedBlockTpr"          , "TrackSeedBlockCpr"       ]
 	    trackSeedModuleLabel       : [ "KSFDeP"                     , "CalSeedFitDep"           ]
 	    shortHelixBlockName        : [ "ShortHelixBlockTpr"         , "CprHelixBlockShort"         , "ShortHelixBlock"          ]

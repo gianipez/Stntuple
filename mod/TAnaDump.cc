@@ -58,7 +58,7 @@
 #include "TrackCaloMatching/inc/TrackClusterMatch.hh"
 #include "TrkDiag/inc/TrkMCTools.hh"
 
-#include "CalPatRec/inc/LsqSums4.hh"
+#include "Mu2eUtilities/inc/LsqSums4.hh"
 
 #include "Stntuple/base/TNamedHandle.hh"
 
@@ -707,8 +707,10 @@ void TAnaDump::printTrackSeedCollection(const char* ModuleLabel,
 }
 
 //-----------------------------------------------------------------------------
-void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix,	const char* Opt, 
-			      const char* ModuleLabelStrawHit) {
+void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix, 
+			      const char* ModuleLabel, 
+			      const char* ModuleLabelStrawHit, 
+			      const char* Opt                ) {
   TString opt = Opt;
   
   if ((opt == "") || (opt == "banner")) {
@@ -720,210 +722,180 @@ void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix,	const char* Opt,
     printf("---------------------------------------------------------------------------------------------------------\n");
   }
  
-  const mu2e::StrawDigiMCCollection* mcdigis(0);
-  art::Handle<mu2e::StrawDigiMCCollection> mcdH;
-  fEvent->getByLabel("makeSD", mcdH);
-  mcdigis = mcdH.product();
-  // art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandleStraw;
-  // //  fEvent->getByLabel("makeSH","StrawHitMCPtr",mcptrHandleStraw);
-  // fEvent->getByLabel("makeSD","",mcptrHandleStraw);
-  // mu2e::PtrStepPointMCVectorCollection const* hits_mcptrStraw = mcptrHandleStraw.product();
+  if ((opt = "") || (opt.Index("data") >= 0)) {
+    const mu2e::StrawDigiMCCollection* mcdigis(0);
+    art::Handle<mu2e::StrawDigiMCCollection> mcdH;
+    fEvent->getByLabel("makeSD", mcdH);
+    mcdigis = mcdH.product();
 
-  const mu2e::RobustHelix*robustHel = &Helix->helix();
+    const mu2e::RobustHelix*robustHel = &Helix->helix();
 
-  if ((opt == "") || (opt.Index("data") >= 0)) {
-    int    nhits  = Helix->hits().size();
-    int    flag   = *((int*) &Helix->status()); 
+    if ((opt == "") || (opt.Index("data") >= 0)) {
+      int    nhits  = Helix->hits().size();
+      int    flag   = *((int*) &Helix->status()); 
 
-    double t0     = Helix->t0()._t0;
-    double t0err  = Helix->t0()._t0err;
+      double t0     = Helix->t0()._t0;
+      double t0err  = Helix->t0()._t0err;
 
-    double fz0    = robustHel->fz0();
-    //    double phi0   = robustHel->phi0();
-    double radius = robustHel->radius();
-    double d0     = robustHel->rcent() - radius;
+      double fz0    = robustHel->fz0();
+      //    double phi0   = robustHel->phi0();
+      double radius = robustHel->radius();
+      double d0     = robustHel->rcent() - radius;
 
-    double lambda = robustHel->lambda();
-    double tandip = lambda/radius;
+      double lambda = robustHel->lambda();
+      double tandip = lambda/radius;
 
-    double mm2MeV = 3/10.;
-    double mom    = radius*mm2MeV/std::cos( std::atan(tandip));
-    double pt     = radius*mm2MeV;
+      double mm2MeV = 3/10.;
+      double mom    = radius*mm2MeV/std::cos( std::atan(tandip));
+      double pt     = radius*mm2MeV;
 
-    double x0     = robustHel->centerx();
-    double y0     = robustHel->centery();
+      double x0     = robustHel->centerx();
+      double y0     = robustHel->centery();
     
-    const mu2e::CaloCluster*cluster = Helix->caloCluster().get();
-    double clusterEnergy(-1);
-    if (cluster != 0) clusterEnergy = cluster->energyDep();
-    printf("%5i %16p %3i %8.3f %8.3f %7.3f %7.3f",
-	   -1,
-	   Helix,
-	   nhits,
-	   mom, pt, t0, t0err );
+      const mu2e::CaloCluster*cluster = Helix->caloCluster().get();
+      double clusterEnergy(-1);
+      if (cluster != 0) clusterEnergy = cluster->energyDep();
+      printf("%5i %16p %3i %8.3f %8.3f %7.3f %7.3f",
+	     -1,
+	     Helix,
+	     nhits,
+	     mom, pt, t0, t0err );
 
-    //eval the chi2
-    auto helix_handle = fEvent->getValidHandle<mu2e::HelixSeedCollection>("CalHelixFinder");//FIX ME!
-    fhicl::ParameterSet const& pset = helix_handle.provenance()->parameterSet();
+      // eval the chi2
+      auto helix_handle = fEvent->getValidHandle<mu2e::HelixSeedCollection>(ModuleLabel);
+      fhicl::ParameterSet const& pset = helix_handle.provenance()->parameterSet();
 
-    int nsh = Helix->hits().size();
-    const mu2e::HelixHitCollection* hits      = &Helix->hits();
-    const mu2e::ComboHit*           hit(0);
-    XYZVec                    pos(0,0,0), /*helix_pos(0),*/ wdir(0,0,0), sdir(0,0,0), helix_center(0,0,0);
-    double                    phi(0), helix_phi(0);
+      int nsh = Helix->hits().size();
+      const mu2e::HelixHitCollection* hits      = &Helix->hits();
+      const mu2e::ComboHit*           hit(0);
+      XYZVec                    pos(0,0,0), /*helix_pos(0),*/ wdir(0,0,0), sdir(0,0,0), helix_center(0,0,0);
+      double                    phi(0), helix_phi(0);
 
-    helix_center = robustHel->center();
-    //add the stopping target center as in CalHeliFinderAlg.cc
-    LsqSums4 sxy;
-    sxy.addPoint(0., 0., 1./900.);
+      helix_center = robustHel->center();
+      //add the stopping target center as in CalHeliFinderAlg.cc
+      LsqSums4 sxy;
+      sxy.addPoint(0., 0., 1./900.);
 
-    LsqSums4 srphi;
-    static const XYZVec zdir(0.0,0.0,1.0);
+      LsqSums4 srphi;
+      static const XYZVec zdir(0.0,0.0,1.0);
 
-    for (int j=0; j<nsh; ++j){
-      hit       = &hits->at(j);
-      pos       = hit->pos();
-      wdir      = hit->wdir();
-      sdir      = zdir.Cross(wdir);
-      phi       = hit->phi();
-      helix_phi = fz0 + pos.z()/lambda;
-      double    weightXY   = evalWeight(hit, sdir, helix_center, radius, 1, pset);
+      for (int j=0; j<nsh; ++j){
+	hit       = &hits->at(j);
+	pos       = hit->pos();
+	wdir      = hit->wdir();
+	sdir      = zdir.Cross(wdir);
+	phi       = hit->phi();
+	helix_phi = fz0 + pos.z()/lambda;
+	double    weightXY   = evalWeight(hit, sdir, helix_center, radius, 1, pset);
 
-      sxy.addPoint(pos.x(), pos.y(), weightXY);
+	sxy.addPoint(pos.x(), pos.y(), weightXY);
 
-      double    dPhi     = helix_phi - phi- M_PI/2.;
-      while (dPhi > M_PI){
-	phi    += 2*M_PI;
-        dPhi   = helix_phi - phi;
+	double    dPhi     = helix_phi - phi- M_PI/2.;
+	while (dPhi > M_PI){
+	  phi    += 2*M_PI;
+	  dPhi   = helix_phi - phi;
+	}
+	while (dPhi < -M_PI){
+	  phi   -= 2*M_PI; 
+	  dPhi  = helix_phi - phi;
+	}
+	double weight    = evalWeight(hit, sdir, helix_center, radius, 0, pset);
+	srphi.addPoint(pos.z(), phi, weight);
       }
-      while (dPhi < -M_PI){
-	phi   -= 2*M_PI; 
-	dPhi  = helix_phi - phi;
-      }
-      double weight    = evalWeight(hit, sdir, helix_center, radius, 0, pset);
-      srphi.addPoint(pos.z(), phi, weight);
-    }
-    if (cluster != 0){
-      double     weight_cl_xy = 1./100.;//FIX ME!
-      mu2e::GeomHandle<mu2e::Calorimeter> ch;
-      const mu2e::Calorimeter* _calorimeter = ch.get();      
-      CLHEP::Hep3Vector        gpos = _calorimeter->geomUtil().diskToMu2e(cluster->diskId(),cluster->cog3Vector());
-      CLHEP::Hep3Vector        tpos = _calorimeter->geomUtil().mu2eToTracker(gpos);
+      if (cluster != 0){
+	double     weight_cl_xy = 1./100.;//FIX ME!
+	mu2e::GeomHandle<mu2e::Calorimeter> ch;
+	const mu2e::Calorimeter* _calorimeter = ch.get();      
+	CLHEP::Hep3Vector        gpos = _calorimeter->geomUtil().diskToMu2e(cluster->diskId(),cluster->cog3Vector());
+	CLHEP::Hep3Vector        tpos = _calorimeter->geomUtil().mu2eToTracker(gpos);
 
-      pos       = XYZVec(tpos.x(), tpos.y(), tpos.z());
-      sxy.addPoint(pos.x(), pos.y(), weight_cl_xy);
+	pos       = XYZVec(tpos.x(), tpos.y(), tpos.z());
+	sxy.addPoint(pos.x(), pos.y(), weight_cl_xy);
       
-      phi       = XYZVec(pos - helix_center).phi();
-      phi       = TVector2::Phi_0_2pi(phi);
-      helix_phi = fz0  + pos.z()/lambda;
-      double     dPhi        = helix_phi - phi;
-      while (dPhi > M_PI){
-	phi    += 2*M_PI;
-        dPhi   = helix_phi - phi;
+	phi       = XYZVec(pos - helix_center).phi();
+	phi       = TVector2::Phi_0_2pi(phi);
+	helix_phi = fz0  + pos.z()/lambda;
+	double     dPhi        = helix_phi - phi;
+	while (dPhi > M_PI){
+	  phi    += 2*M_PI;
+	  dPhi   = helix_phi - phi;
+	}
+	while (dPhi < -M_PI){
+	  phi   -= 2*M_PI; 
+	  dPhi  = helix_phi - phi;
+	}
+
+	double     weight_cl_phiz = 10.;//1./(err_cl*err_cl);
+	srphi.addPoint(pos.z(), phi, weight_cl_phiz);
       }
-      while (dPhi < -M_PI){
-	phi   -= 2*M_PI; 
-	dPhi  = helix_phi - phi;
+
+
+      float chi2xy   = sxy.chi2DofCircle();
+      float chi2zphi = srphi.chi2DofLine();
+
+      printf(" %8.3f %8.3f %8.3f %8.3f %10.3f %10.3f %12.3f %12.3f %12.3f %08x\n",
+	     d0,fz0,x0,y0,lambda,radius,clusterEnergy,chi2xy,chi2zphi, flag);
+    }
+
+    if ((opt == "") || (opt.Index("hits") >= 0) ){
+      int nsh = Helix->hits().size();
+
+      art::Handle<mu2e::ComboHitCollection>         shcHandle;
+      const mu2e::ComboHitCollection*               shcol;
+
+      const char* ProductName = "";
+      const char* ProcessName = "";
+
+      // get ComboHitCollection with single straw hits (makeSH)
+
+      if (ProductName[0] != 0) {
+	art::Selector  selector(art::ProductInstanceNameSelector(ProductName) &&
+				art::ProcessNameSelector(ProcessName)         && 
+				art::ModuleLabelSelector(ModuleLabelStrawHit)           );
+	fEvent->get(selector, shcHandle);
       }
-
-      double     weight_cl_phiz = 10.;//1./(err_cl*err_cl);
-      srphi.addPoint(pos.z(), phi, weight_cl_phiz);
-    }
-
-
-    float chi2xy   = sxy.chi2DofCircle();
-    float chi2zphi = srphi.chi2DofLine();
-
-    printf(" %8.3f %8.3f %8.3f %8.3f %10.3f %10.3f %12.3f %12.3f %12.3f %08x\n",
-	   d0,fz0,x0,y0,lambda,radius,clusterEnergy,chi2xy,chi2zphi, flag);
-  }
-
-  if ((opt == "") || (opt.Index("hits") >= 0) ){
-    int nsh = Helix->hits().size();
-
-    art::Handle<mu2e::StrawHitCollection>         shcHandle;
-    const mu2e::StrawHitCollection*               shcol;
-
-    // art::Handle<mu2e::ComboHitCollection>     chHandle;
-    // const mu2e::ComboHitCollection*           chColl(0);
-
-
-    const char* ProductName = "";
-    const char* ProcessName = "";
-    // const char* ComboHitMouduleLabel = "makePH";
+      else {
+	art::Selector  selector(art::ProcessNameSelector(ProcessName)         && 
+				art::ModuleLabelSelector(ModuleLabelStrawHit)           );
+	fEvent->get(selector, shcHandle);
+      }
     
-    // art::Selector  selectorCombo(art::ProcessNameSelector(ProcessName)         && 
-    // 				 art::ModuleLabelSelector(ComboHitMouduleLabel)  );
-    // fEvent->get(selectorCombo, chHandle);
-    
-    // if (chHandle.isValid()) chColl = (mu2e::ComboHitCollection* )chHandle.product();
+      shcol = shcHandle.product();
 
-                           //now get the strawhitcollection
-    if (ProductName[0] != 0) {
-      art::Selector  selector(art::ProductInstanceNameSelector(ProductName) &&
-			      art::ProcessNameSelector(ProcessName)         && 
-			      art::ModuleLabelSelector(ModuleLabelStrawHit)           );
-      fEvent->get(selector, shcHandle);
-    }
-    else {
-      art::Selector  selector(art::ProcessNameSelector(ProcessName)         && 
-			      art::ModuleLabelSelector(ModuleLabelStrawHit)           );
-      fEvent->get(selector, shcHandle);
-    }
-    
-    shcol = shcHandle.product();
-
-    int banner_printed(0);
-    for (int i=0; i<nsh; ++i){
-      const mu2e::ComboHit*  helHit = &Helix->hits().at(i);
-      int  hitIndex                 = helHit->index(0);//Helix->indices().at(i);
+      int banner_printed(0);
+      for (int i=0; i<nsh; ++i){
+	const mu2e::ComboHit*  helHit = &Helix->hits().at(i);
+	int  hitIndex                 = helHit->index(0);//Helix->indices().at(i);
       
-      std::vector<StrawDigiIndex> shids;
-      //      chColl->fillStrawDigiIndices(*(fEvent),hitIndex,shids);
-      Helix->hits().fillStrawDigiIndices(*(fEvent),i,shids);
+	std::vector<StrawDigiIndex> shids;
+	Helix->hits().fillStrawDigiIndices(*(fEvent),i,shids);
 
-      const mu2e::StrawHit*  hit    = &shcol->at(hitIndex);
+	const mu2e::ComboHit*  hit    = &shcol->at(hitIndex);
  
-      mu2e::StrawDigiMC const&     mcdigi = mcdigis->at(shids[0]);
-      art::Ptr<mu2e::StepPointMC>  spmcp;
-      mu2e::TrkMCTools::stepPoint(spmcp,mcdigi);
+	mu2e::StrawDigiMC const&     mcdigi = mcdigis->at(shids[0]);
+	art::Ptr<mu2e::StepPointMC>  spmcp;
+	mu2e::TrkMCTools::stepPoint(spmcp,mcdigi);
 
-      const mu2e::StepPointMC* Step = spmcp.get();
+	const mu2e::StepPointMC* Step = spmcp.get();
     
-      if (banner_printed == 0) {
-	printHelixHit(helHit, hit, Step, "banner", -1, 0);
-	banner_printed = 1;
-      } 
-      printHelixHit(helHit, hit, Step, "data", -1, 0);
-      
+	if (banner_printed == 0) {
+	  printHelixHit(helHit, hit, Step, "banner", -1, 0);
+	  banner_printed = 1;
+	} 
+	printHelixHit(helHit, hit, Step, "data", -1, 0);
+      }
     }
-    
-    
   }
 }
 
 //-----------------------------------------------------------------------------
-
-void TAnaDump::printHelixSeedCollection(const char* ModuleLabel, 
+void TAnaDump::printHelixSeedCollection(const char* ModuleLabel        , 
+					const char* ModuleLabelStrawHit,
 					const char* ProductName, 
 					const char* ProcessName,
-					int         hitOpt     ,
-					const char* ModuleLabelStrawHit){
+					int         hitOpt     ) {
   
 
-  // art::Handle<mu2e::HelixSeedCollection> helicesHandle;
-
-  // if (ProductName[0] != 0) {
-  //   art::Selector  selector(art::ProductInstanceNameSelector(ProductName) &&
-  // 			    art::ProcessNameSelector(ProcessName)         && 
-  // 			    art::ModuleLabelSelector(ModuleLabel)            );
-  //   fEvent->get(selector,helicesHandle);
-  // }
-  // else {
-  //   art::Selector  selector(art::ProcessNameSelector(ProcessName)         && 
-  // 			    art::ModuleLabelSelector(ModuleLabel)            );
-  //   fEvent->get(selector,helicesHandle);
-  // }
   auto helicesHandle = fEvent->getValidHandle<mu2e::HelixSeedCollection>(ModuleLabel);
 //-----------------------------------------------------------------------------
 // make sure collection exists
@@ -934,19 +906,6 @@ void TAnaDump::printHelixSeedCollection(const char* ModuleLabel,
     return;
   }
   
-  art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandle;
-  if (ModuleLabel[0] != 0) {
-    //    fEvent->getByLabel("makeSH","StrawHitMCPtr",mcptrHandle);
-    fEvent->getByLabel("makeSD","",mcptrHandle);
-    if (mcptrHandle.isValid()) {
-      fListOfMCStrawHits = (mu2e::PtrStepPointMCVectorCollection*) mcptrHandle.product();
-    }
-    else {
-      printf(">>> ERROR in TAnaDump::printHelixSeedCollection: failed to locate StepPointMCCollection:: by makeSD\n");
-      fListOfMCStrawHits = NULL;
-    }
-  }
-
   mu2e::HelixSeedCollection*  list_of_helixSeeds;
   list_of_helixSeeds    = (mu2e::HelixSeedCollection*) &(*helicesHandle);
 
@@ -958,11 +917,10 @@ void TAnaDump::printHelixSeedCollection(const char* ModuleLabel,
   for (int i=0; i<nhelices; i++) {
     helix = &list_of_helixSeeds->at(i);
     if (banner_printed == 0) {
-      printHelixSeed(helix,"banner");
+      printHelixSeed(helix,ModuleLabel,ModuleLabelStrawHit,"banner");
       banner_printed = 1;
     }
-    printHelixSeed(helix,"data");
-    if(hitOpt>0) printHelixSeed(helix,"hits", ModuleLabelStrawHit);
+    if (hitOpt>0) printHelixSeed(helix,ModuleLabel,ModuleLabelStrawHit,"data");
 
   }
 }
@@ -2245,18 +2203,18 @@ void TAnaDump::printComboHit(const mu2e::ComboHit* Hit, const mu2e::StepPointMC*
 
 
 //-----------------------------------------------------------------------------
-void TAnaDump::printHelixHit(const mu2e::HelixHit*    HelHit, const mu2e::StrawHit* Hit, 
+void TAnaDump::printHelixHit(const mu2e::HelixHit*    HelHit, const mu2e::ComboHit* Hit, 
 			     const mu2e::StepPointMC* Step, const char* Opt, int IHit, int Flags) {
     TString opt = Opt;
     opt.ToLower();
 
     if ((opt == "") || (opt.Index("banner") >= 0)) {
-      printf("-----------------------------------------------------------------------------------");
-      printf("---------------------------------------------------------------------------------------------------------------\n");
-      printf("   I   SHID  Flags      Plane   Panel  Layer Straw     x          y           z          phi      Time          dt       eDep ");
+      printf("----------------------------------------------------------------------------------------------------------------------");
+      printf("------------------------------------------------------------------\n");
+      printf("   I nsh  SHID  Flags      Plane   Panel  Layer Straw       x          y           z          phi      Time       eDep");
       printf("           PDG       PDG(M)   Generator         ID       p      pT\n");
-      printf("-----------------------------------------------------------------------------------");
-      printf("---------------------------------------------------------------------------------------------------------------\n");
+      printf("----------------------------------------------------------------------------------------------------------------------");
+      printf("------------------------------------------------------------------\n");
     }
 
     if (opt == "banner") return;
@@ -2309,18 +2267,19 @@ void TAnaDump::printHelixHit(const mu2e::HelixHit*    HelHit, const mu2e::StrawH
       if (IHit  >= 0) printf("%5i " ,IHit);
       else            printf("    ");
 
+      printf(" %3i ",Hit->nStrawHits());
+
       printf("%5i",Hit->strawId().asUint16());
 
       if (Flags >= 0) printf(" %08x",Flags);
       else            printf("        ");
-      printf("  %5i  %5i   %5i   %5i   %8.3f   %8.3f    %10.3f    %6.3f   %8.3f   %8.3f   %9.6f   %10i   %10i  %10i  %10i %8.3f %8.3f\n",
+      printf("  %5i  %5i   %5i   %5i   %8.3f   %8.3f    %10.3f    %6.3f   %8.3f   %9.6f   %10i   %10i  %10i  %10i %8.3f %8.3f\n",
 	     straw->id().getPlane(),
 	     straw->id().getPanel(),
 	     straw->id().getLayer(),
 	     straw->id().getStraw(),
 	     x, y, z, phi,
 	     Hit->time(),
-	     Hit->dt(),
 	     Hit->energyDep(),
 	     pdg_id,
 	     mother_pdg_id,

@@ -52,7 +52,6 @@
 
 // Mu2e includes.
 #include "ConditionsService/inc/ConditionsHandle.hh"
-// #include "ConditionsService/inc/TrackerCalibrations.hh"
 #include "TrackerConditions/inc/StrawResponse.hh"
 
 #include "GeometryService/inc/GeometryService.hh"
@@ -62,7 +61,6 @@
 // #include "CalorimeterGeom/inc/VaneCalorimeter.hh"
 #include "CalorimeterGeom/inc/DiskCalorimeter.hh"
 #include "CalorimeterGeom/inc/Calorimeter.hh"
-//#include "CaloCluster/inc/CaloClusterUtilities.hh"
 #include "Mu2eUtilities/inc/SimParticlesWithHits.hh"
 #include "Mu2eUtilities/inc/SortedStepPoints.hh"
 #include "Mu2eUtilities/inc/TrackTool.hh"
@@ -73,7 +71,6 @@
 #include "MCDataProducts/inc/StrawDigiMCCollection.hh"
 
 #include "BTrk/TrkBase/HelixParams.hh"
-// #include "BTrk/TrkBase/TrkHotList.hh"
 #include "BTrk/KalmanTrack/KalHit.hh"
 #include "RecoDataProducts/inc/TrkFitDirection.hh"
 #include "BTrk/TrkBase/TrkParticle.hh"
@@ -131,7 +128,7 @@
 #include "Stntuple/obj/TStnTrackBlock.hh"
 #include "Stntuple/obj/TStnClusterBlock.hh"
 
-#include "CalPatRec/inc/McUtilsToolBase.hh"
+#include "Mu2eUtilities/inc/McUtilsToolBase.hh"
 
 using namespace std;
 using CLHEP::Hep3Vector;
