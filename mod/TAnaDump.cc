@@ -134,7 +134,7 @@ TAnaDump::TAnaDump(int UseTimeOffsets) {
 //   }
   fEvent = 0;
   fListOfObjects          = new TObjArray();
-  fFlagBgrHitsModuleLabel = "FlagBkgHits";
+  fFlagBgrHitsModuleLabel = "FlagBkgHits:ComboHits";
 
   if (UseTimeOffsets) {
     std::vector<std::string> maps;
