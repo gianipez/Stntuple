@@ -134,7 +134,7 @@ TAnaDump::TAnaDump(int UseTimeOffsets) {
 //   }
   fEvent = 0;
   fListOfObjects          = new TObjArray();
-  fFlagBgrHitsModuleLabel = "FlagBkgHits:ComboHits";
+  fFlagBgrHitsModuleLabel = "FlagBkgHits";
 
   if (UseTimeOffsets) {
     std::vector<std::string> maps;
@@ -764,13 +764,15 @@ void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix,
       // eval the chi2
       auto helix_handle = fEvent->getValidHandle<mu2e::HelixSeedCollection>(ModuleLabel);
       fhicl::ParameterSet const& pset = helix_handle.provenance()->parameterSet();
-
-      int nsh = Helix->hits().size();
-      const mu2e::HelixHitCollection* hits      = &Helix->hits();
+//-----------------------------------------------------------------------------
+// helix is made out of ComboHits, so 'nsh' is the number of those
+//-----------------------------------------------------------------------------
+      const mu2e::HelixHitCollection* hits = &Helix->hits();
       const mu2e::ComboHit*           hit(0);
-      XYZVec                    pos(0,0,0), /*helix_pos(0),*/ wdir(0,0,0), sdir(0,0,0), helix_center(0,0,0);
-      double                    phi(0), helix_phi(0);
+      XYZVec                          pos(0,0,0), wdir(0,0,0), sdir(0,0,0), helix_center(0,0,0);
+      double                          phi(0), helix_phi(0);
 
+      int nsh      = hits->size();
       helix_center = robustHel->center();
       //add the stopping target center as in CalHeliFinderAlg.cc
       LsqSums4 sxy;
@@ -840,8 +842,8 @@ void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix,
     if ((opt == "") || (opt.Index("hits") >= 0) ){
       int nsh = Helix->hits().size();
 
-      art::Handle<mu2e::ComboHitCollection>         shcHandle;
-      const mu2e::ComboHitCollection*               shcol;
+      art::Handle<mu2e::ComboHitCollection> shcHandle;
+      const mu2e::ComboHitCollection*       shcol;
 
       const char* ProductName = "";
       const char* ProcessName = "";
@@ -865,12 +867,12 @@ void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix,
       int banner_printed(0);
       for (int i=0; i<nsh; ++i){
 	const mu2e::ComboHit*  helHit = &Helix->hits().at(i);
-	int  hitIndex                 = helHit->index(0);//Helix->indices().at(i);
+	int  hitIndex                 = helHit->index(0);     // index of the first straw hit
       
 	std::vector<StrawDigiIndex> shids;
 	Helix->hits().fillStrawDigiIndices(*(fEvent),i,shids);
 
-	const mu2e::ComboHit*  hit    = &shcol->at(hitIndex);
+	const mu2e::ComboHit* hit     = &shcol->at(hitIndex);
  
 	mu2e::StrawDigiMC const&     mcdigi = mcdigis->at(shids[0]);
 	art::Ptr<mu2e::StepPointMC>  spmcp;
@@ -1253,7 +1255,7 @@ void TAnaDump::printTimeClusterCollection(const char* ModuleLabel         ,
     }
 
     if (hitOpt > 0) printTimeCluster(tp,"data+hits",chColl);
-    else            printTimeCluster(tp,"data");
+    else            printTimeCluster(tp,"data",chColl);
 
   }
 }
@@ -2130,11 +2132,11 @@ void TAnaDump::printComboHit(const mu2e::ComboHit* Hit, const mu2e::StepPointMC*
     opt.ToLower();
 
     if ((opt == "") || (opt.Index("banner") >= 0)) {
-      printf("-----------------------------------------------------------------------------");
+      printf("--------------------------------------------------------------------------------------------");
       printf("------------------------------------------------------------\n");
-      printf("    I nsh  SHID    Flags  Plane   Panel  Layer   Straw     Time         eDep ");
+      printf("    I nsh  SHID    Flags  Pln:Pnl:Lay:Str      X        Y        Z        Time         eDep ");
       printf("           PDG       PDG(M)   Generator          ID      p  \n");
-      printf("-----------------------------------------------------------------------------");
+      printf("--------------------------------------------------------------------------------------------");
       printf("------------------------------------------------------------\n");
     }
 
@@ -2186,11 +2188,12 @@ void TAnaDump::printComboHit(const mu2e::ComboHit* Hit, const mu2e::StepPointMC*
 
       if (Flags >= 0) printf(" %08x",Flags);
       else            printf("        ");
-      printf("  %5i  %5i   %5i   %5i   %8.3f    %9.6f   %10i   %10i  %10i  %10i %8.3f\n",
+      printf("  %3i %3i %3i %3i  %8.3f %8.3f %9.3f  %8.3f    %9.6f   %10i   %10i  %10i  %10i %8.3f\n",
 	     Hit->strawId().plane(),
 	     Hit->strawId().panel(),
 	     Hit->strawId().layer(),
 	     Hit->strawId().straw(),
+	     Hit->pos().x(),Hit->pos().y(),Hit->pos().z(),
 	     Hit->time(),
 	     Hit->energyDep(),
 	     pdg_id,
@@ -2267,7 +2270,7 @@ void TAnaDump::printHelixHit(const mu2e::HelixHit*    HelHit, const mu2e::ComboH
       if (IHit  >= 0) printf("%5i " ,IHit);
       else            printf("    ");
 
-      printf(" %3i ",Hit->nStrawHits());
+      printf(" %3i ",HelHit->nStrawHits());
 
       printf("%5i",Hit->strawId().asUint16());
 

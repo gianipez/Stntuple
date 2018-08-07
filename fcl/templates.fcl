@@ -410,11 +410,14 @@ Stntuple.tpr_reco_dem    : [ @sequence::Tracking.TPRDeM ,
 Stntuple.mpr_reco_dem    : [ @sequence::Tracking.TPRDeM , 
 			     @sequence::CalPatRec.dem_reco, 
 			     MergePatRecDem, 
-			     @sequence::TrackCaloMatching.matching_dem ]
+			     @sequence::TrackCaloMatching.matching_dem,
+			     AvikPIDNewDem
+			    ]
 
 Stntuple.cpr_reco_dep    : [ @sequence::CalPatRec.dep_reco, 
  			     MergePatRecCprDep, 
- 			     @sequence::TrackCaloMatching.matching_cpr_dep ]
+ 			     @sequence::TrackCaloMatching.matching_cpr_dep
+			    ]
 
 Stntuple.tpr_reco_dep    : [ @sequence::Tracking.TPRDeP , 
  			     MergePatRecTprDep, 
@@ -423,7 +426,9 @@ Stntuple.tpr_reco_dep    : [ @sequence::Tracking.TPRDeP ,
 Stntuple.mpr_reco_dep    : [ @sequence::Tracking.TPRDeP , 
 			     @sequence::CalPatRec.dep_reco, 
 			     MergePatRecDep, 
-			     @sequence::TrackCaloMatching.matching_dep ]
+			     @sequence::TrackCaloMatching.matching_dep,
+			     AvikPIDNewDep
+			    ]
 
 Stntuple.dem_reco        : [ @sequence::Tracking.TPRDeM , @sequence::CalPatRec.dem_reco, MergePatRecDem, 
 			     @sequence::TrackCaloMatching.matching_dem, AvikPIDNewDem ]

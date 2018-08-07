@@ -157,11 +157,11 @@ public:
 				const char* ModuleLabelStrawHit     ,  // usually - "makeSH"
 				const char* Opt = ""                );
 
-  void printHelixSeedCollection(const char* ModuleLabel             , 
-				const char* ModuleLabelStrawHit     ,  // usually - "makeSH"
-				const char* ProductName         = "", 
-				const char* ProcessName         = "",
-				int         hitOpt              = 0 ); 
+  void printHelixSeedCollection(const char* ModuleLabel                   ,  // always needed
+				const char* ModuleLabelStrawHit = "makeSH",  // usually - "makeSH"
+				const char* ProductName         = ""      , 
+				const char* ProcessName         = ""      ,
+				int         hitOpt              = 0       ); 
 
 //   void plotTrackSeed           (int Index                      , 
 // 				const char* ModuleLabelTrkSeeds,
