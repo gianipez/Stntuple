@@ -155,6 +155,7 @@ namespace mu2e {
     std::string        fStrawHitFlagMaker;
 
     std::string        fTrkRecoModuleLabel;
+    std::string        fTimeClusterModuleLabel;
     std::string        fCrystalHitMaker;
     std::string        fTrkExtrapol;
     std::string        fTrkCalMatch;
@@ -299,6 +300,7 @@ namespace mu2e {
     fStrawHitFlagMaker(pset.get<std::string>("strawHitFlagMakerModuleLabel")),
 
     fTrkRecoModuleLabel(pset.get<std::string>("trkRecoModuleLabel")),
+    fTimeClusterModuleLabel(pset.get<std::string>("timeClusterModuleLabel")),
     fCrystalHitMaker(pset.get<std::string>("caloCrystalHitsMaker")),
     fTrkExtrapol(pset.get<std::string>("trkExtrapol")),
     fTrkCalMatch(pset.get<std::string>("trkCalMatch")),
@@ -737,13 +739,13 @@ namespace mu2e {
       //      const char* charDirectionAndParticle = fDirectionAndParticle.c_str();
 
       if (_showTracks){
-	Evt->getByLabel("CalTimePeakFinder", "", tpch);
+	Evt->getByLabel(fTimeClusterModuleLabel/*"CalTimePeakFinder"*/, "", tpch);
       } 
       else {
 //-----------------------------------------------------------------------------
 // not sure I understand the clause
 //-----------------------------------------------------------------------------
-	Evt->getByLabel("CalTimePeakFinder", tpch);
+	Evt->getByLabel(fTimeClusterModuleLabel/*"CalTimePeakFinder"*/, tpch);
       }
       if (tpch.isValid()) {
 	fTimeClusterColl = tpch.product();

@@ -38,6 +38,9 @@
 #include "MCDataProducts/inc/SimParticleCollection.hh"
 #include "MCDataProducts/inc/StepPointMC.hh"
 #include "MCDataProducts/inc/StepPointMCCollection.hh"
+#include "MCDataProducts/inc/StrawDigiMCCollection.hh"
+
+#include "TrkDiag/inc/TrkMCTools.hh"
 //-----------------------------------------------------------------------------
 // assume that the collection name is set, so we could grab it from the event
 //-----------------------------------------------------------------------------
@@ -71,10 +74,27 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
  
   ntrkseeds = list_of_trackSeeds->size();    
 
-  art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandleStraw;
-  Evt->getByLabel("makeSD","",mcptrHandleStraw);
-  mu2e::PtrStepPointMCVectorCollection const* hits_mcptrStraw = mcptrHandleStraw.product();
+  // art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandleStraw;
+  // Evt->getByLabel("compressDigiMCs"/*"makeSD"*/,"",mcptrHandleStraw);
+  // mu2e::PtrStepPointMCVectorCollection const* hits_mcptrStraw = mcptrHandleStraw.product();
+  //  Evt->getByLabel("compressDigiMCs"/*"makeSD"*/,"",mcptrHandleStraw);
+  //  mu2e::PtrStepPointMCVectorCollection const* hits_mcptrStraw = mcptrHandleStraw.product();
+  // char                 stepPointMC_module_label[100], stepPointMC_description[100];
+  // cb->GetModuleLabel("mu2e::StepPointMCCollection", stepPointMC_module_label);
+  // cb->GetDescription("mu2e::StepPointMCCollection", stepPointMC_description );
+  char                 makeSD_module_label[100];
+  cb->GetModuleLabel("mu2e::StrawDigiMCCollection",makeSD_module_label);
 
+  // art::Handle<mu2e::StepPointMCCollection> mcptrHandleStraw;
+  // if (stepPointMC_description[0] == 0) Evt->getByLabel(stepPointMC_module_label/*"makeSD"*/,mcptrHandleStraw);
+  // else                                 Evt->getByLabel(stepPointMC_module_label, stepPointMC_description, mcptrHandleStraw);
+  // mu2e::StepPointMCCollection const* hits_mcptrStraw(0);
+  // if (mcptrHandleStraw.isValid()) hits_mcptrStraw = mcptrHandleStraw.product();
+  const mu2e::StrawDigiMCCollection* mcdigis(0);
+  art::Handle<mu2e::StrawDigiMCCollection> mcdH;
+  Evt->getByLabel(makeSD_module_label/*"makeSD"*/, mcdH);
+  mcdigis = mcdH.product();
+  
   std::vector<int>     hits_simp_id, hits_simp_index;
   TParticlePDG*        part;
   TDatabasePDG*        pdg_db = TDatabasePDG::Instance();
@@ -119,8 +139,14 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
     for (int j=0; j<nsh; ++j){
       int  hitIndex  = int(trkSeed->hits().at(j).index());
 
-      mu2e::PtrStepPointMCVector const& mcptr(hits_mcptrStraw->at(hitIndex));
-      const mu2e::StepPointMC* Step = mcptr[0].get();
+      // mu2e::PtrStepPointMCVector const& mcptr(hits_mcptrStraw->at(hitIndex));
+      // const mu2e::StepPointMC* Step = mcptr[0].get();
+      //      const mu2e::StepPointMC* Step = &hits_mcptrStraw->at(hitIndex);
+      mu2e::StrawDigiMC const&     mcdigi = mcdigis->at(hitIndex);
+      art::Ptr<mu2e::StepPointMC>  spmcp;
+      mu2e::TrkMCTools::stepPoint(spmcp,mcdigi);
+      const mu2e::StepPointMC* Step = spmcp.get();
+
       if (Step) {
 	art::Ptr<mu2e::SimParticle> const& simptr = Step->simParticle(); 
 	int sim_id        = simptr->id().asInt();
@@ -148,8 +174,12 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
     // trackSeed->fSimpId2     = -1;
     trackSeed->fSimpId2Hits = -1;
 
-    mu2e::PtrStepPointMCVector const& mcptr(hits_mcptrStraw->at(mostvalueindex) );
-    const mu2e::StepPointMC* Step = mcptr[0].get();
+    // mu2e::PtrStepPointMCVector const& mcptr(hits_mcptrStraw->at(mostvalueindex) );
+    // const mu2e::StepPointMC* Step = mcptr[0].get();
+    mu2e::StrawDigiMC const&     mcdigi = mcdigis->at(mostvalueindex);
+    art::Ptr<mu2e::StepPointMC>  spmcp;
+    mu2e::TrkMCTools::stepPoint(spmcp,mcdigi);
+    const mu2e::StepPointMC* Step =spmcp.get();
     const mu2e::SimParticle * sim (0);
 
     if (Step) {
@@ -199,39 +229,43 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
       trackSeed->fSimpId2Hits = max;
 
       if (secondmostvalueindex >=0){
-      mu2e::PtrStepPointMCVector const& mcptr(hits_mcptrStraw->at(secondmostvalueindex) );
-      const mu2e::StepPointMC* Step = mcptr[0].get();
-      const mu2e::SimParticle * sim (0);
+	// mu2e::PtrStepPointMCVector const& mcptr(hits_mcptrStraw->at(secondmostvalueindex) );
+	// const mu2e::StepPointMC* Step = mcptr[0].get();
+	mu2e::StrawDigiMC const&     mcdigi = mcdigis->at(secondmostvalueindex);
+	art::Ptr<mu2e::StepPointMC>  spmcp;
+	mu2e::TrkMCTools::stepPoint(spmcp,mcdigi);
+	const mu2e::StepPointMC* Step = spmcp.get();
+	const mu2e::SimParticle * sim (0);
 
-      if (Step) {
-	art::Ptr<mu2e::SimParticle> const& simptr = Step->simParticle(); 
-	trackSeed->fSimpPDG2    = simptr->pdgId();
-	art::Ptr<mu2e::SimParticle> mother = simptr;
-	part   = pdg_db->GetParticle(trackSeed->fSimpPDG2);
+	if (Step) {
+	  art::Ptr<mu2e::SimParticle> const& simptr = Step->simParticle(); 
+	  trackSeed->fSimpPDG2    = simptr->pdgId();
+	  art::Ptr<mu2e::SimParticle> mother = simptr;
+	  part   = pdg_db->GetParticle(trackSeed->fSimpPDG2);
 
-	while(mother->hasParent()) mother = mother->parent();
-	sim = mother.operator ->();
+	  while(mother->hasParent()) mother = mother->parent();
+	  sim = mother.operator ->();
 
-	trackSeed->fSimpPDGM2   = sim->pdgId();
+	  trackSeed->fSimpPDGM2   = sim->pdgId();
       
-	double   px = simptr->startMomentum().x();
-	double   py = simptr->startMomentum().y();
-	double   pz = simptr->startMomentum().z();
-	double   mass(-1.);//  = part->Mass();
-	double   energy(-1.);// = sqrt(px*px+py*py+pz*pz+mass*mass);
-	if (part) {
-	  mass   = part->Mass();
-	  energy = sqrt(px*px+py*py+pz*pz+mass*mass);
-	}
-	trackSeed->fMom2.SetPxPyPzE(px,py,pz,energy);
+	  double   px = simptr->startMomentum().x();
+	  double   py = simptr->startMomentum().y();
+	  double   pz = simptr->startMomentum().z();
+	  double   mass(-1.);//  = part->Mass();
+	  double   energy(-1.);// = sqrt(px*px+py*py+pz*pz+mass*mass);
+	  if (part) {
+	    mass   = part->Mass();
+	    energy = sqrt(px*px+py*py+pz*pz+mass*mass);
+	  }
+	  trackSeed->fMom2.SetPxPyPzE(px,py,pz,energy);
 
-	const CLHEP::Hep3Vector* sp = &simptr->startPosition();
-	trackSeed->fOrigin2.SetXYZT(sp->x(),sp->y(),sp->z(),simptr->startGlobalTime());
+	  const CLHEP::Hep3Vector* sp = &simptr->startPosition();
+	  trackSeed->fOrigin2.SetXYZT(sp->x(),sp->y(),sp->z(),simptr->startGlobalTime());
   
-	// trackSeed->fSimp2P      = Step->momentum().mag();
-	// trackSeed->fSimp2Pt     = sqrt(pow(Step->momentum().x(),2.) + pow(Step->momentum().y(),2.));
-      }      
-    }
+	  // trackSeed->fSimp2P      = Step->momentum().mag();
+	  // trackSeed->fSimp2Pt     = sqrt(pow(Step->momentum().x(),2.) + pow(Step->momentum().y(),2.));
+	}      
+      }
     }
     
     

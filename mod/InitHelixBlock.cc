@@ -111,12 +111,14 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
 
   char                 helix_module_label[100], helix_description[100]; 
   char                 algs_module_label [100], algs_description [100];
+  char                 makeSD_module_label[100];
 
   TStnHelixBlock*         cb = (TStnHelixBlock*) Block;
   TStnHelix*              helix;
 
 
   cb->Clear();
+  cb->GetModuleLabel("mu2e::StrawDigiMCCollection",makeSD_module_label);
 
   cb->GetModuleLabel("mu2e::AlgorithmIDCollection",algs_module_label);
   cb->GetDescription("mu2e::AlgorithmIDCollection",algs_description );
@@ -168,7 +170,7 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
 
   const mu2e::StrawDigiMCCollection* mcdigis(0);
   art::Handle<mu2e::StrawDigiMCCollection> mcdH;
-  Evt->getByLabel("makeSD", mcdH);
+  Evt->getByLabel(makeSD_module_label/*"makeSD"*/, mcdH);
   mcdigis = mcdH.product();
   
   const mu2e::HelixSeed     *tmpHel(0);
@@ -253,7 +255,8 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
       hit       = &hits->at(j);
       //get the MC truth info
       //      int  hitIndex                = tmpHel->indices().at(j);//hit->index();
-      
+      if (hit->_flag.hasAnyProperty(mu2e::StrawHitFlag::outlier))         continue;
+
       std::vector<StrawDigiIndex> shids;
       tmpHel->hits().fillStrawDigiIndices(*(Evt),j,shids);
 
@@ -274,21 +277,24 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
       wdir      = hit->wdir();
       sdir      = zdir.Cross(wdir);
       phi       = hit->phi();
-      helix_phi = helix->fFZ0 + pos.z()/helix->fLambda;
-      double    weightXY   = evalWeight(hit, sdir, helix_center, radius, 1, pset);
+      //      helix_phi = robustHel->circleAzimuth(pos.z());//helix->fFZ0 + pos.z()/helix->fLambda;
+      double    weightXY   = hit->_xyWeight;
+      if (weightXY<1e-6) weightXY = evalWeight(hit, sdir, helix_center, radius, 1, pset);
 
       sxy.addPoint(pos.x(), pos.y(), weightXY);
 
-      double    dPhi     = helix_phi - phi- M_PI/2.;
-      while (dPhi > M_PI){
-	phi    += 2*M_PI;
-        dPhi   = helix_phi - phi;
-      }
-      while (dPhi < -M_PI){
-	phi   -= 2*M_PI; 
-	dPhi  = helix_phi - phi;
-      }
-      double weight    = evalWeight(hit, sdir, helix_center, radius, 0, pset);
+      //      double    dPhi     = helix_phi - phi- M_PI/2.;//NEED TO CHECK!
+      // while (dPhi > M_PI){
+      // 	phi    += 2*M_PI;
+      //   dPhi   = helix_phi - phi;
+      // }
+      // while (dPhi < -M_PI){
+      // 	phi   -= 2*M_PI; 
+      // 	dPhi  = helix_phi - phi;
+      // }
+      double weight    = hit->_zphiWeight;
+      if (weight < 1e-6) weight = evalWeight(hit, sdir, helix_center, radius, 0, pset);
+
       srphi.addPoint(pos.z(), phi, weight);
 
       //increase the counter of the StrawHits
@@ -350,7 +356,7 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
     }
     
     //look for the second most frequent hit
-    if (max != nhits){
+    if (max != int(hits_simp_id.size()) ){  //nhits){
       int   secondmostvalueindex(-1);
       max = 0;//reset max
 

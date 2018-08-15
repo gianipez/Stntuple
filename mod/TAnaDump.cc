@@ -63,6 +63,7 @@
 #include "Stntuple/base/TNamedHandle.hh"
 
 #include "Mu2eUtilities/inc/SimParticleTimeOffset.hh"
+#include "TrkDiag/inc/TrkMCTools.hh"
 
 
 //BaBar includes
@@ -542,7 +543,8 @@ void TAnaDump::printTrackSeed(const mu2e::KalSeed* TrkSeed,	const char* Opt,
   art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandleStraw;
   //  fEvent->getByLabel("makeSH","StrawHitMCPtr",mcptrHandleStraw);
   fEvent->getByLabel("makeSD","",mcptrHandleStraw);
-  mu2e::PtrStepPointMCVectorCollection const* hits_mcptrStraw = mcptrHandleStraw.product();
+  mu2e::PtrStepPointMCVectorCollection const* hits_mcptrStraw(0);
+  if (mcptrHandleStraw.isValid())  hits_mcptrStraw = mcptrHandleStraw.product();
   
 
   if ((opt == "") || (opt.Index("data") >= 0)) {
@@ -710,7 +712,8 @@ void TAnaDump::printTrackSeedCollection(const char* ModuleLabel,
 void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix, 
 			      const char* ModuleLabel, 
 			      const char* ModuleLabelStrawHit, 
-			      const char* Opt                ) {
+			      const char* Opt                ,
+			      const char* ModuleLabelStrawDigi) {
   TString opt = Opt;
   
   if ((opt == "") || (opt == "banner")) {
@@ -725,7 +728,7 @@ void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix,
   if ((opt = "") || (opt.Index("data") >= 0)) {
     const mu2e::StrawDigiMCCollection* mcdigis(0);
     art::Handle<mu2e::StrawDigiMCCollection> mcdH;
-    fEvent->getByLabel("makeSD", mcdH);
+    fEvent->getByLabel(ModuleLabelStrawDigi/*"makeSD"*/, mcdH);
     mcdigis = mcdH.product();
 
     const mu2e::RobustHelix*robustHel = &Helix->helix();
@@ -893,6 +896,7 @@ void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix,
 //-----------------------------------------------------------------------------
 void TAnaDump::printHelixSeedCollection(const char* ModuleLabel        , 
 					const char* ModuleLabelStrawHit,
+					const char* ModuleLabelStrawDigi,
 					const char* ProductName, 
 					const char* ProcessName,
 					int         hitOpt     ) {
@@ -919,10 +923,10 @@ void TAnaDump::printHelixSeedCollection(const char* ModuleLabel        ,
   for (int i=0; i<nhelices; i++) {
     helix = &list_of_helixSeeds->at(i);
     if (banner_printed == 0) {
-      printHelixSeed(helix,ModuleLabel,ModuleLabelStrawHit,"banner");
+      printHelixSeed(helix,ModuleLabel,ModuleLabelStrawHit,"banner",ModuleLabelStrawDigi);
       banner_printed = 1;
     }
-    if (hitOpt>0) printHelixSeed(helix,ModuleLabel,ModuleLabelStrawHit,"data");
+    if (hitOpt>0) printHelixSeed(helix,ModuleLabel,ModuleLabelStrawHit,"data",ModuleLabelStrawDigi);
 
   }
 }
@@ -1137,15 +1141,19 @@ void TAnaDump::printHelixSeedCollection(const char* ModuleLabel        ,
 //   yf->Draw("same");
 // }
 //-----------------------------------------------------------------------------
-void TAnaDump::printTimeCluster(const mu2e::TimeCluster* TPeak, const char* Opt, const mu2e::ComboHitCollection* ChColl) {
+void TAnaDump::printTimeCluster(const mu2e::TimeCluster* TPeak, const char* Opt, const mu2e::ComboHitCollection* ChColl, const char*StrawDigiMCModuleLabel) {
 
   const mu2e::ComboHit*      hit;
   int                        flags;
   //  const mu2e::StepPointMC*   step(NULL);
-  art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandleStraw;
-  fEvent->getByLabel("makeSD","",mcptrHandleStraw);
-  mu2e::PtrStepPointMCVectorCollection const* hits_mcptrStraw = mcptrHandleStraw.product();
-    
+  // art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandleStraw;
+  // fEvent->getByLabel("makeSD","",mcptrHandleStraw);
+  // mu2e::PtrStepPointMCVectorCollection const* hits_mcptrStraw = mcptrHandleStraw.product();
+  const mu2e::StrawDigiMCCollection* mcdigis(0);
+  art::Handle<mu2e::StrawDigiMCCollection> mcdH;
+  fEvent->getByLabel(StrawDigiMCModuleLabel, mcdH);
+  if (mcdH.isValid()) mcdigis = mcdH.product();
+  
   TString opt = Opt;
   opt.ToLower();
 
@@ -1191,8 +1199,12 @@ void TAnaDump::printTimeCluster(const mu2e::TimeCluster* TPeak, const char* Opt,
 	hit         = &(ChColl->at(loc));
 	std::vector<StrawDigiIndex> shids;
 	ChColl->fillStrawDigiIndices(*(fEvent),loc,shids);
-	mu2e::PtrStepPointMCVector           const& mcptr(hits_mcptrStraw->at(shids[0]) );
-	const mu2e::StepPointMC*                    step = mcptr[0].get();
+	mu2e::StrawDigiMC const&     mcdigi = mcdigis->at(shids[0]);
+	art::Ptr<mu2e::StepPointMC>  spmcp;
+	mu2e::TrkMCTools::stepPoint(spmcp,mcdigi);
+	const mu2e::StepPointMC* step = spmcp.get();
+      // mu2e::PtrStepPointMCVector           const& mcptr(hits_mcptrStraw->at(shids[0]) );
+      // 	const mu2e::StepPointMC*                    step = mcptr[0].get();
 	flags = 0; // *((int*) &TPeak->_shfcol->at(loc));
 
 	printComboHit(hit,step,"data",i,flags);
@@ -1210,7 +1222,8 @@ void TAnaDump::printTimeClusterCollection(const char* ModuleLabel         ,
 					  const char* ComboHitMouduleLabel,
 					  const char* ProductName         , 
 					  const char* ProcessName         ,
-					  int         hitOpt              ) {
+					  int         hitOpt              ,
+					  const char* StrawDigiMCModuleLabel) {
 
   art::Handle<mu2e::TimeClusterCollection>  handle;
   const mu2e::TimeClusterCollection*        coll(0);
@@ -1254,8 +1267,8 @@ void TAnaDump::printTimeClusterCollection(const char* ModuleLabel         ,
       banner_printed = 1;
     }
 
-    if (hitOpt > 0) printTimeCluster(tp,"data+hits",chColl);
-    else            printTimeCluster(tp,"data",chColl);
+    if (hitOpt > 0) printTimeCluster(tp,"data+hits",chColl,StrawDigiMCModuleLabel);
+    else            printTimeCluster(tp,"data",chColl,StrawDigiMCModuleLabel);
 
   }
 }

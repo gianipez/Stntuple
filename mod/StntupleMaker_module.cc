@@ -382,8 +382,9 @@ void StntupleMaker::beginJob() {
       //      SetResolveLinksMethod(block_name,StntupleInitMu2eHelixBlockLinks);
       
       if (helix_data) {
-	helix_data->AddCollName("mu2e::HelixSeedCollection", fShortHelixModuleLabel[i].data(),"");
-	helix_data->AddCollName("ShortHelixBlockName"      , fShortHelixBlockName[i].data()    ,"");
+	helix_data->AddCollName("mu2e::HelixSeedCollection"  , fShortHelixModuleLabel[i].data(),"");
+	helix_data->AddCollName("ShortHelixBlockName"        , fShortHelixBlockName[i].data()    ,"");
+	helix_data->AddCollName("mu2e::StrawDigiMCCollection", fMakeStrawDigiModuleLabel.data()  ,"");
       }
     }
     
@@ -405,8 +406,10 @@ void StntupleMaker::beginJob() {
       //     SetResolveLinksMethod(block_name,StntupleInitMu2eTrackSeedBlockLinks);
       
       if (trackSeed_data) {
-	trackSeed_data->AddCollName("mu2e::KalSeedCollection"  ,fShortTrackSeedModuleLabel[i].data(),"");
-	trackSeed_data->AddCollName("ShortTrackSeedBlockName"  ,fShortTrackSeedBlockName[i].data(),"");
+	trackSeed_data->AddCollName("mu2e::KalSeedCollection"    ,fShortTrackSeedModuleLabel[i].data(),"");
+	trackSeed_data->AddCollName("ShortTrackSeedBlockName"    ,fShortTrackSeedBlockName[i].data()  ,"");
+	trackSeed_data->AddCollName("mu2e::StrawDigiMCCollection",fMakeStrawDigiModuleLabel.data()    ,"");
+	trackSeed_data->AddCollName("mu2e::StepPointMCCollection",fG4ModuleLabel.data()               ,"tracker");
       }
     }
     
@@ -467,6 +470,7 @@ void StntupleMaker::beginJob() {
       if (helix_data) {
 	helix_data->AddCollName("mu2e::HelixSeedCollection"  ,fHelixModuleLabel[i].data()   ,"");
  	helix_data->AddCollName("mu2e::TimeClusterCollection",fTimeClusterModuleLabel[i].data(),"");
+	helix_data->AddCollName("mu2e::StrawDigiMCCollection", fMakeStrawDigiModuleLabel.data()  ,"");
      }
     }
   }
@@ -499,6 +503,8 @@ void StntupleMaker::beginJob() {
 	trackSeed_data->AddCollName("HelixBlockName"           ,fHelixBlockName[i].data()       ,"");
 	trackSeed_data->AddCollName("ShortHelixBlockName"      ,fShortHelixBlockName[i].data(),"");
 	trackSeed_data->AddCollName("ShortTrackSeedBlockName"  ,fShortTrackSeedBlockName[i].data(),"");
+	trackSeed_data->AddCollName("mu2e::StrawDigiMCCollection",fMakeStrawDigiModuleLabel.data()    ,"");
+	trackSeed_data->AddCollName("mu2e::StepPointMCCollection",fG4ModuleLabel.data()    , "tracker");
       }
 
       SetResolveLinksMethod(block_name,StntupleInitMu2eTrackSeedBlockLinks);

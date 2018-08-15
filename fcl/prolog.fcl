@@ -113,6 +113,7 @@ MuHitDisplay: { module_type:MuHitDisplay        # the class name;
     caloCrystalHitsMaker         : CaloCrystalHitFromHit
     caloClusterModuleLabel       : CaloClusterFromProtoCluster
 
+    timeClusterModuleLabel       : CalTimePeakFinder
     trkRecoModuleLabel           : MergePatRec
     trkExtrapol                  : TrackCaloIntersection
     trkCalMatch                  : TrackCaloMatching

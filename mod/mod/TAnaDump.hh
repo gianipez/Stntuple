@@ -155,10 +155,12 @@ public:
   void printHelixSeed          (const mu2e::HelixSeed*         Helix, 
 				const char* ModuleLabel             ,
 				const char* ModuleLabelStrawHit     ,  // usually - "makeSH"
-				const char* Opt = ""                );
+				const char* Opt = ""                ,
+				const char* ModuleLabelStrawDigi = "makeSD");
 
   void printHelixSeedCollection(const char* ModuleLabel                   ,  // always needed
-				const char* ModuleLabelStrawHit = "makeSH",  // usually - "makeSH"
+				const char* ModuleLabelStrawHit  = "makeSH",  // usually - "makeSH"
+				const char* ModuleLabelStrawDigi = "makeSD",
 				const char* ProductName         = ""      , 
 				const char* ProcessName         = ""      ,
 				int         hitOpt              = 0       ); 
@@ -186,13 +188,15 @@ public:
 					 const char* ProcessName = "");
 
   void printTimeCluster   (const mu2e::TimeCluster* TimePeak, const char* Opt = "", 
-			   const mu2e::ComboHitCollection* ChColl=0);
+			   const mu2e::ComboHitCollection* ChColl=0,
+			   const char*StrawDigiMCModuleLabel = "makeSD");
 
   void printTimeClusterCollection(const char* ModuleLabel        , 
 				  const char* ComboHitModuleLabel,
 				  const char* ProductName = ""   , 
 				  const char* ProcessName = ""   ,
-				  int         PrintHits   = 0    );
+				  int         PrintHits   = 0    ,
+				  const char* StrawDigiMCModuleLabel = "makeSD");
 
 //   void printCaloCrystalHit(const CaloCrystalHit* Hit, const char* Opt = "");
 //   void printCaloHit       (const CaloHit*        Hit, const char* Opt = "");

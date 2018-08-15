@@ -88,12 +88,16 @@ BEGIN_PROLOG
 # extrapolation and matching
 #------------------------------------------------------------------------------
   trkCaloMatchingSeq       : [ TrackCaloIntersection   , TrackCaloMatching    ]
+  trkCaloMatchingDepSeq    : [ TrackCaloIntersectionDep, TrackCaloMatchingDep ]
   trkCaloMatchingDemSeq    : [ TrackCaloIntersectionDem, TrackCaloMatchingDem ]
   trkCaloMatchingDmmSeq    : [ TrackCaloIntersectionDmm, TrackCaloMatchingDmm ]
   trkCaloMatchingDemDmmSeq : [ TrackCaloIntersectionDem, TrackCaloMatchingDem, TrackCaloIntersectionDmm, TrackCaloMatchingDmm ]
 
   trkCaloMatchingTprSeq    : [ TrackCaloIntersectionTpr, TrackCaloMatchingTpr ]
   trkCaloMatchingCprSeq    : [ TrackCaloIntersectionCpr, TrackCaloMatchingCpr ]
+
+  trkCaloMatchingTprDepSeq    : [ TrackCaloIntersectionTprDep, TrackCaloMatchingTprDep ]
+  trkCaloMatchingCprDepSeq    : [ TrackCaloIntersectionCprDep, TrackCaloMatchingCprDep ]
 
 #------------------------------------------------------------------------------
 # particle identification
