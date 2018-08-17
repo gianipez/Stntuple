@@ -260,17 +260,20 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
       std::vector<StrawDigiIndex> shids;
       tmpHel->hits().fillStrawDigiIndices(*(Evt),j,shids);
 
-      mu2e::StrawDigiMC const&     mcdigi = mcdigis->at(shids[0]);
-      art::Ptr<mu2e::StepPointMC>  spmcp;
-      mu2e::TrkMCTools::stepPoint(spmcp,mcdigi);
-      const mu2e::StepPointMC* Step = spmcp.get();
+      for (size_t k=0; k<shids.size(); ++k) {
+	mu2e::StrawDigiMC const&     mcdigi = mcdigis->at(shids[k]);
+	art::Ptr<mu2e::StepPointMC>  spmcp;
+	mu2e::TrkMCTools::stepPoint(spmcp,mcdigi);
+	const mu2e::StepPointMC* Step = spmcp.get();
       
-      if (Step) {
-	art::Ptr<mu2e::SimParticle> const& simptr = Step->simParticle(); 
-	int sim_id        = simptr->id().asInt();
+	if (Step) {
+	  art::Ptr<mu2e::SimParticle> const& simptr = Step->simParticle(); 
+	  int sim_id        = simptr->id().asInt();
 
-	hits_simp_id.push_back   (sim_id); 
-	hits_simp_index.push_back(shids[0]);
+	  hits_simp_id.push_back   (sim_id); 
+	  hits_simp_index.push_back(shids[k]);
+	  break;
+	}
       }
 
       pos       = hit->pos();
@@ -302,8 +305,10 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
     } 
 
     //find the simparticle that created the majority of the hits
-    int     max(0), mostvalueindex(-1), mostvalue= hits_simp_id[0];
-    for (int k=0; k<nhits; ++k){
+    int     max(0), mostvalueindex(-1), mostvalue(-1);
+    if (hits_simp_id.size()>0) mostvalue = hits_simp_id[0];
+
+    for (int  k=0; k<nhits; ++k){
       int co = (int)std::count(hits_simp_id.begin(), hits_simp_id.end(), hits_simp_id[k]);
       if ( co>max) {
 	max            = co;
@@ -314,10 +319,15 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
 
     //    helix->fSimpId1     = mostvalue;
     helix->fSimpId1Hits = max;
-    //set defaults
-    // helix->fSimpId2     = -1;
     helix->fSimpId2Hits = -1;
-
+    helix->fSimpPDGM1   = -1;
+    helix->fSimpPDGM2   = -1;
+    
+    if (mostvalueindex<0)        {
+      printf(">>> ERROR: HelixFinder helix %i no MC found \n", i);
+      continue;
+    }
+    
     mu2e::StrawDigiMC const&     mcdigi = mcdigis->at(mostvalueindex);
     art::Ptr<mu2e::StepPointMC>  spmcp;
     mu2e::TrkMCTools::stepPoint(spmcp,mcdigi);
