@@ -96,6 +96,9 @@ BEGIN_PROLOG
   trkCaloMatchingTprSeq    : [ TrackCaloIntersectionTpr, TrackCaloMatchingTpr ]
   trkCaloMatchingCprSeq    : [ TrackCaloIntersectionCpr, TrackCaloMatchingCpr ]
 
+  trkCaloMatchingTprDemSeq    : [ TrackCaloIntersectionTprDem, TrackCaloMatchingTprDem ]
+  trkCaloMatchingCprDemSeq    : [ TrackCaloIntersectionCprDem, TrackCaloMatchingCprDem ]
+
   trkCaloMatchingTprDepSeq    : [ TrackCaloIntersectionTprDep, TrackCaloMatchingTprDep ]
   trkCaloMatchingCprDepSeq    : [ TrackCaloIntersectionCprDep, TrackCaloMatchingCprDep ]
 
@@ -114,6 +117,7 @@ BEGIN_PROLOG
   stnmaker_dmm_seq       : [ InitStntuple, StntupleMakerDmm   , FillStntuple ]
   stnmaker_dem_dmm_seq   : [ InitStntuple, StntupleMakerDemDmm, FillStntuple ]
 
+  stnmaker_trig_seq      : [ InitStntuple, StntupleMakerTcmTrig , FillStntuple ]
   stnmaker3_seq          : [ InitStntuple, StntupleMakerTcm     , FillStntuple ]
 #------------------------------------------------------------------------------
 # *** path sequences
