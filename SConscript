@@ -96,6 +96,7 @@ class stntuple_helper:
         self.d1      = self.libname+'-shared';
         self.tmp_dir = "tmp/src/"+self.d1;
         self._debug  = debug
+        if (debug) : print "-------------- building directory: "+self.dirname+'/'+self.subdir
 #
 #   Accesor
 #
