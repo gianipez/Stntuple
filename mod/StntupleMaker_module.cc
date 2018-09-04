@@ -129,12 +129,14 @@ protected:
   
   double                   fMinTActive  ;  // start of the active window
   double                   fMinECrystal ;  // 
+  double                   fMinSimpEnergy; // min energy of a particle stored in SIMP block
 
   TNamed*                  fVersion;
 
   TNamedHandle*            fDarHandle;
   TNamedHandle*            fKalDiagHandle;
   TNamedHandle*            fTimeOffsetsHandle;
+  TNamedHandle*            fMinSimpEnergyHandle;
 
   DoubletAmbigResolver*    fDar;
   KalDiag*                 fKalDiag;
@@ -227,6 +229,7 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
   , fCaloClusterMaker   (PSet.get<string> ("caloClusterMaker"    ))
   , fMinTActive         (PSet.get<double> ("minTActive" ))
   , fMinECrystal        (PSet.get<double> ("minECrystal"))
+  , fMinSimpEnergy      (PSet.get<double> ("minSimpEnergy"))
 {
 
   char  ver[20], text[200];
@@ -249,9 +252,12 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
   fKalDiag       = new KalDiag(PSet.get<fhicl::ParameterSet>("KalDiag",fhicl::ParameterSet()));
   fKalDiagHandle = new TNamedHandle("KalDiagHandle",fKalDiag);
 
+  fMinSimpEnergyHandle = new TNamedHandle("MinSimpEnergyHandle",&fMinSimpEnergy);
+
   fFolder->Add(fDarHandle);
   fFolder->Add(fKalDiagHandle);
   fFolder->Add(fTimeOffsetsHandle);
+  fFolder->Add(fMinSimpEnergyHandle);
 }
 
 
@@ -724,8 +730,10 @@ void StntupleMaker::beginJob() {
       simp_data->AddCollName("mu2e::StrawHitCollection"   ,fMakeStrawHitModuleLabel.data(),"");
 
       simp_data->AddCollName("mu2e::StepPointMCCollection",
-			     fMakeSimpModuleLabel.data()    ,
+			     fMakeSimpModuleLabel.data()  ,
+
 			     fVDCollName.data());
+      simp_data->AddCollName("MinSimpEnergyHandle"         ,GetName()                     ,"MinSimpEnergyHandle");
     }
   }
 //-----------------------------------------------------------------------------

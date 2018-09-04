@@ -27,6 +27,10 @@
 
 #include "Stntuple/mod/InitStntupleDataBlocks.hh"
 
+
+#include "Stntuple/mod/THistModule.hh"
+#include "Stntuple/base/TNamedHandle.hh"
+
 #include "messagefacility/MessageLogger/MessageLogger.h"
 
 //-----------------------------------------------------------------------------
@@ -36,8 +40,11 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
   // is the name from Run I)
   const char* oname = {"StntupleInitMu2eSimpBlock"};
 
+  static int    initialized(0);
   static char   strh_module_label[100], strh_description[100];
   static char   g4_module_label  [100], g4_description  [100];
+
+  static double _min_energy;
 
   std::vector<art::Handle<mu2e::SimParticleCollection>> list_of_sp;
 
@@ -55,6 +62,22 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
 
   TSimpBlock* simp_block = (TSimpBlock*) Block;
   simp_block->Clear();
+
+  char   module_name[100], h_name[100];
+
+  if (initialized == 0) {
+    initialized = 1;
+
+    Block->GetModuleLabel("MinSimpEnergyHandle",module_name);
+    Block->GetDescription("MinSimpEnergyHandle",h_name   );
+
+    THistModule*  m;
+    TNamedHandle* nh;
+
+    m    = static_cast<THistModule*>  (THistModule::GetListOfModules()->FindObject(module_name));
+    nh   = static_cast<TNamedHandle*> (m->GetFolder()->FindObject(h_name));
+    _min_energy = *(static_cast<double*> (nh->Object()));
+  }
 
   Block->GetModuleLabel("mu2e::StrawHitCollection",strh_module_label);
   Block->GetDescription("mu2e::StrawHitCollection",strh_description );
@@ -132,7 +155,8 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
 	mf::LogWarning(oname) << " ERROR: PDG code " << pdg_code << " not in the database, set particle mass to 0\n";
 	energy = sqrt(px*px+py*py+pz*pz);
       }
-
+      
+      if (energy < _min_energy) continue;
       simp   = simp_block->NewParticle(id, parent_id, pdg_code, 
 				       creation_code, termination_code,
 				       start_vol_id, end_vol_id,

@@ -78,6 +78,7 @@ StntupleMakerTemplate : { module_type:StntupleMaker
 
     minTActive              : 0.     # ns
     minECrystal             : 1.0    # MeV
+    minSimpEnergy           : 1.0    # MeV
 #------------------------------------------------------------------------------
 # this is the default for Stage1 simulation
 #------------------------------------------------------------------------------
@@ -273,6 +274,21 @@ Stntuple : {
 	    pidBlockName            : [ "PidBlockDem"              , "PidBlockDmm"             ] 
 	    pidModuleLabel          : [ "AvikPIDNewDem"            , "AvikPIDNewDmm"           ]
 	    fitParticle             : [                11,                13 ]
+	    fitDirection            : [                 0,                 0 ]
+	}
+#------------------------------------------------------------------------------
+# explicitly store 2 versions of track reco - downstream e- and e+ reco
+#------------------------------------------------------------------------------
+	StntupleMakerDemDep  : { @table::StntupleMakerTemplate 
+	    makePid                 : 1
+	    trackBlockName          : [ "TrackBlockDem"            , "TrackBlockDep"           ] 
+	    trackStrawHitBlockName  : [ "TrackHitBlockDem"         , "TrackHitBlockDep"        ] 
+	    trkRecoModuleLabel      : [ "MergePatRecDem"           , "MergePatRecDep"          ]
+	    trkExtrapolModuleLabel  : [ "TrackCaloIntersectionDem" , "TrackCaloIntersectionDep"]
+	    trkCaloMatchModuleLabel : [ "TrackCaloMatchingDem"     , "TrackCaloMatchingDep"    ]
+	    pidBlockName            : [ "PidBlockDem"              , "PidBlockDep"             ] 
+	    pidModuleLabel          : [ "AvikPIDNewDem"            , "AvikPIDNewDep"           ]
+	    fitParticle             : [                11,               -11 ]
 	    fitDirection            : [                 0,                 0 ]
 	}
 #------------------------------------------------------------------------------
@@ -546,6 +562,7 @@ Stntuple.stnmaker_dem     : [ InitStntuple, StntupleMakerDem,                   
 Stntuple.stnmaker_dep     : [ InitStntuple, StntupleMakerDep,                   FillStntuple ]
 Stntuple.stnmaker_dmm     : [ InitStntuple, StntupleMakerDmm,                   FillStntuple ]
 Stntuple.stnmaker_ump     : [ InitStntuple, StntupleMakerUmp,                   FillStntuple ]
+Stntuple.stnmaker_dem_dep : [ InitStntuple, StntupleMakerDemDep,                FillStntuple ]
 Stntuple.stnmaker_dem_dmm : [ InitStntuple, StntupleMakerDem, StntupleMakerDmm, FillStntuple ]
 Stntuple.stnmaker_dem_umm : [ InitStntuple, StntupleMakerDem, StntupleMakerUmm, FillStntuple ]
 Stntuple.stnmaker_dem_ump : [ InitStntuple, StntupleMakerDem, StntupleMakerUmp, FillStntuple ]
