@@ -2395,64 +2395,33 @@ void TAnaDump::printStrawHitCollection(const char* ModuleLabel,
 //-----------------------------------------------------------------------------
 // FlagBgrHitsCollName = 'StrawHits' or 'ComboHits'. Very unfortunate choice!
 //-----------------------------------------------------------------------------
-void TAnaDump::printComboHitCollection(const char* ModuleLabel, 
-				       const char* FlagBgrHitsCollName,
-				       const char* ProductName,
-				       const char* ProcessName,
+void TAnaDump::printComboHitCollection(const char* StrawHitCollTag   , 
+				       const char* FlagBgrHitsCollTag,
+				       const char* StrawDigiMCCollTag,
+				       const char* ProcessName       ,
 				       double TMin, double TMax) {
 
-  const char* oname = "TAnaDump::printComboHitCollection";
+  //  const char* oname = "TAnaDump::printComboHitCollection";
 
-  art::Handle<mu2e::ComboHitCollection> shcHandle;
   const mu2e::ComboHitCollection*       shc;
 
   art::Handle<mu2e::StrawHitFlagCollection> shflagH;
   const mu2e::StrawHitFlagCollection*       shfcol;
-  
-
+  const mu2e::StrawDigiMCCollection*        mcdigis;
 //-----------------------------------------------------------------------------
 // get straw hits
 //-----------------------------------------------------------------------------
-  if (ProductName[0] != 0) {
-    art::Selector  selector(art::ProductInstanceNameSelector(ProductName) &&
-			    art::ProcessNameSelector(ProcessName)         && 
-			    art::ModuleLabelSelector(ModuleLabel)            );
-    fEvent->get(selector, shcHandle);
-  }
-  else {
-    art::Selector  selector(art::ProcessNameSelector(ProcessName)         && 
-			    art::ModuleLabelSelector(ModuleLabel)            );
-    fEvent->get(selector, shcHandle);
-  }
-
-  if (shcHandle.isValid()) shc = shcHandle.product();
-  else {
-    printf(">>> ERROR in %s: Straw Hit Collection by \"%s\" doesn't exist. Bail Out.\n",
-	   oname,ModuleLabel);
-    return;
-  }
+  auto chH = fEvent->getValidHandle<mu2e::ComboHitCollection>(StrawHitCollTag);
+  shc = chH.product();
 //-----------------------------------------------------------------------------
 // get straw hit flags (half-hack)
 //-----------------------------------------------------------------------------
-  art::Selector  sel_flags(art::ProductInstanceNameSelector(FlagBgrHitsCollName)     &&
-			   art::ProcessNameSelector(ProcessName)                     && 
-			   art::ModuleLabelSelector(fFlagBgrHitsModuleLabel.Data()));
-  fEvent->get(sel_flags,shflagH);
+  auto shfH = fEvent->getValidHandle<mu2e::StrawHitFlagCollection>(FlagBgrHitsCollTag);
+  shfcol = shfH.product();
 
-  if (shflagH.isValid()) shfcol = shflagH.product();
-  else {
-    printf(">>> ERROR in %s: Straw Hit Flag Collection by \"%s\" doesn't exist. Bail Out.\n",
-	   oname,fFlagBgrHitsModuleLabel.Data());
-    return;
-  }
+  auto mcdigiH = fEvent->getValidHandle<mu2e::StrawDigiMCCollection>(StrawDigiMCCollTag);
+  mcdigis = mcdigiH.product();
 
-// 12 - 11 -2013 giani added some MC info of the straws
-  art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandleStraw;
-  //  fEvent->getByLabel(ModuleLabel,"StrawHitMCPtr",mcptrHandleStraw);
-  fEvent->getByLabel("makeSD","",mcptrHandleStraw);
-  mu2e::PtrStepPointMCVectorCollection const* hits_mcptrStraw = mcptrHandleStraw.product();
- 
-  //------------------------------------------------------------
 
   int nhits = shc->size();
 
@@ -2469,9 +2438,16 @@ void TAnaDump::printComboHitCollection(const char* ModuleLabel,
     std::vector<StrawDigiIndex> shids;
     shc->fillStrawDigiIndices(*(fEvent),ish,shids);
 
-    mu2e::PtrStepPointMCVector const& mcptr(hits_mcptrStraw->at(shids[0] ) );
-    const mu2e::StepPointMC* Step = mcptr[0].operator ->();
-    
+
+    const mu2e::StrawDigiMC* mcdigi = &mcdigis->at(shids[0]);
+    const mu2e::StepPointMC* Step;
+
+    if (mcdigi->wireEndTime(mu2e::StrawEnd::cal) < mcdigi->wireEndTime(mu2e::StrawEnd::hv)) {
+      Step = mcdigi->stepPointMC(mu2e::StrawEnd::cal).get();
+    }
+    else {
+      Step = mcdigi->stepPointMC(mu2e::StrawEnd::hv ).get();
+    }
 					// assuming it doesn't move beyond 32 bits
     flags = *((int*) &shfcol->at(i));
     if (banner_printed == 0) {

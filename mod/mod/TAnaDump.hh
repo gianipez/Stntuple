@@ -222,9 +222,9 @@ public:
 			   int                      INit  = -1,
 			   int                      Flags = -1);
   
-  void printComboHitCollection (const char* ModuleLabel, 
-				const char* FlagBgrHitsCollName,  // 'StrawHits' or 'ComboHits'
-				const char* ProductName = "", 
+  void printComboHitCollection (const char* StrawHitCollTag, 
+				const char* FlagBgrHitsCollTag,  // 'FlagBgrHits:StrawHits' or 'FlagBgrHits:ComboHits'
+				const char* StrawDigiMCCollTag,  // "makeSD" or "compressDigiMCs"
 				const char* ProcessName = "",
 				double TMin = -1.e6,
 				double TMax =  1.e6);
