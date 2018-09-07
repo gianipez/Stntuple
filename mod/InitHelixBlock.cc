@@ -279,7 +279,7 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
       pos       = hit->pos();
       wdir      = hit->wdir();
       sdir      = zdir.Cross(wdir);
-      phi       = hit->phi();
+      phi       = hit->helixPhi();
       //      helix_phi = robustHel->circleAzimuth(pos.z());//helix->fFZ0 + pos.z()/helix->fLambda;
       double    weightXY   = hit->_xyWeight;
       if (weightXY<1e-6) weightXY = evalWeight(hit, sdir, helix_center, radius, 1, pset);
