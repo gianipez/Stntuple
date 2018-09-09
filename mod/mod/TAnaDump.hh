@@ -70,7 +70,7 @@ public:
 
 private:
 
-  TAnaDump(int TimeOffsets = 1);
+  TAnaDump(const char* TimeOffsetsTag = "compressDigiMCs");
   ~TAnaDump();
   
   class  Cleaner {
@@ -88,7 +88,7 @@ public:
 //-----------------------------------------------------------------------------
 // methods
 //-----------------------------------------------------------------------------
-  static TAnaDump*  Instance(int UseTimeOffsets = 1);
+  static TAnaDump*  Instance(const char* TimeOffsetsTag = "compressDigiMCs");
 
 
   void   AddObject      (const char* Name, void* Object);

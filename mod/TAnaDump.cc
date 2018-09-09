@@ -129,7 +129,7 @@ double TAnaDump::evalWeight(const mu2e::ComboHit* Hit   ,
 
 
 //______________________________________________________________________________
-TAnaDump::TAnaDump(int UseTimeOffsets) {
+TAnaDump::TAnaDump(const char* TimeOffsetsTag) {
 //   if (! TROOT::Initialized()) {
 //     static TROOT a ("ROOT@Mu2e","hmm",initfuncs);
 //   }
@@ -137,10 +137,10 @@ TAnaDump::TAnaDump(int UseTimeOffsets) {
   fListOfObjects          = new TObjArray();
   fFlagBgrHitsModuleLabel = "FlagBkgHits";
 
-  if (UseTimeOffsets) {
+  if (TimeOffsetsTag) {
     std::vector<std::string> maps;
-    maps.push_back(std::string("protonTimeMap"));
-    maps.push_back(std::string("muonTimeMap"));
+    maps.push_back(std::string(TimeOffsetsTag)+":protonTimeMap");
+    maps.push_back(std::string(TimeOffsetsTag)+":muonTimeMap");
     
     fhicl::ParameterSet  pset;
     pset.put("inputs", maps);
@@ -152,10 +152,10 @@ TAnaDump::TAnaDump(int UseTimeOffsets) {
 }
 
 //------------------------------------------------------------------------------
-TAnaDump* TAnaDump::Instance(int UseTimeOffsets) {
+TAnaDump* TAnaDump::Instance(const char* TimeOffsetsTag) {
   static TAnaDump::Cleaner cleaner;
 
-  if  (! fgInstance) fgInstance  = new TAnaDump(UseTimeOffsets);
+  if  (! fgInstance) fgInstance  = new TAnaDump(TimeOffsetsTag);
   return fgInstance;
 }
 

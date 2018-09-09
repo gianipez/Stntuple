@@ -26,7 +26,7 @@ StntupleMakerTemplate : { module_type:StntupleMaker
     makeHelices         : 0
     makeVirtualHits     : 1
     
-    TimeOffsets          : { inputs : [ "protonTimeMap", "muonTimeMap" ] }
+    TimeOffsets          : { inputs : [ "compressDigiMCs:protonTimeMap", "compressDigiMCs:muonTimeMap" ] }
 
     KalDiag              : { @table::KalDiagDirect    }
     DoubletAmbigResolver : { @table::TrkReco.DoubletAmbigResolver }
@@ -96,8 +96,10 @@ StntupleMakerTemplate : { module_type:StntupleMaker
 #------------------------------------------------------------------------------
 # 
 #------------------------------------------------------------------------------
-MuHitDisplay: { module_type:MuHitDisplay        # the class name;
-    debugBits                    : { }          # need for TAnaModule
+MuHitDisplay: { module_type:MuHitDisplay                 # the class name;
+    debugBits                    : { }                   # passed to TModule
+    timeOffsetsTag               : "compressDigiMCs"     # passed to TModule
+
     interactiveMode              : 1
     
     crvRecoPulsesModuleLabel     : CrvRecoPulses

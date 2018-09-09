@@ -428,8 +428,8 @@ namespace mu2e {
     fTrackBlock->AddCollName("DarHandle"                           ,GetName()                         ,"DarHandle");
     fTrackBlock->AddCollName("KalDiagHandle"                       ,GetName()                         ,"KalDiagHandle");
 
-    TAnaDump::Instance()->AddObject("MuHitDisplay::TrackBlock"  , fTrackBlock);
-    TAnaDump::Instance()->AddObject("MuHitDisplay::ClusterBlock", fClusterBlock);
+    TModule::fDump->AddObject("MuHitDisplay::TrackBlock"  , fTrackBlock);
+    TModule::fDump->AddObject("MuHitDisplay::ClusterBlock", fClusterBlock);
   }
 
   //-----------------------------------------------------------------------------
@@ -1111,7 +1111,7 @@ namespace mu2e {
 
       double  d0, om, r, phi0, x0, y0;
 
-      TAnaDump::Instance()->printKalRep(0, "banner"," I alg ");
+      TModule::fDump->printKalRep(0, "banner"," I alg ");
       for (int i = 0; i<fNTracks[0]; i++) {
 	trk = _kalRepPtrColl->at(i).get();
 	printf("%2i dem ", i);
