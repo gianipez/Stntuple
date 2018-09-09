@@ -78,7 +78,8 @@ int StntupleInitMu2eGenpBlock(TStnDataBlock* block, AbsEvent* AnEvent, int mode)
 	px     = gp->momentum().x();
 	py     = gp->momentum().y();
 	pz     = gp->momentum().z();
-	mass   = part->Mass();
+	if (part != NULL) mass   = part->Mass();
+	else              mass   = 0.;// FIXME!
 	energy = sqrt(px*px+py*py+pz*pz+mass*mass);
 
 	genp_block->NewParticle(pdg_code,
