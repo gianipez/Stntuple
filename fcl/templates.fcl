@@ -389,6 +389,8 @@ Stntuple.mix_time_map        : [ @sequence::Stntuple.mix, @sequence::CommonMC.Di
 Stntuple.gen_g4_mix_time_map : [ @sequence::Stntuple.gen_g4, @sequence::Stntuple.mix, @sequence::CommonMC.DigiSim ]
 Stntuple.digis               : [ @sequence::CaloDigiMC.DigiSim, @sequence::TrackerMC.DigiSim ]
 
+kludge_Tracking_TPRDpP       : [ TimeClusterFinder, HelixFinder, KSFDpP, KFFDpP ]
+
 Stntuple.trk_hit_reco        : [ makeSH, makePH, FlagBkgHits]
 
 Stntuple.cal_reco        : [ CaloRecoDigiFromDigi ,CaloCrystalHitFromHit, 
@@ -440,6 +442,9 @@ Stntuple.mpr_reco_dep    : [ @sequence::Tracking.TPRDeP ,
 
 Stntuple.dem_reco        : [ @sequence::Tracking.TPRDeM , @sequence::CalPatRec.dem_reco, MergePatRecDem, 
 			     @sequence::TrackCaloMatching.matching_dem, AvikPIDNewDem ]
+
+Stntuple.dpp_reco        : [ @sequence::kludge_Tracking_TPRDpP, MergePatRecDpp,
+			     @sequence::TrackCaloMatching.matching_dpp   ]
 
 Stntuple.dmm_reco        : [ @sequence::Tracking.TPRDmuM, @sequence::CalPatRec.dmm_reco, MergePatRecDmm, 
 			     @sequence::TrackCaloMatching.matching_dmm, AvikPIDNewDmm ]

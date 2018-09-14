@@ -16,13 +16,15 @@
 #ifndef __CINT__
 
 #include "art/Framework/Principal/Event.h"
-#include "MCDataProducts/inc/PtrStepPointMCVectorCollection.hh"
-#include "RecoDataProducts/inc/XYZVec.hh"
-#include "RecoDataProducts/inc/ComboHit.hh"
+
 #include "MCDataProducts/inc/CaloClusterMCTruthAssn.hh"
 #include "MCDataProducts/inc/CaloHitMCTruthAssn.hh"
+#include "MCDataProducts/inc/StrawDigiMCCollection.hh"
+
+#include "RecoDataProducts/inc/ComboHit.hh"
 #include "RecoDataProducts/inc/HelixHit.hh"
 #include "RecoDataProducts/inc/StrawHitPositionCollection.hh"
+#include "RecoDataProducts/inc/XYZVec.hh"
 
 #else
 
@@ -31,7 +33,7 @@ namespace art {
 }
 
 namespace mu2e {
-  class PtrStepPointMCVectorCollection;
+  class StrawDigiMCCollection;
 }
 
 #endif
@@ -64,8 +66,9 @@ public:
   const art::Event*                     fEvent;
   TObjArray*                            fListOfObjects;
   TString                               fFlagBgrHitsModuleLabel;
+  TString                               fStrawDigiMCCollTag;
   mu2e::SimParticleTimeOffset*          fTimeOffsets;
-  mu2e::PtrStepPointMCVectorCollection* fListOfMCStrawHits;
+  const mu2e::StrawDigiMCCollection*    _mcdigis;
   double                                fTmp[100];  // for testing
 
 private:
@@ -95,7 +98,9 @@ public:
   void*  FindNamedObject(const char* Name);
 
   void SetEvent(art::Event& Evt) { fEvent = &Evt; }
-  void SetFlagBgrHitsModuleLabel(const char* Label) { fFlagBgrHitsModuleLabel = Label; }
+
+  void SetFlagBgrHitsModuleLabel(const char* Tag) { fFlagBgrHitsModuleLabel = Tag; }
+  void SetStrawDigiMCCollTag    (const char* Tag) { fStrawDigiMCCollTag     = Tag; }
 
   double evalWeight(const mu2e::ComboHit* Hit   ,
 		    XYZVec& StrawDir ,
@@ -204,7 +209,7 @@ public:
 
   void printGenParticleCollections();
 
-  void printSimParticle   (const mu2e::SimParticle*    P  , const char* Opt = "");
+  void printSimParticle   (const mu2e::SimParticle*    P  , const char* Opt = "", const void* PrintData = nullptr);
 
   void printSimParticleCollection(const char* ModuleLabel     , 
 				  const char* ProductName = "", 
@@ -267,10 +272,6 @@ public:
   void printTrackClusterMatchCollection (const char* ModuleLabel     , 
 					 const char* ProductName = "", 
 					 const char* ProcessName = "");
-			      
-  void printStepPointMCVectorCollection(const char* ModuleLabel     ,
-					const char* ProductName = "", 
-					const char* ProcessName = "");
 			      
 					// refit track dropping hits away > NSig sigma (0.1)
   void  refitTrack(void* Trk, double NSig);

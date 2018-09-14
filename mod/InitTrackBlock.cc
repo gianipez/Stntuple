@@ -291,8 +291,6 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 
   art::Handle<mu2e::KalRepPtrCollection> krepsHandle;
   if (krep_module_label[0] != 0) {
-    // if (krep_description[0] == 0) AnEvent->getByLabel(krep_module_label,krepsHandle);
-    // else                          AnEvent->getByLabel(krep_module_label,krep_description, krepsHandle);
     AnEvent->getByLabel(krep_module_label,krepsHandle);
     if (krepsHandle.isValid())    list_of_kreps = krepsHandle.product();
   }
@@ -319,15 +317,12 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 
   art::Handle<mu2e::StrawDigiMCCollection> sdmcHandle;
   if (sdmc_module_label[0] != 0) {
-    // if (sdmc_description[0] == 0) AnEvent->getByLabel(sdmc_module_label,sdmcHandle);
-    // else                          AnEvent->getByLabel(sdmc_module_label,sdmc_description,sdmcHandle);
     AnEvent->getByLabel(sdmc_module_label,sdmcHandle);
     if (sdmcHandle.isValid()) list_of_mc_straw_hits = sdmcHandle.product();
   }
 
   art::Handle<mu2e::TrkCaloIntersectCollection>  texHandle;
   if (trex_module_label[0] != 0) {
-    //    AnEvent->getByLabel(trex_module_label,trex_description,texHandle);
     AnEvent->getByLabel(trex_module_label,texHandle);
     if (texHandle.isValid()) list_of_extrapolated_tracks = texHandle.product();
   }
@@ -754,7 +749,9 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
       art::Handle<mu2e::StepPointMCCollection> vdhits;
       AnEvent->getByLabel(g4_module_label,"virtualdetector",vdhits);
       if (!vdhits.isValid()) {
-	printf("ERROR %s : invalid VD step points\n",oname);
+	char warning[100];
+	sprintf(warning,"WARNING: StepPointMCCollection %s:virtualdetector not found\n",g4_module_label);
+	mf::LogWarning(oname) << warning;
       }
       else {
 	int nvdhits = vdhits->size();
@@ -772,7 +769,10 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 	    const mu2e::SimParticle* sim  = simptr.operator ->();
 
 	    if (sim == NULL) {
+	      char warning[100];
 	      printf(">>> ERROR: %s sim == NULL\n",oname);
+	      sprintf(warning,"WARNING: SimParticle for step %i = NULL\n",i);
+	      mf::LogWarning(oname) << warning;
 	    }
 	    int sim_id = sim->id().asInt();
 	    if (sim_id == track->fPartID) {
@@ -801,29 +801,25 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 //-----------------------------------------------------------------------------
 // number of MC hits produced by the mother particle
 //-----------------------------------------------------------------------------
-    const mu2e::PtrStepPointMCVectorCollection* stepPointMCVectorCollection;
-    const mu2e::StepPointMC*                    step;
+    const mu2e::StepPointMC* step;
 
     track->fNMcStrawHits = 0;
 
-    art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandleStraw;
-    AnEvent->getByLabel(stmc_module_label,mcptrHandleStraw);
-    int   nstepMC(0);
-    if (mcptrHandleStraw.isValid()){
-      stepPointMCVectorCollection = mcptrHandleStraw.product();
-      nstepMC                     = stepPointMCVectorCollection->size();
-    }
-
-    if (nstepMC > 0) {
+    if (list_of_mc_straw_hits->size() > 0) {
       for (int i=0; i<n_straw_hits; i++) {
-	mu2e::PtrStepPointMCVector const& mcptr(stepPointMCVectorCollection->at(i));
+	const mu2e::StrawDigiMC* mcdigi = &list_of_mc_straw_hits->at(i);
 
-	step = mcptr[0].get();
-    
+	if (mcdigi->wireEndTime(mu2e::StrawEnd::cal) < mcdigi->wireEndTime(mu2e::StrawEnd::hv)) {
+	  step = mcdigi->stepPointMC(mu2e::StrawEnd::cal).get();
+	}
+	else {
+	  step = mcdigi->stepPointMC(mu2e::StrawEnd::hv ).get();
+	}
+
 	art::Ptr<mu2e::SimParticle> const& simptr = step->simParticle(); 
-	art::Ptr<mu2e::SimParticle> mother = simptr;
-	while(mother->hasParent())  mother = mother->parent();
-	const mu2e::SimParticle*    sim    = mother.operator ->();
+	art::Ptr<mu2e::SimParticle> mother        = simptr;
+	while(mother->hasParent())  mother        = mother->parent();
+	const mu2e::SimParticle*    sim           = mother.operator ->();
 
 	int sim_id = sim->id().asInt();
 

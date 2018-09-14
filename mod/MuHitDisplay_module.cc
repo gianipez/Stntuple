@@ -58,7 +58,6 @@
 #include "GeometryService/inc/GeomHandle.hh"
 
 #include "TTrackerGeom/inc/TTracker.hh"
-// #include "CalorimeterGeom/inc/VaneCalorimeter.hh"
 #include "CalorimeterGeom/inc/DiskCalorimeter.hh"
 #include "CalorimeterGeom/inc/Calorimeter.hh"
 #include "Mu2eUtilities/inc/SimParticlesWithHits.hh"
@@ -216,8 +215,6 @@ namespace mu2e {
 
     const mu2e::CaloCrystalHitCollection*       fListOfCrystalHits;//
     const mu2e::CaloClusterCollection*          fListOfClusters;   //
-
-    //    const mu2e::StrawDigiMCCollection*           _hits_mcptr;        //
 
     const mu2e::StepPointMCCollection*          _stepPointMCColl;  //
 
@@ -419,7 +416,6 @@ namespace mu2e {
     fTrackBlock->AddCollName("mu2e::KalRepCollection"              ,fTrkRecoModuleLabel.data()        ,"");
     fTrackBlock->AddCollName("mu2e::ComboHitCollection"            ,_makeStrawHitModuleLabel.data()   ,"");
     fTrackBlock->AddCollName("mu2e::StrawDigiMCCollection"         ,_makeStrawDigiModuleLabel.data()   ,"");
-    //    fTrackBlock->AddCollName("mu2e::PtrStepPointMCVectorCollection",_makeStrawDigiModuleLabel.data()   ,"");
     fTrackBlock->AddCollName("mu2e::TrkCaloIntersectCollection"    ,fTrkExtrapol.data()               ,"");
     fTrackBlock->AddCollName("mu2e::CaloClusterCollection"         ,_caloClusterModuleLabel.data()    ,"");
     fTrackBlock->AddCollName("mu2e::TrackClusterMatchCollection"   ,fTrkCalMatch.data()               ,"");
@@ -430,6 +426,7 @@ namespace mu2e {
 
     TModule::fDump->AddObject("MuHitDisplay::TrackBlock"  , fTrackBlock);
     TModule::fDump->AddObject("MuHitDisplay::ClusterBlock", fClusterBlock);
+    TModule::fDump->SetStrawDigiMCCollTag(_makeStrawDigiModuleLabel.data());
   }
 
   //-----------------------------------------------------------------------------
@@ -847,7 +844,7 @@ namespace mu2e {
       step = &coll->at(i);
       if (step->volumeId() == 13) {
 	mom = &step->momentum();
-	fDump->printStepPointMC(step,"virtualdetector","banner+data");
+	TModule::fDump->printStepPointMC(step,"virtualdetector","banner+data");
 
 	px = mom->x();
 	py = mom->x();
@@ -899,7 +896,7 @@ namespace mu2e {
 	  firstCall = 0;
 	  InitVisManager();
 	}
-	fDump->SetEvent(Evt);
+	TModule::fDump->SetEvent(Evt);
 
 	rc = getData(&Evt);
 
@@ -942,7 +939,7 @@ namespace mu2e {
       firstCall = 0;
       InitVisManager();
     }
-    fDump->SetEvent(Evt);
+    TModule::fDump->SetEvent(Evt);
 //-----------------------------------------------------------------------------
 // get event data and initialize data blocks
 //-----------------------------------------------------------------------------

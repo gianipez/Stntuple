@@ -40,11 +40,11 @@ StntupleMakerTemplate : { module_type:StntupleMaker
 # module is running upstream, simply copies its output
 #------------------------------------------------------------------------------
     makeStrawHitModuleLabel : "makeSH"
-    makeStrawDigiModuleLabel: "makeSD"
-    makeSimpModuleLabel     : "g4run"
+    makeStrawDigiModuleLabel: "compressDigiMCs"    # was "makeSD"
+    makeSimpModuleLabel     : "compressDigiMCs"    # was "g4run" before
     vdCollName              : "virtualdetector"
     makeVdetHitsModuleLabel : "g4run"
-    generatorModuleLabel    : "generate"
+    generatorModuleLabel    : "compressDigiMCs"    # was "generate" 
 
     timeClusterBlockName    : ["TimeClusterBlock"    ]   # to be renamed, *FIXME*
     timeClusterModuleLabel  : ["CalTimePeakFinder"]   # to be renamed into CalTimeCLusterFinder *FIXME* 
@@ -109,7 +109,7 @@ MuHitDisplay: { module_type:MuHitDisplay                 # the class name;
     generatorModuleLabel         : generate
     g4ModuleLabel                : g4run
     strawHitMakerModuleLabel     : makeSH
-    strawDigiMakerModuleLabel    : makeSD
+    strawDigiMakerModuleLabel    : "compressDigiMCs" #  was "makeSD"
     strawHitFlagMakerModuleLabel : "DeltaFinder:StrawHits"
     comboHitMakerModuleLabel     : makePH
 
@@ -231,6 +231,21 @@ Stntuple : {
 	    pidBlockName            : [ "PidBlockDep"              ] 
 	    pidModuleLabel          : [ "AvikPIDNewDep"            ]
 	    fitParticle             : [                        -11 ]
+	    fitDirection            : [                          0 ]
+	}
+#------------------------------------------------------------------------------
+# downstream proton reco
+#------------------------------------------------------------------------------
+	StntupleMakerDpp  : { @table::StntupleMakerTemplate 
+	    makePid                 : 0
+	    trackBlockName          : [ "TrackBlockDpp"            ] 
+	    trackStrawHitBlockName  : [ "TrackHitBlockDpp"         ] 
+	    trkRecoModuleLabel      : [ "MergePatRecDpp"           ]
+	    trkExtrapolModuleLabel  : [ "TrackCaloIntersectionDpp" ]
+	    trkCaloMatchModuleLabel : [ "TrackCaloMatchingDpp"     ]
+	    pidBlockName            : [ "PidBlockDpp"              ] 
+	    pidModuleLabel          : [ "AvikPIDNewDpp"            ]
+	    fitParticle             : [                       2212 ]
 	    fitDirection            : [                          0 ]
 	}
 #------------------------------------------------------------------------------
@@ -546,6 +561,15 @@ Stntuple : {
 	    fitDirection                 : @local::FitDir.downstream
 	}
 
+	MuHitDisplayDpp : { @table::MuHitDisplay 
+	    trkRecoModuleLabel           : MergePatRecDpp
+	    strawHitFlagMakerModuleLabel : "FlagBkgHits:StrawHits"    # run TrkPatRec only
+	    trkExtrapol                  : TrackCaloIntersectionDpp
+	    trkCalMatch                  : TrackCaloMatchingDpp
+	    fitParticle                  : @local::Particle.proton
+	    fitDirection                 : @local::FitDir.downstream
+	}
+
 	MuHitDisplayDmm : { @table::MuHitDisplay 
 	    trkRecoModuleLabel           : MergePatRecDmm
 	    trkExtrapol                  : TrackCaloIntersectionDmm
@@ -564,6 +588,7 @@ Stntuple.stnmaker_dem     : [ InitStntuple, StntupleMakerDem,                   
 Stntuple.stnmaker_dep     : [ InitStntuple, StntupleMakerDep,                   FillStntuple ]
 Stntuple.stnmaker_dmm     : [ InitStntuple, StntupleMakerDmm,                   FillStntuple ]
 Stntuple.stnmaker_ump     : [ InitStntuple, StntupleMakerUmp,                   FillStntuple ]
+Stntuple.stnmaker_dpp     : [ InitStntuple, StntupleMakerDpp,                   FillStntuple ]
 Stntuple.stnmaker_dem_dep : [ InitStntuple, StntupleMakerDemDep,                FillStntuple ]
 Stntuple.stnmaker_dem_dmm : [ InitStntuple, StntupleMakerDem, StntupleMakerDmm, FillStntuple ]
 Stntuple.stnmaker_dem_umm : [ InitStntuple, StntupleMakerDem, StntupleMakerUmm, FillStntuple ]

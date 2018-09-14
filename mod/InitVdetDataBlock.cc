@@ -71,8 +71,10 @@ Int_t StntupleInitMu2eVirtualDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent, 
   }
 
   if (list_of_hits == NULL) {
-    printf("[%s] ERROR: run %10i event %10i StepPointMCCollection by %s:%s is missing. BAIL OUT\n",
-	   oname,rn_number,ev_number,step_module_label,step_description);
+    char warning[100];
+    sprintf(warning," WARNING: StepPointMCCollection by %s:%s is missing. BAIL OUT\n",
+	   step_module_label,step_description);
+    mf::LogWarning(oname) << warning;
     return -1;
   }
 

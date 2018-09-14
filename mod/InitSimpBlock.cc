@@ -152,7 +152,7 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
 	energy = sqrt(px*px+py*py+pz*pz+mass*mass);
       }
       else {
-	mf::LogWarning(oname) << " ERROR: PDG code " << pdg_code << " not in the database, set particle mass to 0\n";
+	mf::LogWarning(oname) << " WARNING: PDG code " << pdg_code << " not in the database, set particle mass to 0\n";
 	energy = sqrt(px*px+py*py+pz*pz);
       }
       
@@ -177,8 +177,9 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
       art::Handle<mu2e::StepPointMCCollection> vdhits;
       AnEvent->getByLabel(g4_module_label,g4_description,vdhits);
       if (!vdhits.isValid()) {
-	printf("[%s] ERROR: StepPointMCCollection %s:%s NOT FOUND\n",
-	       oname,g4_module_label,g4_description);
+	char warning[100];
+	sprintf(warning,"StepPointMCCollection %s:%s NOT FOUND\n",g4_module_label,g4_description);
+	mf::LogWarning(oname) << warning;
       }
       else {
 	int nvdhits = vdhits->size();
