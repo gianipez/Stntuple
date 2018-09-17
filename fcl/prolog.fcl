@@ -31,7 +31,7 @@ StntupleMakerTemplate : { module_type:StntupleMaker
     KalDiag              : { @table::KalDiagDirect    }
     DoubletAmbigResolver : { @table::TrkReco.DoubletAmbigResolver }
 
-    g4ModuleLabel        : "g4run"
+    g4ModuleLabel        : "compressDigiMCs"
     caloCrystalHitsMaker : "CaloCrystalHitFromHit"
     caloClusterMaker     : "CaloClusterFromProtoCluster"
 #------------------------------------------------------------------------------
@@ -43,7 +43,7 @@ StntupleMakerTemplate : { module_type:StntupleMaker
     makeStrawDigiModuleLabel: "compressDigiMCs"    # was "makeSD"
     makeSimpModuleLabel     : "compressDigiMCs"    # was "g4run" before
     vdCollName              : "virtualdetector"
-    makeVdetHitsModuleLabel : "g4run"
+    makeVdetHitsModuleLabel : "compressDigiMCs"    # was "g4run" before
     generatorModuleLabel    : "compressDigiMCs"    # was "generate" 
 
     timeClusterBlockName    : ["TimeClusterBlock"    ]   # to be renamed, *FIXME*
