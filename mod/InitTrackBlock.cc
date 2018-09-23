@@ -212,7 +212,7 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
   char   stmc_module_label[100], stmc_description[100];
   char   calo_module_label[100], calo_description[100];
   char   pidp_module_label[100], pidp_description[100];
-  char   g4_module_label  [100], g4_description  [100];
+  char   spmc_module_label[100], spmc_description[100];
 
   char   module_name      [100], dar_name        [100], kaldiag_name[100];
 
@@ -277,8 +277,8 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
   data->GetModuleLabel("mu2e::PIDProductCollection",pidp_module_label);
   data->GetDescription("mu2e::PIDProductCollection",pidp_description );
 
-  data->GetModuleLabel("mu2e::StepPointMCCollection",g4_module_label);
-  data->GetDescription("mu2e::StepPointMCCollection",g4_description );
+  data->GetModuleLabel("mu2e::StepPointMCCollection",spmc_module_label);
+  data->GetDescription("mu2e::StepPointMCCollection",spmc_description );
 
   art::Handle<mu2e::AlgorithmIDCollection> algsHandle;
   strcpy(algs_module_label, krep_module_label);
@@ -747,10 +747,10 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 
     if (vdg->nDet() > 0) {
       art::Handle<mu2e::StepPointMCCollection> vdhits;
-      AnEvent->getByLabel(g4_module_label,"virtualdetector",vdhits);
+      AnEvent->getByLabel(spmc_module_label,"virtualdetector",vdhits);
       if (!vdhits.isValid()) {
 	char warning[100];
-	sprintf(warning,"WARNING: StepPointMCCollection %s:virtualdetector not found\n",g4_module_label);
+	sprintf(warning,"WARNING: StepPointMCCollection %s:virtualdetector not found\n",spmc_module_label);
 	mf::LogWarning(oname) << warning;
       }
       else {
