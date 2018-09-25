@@ -591,10 +591,10 @@ void TAnaDump::printTrackSeed(const mu2e::KalSeed* TrkSeed        ,
     int nsh = TrkSeed->hits().size();
 
     const mu2e::StrawHit* hit(0);
-    const mu2e::StepPointMC* step;
+    const mu2e::StepPointMC* step(0);
 
     art::Handle<mu2e::StrawHitCollection> shcolH;
-    const mu2e::StrawHitCollection*       shcol;
+    const mu2e::StrawHitCollection*       shcol(0);
     fEvent->getByLabel<mu2e::StrawHitCollection>(StrawHitCollTag,shcolH);
     if (shcolH.isValid()) shcol = shcolH.product();
     else {
