@@ -18,7 +18,7 @@ END_PROLOG
 
 #include "Stntuple/fcl/templates.fcl"
 
-process_name : Stage1SpmcStn
+process_name : G4S1MubeamStn
 
 source       : { module_type : RootInput 
 # use one of the concatenated Stage1 files 
@@ -28,6 +28,7 @@ source       : { module_type : RootInput
 outputs      : { @table::Stntuple.outputs   }
 producers    : { @table::Stntuple.producers }
 filters      : { @table::Stntuple.filters   }
+analyzers    : { @table::Stntuple.analyzers }
 paths        : { @table::Stntuple.paths     }
 
 physics : {
@@ -58,18 +59,15 @@ physics : {
 	InitStntuple : { @table::filters.InitStntuple histFileName : "nts.murat.xxx_xxxx.g4s1_mubeam.000001.stn" }
     }
 
-    analyzers : {
-	GenEventCountReader      : { module_type: GenEventCountReader }
-    }
+    analyzers : { @table::analyzers }
 
     @table::paths
 
     p1            : [ @sequence::stnmaker_seq ]
     trigger_paths : [ p1 ]
-    #    out : [ detectorOutput, GenEventCountReader ]  # detectorOutput is defined in Stntuple/fcl/templates.fcl
-    out           : [ GenEventCountReader ]
-    end_paths     : [ out ]
-
+    #    out : [ detectorOutput ]  # detectorOutput is defined in Stntuple/fcl/templates.fcl
+    out           : [  ]
+    end_paths     : [ gcl, out ]
 }
 
 services.TFileService.fileName            : "nts.murat.xxx_xxxx.g4s1_mubeam_hist.000001.root"

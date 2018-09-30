@@ -15,7 +15,7 @@ END_PROLOG
 
 #include "Stntuple/fcl/templates.fcl"
 
-process_name : EgunMergePatRecStnmaker
+process_name : G4S3OotstopsStn
 
 source       : { module_type : RootInput    
     fileNames : [ 
@@ -26,6 +26,7 @@ source       : { module_type : RootInput
 outputs      : { @table::Stntuple.outputs   }
 producers    : { @table::Stntuple.producers }
 filters      : { @table::Stntuple.filters   }
+analyzers    : { @table::Stntuple.analyzers }
 paths        : { @table::Stntuple.paths     }
 
 physics : {
@@ -56,18 +57,17 @@ physics : {
 	InitStntuple : { @table::filters.InitStntuple histFileName : "nts.{USER}.{DATASET}.stage2_step_point_mc.000001.stn" }
     }
 
-    analyzers : {
-	GenEventCountReader      : { module_type: GenEventCountReader }
-    }
+    analyzers: { @table::analyzers }
 
     @table::paths
 
     p1            : [ @sequence::stnmaker_seq  ]
+    gcl           : [ genCountLogger ]
+
     trigger_paths : [ p1 ]
     #    out : [GenEventCountReader, detectorOutput]  # detectorOutput is defined in Stntuple/fcl/templates.fcl
-    out           : [ GenEventCountReader ]
-    end_paths     : [ out ]
-
+    out           : [  ]
+    end_paths     : [ gcl, out ]
 }
 
 services.TFileService.fileName            : "nts.{USER}.{DATASET}.stage2_step_point_mc.000001.root"

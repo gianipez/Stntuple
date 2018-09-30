@@ -25,6 +25,7 @@ source       : { module_type : RootInput
 outputs      : { @table::Stntuple.outputs   }
 producers    : { @table::Stntuple.producers }
 filters      : { @table::Stntuple.filters   }
+analyzers    : { @table::Stntuple.analyzers }
 paths        : { @table::Stntuple.paths     }
 
 physics : {
@@ -53,7 +54,7 @@ physics : {
 	    stepPointMCModuleLabel  : ["g4run"         , "g4run"          ]
 	    stepPointMCProductName  : ["stepper"       , "timeVD"         ]
 	}
-	InitStntuple : { @table::filters.InitStntuple histFileName : "nts.murat.xxx.g4study2.simp.stn" }
+	InitStntuple : { @table::filters.InitStntuple histFileName : "nts.murat.project.g4study2.simp.stn" }
     }
 
     @table::paths
@@ -62,16 +63,16 @@ physics : {
     trigger_paths : [ p1 ]
     #    out : [detectorOutput]  # detectorOutput is defined in Stntuple/fcl/templates.fcl
     out           : []
-    end_paths     : [ out ]
+    end_paths     : [ gcl, out ]
 }
 
-services.TFileService.fileName            : "nts.murat.bbb.g4study2.simp.root"
+services.TFileService.fileName            : "nts.murat.bbb.g4study2.000001.root"
 #------------------------------------------------------------------------------
 # uncomment the next 2 lines if you want the DST file to be written out
 #-----------------------------------------------------------------------------
 # physics.out                               : [ detectorOutput ]
 # outputs.detectorOutput.SelectEvents       : [ path_gen_digi_reco_stn_dem_dmm ]
-outputs.detectorOutput.fileName           : "aaa.stntuple.bbb.stage1.step_point_mc.art"
+outputs.detectorOutput.fileName           : "aaa.murat.bbb.g4study2.000001.art"
 #------------------------------------------------------------------------------
 # debugging
 #------------------------------------------------------------------------------

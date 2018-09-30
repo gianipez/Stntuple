@@ -370,6 +370,10 @@ Stntuple : { @table::Stntuple  # defined in Stntuple/fcl/prolog.fcl
 	@table::CalPatRec.filters
     }
 
+    analyzers : {
+	genCountLogger      : { module_type: GenEventCountReader }
+    }
+
     outputs: {
 	detectorOutput : {
 	    module_type   : RootOutput
@@ -463,6 +467,8 @@ Stntuple.uep_reco : [ @sequence::Tracking.TPRUeP , MergePatRecUep, @sequence::Tr
 Stntuple.ump_reco : [ @sequence::Tracking.TPRUmuP, MergePatRecUmp, @sequence::TrackCaloMatching.matching_ump, AvikPIDNewUmp ]
 
 Stntuple.paths : {
+
+    gcl                        : [ genCountLogger ]
 
     path_gen_digi_reco_stn_dem : [ @sequence::Stntuple.gen_g4_time_map,
 				   @sequence::Stntuple.digis          ,

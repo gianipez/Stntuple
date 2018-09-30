@@ -15,7 +15,7 @@ END_PROLOG
 
 #include "Stntuple/fcl/templates.fcl"
 
-process_name : Stage1SpmcStn
+process_name : G4S3MothersStn
 
 source       : { module_type : RootInput 
 # use one of the concatenated Stage1 files 
@@ -25,6 +25,7 @@ source       : { module_type : RootInput
 outputs      : { @table::Stntuple.outputs   }
 producers    : { @table::Stntuple.producers }
 filters      : { @table::Stntuple.filters   }
+analysers    : { @table::Stntuple.analyzers }
 paths        : { @table::Stntuple.paths     }
 
 physics : {
@@ -62,14 +63,15 @@ physics : {
 	}
     }
 
+    analyzers : @table::analyzers
+
     @table::paths
 
     p1            : [ @sequence::stnmaker_seq ]
     trigger_paths : [ p1 ]
     #    out : [detectorOutput]  # detectorOutput is defined in Stntuple/fcl/templates.fcl
-    out           : []
-    end_paths     : [ out ]
-
+    out           : [ ]
+    end_paths     : [ gcl, out ]
 }
 
 services.TFileService.fileName            : "nts.{USER}.{DATASET}.{OFFVER}.00000001.root"
