@@ -189,12 +189,15 @@ void TSimParticle::Print(Option_t* Opt) const {
   TString opt = Opt;
   if ((opt == "banner") || (opt == "")) {
 				// print banner
-    printf("-------------------------------------------------------------");
-    printf("-----------------------------------------------------------------------------\n");
-    printf("   i name                   PDG     ID GenID  ParentID     px");
-    printf("        py         pz          e          vx         vy          vz         t\n");
-    printf("-------------------------------------------------------------");
-    printf("-----------------------------------------------------------------------------\n");
+    printf("------------------------------------------------------");
+    printf("-------------------------------------------------------------------------------");
+    printf("------------------------------------------------------------------------------\n");
+    printf("   i name                   PDG     ID GenID  ParentID");
+    printf("    p0x       p0y       p0z       p0       v0x        v0y      v0z         t0   ");
+    printf("    p1x       p1y        p1z      p1       v1x        v1y       v1z        t1\n");
+    printf("------------------------------------------------------");
+    printf("-------------------------------------------------------------------------------");
+    printf("-------------------------------------------------------------------------------\n");
   }
 
   TDatabasePDG* db = TDatabasePDG::Instance();
@@ -211,14 +214,22 @@ void TSimParticle::Print(Option_t* Opt) const {
     printf("%7i"   ,GetUniqueID());
     printf("%6i"   ,fGeneratorID);
     printf("%8i"   ,fParentID);
-    printf("%11.3f",fStartMom.Px());
-    printf("%11.3f",fStartMom.Py());
-    printf("%11.3f",fStartMom.Pz());
-    printf("%11.3f",fStartMom.Energy());
-    printf("%11.3f",fStartPos.X());
-    printf("%11.3f",fStartPos.Y());
-    printf("%11.3f",fStartPos.Z());
-    printf("%11.3f",fStartPos.T());
+    printf("%10.3f",fStartMom.Px());
+    printf("%10.3f",fStartMom.Py());
+    printf("%10.3f",fStartMom.Pz());
+    printf("%10.3f",fStartMom.Energy());
+    printf("%10.3f",fStartPos.X());
+    printf("%10.3f",fStartPos.Y());
+    printf("%10.3f",fStartPos.Z());
+    printf("%10.3f",fStartPos.T());
+    printf("%10.3f",fEndMom.Px());
+    printf("%10.3f",fEndMom.Py());
+    printf("%10.3f",fEndMom.Pz());
+    printf("%10.3f",fEndMom.Energy());
+    printf("%10.3f",fEndPos.X());
+    printf("%10.3f",fEndPos.Y());
+    printf("%10.3f",fEndPos.Z());
+    printf("%10.3f",fEndPos.T());
     printf("\n");
   }
 }
