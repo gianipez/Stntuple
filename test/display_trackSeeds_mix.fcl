@@ -106,7 +106,7 @@ physics : { @table::physics
 #	     , @sequence::cprPrepHitSeq
 #	     , CalTimePeakFinder
 #	     , CalPatRecNew
-#	     , @sequence::trkCaloMatchingSeq
+#                                       @sequence::TrackCaloMatching.matching,
 #	     , ParticleID
 #	     , @sequence::stnmaker_seq	     
 	     MuHitDisplay

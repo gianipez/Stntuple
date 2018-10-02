@@ -36,8 +36,7 @@
 //-----------------------------------------------------------------------------
 int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode) 
 {
-  // fill generator particle data block (GENP - GENerator Particles - 
-  // is the name from Run I)
+  // fill simulated particle data block
   const char* oname = {"StntupleInitMu2eSimpBlock"};
 
   static int    initialized(0);
@@ -53,11 +52,9 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
   art::Handle<mu2e::SimParticleCollection> simp_handle;
   const mu2e::StrawHitCollection*          list_of_straw_hits(0);
 
-  double        px, py, pz, mass, energy;
+  double        px, py, pz, energy;
   int           id, parent_id, generator_id, n_straw_hits(0), nhits;
   int           pdg_code, start_vol_id, end_vol_id, creation_code, termination_code;
-  TParticlePDG* part;
-  TDatabasePDG* pdg_db = TDatabasePDG::Instance();
   TSimParticle* simp;
 
   TSimpBlock* simp_block = (TSimpBlock*) Block;
@@ -145,17 +142,8 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
       px     = sim->startMomentum().x();
       py     = sim->startMomentum().y();
       pz     = sim->startMomentum().z();
+      energy = sim->startMomentum().e();
 
-      part   = pdg_db->GetParticle(pdg_code);
-      if (part) {
-	mass   = part->Mass();
-	energy = sqrt(px*px+py*py+pz*pz+mass*mass);
-      }
-      else {
-	mf::LogWarning(oname) << " WARNING: PDG code " << pdg_code << " not in the database, set particle mass to 0\n";
-	energy = sqrt(px*px+py*py+pz*pz);
-      }
-      
       if (energy < _min_energy) continue;
       simp   = simp_block->NewParticle(id, parent_id, pdg_code, 
 				       creation_code, termination_code,
@@ -201,9 +189,6 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
 	    }
 	  }
 	  else if (vdid.isTrackerFront()) {
-
-	    //	    TAnaDump::Instance()->printStepPointMC(hit,"");
-
 	    art::Ptr<mu2e::SimParticle> const& simptr = hit->simParticle();
 	    const mu2e::SimParticle* sim = simptr.get();
 
@@ -230,12 +215,12 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
 	for (int i=0; i<n_straw_hits; i++) {
 	  mu2e::PtrStepPointMCVector const& mcptr(stepPointMCVectorCollection->at(i) );
 
-	  step = mcptr[0].get(); // operator ->();
+	  step = mcptr[0].get();
     
 	  art::Ptr<mu2e::SimParticle> const& simptr = step->simParticle(); 
 	  art::Ptr<mu2e::SimParticle> mother = simptr;
 	  while(mother->hasParent())  mother = mother->parent();
-	  const mu2e::SimParticle*    sim    = mother.get(); // operator ->();
+	  const mu2e::SimParticle*    sim    = mother.get();
 
 	  int sim_id = sim->id().asInt();
 
@@ -245,8 +230,6 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
 	}
       }
       simp->SetNStrawHits(nhits);
-
-      //    NEXT_PARTICLE:;
     }
   }
   else {

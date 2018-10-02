@@ -29,7 +29,17 @@ source       : {
 physics : { @table::physics 
     # trigger_paths : [ allpatrec_reco_display ]
     # trigger_paths : [ dem_reco_display ]
-    trigger_paths : [ hit_reco_display_dem ]
+
+
+    p1 : [ @sequence::CommonMC.DigiSim, 
+	   @sequence::hitMakerSeq,
+	   @sequence::CaloCluster.Reco, 
+	   @sequence::allPatRecSeq,
+	   @sequence::vadimPidSeq, 
+	   MuHitDisplay 
+	  ]
+
+    trigger_paths : [ p1  ]
     end_paths     : [ out ]
 
     producers : { @table::physics.producers 

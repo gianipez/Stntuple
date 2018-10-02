@@ -254,9 +254,9 @@ physics : {
 	    MergePatRec,
 	    MergePatRecTpr,
 	    MergePatRecCpr,
-	    @sequence::trkCaloMatchingSeq,
-	    @sequence::trkCaloMatchingTprSeq,
-	    @sequence::trkCaloMatchingCprSeq,
+            @sequence::TrackCaloMatching.matching,
+            @sequence::TrackCaloMatching.matching_tpr,
+            @sequence::TrackCaloMatching.matching_cpr,
 	    ParticleID, 
 	    @sequence::stnmaker3_seq
 	   ]
@@ -289,9 +289,9 @@ physics : {
 	    MergePatRec,
 	    MergePatRecTpr,
 	    MergePatRecCpr,
-	    @sequence::trkCaloMatchingSeq,
-	    @sequence::trkCaloMatchingTprSeq,
-	    @sequence::trkCaloMatchingCprSeq,
+            @sequence::TrackCaloMatching.matching,
+            @sequence::TrackCaloMatching.matching_tpr,
+            @sequence::TrackCaloMatching.matching_cpr,
 	    ParticleID, 
 	    #	    
 	    MuHitDisplay

@@ -14,101 +14,76 @@ BEGIN_PROLOG
 
 #  mix_seq       : [ @sequence::EventMixing.CD3Mixers, @sequence::CommonMC.DigiSim ]  # FIXME
 
-  hitMakerSeq   : [ @sequence::CaloDigiMC.DigiSim, @sequence::CaloReco.Reco, @sequence::TrackerMC.DigiSim, makeSH, makePH ]
+  hitMakerSeq   : [ @sequence::CaloDigiMC.DigiSim, @sequence::CaloReco.Reco, @sequence::TrackerMC.DigiSim, makeSH, makePH, FlagBkgHits]
 
-  digiMakerSeq  : [ @sequence::CaloDigiMC.DigiSim, @sequence::CaloReco.Reco, @sequence::TrackerMC.DigiSim, makeSH, makePH ]
+  digiMakerSeq  : [ @sequence::CaloDigiMC.DigiSim, @sequence::CaloReco.Reco, @sequence::TrackerMC.DigiSim, makeSH, makePH, FlagBkgHits]
  
 # MC generator and hit makers
 
   gen_hits_seq  : [ @sequence::generatorSeq, @sequence::hitMakerSeq ]
 
 # calorimeter cluster reconstruction
-  calRecoSeq    : [ @sequence::CaloCluster.Reco ]
+#  calRecoSeq    : [ @sequence::CaloCluster.Reco ]
 
 # hit pre-making for TrkPatRec;
-  tprPrepHitSeq : [ FlagBkgHits ]
+#  tprPrepHitSeq : [ FlagBkgHits ]
 
 # CalPatRec
   cprPrepHitSeq : [ DeltaFinder ]
 
-  trkPatRecSeq     : [ @sequence::tprPrepHitSeq, TimeClusterFinder, HelixFinder, KSFDeM, 
-		       KFFDeM, MergePatRec    ]
+  trkPatRecSeq     : [ @sequence::Tracking.TPRDeM, MergePatRec ]  # an attempt to ensure that the track collection has a fixed name
 
-  calPatRecSeq     : [ @sequence::cprPrepHitSeq, CalPatRec   , MergePatRec    ]
+  calPatRecSeq     : [ DeltaFinder, CalPatRec   , MergePatRec    ]
 
-  allPatRecSeq     : [ @sequence::tprPrepHitSeq, TimeClusterFinder, HelixFinder, KSFDeM, 
-		       KFFDeM, @sequence::cprPrepHitSeq, CalPatRec, MergePatRec ]
+  allPatRecSeq     : [ @sequence::Tracking.TPRDeM, 
+		       @sequence::CalPatRec.reco, 
+		       MergePatRec ]
 
-  allPatRecNewSeq  : [ TimeClusterFinder, HelixFinder, KSFDeM, 
-		       KFFDeM,
-		       CalTimePeakFinder, CalHelixFinder, CalSeedFit, CalTrkFit,
+  allPatRecNewSeq  : [ @sequence::Tracking.TPRDeM, 
+		       @sequence::CalPatRec.reco,
 		       MergePatRec, MergeHelixFinder ]
   
   allHelixSearchSeq  : [ TimeClusterFinder, HelixFinder, 
 			 CalTimePeakFinder, CalHelixFinder, 
 			 MergeHelixFinder ]
 
-  trkPatRecDemSeq  : [ @sequence::tprPrepHitSeq, TimeClusterFinder, HelixFinder, KSFDeM, 
-		       KFFDeM , MergePatRecDem ]
-  trkPatRecDmmSeq  : [ @sequence::tprPrepHitSeq, TimeClusterFinder, HelixFinder, KSFDeM, 
-		       KFFDeM, MergePatRecDmm ]
+  trkPatRecDemSeq  : [ @sequence::Tracking.TPRDeM , MergePatRecDem ]
+  trkPatRecDmmSeq  : [ @sequence::Tracking.TPRDmuM, MergePatRecDmm ]
 
-  calPatRecDemSeq  : [ @sequence::cprPrepHitSeq, CalPatRecDem, MergePatRecDem ]
+  calPatRecDemSeq  : [ @sequence::CalPatRec.dem_reco, MergePatRecDem ]
 
 
 # event for the downstream particles, avikPID requires running both electron and muon track reconstruction 
 # hit making - just once, but two modules
 
-  allPatRecDemSeq     : [ @sequence::tprPrepHitSeq, TimeClusterFinder, HelixFinder,  KSFDeM, 
-			  KFFDeM, 
-			  @sequence::cprPrepHitSeq, CalPatRecDem, 
+  allPatRecDemSeq     : [ TimeClusterFinder, HelixFinder,  KSFDeM, KFFDeM, 
+			  DeltaFinder, CalPatRecDem, 
 			  MergePatRecDem ]
 
-  allPatRecDmmSeq     : [ @sequence::tprPrepHitSeq, TimeClusterFinder, HelixFinder,  KSFDeM, 
-			  KFFDeM,
-			  @sequence::cprPrepHitSeq, CalPatRecDmm, 
+  allPatRecDmmSeq     : [ TimeClusterFinder, HelixFinder,  KSFDmM, KFFDmM,
+			  DeltaFinder, CalPatRecDmm, 
 			  MergePatRecDmm ]
 #------------------------------------------------------------------------------
 # downstream electron and muon reconstructon together
 #------------------------------------------------------------------------------
-  trkPatRecDemDmmSeq  : [ @sequence::tprPrepHitSeq, TimeClusterFinder, HelixFinder, 
-			  KSFDeM, KFFDeM, KSFDmuM, KFFDmuM, 
+  trkPatRecDemDmmSeq  : [ TimeClusterFinder, HelixFinder, KSFDeM, KFFDeM, KSFDmuM, KFFDmuM, 
 			  MergePatRecDem, MergePatRecDmm ]
 
-  calPatRecDemDmmSeq  : [ @sequence::cprPrepHitSeq, 
+  calPatRecDemDmmSeq  : [ DeltaDinder, 
 			  CalPatRecDem, CalPatRecDmm, 
 			  MergePatRecDem, MergePatRecDmm ]
 
-  allPatRecDemDmmSeq  : [ @sequence::tprPrepHitSeq, TimeClusterFinder, HelixFinder,  
+  allPatRecDemDmmSeq  : [ TimeClusterFinder, HelixFinder, 
 			  KSFDeM, KFFDeM, KSFDmuM, KFFDmuM, 
-			  @sequence::CalPatRec.dem_reco,
-			  @sequence::CalPatRec.dmm_reco,
-			  MergePatRecDem, MergePatRecDmm ]
-#------------------------------------------------------------------------------
-# extrapolation and matching
-#------------------------------------------------------------------------------
-  trkCaloMatchingSeq       : [ TrackCaloIntersection   , TrackCaloMatching    ]
-  trkCaloMatchingDepSeq    : [ TrackCaloIntersectionDep, TrackCaloMatchingDep ]
-  trkCaloMatchingDemSeq    : [ TrackCaloIntersectionDem, TrackCaloMatchingDem ]
-  trkCaloMatchingDmmSeq    : [ TrackCaloIntersectionDmm, TrackCaloMatchingDmm ]
-  trkCaloMatchingDemDmmSeq : [ TrackCaloIntersectionDem, TrackCaloMatchingDem, TrackCaloIntersectionDmm, TrackCaloMatchingDmm ]
-
-  trkCaloMatchingTprSeq    : [ TrackCaloIntersectionTpr, TrackCaloMatchingTpr ]
-  trkCaloMatchingCprSeq    : [ TrackCaloIntersectionCpr, TrackCaloMatchingCpr ]
-
-  trkCaloMatchingTprDemSeq    : [ TrackCaloIntersectionTprDem, TrackCaloMatchingTprDem ]
-  trkCaloMatchingCprDemSeq    : [ TrackCaloIntersectionCprDem, TrackCaloMatchingCprDem ]
-
-  trkCaloMatchingTprDepSeq    : [ TrackCaloIntersectionTprDep, TrackCaloMatchingTprDep ]
-  trkCaloMatchingCprDepSeq    : [ TrackCaloIntersectionCprDep, TrackCaloMatchingCprDep ]
-
+			  @sequence::CalPatRec.dem_reco, MergePatRecDem, 
+			  @sequence::CalPatRec.dmm_reco, MergePatRecDmm ]
 #------------------------------------------------------------------------------
 # particle identification
 # AvikPID on input takes MergePatRecDem and MergePatRecDmm
 #------------------------------------------------------------------------------
-  vadimPidSeq   : [ TrackCaloIntersection, TrackCaloMatching, ParticleID ]
+  vadimPidSeq   : [ @sequence::TrackCaloMatching.matching, ParticleID ]
 
-  avikPidSeq    : [ TrackCaloIntersectionDem, TrackCaloIntersectionDmm, TrackCaloMatchingDem, TrackCaloMatchingDmm, AvikPID ]
+  avikPidSeq    : [ @sequence::TrackCaloMatching.matching_dem, @sequence::TrackCaloMatching.matching_dmm, AvikPID ]
 
   pidSeq        : [ @sequence::avikPidSeq ]
 
@@ -124,22 +99,22 @@ BEGIN_PROLOG
 #------------------------------------------------------------------------------
   hits_calo_apr_stnmaker_seq : [ @sequence::CommonMC.DigiSim, @sequence::hitMakerSeq, 
 				 @sequence::CaloCluster.Reco, 
-				 @sequence::allPatRecSeq,
-				 @sequence::trkCaloMatchingSeq,
+                                 @sequence::allPatRecSeq,
+                                 @sequence::TrackCaloMatching.matching,
 #				 AvikPID, 
 				 @sequence::stnmaker_seq ]
 
   hits_calo_tprdem_stnmaker_seq : [ @sequence::CommonMC.DigiSim, @sequence::hitMakerSeq, 
 				    @sequence::CaloCluster.Reco,
 				    @sequence::trkPatRecDemSeq,
-				    @sequence::trkCaloMatchingDemSeq,
+                                    @sequence::TrackCaloMatching.matching_dem,
 				    #				      AvikPID, 
 				    @sequence::stnmaker_dem_seq ]
 #------------------------------------------------------------------------------
 # run full reconstruction on the data coming from the input file
 #------------------------------------------------------------------------------
   path_calo_apr_vpid_stnm :       [ @sequence::CaloCluster.Reco  , @sequence::allPatRecSeq,
-				    @sequence::trkCaloMatchingSeq,
+                                    @sequence::TrackCaloMatching.matching,
 				    ParticleID, 
 				    @sequence::stnmaker_seq ]
 #------------------------------------------------------------------------------
@@ -147,19 +122,20 @@ BEGIN_PROLOG
 #------------------------------------------------------------------------------
   path_gen_hits_calo_apr_vpid_stnm : [ @sequence::generatorSeq, @sequence::hitMakerSeq ,
 				       @sequence::CaloCluster.Reco , @sequence::allPatRecSeq,
-				       @sequence::trkCaloMatchingSeq,
+                                       @sequence::TrackCaloMatching.matching,
 				       ParticleID, 
 				       @sequence::stnmaker_seq ]
 #------------------------------------------------------------------------------
 # do track-to-calo matching for each branch separately
 #------------------------------------------------------------------------------
   path_gen_hits_calo_apr_vpid_stnm3 : [ @sequence::generatorSeq    , @sequence::hitMakerSeq ,
-					@sequence::CaloCluster.Reco, @sequence::allPatRecSeq, 
+					@sequence::CaloCluster.Reco, 
+					@sequence::allPatRecSeq, 
 					MergePatRecTpr,
 					MergePatRecCpr,
-					@sequence::trkCaloMatchingSeq,
-					@sequence::trkCaloMatchingTprSeq,
-					@sequence::trkCaloMatchingCprSeq,
+					@sequence::TrackCaloMatching.matching,
+					@sequence::TrackCaloMatching.matching_tpr,
+					@sequence::TrackCaloMatching.matching_cpr,
 					ParticleID, 
 					@sequence::stnmaker3_seq ]
 
@@ -168,9 +144,9 @@ BEGIN_PROLOG
 # 					@sequence::CaloCluster.Reco  , @sequence::allPatRecSeq,
 # 					MergePatRecTpr,
 # 					MergePatRecCpr,
-# 					@sequence::trkCaloMatchingSeq,
-# 					@sequence::trkCaloMatchingTprSeq,
-# 					@sequence::trkCaloMatchingCprSeq,
+# 					@sequence::TrackCaloMatching.matching,
+# 					@sequence::TrackCaloMatching.matching_tpr,
+# 					@sequence::TrackCaloMatching.matching_cpr,
 # 					ParticleID, 
 # 					@sequence::stnmaker3_seq ]
 #------------------------------------------------------------------------------
@@ -178,12 +154,12 @@ BEGIN_PROLOG
 #------------------------------------------------------------------------------
   path_hits_calo_apr_vpid_stnm     : [ @sequence::CommonMC.DigiSim  , @sequence::hitMakerSeq ,
 				       @sequence::CaloCluster.Reco  , @sequence::allPatRecSeq,
-				       @sequence::trkCaloMatchingSeq,
+                                       @sequence::TrackCaloMatching.matching,
 				       ParticleID, 
 				       @sequence::stnmaker_seq ]
 
   path_calo_apr_vpid_stnm          : [ @sequence::CaloCluster.Reco  , @sequence::allPatRecSeq,
-				       @sequence::trkCaloMatchingSeq,
+				       @sequence::TrackCaloMatching.matching,
 				       ParticleID, 
 				       @sequence::stnmaker_seq ]
 #------------------------------------------------------------------------------
@@ -191,13 +167,13 @@ BEGIN_PROLOG
 #------------------------------------------------------------------------------
 #   path_mix_hits_calo_apr_vpid_stnm : [ @sequence::mix_seq     , @sequence::hitMakerSeq ,  # FIXME
 # 				       @sequence::CaloCluster.Reco  , @sequence::allPatRecSeq,
-# 				       @sequence::trkCaloMatchingSeq,
+#                                       @sequence::TrackCaloMatching.matching,
 # 				       ParticleID, 
 # 				       @sequence::stnmaker_seq ]
 # 
 #   path_mix_hits_calo_apr_vpid_display : [ @sequence::mix_seq     , @sequence::hitMakerSeq ,
 # 					  @sequence::CaloCluster.Reco  , @sequence::allPatRecSeq,
-# 					  @sequence::trkCaloMatchingSeq,
+#                                         @sequence::TrackCaloMatching.matching,
 # 					  ParticleID, 
 # 					  MuHitDisplay ]
 # #------------------------------------------------------------------------------
@@ -207,19 +183,19 @@ BEGIN_PROLOG
 
 #   path_gen_mix_hits_calo_apr_vpid_stnm : [ @sequence::gen_mix_seq , @sequence::hitMakerSeq ,  # FIXME
 # 					   @sequence::CaloCluster.Reco  , @sequence::allPatRecSeq,
-# 					   @sequence::trkCaloMatchingSeq,
+#                                          @sequence::TrackCaloMatching.matching,
 # 					   ParticleID, 
 # 					   @sequence::stnmaker_seq ]
 # 
 #   path_gen_mix_hits_calo_apr_vpid_display : [ @sequence::gen_mix_seq , @sequence::hitMakerSeq ,
 # 					   @sequence::CaloCluster.Reco  , @sequence::allPatRecSeq,
-# 					   @sequence::trkCaloMatchingSeq,
+#                                          @sequence::TrackCaloMatching.matching,
 # 					   ParticleID, 
 # 					   MuHitDisplay]
 
   trkpatrec_dem_reco_stnmaker_seq : [ @sequence::CaloCluster.Reco, 
 				      @sequence::trkPatRecDemSeq,
-				      @sequence::trkCaloMatchingDemSeq,
+                                      @sequence::TrackCaloMatching.matching_dem,
 #				      AvikPID, 
 				      @sequence::stnmaker_dem_seq ]
 
@@ -229,18 +205,20 @@ BEGIN_PROLOG
 				      @sequence::stnmaker_dem_seq ]
 
   allpatrec_dem_reco_stnmaker_seq : [ @sequence::CaloCluster.Reco, @sequence::allPatRecDemSeq,
-				      @sequence::trkCaloMatchingDemSeq,
+                                      @sequence::TrackCaloMatching.matching_dem,
 #				      ParticleIDDem,
 #				      AvikPID,
 				      @sequence::stnmaker_dem_seq ]
 #------------------------------------------------------------------------------
-  trkpatrec_dem_dmm_reco_stnmaker_seq : [ @sequence::CaloCluster.Reco, @sequence::trkPatRecDemDmmSeq,
+  trkpatrec_dem_dmm_reco_stnmaker_seq : [ @sequence::CaloCluster.Reco, 
+					  @sequence::trkPatRecDemDmmSeq,
 					  @sequence::avikPidSeq, @sequence::stnmaker_dem_dmm_seq ]
 
   calpatrec_dem_dmm_reco_stnmaker_seq : [ @sequence::CaloCluster.Reco, @sequence::calPatRecDemDmmSeq,
 					  @sequence::avikPidSeq, @sequence::stnmaker_dem_dmm_seq ]
 
-  allpatrec_dem_dmm_reco_stnmaker_seq : [ @sequence::CaloCluster.Reco, @sequence::allPatRecDemDmmSeq,
+  allpatrec_dem_dmm_reco_stnmaker_seq : [ @sequence::CaloCluster.Reco, 
+					  @sequence::allPatRecDemDmmSeq,
 #					  @sequence::avikPidSeq, 
 					  @sequence::stnmaker_dem_dmm_seq ]
 #------------------------------------------------------------------------------
