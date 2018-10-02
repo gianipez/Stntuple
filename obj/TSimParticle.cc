@@ -217,7 +217,7 @@ void TSimParticle::Print(Option_t* Opt) const {
     printf("%10.3f",fStartMom.Px());
     printf("%10.3f",fStartMom.Py());
     printf("%10.3f",fStartMom.Pz());
-    printf("%10.3f",fStartMom.Energy());
+    printf("%10.3f",fStartMom.P());
     printf("%10.3f",fStartPos.X());
     printf("%10.3f",fStartPos.Y());
     printf("%10.3f",fStartPos.Z());
@@ -225,7 +225,7 @@ void TSimParticle::Print(Option_t* Opt) const {
     printf("%10.3f",fEndMom.Px());
     printf("%10.3f",fEndMom.Py());
     printf("%10.3f",fEndMom.Pz());
-    printf("%10.3f",fEndMom.Energy());
+    printf("%10.3f",fEndMom.P());
     printf("%10.3f",fEndPos.X());
     printf("%10.3f",fEndPos.Y());
     printf("%10.3f",fEndPos.Z());
