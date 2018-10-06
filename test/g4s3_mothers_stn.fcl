@@ -25,7 +25,7 @@ source       : { module_type : RootInput
 outputs      : { @table::Stntuple.outputs   }
 producers    : { @table::Stntuple.producers }
 filters      : { @table::Stntuple.filters   }
-analysers    : { @table::Stntuple.analyzers }
+analyzers    : { @table::Stntuple.analyzers }
 paths        : { @table::Stntuple.paths     }
 
 physics : {
@@ -44,7 +44,6 @@ physics : {
 #------------------------------------------------------------------------------
 	    makeClusters        : 0
 	    makePid             : 0
-	    makeSimp            : 1
 	    makeTracks          : 0
 	    makeVirtualHits     : 0
 	    makeStepPointMC     : 1
@@ -54,16 +53,20 @@ physics : {
 # suppress calculation of MC time offsets, not really needed, just an example
 	    TimeOffsets             : {}
 
+	    stepPointMCBlockName    : ["SpmcBlock"     , "VDetBlock"      ]
+	    stepPointMCModuleLabel  : ["muonBeamFilter", "muonBeamFilter" ]
+	    stepPointMCProductName  : ["DSVacuum"      , "virtualdetector"]
+
 	    stepPointMCBlockName    : ["VdetBlock"       ]
 	    stepPointMCModuleLabel  : ["mothersFilter"   ]
 	    stepPointMCProductName  : ["virtualdetector" ]
 	}
 	InitStntuple : { @table::filters.InitStntuple 
-	    histFileName : "nts.{USER}.{DATASET}.{OFFVER}.0000001.stn" 
+	    histFileName : "nts._USER_._DATASET_.s3_mothers_stn.0000001.stn" 
 	}
     }
 
-    analyzers : @table::analyzers
+    analyzers : { @table::analyzers }
 
     @table::paths
 
@@ -74,13 +77,13 @@ physics : {
     end_paths     : [ gcl, out ]
 }
 
-services.TFileService.fileName            : "nts.{USER}.{DATASET}.{OFFVER}.00000001.root"
+services.TFileService.fileName            : "nts._USER_._DATASET_.s3_mothers_stn.00000001.root"
 #------------------------------------------------------------------------------
 # uncomment the next 2 lines if you want the DST file to be written out
 #-----------------------------------------------------------------------------
 # physics.out                               : [ detectorOutput ]
 # outputs.detectorOutput.SelectEvents       : [ path_gen_digi_reco_stn_dem_dmm ]
-# outputs.detectorOutput.fileName           : "aaa.{USER}.{DATASET}.{OFFVER}.00000001.art"
+# outputs.detectorOutput.fileName           : "aaa._USER_._DATASET_.s3_mothers_stn.00000001.art"
 #------------------------------------------------------------------------------
 # debugging
 #------------------------------------------------------------------------------

@@ -42,6 +42,7 @@ physics : {
 	StntupleMaker: { @table::filters.StntupleMaker
 #------------------------------------------------------------------------------
 # disable everything, enable StepPointMC
+# VDET block is just yet another step point MC block
 #------------------------------------------------------------------------------
 	    makeClusters        : 0
 	    makePid             : 0
