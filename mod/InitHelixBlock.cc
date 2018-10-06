@@ -117,7 +117,7 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
   char                 makeSD_module_label[100];
 
   TStnHelixBlock*         cb = (TStnHelixBlock*) Block;
-  TStnHelix*              helix;
+  TStnHelix*              helix(0);
 
 
   cb->Clear();
@@ -146,31 +146,6 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
     if (helix_handle.isValid()) list_of_helices = helix_handle.product();//(mu2e::HelixSeedCollection*) &(*helix_handle);
   }
 
-  // art::Handle<mu2e::StrawHitCollection>         shcHandle;
-  // const mu2e::StrawHitCollection*               shcol;
-
-  // const char* ProductName = "";
-  // const char* ProcessName = "";
-
-  // //now get the strawhitcollection
-  // if (ProductName[0] != 0) {
-  //   art::Selector  selector(art::ProductInstanceNameSelector(ProductName) &&
-  // 			    art::ProcessNameSelector(ProcessName)         && 
-  // 			    art::ModuleLabelSelector("makeSH")           );
-  //   fEvent->get(selector, shcHandle);
-  // }
-  // else {
-  //   art::Selector  selector(art::ProcessNameSelector(ProcessName)         && 
-  // 			    art::ModuleLabelSelector("makeSH")           );
-  //   fEvent->get(selector, shcHandle);
-  // }
-    
-  // shcol = shcHandle.product();
-
-  // art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandleStraw;
-  // Evt->getByLabel("makeSD","",mcptrHandleStraw);
-  // mu2e::PtrStepPointMCVectorCollection const* hits_mcptrStraw = mcptrHandleStraw.product();
-
   const mu2e::StrawDigiMCCollection* mcdigis(0);
   art::Handle<mu2e::StrawDigiMCCollection> mcdH;
   Evt->getByLabel(makeSD_module_label/*"makeSD"*/, mcdH);
@@ -184,21 +159,24 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
   const mu2e::AlgorithmID*   alg_id(0);
   int                        mask(-1);
 
+  //std::vector<int>     hits_simp_id, hits_simp_index, hits_simp_z;
+
   //  int xxx(0);
 
   if (list_of_helices) nhelices = list_of_helices->size();
   
-  std::vector<int>     hits_simp_id, hits_simp_index;
-
-  TParticlePDG* part;
+  TParticlePDG* part(0);
   TDatabasePDG* pdg_db = TDatabasePDG::Instance();
   static XYZVec zaxis(0.0,0.0,1.0); // unit in z direction
 
   for (int i=0; i<nhelices; i++) {
-    //clear vector content
-    hits_simp_id.clear();
-    hits_simp_index.clear();
+    // //clear vector content
+    // hits_simp_id.clear();
+    // hits_simp_index.clear();
+    // hits_simp_z.clear();
+    std::vector<int>     hits_simp_id, hits_simp_index, hits_simp_z;
 
+    
     helix                  = cb->NewHelix();
     tmpHel                 = &list_of_helices->at(i);
     cluster                = tmpHel->caloCluster().get();
@@ -245,14 +223,12 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
     int                       nhits(hits->size());
 
     LsqSums4 sxy;
-    //add the stopping target center as in CalHeliFinderAlg.cc
-    sxy.addPoint(0., 0., 1./900.);
-
+ 
     LsqSums4 srphi;
     // static const CLHEP::Hep3Vector zdir(0.0,0.0,1.0);
     static const XYZVec zdir(0.0,0.0,1.0);
     float          rpullScaleF(0.);
-    float          minrerr(0.);
+    //    float          minrerr(0.);
     float          cradres(0.);
     float          cperpres(0.);
 
@@ -260,12 +236,20 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
     std::string    module     = pset.get<std::string>("module_type");
   
     if ( module == "RobustHelixFinder"){
-      rpullScaleF  = 1.414;//pset.get<float>("RPullScaleF");
-      minrerr      = 20.0;//pset.get<float>("MinRadiusErr");
-      cradres      = 20.0;//pset.get<float>("CenterRadialResolution");
-      cperpres     = 20.0;//pset.get<float>("CenterPerpResolution");
+      rpullScaleF  = pset.get<float>("RPullScaleF", 1.0);//0.895);
+      //      minrerr      = pset.get<float>("MinRadiusErr", 20.0);
+      cradres      = pset.get<float>("CenterRadialResolution", 20.0);
+      cperpres     = pset.get<float>("CenterPerpResolution"  , 20.0);
     }
 
+    if ( module == "CalHelixFinder" ){
+      fhicl::ParameterSet const& psetHelFit = pset.get<fhicl::ParameterSet>("HelixFinderAlg", fhicl::ParameterSet());
+      int addST  = psetHelFit.get<int>("targetconsistent");//0.895);
+
+      if (addST == 1) { //add the stopping target center as in CalHeliFinderAlg.cc
+	sxy.addPoint(0., 0., 1./900.);
+      }
+    }
 
     int      nStrawHits(0);
     float    chi2TprZPhi(0.), chi2TprXY(0.);
@@ -288,9 +272,10 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
 	if (Step) {
 	  art::Ptr<mu2e::SimParticle> const& simptr = Step->simParticle(); 
 	  int sim_id        = simptr->id().asInt();
-
+	  float   dz        = Step->position().z();// - trackerZ0;
 	  hits_simp_id.push_back   (sim_id); 
 	  hits_simp_index.push_back(shids[k]);
+	  hits_simp_z.push_back(dz);
 	  break;
 	}
       }
@@ -340,7 +325,8 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
       float werr   = hit->posRes(mu2e::StrawHitPosition::wire);
       float terr   = hit->posRes(mu2e::StrawHitPosition::trans);
       // the resolution is dominated the resolution along the wire
-      float rres   = std::max(sqrtf(werr*werr*rwdot2 + terr*terr*(1.0-rwdot2)),minrerr);
+      //      float rres   = std::max(sqrtf(werr*werr*rwdot2 + terr*terr*(1.0-rwdot2)),minrerr);
+      float rres   = sqrtf(werr*werr*rwdot2 + terr*terr*(1.0-rwdot2));
       float rpull  = fabs(dr/rres)*rpullScaleF;
 
       chi2TprXY += rpull*rpull;
@@ -371,15 +357,21 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
     } 
 
     //find the simparticle that created the majority of the hits
-    int     max(0), mostvalueindex(-1), mostvalue(-1);
+    int     max(0), mostvalueindex(-1), mostvalue(-1), id_max(0);
+    float   dz_most(1e4);
     if (hits_simp_id.size()>0) mostvalue = hits_simp_id[0];
-
-    for (int  k=0; k<nhits; ++k){
+    
+    for (int  k=0; k<(int)hits_simp_id.size(); ++k){
       int co = (int)std::count(hits_simp_id.begin(), hits_simp_id.end(), hits_simp_id[k]);
-      if ( co>max) {
-	max            = co;
-	mostvalue      = hits_simp_id[k];
-	mostvalueindex = hits_simp_index[k];
+      if ( (co>0) && (co>=max)) {
+	float  dz      = std::fabs(hits_simp_z[k]);
+	if (dz < dz_most){
+	  dz_most        = dz;
+	  max            = co;
+	  id_max         = k;
+	  mostvalue      = hits_simp_id[k];
+	  mostvalueindex = hits_simp_index[k];
+	}
       }
     }
 
@@ -389,8 +381,16 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
     helix->fSimpPDGM1   = -1;
     helix->fSimpPDGM2   = -1;
     
-    if (mostvalueindex<0)        {
-      printf(">>> ERROR: HelixFinder helix %i no MC found \n", i);
+    if (hits_simp_id.size()>0) {
+      if ( (mostvalueindex != hits_simp_index[id_max]) ){
+	printf(">>> ERROR: event %i %s helix %i no MC found. MostValueindex = %i hits_simp_index[id_max] =%i \n", 
+	       Evt->event(), module.c_str(), i, mostvalueindex, hits_simp_index[id_max]);
+      }
+    }
+    
+    if ( (mostvalueindex<0) || (mostvalueindex >= (int)mcdigis->size()))        {
+      printf(">>> ERROR: event %i %s helix %i no MC found. MostValueindex = %i hits_simp_index[id_max] = %i mcdigis_size =%li \n", 
+	     Evt->event(), module.c_str(), i, mostvalueindex, hits_simp_index[id_max], mcdigis->size());
       continue;
     }
     
@@ -434,56 +434,61 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
     //look for the second most frequent hit
     if (max != int(hits_simp_id.size()) ){  //nhits){
       int   secondmostvalueindex(-1);
-      max = 0;//reset max
+      max     = 0;//reset max
+      dz_most = 1e4;
 
-      for (int k=0; k<nhits; ++k){
+      for (int k=0; k<(int)hits_simp_id.size(); ++k){
 	int value = hits_simp_id[k];
 	int co = (int)std::count(hits_simp_id.begin(), hits_simp_id.end(), value);
-	if ( (co>max) && (value != mostvalue)) {
-	  max                  = co;
-	  // secondmostvalue      = value;
-	  secondmostvalueindex = hits_simp_index[k];
+	if ( (co>0) && (co>=max) && (value != mostvalue)) {
+	  float  dz      = std::fabs(hits_simp_z[k]);
+	  if (dz < dz_most){
+	    max                  = co;
+	    dz_most              = dz;
+	    secondmostvalueindex = hits_simp_index[k];
+	  }
 	}
       }
       //      helix->fSimpId2     = secondmostvalue;
       helix->fSimpId2Hits = max;
 
+      if (secondmostvalueindex >=0){
 
-      mu2e::StrawDigiMC const&     mcdigi = mcdigis->at(secondmostvalueindex);
-      art::Ptr<mu2e::StepPointMC>  spmcp;
-      mu2e::TrkMCTools::stepPoint(spmcp,mcdigi);
-      const mu2e::StepPointMC* Step = spmcp.get();
-      const mu2e::SimParticle * sim (0);
+	mu2e::StrawDigiMC const&     mcdigi = mcdigis->at(secondmostvalueindex);
+	art::Ptr<mu2e::StepPointMC>  spmcp;
+	mu2e::TrkMCTools::stepPoint(spmcp,mcdigi);
+	const mu2e::StepPointMC* Step = spmcp.get();
+	const mu2e::SimParticle * sim (0);
 
-      if (Step) {
-	art::Ptr<mu2e::SimParticle> const& simptr = Step->simParticle(); 
-	helix->fSimpPDG2    = simptr->pdgId();
-	art::Ptr<mu2e::SimParticle> mother = simptr;
-	part   = pdg_db->GetParticle(helix->fSimpPDG2);
+	if (Step) {
+	  art::Ptr<mu2e::SimParticle> const& simptr = Step->simParticle(); 
+	  helix->fSimpPDG2    = simptr->pdgId();
+	  art::Ptr<mu2e::SimParticle> mother = simptr;
+	  part   = pdg_db->GetParticle(helix->fSimpPDG2);
 
-	while(mother->hasParent()) mother = mother->parent();
-	sim = mother.operator ->();
+	  while(mother->hasParent()) mother = mother->parent();
+	  sim = mother.operator ->();
 
-	helix->fSimpPDGM2   = sim->pdgId();
+	  helix->fSimpPDGM2   = sim->pdgId();
       
-	double   px = simptr->startMomentum().x();
-	double   py = simptr->startMomentum().y();
-	double   pz = simptr->startMomentum().z();
-	double   mass(-1.);//  = part->Mass();
-	double   energy(-1.);// = sqrt(px*px+py*py+pz*pz+mass*mass);
-	if (part) {
-	  mass   = part->Mass();
-	  energy = sqrt(px*px+py*py+pz*pz+mass*mass);
-	}
-	helix->fMom2.SetPxPyPzE(px,py,pz,energy);
+	  double   px = simptr->startMomentum().x();
+	  double   py = simptr->startMomentum().y();
+	  double   pz = simptr->startMomentum().z();
+	  double   mass(-1.);//  = part->Mass();
+	  double   energy(-1.);// = sqrt(px*px+py*py+pz*pz+mass*mass);
+	  if (part) {
+	    mass   = part->Mass();
+	    energy = sqrt(px*px+py*py+pz*pz+mass*mass);
+	  }
+	  helix->fMom2.SetPxPyPzE(px,py,pz,energy);
 
-	const CLHEP::Hep3Vector* sp = &simptr->startPosition();
-	helix->fOrigin2.SetXYZT(sp->x(),sp->y(),sp->z(),simptr->startGlobalTime());
+	  const CLHEP::Hep3Vector* sp = &simptr->startPosition();
+	  helix->fOrigin2.SetXYZT(sp->x(),sp->y(),sp->z(),simptr->startGlobalTime());
   
-	// helix->fSimp2P      = Step->momentum().mag();
-	// helix->fSimp2Pt     = sqrt(pow(Step->momentum().x(),2.) + pow(Step->momentum().y(),2.));
-      }      
-      
+	  // helix->fSimp2P      = Step->momentum().mag();
+	  // helix->fSimp2Pt     = sqrt(pow(Step->momentum().x(),2.) + pow(Step->momentum().y(),2.));
+	}      
+      }
     }
     
     helix->fNComboHits = tmpHel->hits().size();
@@ -511,7 +516,8 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
       srphi.addPoint(pos.z(), phi, weight_cl_phiz);
     }
     
-
+    //Gainipez, 20180911
+    //commented for making a test
     if ( module == "CalHelixFinder"){
       helix->fChi2XYNDof   = sxy.chi2DofCircle();
       helix->fChi2PhiZNDof = srphi.chi2DofLine();
