@@ -51,7 +51,7 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
   static char                 trkSeed_module_label[100], trkSeed_description[100]; 
 
   TStnTrackSeedBlock*         cb = (TStnTrackSeedBlock*) Block;
-  TStnTrackSeed*              trackSeed;
+  TStnTrackSeed*              trackSeed(0);
 
 
   cb->Clear();
@@ -72,6 +72,9 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
   
   const mu2e::CaloCluster       *cluster(0);
  
+  // mu2e::GeomHandle<mu2e::TTracker> th;
+  // const mu2e::TTracker* tracker = th.get();
+
   ntrkseeds = list_of_trackSeeds->size();    
 
   // art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandleStraw;
@@ -95,11 +98,16 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
   Evt->getByLabel(makeSD_module_label/*"makeSD"*/, mcdH);
   mcdigis = mcdH.product();
   
-  std::vector<int>     hits_simp_id, hits_simp_index;
-  TParticlePDG*        part;
+  TParticlePDG*        part(0);
   TDatabasePDG*        pdg_db = TDatabasePDG::Instance();
  
   for (int i=0; i<ntrkseeds; i++) {
+    //clear vector content
+    // hits_simp_id.clear();
+    // hits_simp_index.clear();
+    // hits_simp_z.clear();
+    std::vector<int>     hits_simp_id, hits_simp_index, hits_simp_z;
+    
     trackSeed                  = cb->NewTrackSeed();
     trkSeed                    = &list_of_trackSeeds->at(i);
     cluster                    = trkSeed->caloCluster().get();
@@ -153,18 +161,24 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
 
 	hits_simp_id.push_back   (sim_id); 
 	hits_simp_index.push_back(hitIndex);
-      }
+	hits_simp_z.push_back(Step->position().z());
+     }
     }//end loop over the hits
     
 
  //find the simparticle that created the majority of the hits
     int     max(0), mostvalueindex(-1), mostvalue= hits_simp_id[0];
-    for (int k=0; k<nsh; ++k){
+    float   dz_most(1e4);
+    for (int k=0; k<(int)hits_simp_id.size(); ++k){
       int co = (int)std::count(hits_simp_id.begin(), hits_simp_id.end(), hits_simp_id[k]);
-      if ( co>max) {
-	max            = co;
-	mostvalue      = hits_simp_id[k];
-	mostvalueindex = hits_simp_index[k];
+      if ( (co>0) &&  (co>max)) {
+	float  dz      = std::fabs(hits_simp_z[k]);
+	if (dz < dz_most){
+	  dz_most        = dz;
+	  max            = co;
+	  mostvalue      = hits_simp_id[k];
+	  mostvalueindex = hits_simp_index[k];
+	}
       }
     }
 
@@ -214,15 +228,19 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
     //look for the second most frequent hit
     if (max != nsh && max > 0){
       int   secondmostvalueindex(-1);
-      max = 0;//reset max
+      max     = 0;//reset max
+      dz_most = 1e4;
 
-      for (int k=0; k<nsh; ++k){
+      for (int k=0; k<(int)hits_simp_id.size(); ++k){
 	int value = hits_simp_id[k];
 	int co = (int)std::count(hits_simp_id.begin(), hits_simp_id.end(), value);
-	if ( (co>max) && (value != mostvalue)) {
-	  max                  = co;
-	  // secondmostvalue      = value;
-	  secondmostvalueindex = hits_simp_index[k];
+	if ( (co>0) && (co>max) && (value != mostvalue)) {
+	  float  dz      = std::fabs(hits_simp_z[k]);
+	  if (dz < dz_most){
+	    max                  = co;
+	    dz_most              = dz;
+	    secondmostvalueindex = hits_simp_index[k];
+	  }
 	}
       }
       //      trackSeed->fSimpId2     = secondmostvalue;
