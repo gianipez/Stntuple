@@ -3,8 +3,7 @@
 #pragma link off all   classes;
 #pragma link off all   functions;
 
-#pragma link C++ class TPhotosAnaModule;
-#pragma link C++ class TPhotosAnaModule::Hist_t;
+#pragma link C++ class TStnEventDisplayModule;
 
 #endif
 

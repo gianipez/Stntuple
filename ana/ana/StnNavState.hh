@@ -5,8 +5,8 @@
 //   event display service.
 //
 
-#ifndef __murat_ana_NavState_hh__
-#define __murat_ana_NavState_hh__
+#ifndef __murat_ana_StnNavState_hh__
+#define __murat_ana_StnNavState_hh__
 
 enum nav_states_ {
   kNEXT_EVENT  ,
@@ -16,7 +16,7 @@ enum nav_states_ {
 };
 
 
-class NavState {
+class StnNavState {
 public:
   static int  Which      ();
   static void Set        (int which);
@@ -24,7 +24,7 @@ public:
   static int  TargetRun  ();
   static int  TargetEvent();
 private:
-  NavState() { }
+  StnNavState() { }
 };
 
 #endif

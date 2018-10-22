@@ -5,34 +5,34 @@
 //
 
 
-#include "Stntuple/ana/NavState.hh"
-#include "Stntuple/ana/TEventDisplayUtils.hh"
+#include "Stntuple/ana/StnNavState.hh"
+#include "Stntuple/ana/TStnEventDisplayUtils.hh"
 #include <string>
 
-ClassImp(TEventDisplayUtils)
+ClassImp(TStnEventDisplayUtils)
 
 //-----------------------------------------------------------------------------
-TEventDisplayUtils::TEventDisplayUtils(): TObject() {
+TStnEventDisplayUtils::TStnEventDisplayUtils(): TObject() {
   fTbRun = 0;
   fTbEvt = 0;
 }
 
 //-----------------------------------------------------------------------------
-TEventDisplayUtils::~TEventDisplayUtils() {
+TStnEventDisplayUtils::~TStnEventDisplayUtils() {
 }
 
-void TEventDisplayUtils::PrevEvent(){
-  NavState::Set(kPREV_EVENT);
+void TStnEventDisplayUtils::PrevEvent(){
+  StnNavState::Set(kPREV_EVENT);
 }
 
-void TEventDisplayUtils::NextEvent(){
-  NavState::Set(kNEXT_EVENT);
+void TStnEventDisplayUtils::NextEvent(){
+  StnNavState::Set(kNEXT_EVENT);
 }
 
-void TEventDisplayUtils::GotoEvent(){
+void TStnEventDisplayUtils::GotoEvent(){
   int run   = std::stoi(fTbRun->GetString());
   int event = std::stoi(fTbEvt->GetString());
   
-  NavState::SetTarget(run, event);
-  NavState::Set(kGOTO_EVENT);
+  StnNavState::SetTarget(run, event);
+  StnNavState::Set(kGOTO_EVENT);
 }

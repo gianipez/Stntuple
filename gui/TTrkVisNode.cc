@@ -99,8 +99,6 @@ int TTrkVisNode::InitEvent() {
   const mu2e::TTracker* tracker = ttHandle.get();
 
   // Tracker calibration object.
-
-  // mu2e::ConditionsHandle<mu2e::TrackerCalibrations> trackCal("ignored");
   mu2e::ConditionsHandle<mu2e::StrawResponse> srep = mu2e::ConditionsHandle<mu2e::StrawResponse>("ignored");
 
   fListOfStrawHits->Delete();
@@ -108,8 +106,6 @@ int TTrkVisNode::InitEvent() {
   fListOfTracks->Delete();
 
   const mu2e::ComboHit              *hit;
-  //  const XYZVec                      *hit_pos;
-  //  const mu2e::StrawHitFlag          *hit_id_word;
   const mu2e::StrawDigiMC           *hit_digi_mc;
 
   TEvdStrawHit                      *evd_straw_hit; 
@@ -156,19 +152,16 @@ int TTrkVisNode::InitEvent() {
 // if the time peak is not found
 //-----------------------------------------------------------------------------
   TEvdStraw* evd_straw;
-  n_straw_hits = (*fStrawHitColl)->size();
+  n_straw_hits = (*fComboHitColl)->size();
 
   for (int ihit=0; ihit<n_straw_hits; ihit++ ) {
 
-    hit         = &(*fStrawHitColl)    ->at(ihit);
-    //    hit_pos     = &hit->pos();
-    //    hit_pos     = &(*fStrawHitPosColl) ->at(ihit);
-    //    hit_id_word = &(*fStrawHitFlagColl)->at(ihit);
+    hit         = &(*fComboHitColl)->at(ihit);
 
     if ((*fStrawDigiMCColl)->size() > 0) hit_digi_mc = &(*fStrawDigiMCColl)->at(ihit);
     else                                 hit_digi_mc = NULL; // normally, should not be happening, but it does
 
-    straw       = &tracker->getStraw(hit->strawId());//strawIndex());
+    straw       = &tracker->getStraw(hit->strawId());
     display_hit = 1;
 
     if (! display_hit)                                      continue;
@@ -198,7 +191,6 @@ int TTrkVisNode::InitEvent() {
       //	    if ( gen->generatorId() == mu2e::GenId::conversionGun ){
       if ( gen->generatorId() == mu2e::GenId::StoppedParticleReactionGun ){
 	isFromConversion = true;
-	break;
       }
     }
 
@@ -233,27 +225,15 @@ int TTrkVisNode::InitEvent() {
     
     int ist, ipl, ippl, /*ifc,*/ ipn, il, is;
 
-    ipl = straw->id().getPlane(); // plane number here runs from 0 to 2*NStations-1
-
-    //    int idd = straw->id().getDevice();	// really it is a plane number in a throughout enumeration
+    ipl  = straw->id().getPlane(); // plane number here runs from 0 to 2*NStations-1
 
     ist  = ipl / 2 ; // *** should become straw->id().getStation();
     ippl = ipl % 2 ; // plane number within the station
 
-    //    ipl = idd % 2 ; // straw->id().getSector();
-
     ipn = straw->id().getPanel();
-
-//     ifc  = isec%2;
-//     ipn  = isec/2;
 
     il   = straw->id().getLayer();
     is   = straw->id().getStraw();
-
-    // from now on, the straw number in a layer is is' = is/2
-      
-//     ifc = -1; //## FIXME
-//     ipn = -1;
 
     evd_straw     = fTracker->Station(ist)->Plane(ippl)->Panel(ipn)->Straw(il,is/2);
 
@@ -311,7 +291,7 @@ int TTrkVisNode::InitEvent() {
 void TTrkVisNode::PaintXY(Option_t* Option) {
 
   double        time;
-  int           station, display_hit, ntrk(0);
+  int           station, ntrk(0);
   TEvdStrawHit  *hit;
 
   const mu2e::ComboHit   *straw_hit;
@@ -334,8 +314,12 @@ void TTrkVisNode::PaintXY(Option_t* Option) {
     }
   }
 
-  double tMin = fTimeCluster->t0().t0() - 30;//FIXME!
-  double tMax = fTimeCluster->t0().t0() + 20;//FIXME!
+  double tmin(0), tmax(2000.);
+
+  if (fTimeCluster) {
+    tmin = fTimeCluster->t0().t0() - 30;//FIXME!
+    tmax = fTimeCluster->t0().t0() + 20;//FIXME!
+  }
   
   int nhits = fListOfStrawHits->GetEntries();
   for (int i=0; i<nhits; i++) {
@@ -346,11 +330,7 @@ void TTrkVisNode::PaintXY(Option_t* Option) {
     time      = straw_hit->time();
 
     if ((station >= vm->MinStation()) && (station <= vm->MaxStation())) { 
-      display_hit = 1;
-      if (fTimeCluster != NULL) {
-	if ((time < tMin) || (time > tMax)) display_hit = 0;
-      }
-      if (display_hit) {
+      if ((time >= tmin) && (time <= tmax)) {
 	hit->Paint(Option);
       }
     }

@@ -41,16 +41,15 @@ physics : {
 #------------------------------------------------------------------------------
 # disable everything, require stage2 StepPointMC collection ("DSVacuum")
 #------------------------------------------------------------------------------
-	    makeClusters    : 0
-	    makePid         : 0
-	    makeSimp        : 1
-	    makeTracks      : 0
-	    makeVirtualHits : 0
-	    makeStepPointMC : 1
+	    makeClusters    : 0  # default: 1
+	    makePid         : 0  # default: 1
+	    makeStepPointMC : 1  # default: 0
+	    makeTracks      : 0  # default: 1
+	    makeVirtualHits : 0  # default: 1
 
 	    makeSimpModuleLabel     : "muonBeamFilter"
 
-	    stepPointMCBlockName    : ["SpmcBlock"     , "VdetBlock"    ]
+	    stepPointMCBlockName    : ["SpmcBlock"     , "VDetBlock"      ]
 	    stepPointMCModuleLabel  : ["muonBeamFilter", "muonBeamFilter" ]
 	    stepPointMCProductName  : ["DSVacuum"      , "virtualdetector"]
 	}

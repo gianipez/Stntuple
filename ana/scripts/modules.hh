@@ -3,20 +3,20 @@
 
 // #include "Stntuple/ana/TDFCModule.hh"
 
-class TPhotosAnaModule;
-class TEventDisplayModule;
-class TValidationModule;
-class TDebugModule;
-class TLumiMonModule;
+class TStnPhotosAnaModule;
+class TStnEventDisplayModule;
+class TStnValidationModule;
+class TStnDebugModule;
+class TStnLumiMonModule;
 
 namespace stntuple {
 
-  TDebugModule*            m_dbg   = NULL;
-  TDFCModule*              m_dfc   = NULL;
-  TLumiMonModule*          m_lum   = NULL;
-  TEventDisplayModule*     m_evd   = NULL;
-  TPhotosAnaModule*        m_pho   = NULL;
-  TValidationModule*       m_val   = NULL;
+  TStnDebugModule*            m_dbg   = NULL;
+  TDFCModule*                 m_dfc   = NULL;
+  TStnLumiMonModule*          m_lum   = NULL;
+  TStnEventDisplayModule*     m_evd   = NULL;
+  TStnPhotosAnaModule*        m_pho   = NULL;
+  TStnValidationModule*       m_val   = NULL;
 };
 
 #endif

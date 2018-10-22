@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 ///////////////////////////////////////////////////////////////////////////////
-#include "Stntuple/ana/TMu2eEveMagField.hh"
+#include "Stntuple/ana/TStnMu2eEveMagField.hh"
 #include "Stntuple/val/stntuple_val_functions.hh"
 
 #include "GeometryService/inc/GeometryService.hh"
@@ -15,9 +15,9 @@
 #include "TBranch.h"
 #include "TNtuple.h"
 
-ClassImp(TMu2eEveMagField)
+ClassImp(TStnMu2eEveMagField)
 //-----------------------------------------------------------------------------
-TMu2eEveMagField::TMu2eEveMagField(): TEveMagField() {
+TStnMu2eEveMagField::TStnMu2eEveMagField(): TEveMagField() {
 
   bool _allowReplacement    (true);
   bool _messageOnReplacement(false);
@@ -45,7 +45,7 @@ TMu2eEveMagField::TMu2eEveMagField(): TEveMagField() {
 }
 
 //-----------------------------------------------------------------------------
-TMu2eEveMagField::~TMu2eEveMagField() {
+TStnMu2eEveMagField::~TStnMu2eEveMagField() {
   // delete [] fZ;
   // delete [] fBz;
   delete fBeamline;
@@ -58,7 +58,7 @@ TMu2eEveMagField::~TMu2eEveMagField() {
 // for some reason, TEveTrackPropagator RungeKutta method explicitly inverts
 // the magnetic field - add one more inversion to get it right
 //-----------------------------------------------------------------------------
-TEveVector TMu2eEveMagField::GetField(float X, float Y, float Z) const {
+TEveVector TStnMu2eEveMagField::GetField(float X, float Y, float Z) const {
 
   double bx(0), by(0), bz(0);
   CLHEP::Hep3Vector field = fBmgr->getBField(CLHEP::Hep3Vector(X*10,Y*10,Z*10));

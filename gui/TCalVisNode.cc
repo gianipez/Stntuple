@@ -258,18 +258,18 @@ void TCalVisNode::PaintXY(Option_t* Option) {
 
   int ncl = fListOfEvdClusters->GetEntries();
   if (ncl > 0) {
-    //    TAnaDump::Instance()->printCaloCluster(0,"banner");
     for (int i=0; i<ncl; i++) {
       cl = EvdCluster(i);
-      //      TAnaDump::Instance()->printCaloCluster(cl,"data");
-      double tMin = fTimeCluster->t0().t0() - 30;//FIXME!
-      double tMax = fTimeCluster->t0().t0() + 20;//FIXME!
+
+      double tmin(0), tmax(2000);
+      if (fTimeCluster) {
+	tmin = fTimeCluster->t0().t0() - 30;//FIXME!
+	tmax = fTimeCluster->t0().t0() + 20;//FIXME!
+      }
       time = cl->Cluster()->time();
       display_cluster = 1;
 
-      if (fTimeCluster != NULL) {
-	if ((time < tMin) || (time > tMax)) display_cluster = 0;
-      }
+      if ((time < tmin) || (time > tmax)) display_cluster = 0;
 
       if (display_cluster) {
 //-----------------------------------------------------------------------------

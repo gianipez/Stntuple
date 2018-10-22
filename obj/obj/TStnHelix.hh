@@ -123,6 +123,9 @@ public:
   float   CenterY    () { return  fRCent*sin(fFCent);}
   float   D0         () { return  fD0;    }   
 
+  float   Pt         () { return  fRadius*3./10;}//assumes 1T magnetic field!
+  float   P          () { return  sqrt(fRadius*fRadius + fLambda*fLambda)*3./10;}//assumes 1T magnetic field!
+
   float   Chi2XY     () { return  fChi2XYNDof;}
   float   Chi2ZPhi   () { return  fChi2PhiZNDof;}
 

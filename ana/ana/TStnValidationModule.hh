@@ -1,8 +1,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 ///////////////////////////////////////////////////////////////////////////////
-#ifndef Stntuple_ana_TValidationModule_hh
-#define Stntuple_ana_TValidationModule_hh
+#ifndef Stntuple_ana_TStnValidationModule_hh
+#define Stntuple_ana_TStnValidationModule_hh
 
 #include "TH1.h"
 #include "TH2.h"
@@ -28,7 +28,7 @@
 #include "Stntuple/alg/TStnTrackID.hh"
 #include "Stntuple/alg/TEmuLogLH.hh"
 
-class TValidationModule: public TStnModule {
+class TStnValidationModule: public TStnModule {
 public:
 
   struct TrackPar_t {
@@ -385,8 +385,8 @@ public:
 //  functions
 //-----------------------------------------------------------------------------
 public:
-  TValidationModule(const char* name="Validation", const char* title="Validation");
-  ~TValidationModule();
+  TStnValidationModule(const char* name="StnValidation", const char* title="Validation");
+  ~TStnValidationModule();
 //-----------------------------------------------------------------------------
 // accessors
 //-----------------------------------------------------------------------------
@@ -444,7 +444,7 @@ public:
 //-----------------------------------------------------------------------------
   void    Test001();
 
-  ClassDef(TValidationModule,0)
+  ClassDef(TStnValidationModule,0)
 };
 
 #endif

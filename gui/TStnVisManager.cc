@@ -31,17 +31,15 @@
 
 ClassImp(TStnVisManager)
 
-//_____________________________________________________________________________
-TStnVisManager::TStnVisManager(const char* Name, const char* Title) : TVisManager(Name, Title) {
+//-----------------------------------------------------------------------------
+TStnVisManager::TStnVisManager(const char* Name, const char* Title): TVisManager(Name, Title) {
   if (gROOT->IsBatch()) return;
 
-  fMain = new  TEvdMainFrame(gClient->GetRoot(), 200, 100,
-			     kMainFrame | kVerticalFrame);
-  //-----------------------------------------------------------------------------
-  //  create menu bar
-  //-----------------------------------------------------------------------------
-	
-  fMenuBarLayout = new TGLayoutHints(kLHintsTop | kLHintsLeft | kLHintsExpandX, 0, 0, 1, 1);
+  fMain = new  TEvdMainFrame(gClient->GetRoot(),200,100,kMainFrame | kVerticalFrame);
+//-----------------------------------------------------------------------------
+//  create menu bar
+//-----------------------------------------------------------------------------
+  fMenuBarLayout     = new TGLayoutHints(kLHintsTop | kLHintsLeft | kLHintsExpandX, 0, 0, 1, 1);
   fMenuBarItemLayout = new TGLayoutHints(kLHintsTop | kLHintsLeft, 0, 4, 0, 0);
   fMenuBarHelpLayout = new TGLayoutHints(kLHintsTop | kLHintsRight);
 
@@ -124,13 +122,12 @@ TStnVisManager::TStnVisManager(const char* Name, const char* Title) : TVisManage
   updaterBtn->SetMargins(0, 0, 0, 0);
   updaterBtn->SetWrapLength(-1);
   updaterBtn->MoveResize(220, 120, 60, 20);
-
-  //-----------------------------------------------------------------------------
-  // views
-  //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// views
+//-----------------------------------------------------------------------------
   fTrkXYView = new TTrkXYView();
   fTrkRZView = new TTrkRZView();
-  // for vanes - 4 "views"
+
   fCalView[0] = new TCalView(0);
   fCalView[1] = new TCalView(1);
 
@@ -147,12 +144,10 @@ TStnVisManager::TStnVisManager(const char* Name, const char* Title) : TVisManage
   fCrvView[5] = new TCrvView(8); //topts
   fCrvView[5]->SetTimeWindow(0, 1695);
 	
-
   fListOfDetectors = new TObjArray(10);
-
-  //-----------------------------------------------------------------------------
-  // final actions
-  //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// final actions
+//-----------------------------------------------------------------------------
   fMain->MapSubwindows();
   fMain->Resize(fMain->GetDefaultSize());
   fMain->Resize(400, 150);
@@ -161,9 +156,9 @@ TStnVisManager::TStnVisManager(const char* Name, const char* Title) : TVisManage
 
   fMain->MapWindow();
 
-  fMinStation = 0;
+  fMinStation =  0;
   fMaxStation = 50;
-  // by default, no timing constraints
+					// by default, no timing constraints
   fTMin = 0;
   fTMax = 1.e5;
 
@@ -205,99 +200,93 @@ TStnVisManager::~TStnVisManager() {
 
 //_____________________________________________________________________________
 TStnVisManager* TStnVisManager::Instance() {
-	if (TVisManager::fgInstance != NULL) {
-		return (TStnVisManager*) TVisManager::fgInstance;
-	}
-	else {
-		return new TStnVisManager();
-	}
+  if (TVisManager::fgInstance != NULL) {
+    return (TStnVisManager*) TVisManager::fgInstance;
+  }
+  else {
+    return new TStnVisManager();
+  }
 }
 
 //_____________________________________________________________________________
-TCanvas* TStnVisManager::NewCanvas(const char* Name,
-	const char* Title,
-	Int_t       SizeX,
-	Int_t       SizeY)
-{
-	TStnFrame* win = new TStnFrame(Name, Title, 0, SizeX, SizeY);
-	TCanvas*c = win->GetCanvas();
-	DeclareCanvas(c);
-	return c;
+TCanvas* TStnVisManager::NewCanvas(const char* Name, const char* Title, int SizeX, int SizeY) {
+  TStnFrame* win = new TStnFrame(Name, Title, 0, SizeX, SizeY);
+  TCanvas*c = win->GetCanvas();
+  DeclareCanvas(c);
+  return c;
 }
 
 
 //_____________________________________________________________________________
 Int_t TStnVisManager::OpenTrkXYView() {
-	// open new XY view of the detector with the default options
+  // open new XY view of the detector with the default options
 
-	int n = fListOfCanvases->GetSize();
+  int n = fListOfCanvases->GetSize();
 
-	char name[100], title[100];
+  char name[100], title[100];
 
-	sprintf(name, "xy_view_%i", n);
-	sprintf(title, "XY view number %i", n);
+  sprintf(name, "xy_view_%i", n);
+  sprintf(title, "XY view number %i", n);
 
-	TStnFrame* win = new TStnFrame(name, title, kXYView, 740, 760);
-	TCanvas* c = win->GetCanvas();
-	fListOfCanvases->Add(c);
+  TStnFrame* win = new TStnFrame(name, title, kXYView, 740, 760);
+  TCanvas* c = win->GetCanvas();
+  fListOfCanvases->Add(c);
 
-	TString name1(name);
-	name1 += "_1";
-	TPad* p1 = (TPad*) c->FindObject(name1);
-	p1->Range(-800., -800., 800., 800.);
-	p1->cd();
-	fTrkXYView->Draw();
+  TString name1(name);
+  name1 += "_1";
+  TPad* p1 = (TPad*) c->FindObject(name1);
+  p1->Range(-1000., -1000., 1000., 1000.);
+  p1->cd();
+  fTrkXYView->Draw();
 
-	TString name_title(name);
-	name1 += "_title";
-	TPad* title_pad = (TPad*) c->FindObject(name_title);
-	title_pad->cd();
-	fTitleNode->Draw();
+  TString name_title(name);
+  name1 += "_title";
+  TPad* title_pad = (TPad*) c->FindObject(name_title);
+  title_pad->cd();
+  fTitleNode->Draw();
 
-	c->Modified();
-	c->Update();
-	return 0;
+  c->Modified();
+  c->Update();
+  return 0;
 }
 
 //_____________________________________________________________________________
-Int_t TStnVisManager::OpenTrkXYView(TTrkXYView* mother, Axis_t x1, Axis_t y1,
-	Axis_t x2, Axis_t y2)
-{
+Int_t TStnVisManager::OpenTrkXYView(TTrkXYView* mother, Axis_t x1, Axis_t y1, Axis_t x2, Axis_t y2) {
 	// open new XY view of the detector with the default options
 
-	int n = fListOfCanvases->GetSize();
+  int n = fListOfCanvases->GetSize();
 
-	char name[100], title[100];
+  char name[100], title[100];
 
-	sprintf(name, "xy_view_%i", n);
-	sprintf(title, "XY view number %i", n);
+  sprintf(name, "xy_view_%i", n);
+  sprintf(title, "XY view number %i", n);
 
-	// try to preserve the aspect ratio
-	Int_t   xsize, ysize;
+  // try to preserve the aspect ratio
+  Int_t   xsize, ysize;
 
-	xsize = 540;
-	ysize = (Int_t) (xsize*TMath::Abs((y2 - y1) / (x2 - x1)) + 20);
+  xsize = 540;
+  ysize = (Int_t) (xsize*TMath::Abs((y2 - y1) / (x2 - x1)) + 20);
 
-	TStnFrame* win = new TStnFrame(name, title, kXYView, xsize, ysize);
-	TCanvas* c = win->GetCanvas();
-	fListOfCanvases->Add(c);
+  TStnFrame* win = new TStnFrame(name, title, kXYView, xsize, ysize);
+  TCanvas* c = win->GetCanvas();
+  fListOfCanvases->Add(c);
 
-	TString name1(name);
-	name1 += "_1";
-	TPad* p1 = (TPad*) c->FindObject(name1);
-	p1->Range(x1, y1, x2, y2);
-	p1->cd();
-	mother->Draw();
+  TString name1(name);
+  name1 += "_1";
+  TPad* p1 = (TPad*) c->FindObject(name1);
+  p1->Range(x1, y1, x2, y2);
+  p1->cd();
+  mother->Draw();
 
-	TString name_title(name);
-	name1 += "_title";
-	TPad* title_pad = (TPad*) c->FindObject(name_title);
-	title_pad->cd();
-	fTitleNode->Draw();
+  TString name_title(name);
+  name1 += "_title";
+  TPad* title_pad = (TPad*) c->FindObject(name_title);
+  title_pad->cd();
+  fTitleNode->Draw();
 
-	c->Modified();
-	c->Update();
-	return 0;
+  c->Modified();
+  c->Update();
+  return 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -305,381 +294,374 @@ Int_t TStnVisManager::OpenTrkXYView(TTrkXYView* mother, Axis_t x1, Axis_t y1,
 //-----------------------------------------------------------------------------
 Int_t TStnVisManager::OpenTrkRZView() {
 
-	int n = fListOfCanvases->GetSize();
+  int n = fListOfCanvases->GetSize();
 
-	char name[100], title[100];
+  char name[100], title[100];
 
-	sprintf(name, "rz_view_%i", n);
-	sprintf(title, "RZ view number %i", n);
+  sprintf(name, "rz_view_%i", n);
+  sprintf(title, "RZ view number %i", n);
 
-	TStnFrame* win = new TStnFrame(name, title, kRZView, 1500, 500);
-	TCanvas* c = win->GetCanvas();
-	fListOfCanvases->Add(c);
+  TStnFrame* win = new TStnFrame(name, title, kRZView, 1500, 500);
+  TCanvas* c = win->GetCanvas();
+  fListOfCanvases->Add(c);
 
-	TString name1(name);
-	name1 += "_1";
-	TPad* p1 = (TPad*) c->FindObject(name1);
-	//  p1->Range(8500.,-200.,12500.,800.);
-	p1->Range(-2000., -300., 3000., 700.);
-	p1->cd();
-	fTrkRZView->Draw();
+  TString name1(name);
+  name1 += "_1";
+  TPad* p1 = (TPad*) c->FindObject(name1);
+  //  p1->Range(8500.,-200.,12500.,800.);
+  p1->Range(-2000., -300., 3000., 700.);
+  p1->cd();
+  fTrkRZView->Draw();
 
-	TString name_title(name);
-	name1 += "_title";
-	TPad* title_pad = (TPad*) c->FindObject(name_title);
-	title_pad->cd();
-	fTitleNode->Draw();
+  TString name_title(name);
+  name1 += "_title";
+  TPad* title_pad = (TPad*) c->FindObject(name_title);
+  title_pad->cd();
+  fTitleNode->Draw();
 
-	c->Modified();
-	c->Update();
-	return 0;
+  c->Modified();
+  c->Update();
+  return 0;
 }
 
 //-----------------------------------------------------------------------------
 // open new RZ view of the detector with the default options
 //-----------------------------------------------------------------------------
-Int_t TStnVisManager::OpenTrkRZView(TTrkRZView* mother,
-	Axis_t      x1, Axis_t y1,
-	Axis_t      x2, Axis_t y2)
-{
+Int_t TStnVisManager::OpenTrkRZView(TTrkRZView* mother,	Axis_t x1, Axis_t y1, Axis_t x2, Axis_t y2) {
 
-	int n = fListOfCanvases->GetSize();
+  int n = fListOfCanvases->GetSize();
 
-	char name[100], title[100];
+  char name[100], title[100];
 
-	sprintf(name, "rz_view_%i", n);
-	sprintf(title, "RZ view number %i", n);
-	//-----------------------------------------------------------------------------
-	// try to preserve the aspect ratio
-	//-----------------------------------------------------------------------------
-	Int_t   xsize, ysize;
+  sprintf(name, "rz_view_%i", n);
+  sprintf(title, "RZ view number %i", n);
+//-----------------------------------------------------------------------------
+// try to preserve the aspect ratio
+//-----------------------------------------------------------------------------
+  Int_t   xsize, ysize;
 
-	xsize = 540;
-	ysize = (Int_t) (xsize*TMath::Abs((y2 - y1) / (x2 - x1)) + 20);
+  xsize = 540;
+  ysize = (Int_t) (xsize*TMath::Abs((y2 - y1) / (x2 - x1)) + 20);
 
-	TStnFrame* win = new TStnFrame(name, title, kRZView, xsize, ysize);
-	TCanvas* c = win->GetCanvas();
-	fListOfCanvases->Add(c);
+  TStnFrame* win = new TStnFrame(name, title, kRZView, xsize, ysize);
+  TCanvas* c = win->GetCanvas();
+  fListOfCanvases->Add(c);
 
-	TString name1(name);
-	name1 += "_1";
-	TPad* p1 = (TPad*) c->FindObject(name1);
-	p1->Range(x1, y1, x2, y2);
-	p1->cd();
-	mother->Draw();
+  TString name1(name);
+  name1 += "_1";
+  TPad* p1 = (TPad*) c->FindObject(name1);
+  p1->Range(x1, y1, x2, y2);
+  p1->cd();
+  mother->Draw();
 
-	TString name_title(name);
-	name1 += "_title";
-	TPad* title_pad = (TPad*) c->FindObject(name_title);
-	title_pad->cd();
-	fTitleNode->Draw();
+  TString name_title(name);
+  name1 += "_title";
+  TPad* title_pad = (TPad*) c->FindObject(name_title);
+  title_pad->cd();
+  fTitleNode->Draw();
 
-	c->Modified();
-	c->Update();
-	return 0;
+  c->Modified();
+  c->Update();
+  return 0;
 }
 
 
 //_____________________________________________________________________________
 Int_t TStnVisManager::OpenCalView() {
-	// open new calorimeter view of the detector with the default options
-	// start from the disk calorimeter
+  // open new calorimeter view of the detector with the default options
+  // start from the disk calorimeter
 
-	int n = fListOfCanvases->GetSize();
+  int n = fListOfCanvases->GetSize();
 
-	char name[100], title[100];
+  char name[100], title[100];
 
-	sprintf(name, "cal_view_%i", n);
-	sprintf(title, "CAL view number %i", n);
+  sprintf(name, "cal_view_%i", n);
+  sprintf(title, "CAL view number %i", n);
 
-	TStnFrame* win = new TStnFrame(name, title, kCalView, 1200, 600);
-	TCanvas*   c = win->GetCanvas();
-	fListOfCanvases->Add(c);
+  TStnFrame* win = new TStnFrame(name, title, kCalView, 1200, 600);
+  TCanvas*   c = win->GetCanvas();
+  fListOfCanvases->Add(c);
 
-	TString name1(name);
-	name1 += "_1";
-	TPad* p1 = (TPad*) c->FindObject(name1);
-	//-----------------------------------------------------------------------------
-	// the disk calorimeter view has two pads, one per disk
-	// the vane-based calorimeter display should have 4 pads in this view
-	//-----------------------------------------------------------------------------
-	// divide horisontally
-	p1->Divide(2, 1);
-	// ranges in mm
-	p1->cd(1);
-	gPad->Range(-800., -800., 800., 800.);
-	fCalView[0]->SetPad(gPad);
-	fCalView[0]->Draw("cal");
-	gPad->Modified();
+  TString name1(name);
+  name1 += "_1";
+  TPad* p1 = (TPad*) c->FindObject(name1);
+  //-----------------------------------------------------------------------------
+  // the disk calorimeter view has two pads, one per disk
+  // the vane-based calorimeter display should have 4 pads in this view
+  //-----------------------------------------------------------------------------
+  // divide horisontally
+  p1->Divide(2, 1);
+  // ranges in mm
+  p1->cd(1);
+  gPad->Range(-800., -800., 800., 800.);
+  fCalView[0]->SetPad(gPad);
+  fCalView[0]->Draw("cal");
+  gPad->Modified();
 
-	p1->cd(2);
-	gPad->Range(-800., -800., 800., 800.);
-	fCalView[1]->SetPad(gPad);
-	fCalView[1]->Draw("cal");
-	gPad->Modified();
-	// draw title
-	TString name_title(name);
-	name1 += "_title";
-	TPad* title_pad = (TPad*) c->FindObject(name_title);
-	title_pad->cd();
-	fTitleNode->Draw();
+  p1->cd(2);
+  gPad->Range(-800., -800., 800., 800.);
+  fCalView[1]->SetPad(gPad);
+  fCalView[1]->Draw("cal");
+  gPad->Modified();
+  // draw title
+  TString name_title(name);
+  name1 += "_title";
+  TPad* title_pad = (TPad*) c->FindObject(name_title);
+  title_pad->cd();
+  fTitleNode->Draw();
 
-	c->Modified();
-	c->Update();
-	return 0;
+  c->Modified();
+  c->Update();
+  return 0;
 }
 
 //_____________________________________________________________________________
-Int_t TStnVisManager::OpenCalView(TObject* Mother, Axis_t x1, Axis_t y1,
-	Axis_t x2, Axis_t y2)
-{
-	// open new calorimeter view of the detector with the default options
+Int_t TStnVisManager::OpenCalView(TObject* Mother, Axis_t x1, Axis_t y1, Axis_t x2, Axis_t y2) {
+  // open new calorimeter view of the detector with the default options
 
-	//   int n = fListOfCanvases->GetSize();
+  //   int n = fListOfCanvases->GetSize();
 
-	//   char name[100], title[100];
+  //   char name[100], title[100];
 
-	//   sprintf(name,"ces_view_%i",n);
-	//   sprintf(title,"CES view number %i",n);
+  //   sprintf(name,"ces_view_%i",n);
+  //   sprintf(title,"CES view number %i",n);
 
-	// 				// try to preserve the aspect ratio
-	//   Int_t   xsize, ysize;
+  // 				// try to preserve the aspect ratio
+  //   Int_t   xsize, ysize;
 
-	//   xsize = 540;
-	//   ysize = (Int_t) (xsize*TMath::Abs((y2-y1)/(x2-x1))+20);
+  //   xsize = 540;
+  //   ysize = (Int_t) (xsize*TMath::Abs((y2-y1)/(x2-x1))+20);
 
-	//   TStnFrame* win = new TStnFrame(name, title, kCesStripView, xsize,ysize);
-	//   TCanvas* c = win->GetCanvas();
-	//   fListOfCanvases->Add(c);
-	//   c->Divide(1,2);
+  //   TStnFrame* win = new TStnFrame(name, title, kCesStripView, xsize,ysize);
+  //   TCanvas* c = win->GetCanvas();
+  //   fListOfCanvases->Add(c);
+  //   c->Divide(1,2);
 
-	//   TString name1(name);
-	//   name1 += "_1";
-	//   TPad* p1 = (TPad*) c->FindObject(name1);
+  //   TString name1(name);
+  //   name1 += "_1";
+  //   TPad* p1 = (TPad*) c->FindObject(name1);
 
-	//   p1->Divide(2,1);
+  //   p1->Divide(2,1);
 
-	//   p1->cd(1);
-	//   gPad->Range(x1,y1,x2,y2);
+  //   p1->cd(1);
+  //   gPad->Range(x1,y1,x2,y2);
 
-	//   fCalSectionView[0]->Draw();
+  //   fCalSectionView[0]->Draw();
 
-	//   p1->cd(2);
-	//   gPad->Range(x1,y1,x2,y2);
-	//   fCalSectionView[1]->Draw();
+  //   p1->cd(2);
+  //   gPad->Range(x1,y1,x2,y2);
+  //   fCalSectionView[1]->Draw();
 
-	//   TString name_title(name);
-	//   name1 += "_title";
-	//   TPad* title_pad = (TPad*) c->FindObject(name_title);
-	//   title_pad->cd();
-	//   fTitleNode->Draw();
+  //   TString name_title(name);
+  //   name1 += "_title";
+  //   TPad* title_pad = (TPad*) c->FindObject(name_title);
+  //   title_pad->cd();
+  //   fTitleNode->Draw();
 
-	//   c->Modified();
-	//   c->Update();
-	return 0;
+  //   c->Modified();
+  //   c->Update();
+  return 0;
 }
 
 //_____________________________________________________________________________
 Int_t TStnVisManager::OpenCrvView() {
-	TText Tl;
-	Tl.SetTextSize(0.2);
+  TText Tl;
+  Tl.SetTextSize(0.2);
 
-	int n = fListOfCanvases->GetSize();
+  int n = fListOfCanvases->GetSize();
 
-	char name[100], title[100];
+  char name[100], title[100];
 
-	sprintf(name, "crv_view_%i", n);
-	sprintf(title, "CRV view number %i", n);
+  sprintf(name, "crv_view_%i", n);
+  sprintf(title, "CRV view number %i", n);
 
-	TStnFrame* win = new TStnFrame(name, title, kCrvView, 2000, 600);
-	TCanvas*   c = win->GetCanvas();
-	c->SetFixedAspectRatio(kTRUE);
-	fListOfCanvases->Add(c);
+  TStnFrame* win = new TStnFrame(name, title, kCrvView, 2000, 600);
+  TCanvas*   c = win->GetCanvas();
+  c->SetFixedAspectRatio(kTRUE);
+  fListOfCanvases->Add(c);
 
-	TString name1(name);
-	name1 += "_1";
-	TPad* p1 = (TPad*) c->FindObject(name1);
+  TString name1(name);
+  name1 += "_1";
+  TPad* p1 = (TPad*) c->FindObject(name1);
 
-	p1->Divide(1, 10, 0.003, 0.003);
-	// ranges in mm
-	p1->cd(1);
-	gPad->Range(2698., -6570., 18750., -6415.); // Right CRV sans TS region
-	gPad->SetFixedAspectRatio(kTRUE);
-	fCrvView[0]->SetPad(gPad);
-	fCrvView[0]->Draw("crv");
-	Tl.DrawText(3000, -6565, "RIGHT");
-	gPad->SetEditable(kFALSE);
-	gPad->Modified();
+  p1->Divide(1, 10, 0.003, 0.003);
+  // ranges in mm
+  p1->cd(1);
+  gPad->Range(2698., -6570., 18750., -6415.); // Right CRV sans TS region
+  gPad->SetFixedAspectRatio(kTRUE);
+  fCrvView[0]->SetPad(gPad);
+  fCrvView[0]->Draw("crv");
+  Tl.DrawText(3000, -6565, "RIGHT");
+  gPad->SetEditable(kFALSE);
+  gPad->Modified();
 		
-	p1->cd(2);
-	gPad->Range(2698., -1420., 18750., -1260.); // Left CRV
-	gPad->SetFixedAspectRatio(kTRUE);
-	fCrvView[1]->SetPad(gPad);
-	fCrvView[1]->Draw("crv");
-	Tl.DrawText(3000, -1420, "LEFT");
-	gPad->SetEditable(kFALSE);
-	gPad->Modified();
+  p1->cd(2);
+  gPad->Range(2698., -1420., 18750., -1260.); // Left CRV
+  gPad->SetFixedAspectRatio(kTRUE);
+  fCrvView[1]->SetPad(gPad);
+  fCrvView[1]->Draw("crv");
+  Tl.DrawText(3000, -1420, "LEFT");
+  gPad->SetEditable(kFALSE);
+  gPad->Modified();
 
-	p1->cd(3);
-	gPad->Range(2698., 2560., 18750., 2715.); // Top DS CRV
-	gPad->SetFixedAspectRatio(kTRUE);
-	fCrvView[2]->SetPad(gPad);
-	fCrvView[2]->Draw("crv");
-	Tl.DrawText(3000, 2560, "TOP DS");
-	gPad->SetEditable(kFALSE);
-	gPad->Modified();
+  p1->cd(3);
+  gPad->Range(2698., 2560., 18750., 2715.); // Top DS CRV
+  gPad->SetFixedAspectRatio(kTRUE);
+  fCrvView[2]->SetPad(gPad);
+  fCrvView[2]->Draw("crv");
+  Tl.DrawText(3000, 2560, "TOP DS");
+  gPad->SetEditable(kFALSE);
+  gPad->Modified();
 
-	//Axis Pad
-	p1->cd(4);
-	gPad->Range(2698., 0., 18750., 10.);
-	TGaxis *a1 = new TGaxis(2698., 7., 18750., 7., 2698., 18750., 50510, "");
-	a1->SetName("Zaxis");
-	a1->SetTitle("Z (mm)");
-	a1->SetLabelSize(0.3);
-	a1->SetTitleSize(0.3);
-	a1->SetLabelOffset(0.1);
-	a1->SetTitleOffset(0.3);
-	a1->SetTickSize(0.1);
-	a1->Draw();
-	gPad->SetEditable(kFALSE);
-	gPad->Modified();
+  //Axis Pad
+  p1->cd(4);
+  gPad->Range(2698., 0., 18750., 10.);
+  TGaxis *a1 = new TGaxis(2698., 7., 18750., 7., 2698., 18750., 50510, "");
+  a1->SetName("Zaxis");
+  a1->SetTitle("Z (mm)");
+  a1->SetLabelSize(0.3);
+  a1->SetTitleSize(0.3);
+  a1->SetLabelOffset(0.1);
+  a1->SetTitleOffset(0.3);
+  a1->SetTickSize(0.1);
+  a1->Draw();
+  gPad->SetEditable(kFALSE);
+  gPad->Modified();
 
-	p1->cd(5);
-	gPad->Range(-2220., -6570., 2750., -6415.); // Right CRV TS region
-	gPad->SetFixedAspectRatio(kTRUE);
-	//fCrvView[0]->SetPad(gPad);
-	fCrvView[0]->Draw("crv");
-	Tl.DrawText(-2150, -6565, "RIGHT");
-	gPad->SetEditable(kFALSE);
-	gPad->Modified();
+  p1->cd(5);
+  gPad->Range(-2220., -6570., 2750., -6415.); // Right CRV TS region
+  gPad->SetFixedAspectRatio(kTRUE);
+  //fCrvView[0]->SetPad(gPad);
+  fCrvView[0]->Draw("crv");
+  Tl.DrawText(-2150, -6565, "RIGHT");
+  gPad->SetEditable(kFALSE);
+  gPad->Modified();
 
-	p1->cd(6);
-	gPad->Range(-2220., 2560., 2750., 2715.); // Top TS CRV
-	gPad->SetFixedAspectRatio(kTRUE);
-	fCrvView[5]->SetPad(gPad);
-	fCrvView[5]->Draw("crv");
-	Tl.DrawText(-2150, 2560, "TOP TS");
-	gPad->SetEditable(kFALSE);
-	gPad->Modified();
+  p1->cd(6);
+  gPad->Range(-2220., 2560., 2750., 2715.); // Top TS CRV
+  gPad->SetFixedAspectRatio(kTRUE);
+  fCrvView[5]->SetPad(gPad);
+  fCrvView[5]->Draw("crv");
+  Tl.DrawText(-2150, 2560, "TOP TS");
+  gPad->SetEditable(kFALSE);
+  gPad->Modified();
 
-	//Axis Pad
-	p1->cd(7);
-	gPad->Range(-2220., 0., 2750., 10.);
-	TGaxis *a2 = new TGaxis(-2220., 7., 2750., 7., -2220., 2750., 50510, "");
-	a2->SetName("Zaxis2");
-	a2->SetTitle("Z (mm)");
-	a2->SetLabelSize(0.3);
-	a2->SetTitleSize(0.3);
-	a2->SetLabelOffset(0.1);
-	a2->SetTitleOffset(0.3);
-	a2->SetTickSize(0.1);
-	a2->Draw();
-	gPad->SetEditable(kFALSE);
-	gPad->Modified();	
+  //Axis Pad
+  p1->cd(7);
+  gPad->Range(-2220., 0., 2750., 10.);
+  TGaxis *a2 = new TGaxis(-2220., 7., 2750., 7., -2220., 2750., 50510, "");
+  a2->SetName("Zaxis2");
+  a2->SetTitle("Z (mm)");
+  a2->SetLabelSize(0.3);
+  a2->SetTitleSize(0.3);
+  a2->SetLabelOffset(0.1);
+  a2->SetTitleOffset(0.3);
+  a2->SetTickSize(0.1);
+  a2->Draw();
+  gPad->SetEditable(kFALSE);
+  gPad->Modified();	
 		
 
-	p1->cd(8);
-	gPad->Range(-2220., 18695., 2780., 18970.); // Downstream CRV
-	gPad->SetFixedAspectRatio(kTRUE);
-	fCrvView[3]->SetPad(gPad);
-	fCrvView[3]->Draw("crv");
-	gPad->SetEditable(kFALSE);
-	gPad->Modified();
+  p1->cd(8);
+  gPad->Range(-2220., 18695., 2780., 18970.); // Downstream CRV
+  gPad->SetFixedAspectRatio(kTRUE);
+  fCrvView[3]->SetPad(gPad);
+  fCrvView[3]->Draw("crv");
+  gPad->SetEditable(kFALSE);
+  gPad->Modified();
 
-	p1->cd(9);
-	gPad->Range(-2220., -2415., 2780., -2260.); // Upstream CRV
-	gPad->SetFixedAspectRatio(kTRUE);
-	fCrvView[4]->SetPad(gPad);
-	fCrvView[4]->Draw("crv");
-	Tl.DrawText(-2000., -2300., "DWNSTRM");
-	Tl.DrawText(50., -2340., "UPSTRM");
-	gPad->SetEditable(kFALSE);
-	gPad->Modified();
+  p1->cd(9);
+  gPad->Range(-2220., -2415., 2780., -2260.); // Upstream CRV
+  gPad->SetFixedAspectRatio(kTRUE);
+  fCrvView[4]->SetPad(gPad);
+  fCrvView[4]->Draw("crv");
+  Tl.DrawText(-2000., -2300., "DWNSTRM");
+  Tl.DrawText(50., -2340., "UPSTRM");
+  gPad->SetEditable(kFALSE);
+  gPad->Modified();
 
 
-	p1->cd(10);
-	gPad->Range(-2220., 0., 2800., 10.);
-	TGaxis *a3 = new TGaxis(-2220., 7., 2780., 7., -2220, 2780, 50510, "");
-	a3->SetName("Yaxis");
-	a3->SetTitle("Y (mm)");
-	a3->SetLabelSize(0.3);
-	a3->SetTitleSize(0.3);
-	a3->SetLabelOffset(0.2);
-	a3->SetTitleOffset(0.3);
-	a3->SetTickSize(0.1);
-	a3->Draw();
-	gPad->SetEditable(kFALSE);
-	gPad->Modified();
+  p1->cd(10);
+  gPad->Range(-2220., 0., 2800., 10.);
+  TGaxis *a3 = new TGaxis(-2220., 7., 2780., 7., -2220, 2780, 50510, "");
+  a3->SetName("Yaxis");
+  a3->SetTitle("Y (mm)");
+  a3->SetLabelSize(0.3);
+  a3->SetTitleSize(0.3);
+  a3->SetLabelOffset(0.2);
+  a3->SetTitleOffset(0.3);
+  a3->SetTickSize(0.1);
+  a3->Draw();
+  gPad->SetEditable(kFALSE);
+  gPad->Modified();
 
-	// draw title
-	TString name_title(name);
-	name1 += "_title";
-	TPad* title_pad = (TPad*) c->FindObject(name_title);
-	title_pad->cd();
-	fTitleNode->Draw();
-	title_pad->SetEditable(kFALSE);
+  // draw title
+  TString name_title(name);
+  name1 += "_title";
+  TPad* title_pad = (TPad*) c->FindObject(name_title);
+  title_pad->cd();
+  fTitleNode->Draw();
+  title_pad->SetEditable(kFALSE);
 
-	c->cd();
-	gPad->SetEditable(kFALSE);
-	c->Modified();
-	c->Update();
-	return 0;
+  c->cd();
+  gPad->SetEditable(kFALSE);
+  c->Modified();
+  c->Update();
+  return 0;
 }
 
 //_____________________________________________________________________________
-Int_t TStnVisManager::OpenCrvView(TCrvView* mother, Axis_t x1, Axis_t y1,
-	Axis_t x2, Axis_t y2)
-{
+Int_t TStnVisManager::OpenCrvView(TCrvView* mother, Axis_t x1, Axis_t y1, Axis_t x2, Axis_t y2) {
 
-	int n = fListOfCanvases->GetSize();
+  int n = fListOfCanvases->GetSize();
+  
+  char name[100], title[100];
+  
+  sprintf(name, "crv_view_%i", n);
+  sprintf(title, "CRV view number %i", n);
 
-	char name[100], title[100];
+  // try to preserve the aspect ration
+  Int_t   xsize, ysize;
 
-	sprintf(name, "crv_view_%i", n);
-	sprintf(title, "CRV view number %i", n);
+  xsize = 540;
+  ysize = (Int_t) (xsize*TMath::Abs((y2 - y1) / (x2 - x1)) + 20);
 
-	// try to preserve the aspect ration
-	Int_t   xsize, ysize;
+  TStnFrame* win = new TStnFrame(name, title, kCrvView, xsize, ysize);
+  TCanvas* c = win->GetCanvas();
+  fListOfCanvases->Add(c);
 
-	xsize = 540;
-	ysize = (Int_t) (xsize*TMath::Abs((y2 - y1) / (x2 - x1)) + 20);
+  TString name1(name);
+  name1 += "_1";
+  TPad* p1 = (TPad*) c->FindObject(name1);
+  p1->Range(x1, y1, x2, y2);
+  p1->cd();
+  mother->Draw();
 
-	TStnFrame* win = new TStnFrame(name, title, kCrvView, xsize, ysize);
-	TCanvas* c = win->GetCanvas();
-	fListOfCanvases->Add(c);
+  TString name_title(name);
+  name1 += "_title";
+  TPad* title_pad = (TPad*) c->FindObject(name_title);
+  title_pad->cd();
+  fTitleNode->Draw();
 
-	TString name1(name);
-	name1 += "_1";
-	TPad* p1 = (TPad*) c->FindObject(name1);
-	p1->Range(x1, y1, x2, y2);
-	p1->cd();
-	mother->Draw();
-
-	TString name_title(name);
-	name1 += "_title";
-	TPad* title_pad = (TPad*) c->FindObject(name_title);
-	title_pad->cd();
-	fTitleNode->Draw();
-
-	c->Modified();
-	c->Update();
-	return 0;
+  c->Modified();
+  c->Update();
+  return 0;
 }
 
-void TStnVisManager::UpdateViews()
-{
-	TIter it(fListOfCanvases);
-	while (TCanvas* c = (TCanvas*) it.Next()) {
-		TIter it1(c->GetListOfPrimitives());
-		while (TObject* o = it1.Next()) {
-			if (o->InheritsFrom("TPad")) {
-				TPad* pad = (TPad*) o;
-				MarkModified(pad);
-			}
-		}
-		c->Modified();
-		c->Update();
-	}
+//-----------------------------------------------------------------------------
+void TStnVisManager::UpdateViews() {
+  TIter it(fListOfCanvases);
+  while (TCanvas* c = (TCanvas*) it.Next()) {
+    TIter it1(c->GetListOfPrimitives());
+    while (TObject* o = it1.Next()) {
+      if (o->InheritsFrom("TPad")) {
+	TPad* pad = (TPad*) o;
+	MarkModified(pad);
+      }
+    }
+    c->Modified();
+    c->Update();
+  }
 }
 
 
@@ -687,54 +669,51 @@ void TStnVisManager::UpdateViews()
 void TStnVisManager::CloseWindow() {
 	// Called when window is closed via the window manager.
 
-	delete this;
+  delete this;
 }
 
 
 //-----------------------------------------------------------------------------
 void TStnVisManager::SetStations(int IMin, int IMax) {
-	fMinStation = IMin;
-	fMaxStation = IMax;
+  fMinStation = IMin;
+  fMaxStation = IMax;
 }
 
 //-----------------------------------------------------------------------------
 void TStnVisManager::SetTimeCluster(int I) {
-	fTimeCluster = I;
+  fTimeCluster = I;
 }
 
 //_____________________________________________________________________________
-void TStnVisManager::HandleButtons()
-{
-	// Handle different buttons.
-
-	TGButton *btn = (TGButton *) gTQSender;
-	int id = btn->WidgetId();
-
-	switch (id)
-	{
-	case kXYView:
-		OpenTrkXYView();
-		break;
-	case kRZView:
-		OpenTrkRZView();
-		break;
-	case kCalView:
-		OpenCalView();
-		break;
-	case kCrvView:
-		OpenCrvView();
-		break;
-	case UPDATER_BTN:
-		for (unsigned int i = 0; i < 6; i++)
-		{
-			fCrvView[i]->SetTimeWindow(timeWindowSlider->GetMinPosition(), timeWindowSlider->GetMaxPosition());
-		}
-		UpdateViews();
-		break;
-	default:
-		printf("Unknown button clicked\n");
-		break;
-	}
+void TStnVisManager::HandleButtons() {
+  // Handle different buttons.
+  
+  TGButton *btn = (TGButton *) gTQSender;
+  int id = btn->WidgetId();
+  
+  switch (id) {
+  case kXYView:
+    OpenTrkXYView();
+    break;
+  case kRZView:
+    OpenTrkRZView();
+    break;
+  case kCalView:
+    OpenCalView();
+    break;
+  case kCrvView:
+    OpenCrvView();
+    break;
+  case UPDATER_BTN:
+    for (unsigned int i = 0; i < 6; i++) {
+      fCrvView[i]->SetTimeWindow(timeWindowSlider->GetMinPosition(), timeWindowSlider->GetMaxPosition());
+    }
+    UpdateViews();
+    break;
+  default:
+    printf("Unknown button clicked\n");
+    break;
+  }
 }
 
 //_____________________________________________________________________________
@@ -745,15 +724,15 @@ void TStnVisManager::HandleSlider() {
   TGFrame *frm = (TGFrame *) gTQSender;
   TGDoubleSlider *sd = (TGDoubleSlider *) frm;
   id = sd->WidgetId();
-
+  
   switch (id) {
     //case TStnVisManager::TIMESLIDER_ID:
     // Update text boxes with max and min values
-		
+    
   case TIMESLIDER_ID:
     timeWindowLowDisp->SetText(boost::lexical_cast<std::string>((int) timeWindowSlider->GetMinPosition()).c_str());
     gClient->NeedRedraw(timeWindowLowDisp);
-
+    
     timeWindowHighDisp->SetText(boost::lexical_cast<std::string>((int) timeWindowSlider->GetMaxPosition()).c_str());
     gClient->NeedRedraw(timeWindowHighDisp);
     break;
@@ -787,7 +766,7 @@ void TStnVisManager::HandleText() {
     }		
     break;
   case TIMEHIGH_DISP:
-    try{
+    try {
       textBoxNum = boost::lexical_cast<float>(timeWindowHighDisp->GetText());
       if (textBoxNum > 1695 || textBoxNum < timeWindowSlider->GetMinPosition())
 	timeWindowHighDisp->SetText(boost::lexical_cast<std::string>((int) timeWindowSlider->GetMaxPosition()).c_str());

@@ -3,7 +3,8 @@
 #pragma link off all   classes;
 #pragma link off all   functions;
 
-#pragma link C++ class TMu2eEveMagField;
+#pragma link C++ class TStnPhotosAnaModule;
+#pragma link C++ class TStnPhotosAnaModule::Hist_t;
 
 #endif
 
