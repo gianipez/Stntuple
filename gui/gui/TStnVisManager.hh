@@ -37,86 +37,82 @@ class TExtrapolator;
 class TStnVisManager : public TVisManager {
 public:
 
-	enum {
-		kXYView = 1,
-		kRZView = 2,
-		kCalView = 3,
-		kCrvView = 4
-	};
-	//-----------------------------------------------------------------------------
-	// command codes
-	//-----------------------------------------------------------------------------
-	enum CommandIdentifiers {
-		M_TRACKER_XY,
-		M_TRACKER_RZ,
-		M_CALORIMETER_XY,
-		M_CRV_XY,
-		M_EXIT,
+  enum {
+    kXYView = 1,
+    kRZView = 2,
+    kCalView = 3,
+    kCrvView = 4
+  };
+  //-----------------------------------------------------------------------------
+  // command codes
+  //-----------------------------------------------------------------------------
+  enum CommandIdentifiers {
+    M_TRACKER_XY,
+    M_TRACKER_RZ,
+    M_CALORIMETER_XY,
+    M_CRV_XY,
+    M_EXIT,
 
-		M_OPTION_EVENT_STATUS,
+    M_OPTION_EVENT_STATUS,
 
-		M_HELP_CONTENTS,
-		M_HELP_SEARCH,
-		M_HELP_ABOUT
-	};
+    M_HELP_CONTENTS,
+    M_HELP_SEARCH,
+    M_HELP_ABOUT
+  };
 
-	enum WidgetIdentities{
-		TIMESLIDER_ID = 10,
-		TIMELOW_DISP = 11,
-		TIMEHIGH_DISP = 12,
-		UPDATER_BTN = 13
-	};
+  enum WidgetIdentities{
+    TIMESLIDER_ID = 10,
+    TIMELOW_DISP = 11,
+    TIMEHIGH_DISP = 12,
+    UPDATER_BTN = 13
+  };
 
-	//-----------------------------------------------------------------------------
-	//  data members
-	//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//  data members
+//-----------------------------------------------------------------------------
 protected:
-	TGMainFrame*        fMain;
-	TGMenuBar           *fMenuBar;	  // !
-	TGPopupMenu         *fMenu; // !
-	TGPopupMenu         *fMenuHelp;	  // !
+  TGMainFrame*        fMain;
+  TGMenuBar           *fMenuBar;	  // !
+  TGPopupMenu         *fMenu; // !
+  TGPopupMenu         *fMenuHelp;	  // !
 
-	TGLayoutHints       *fMenuBarLayout;	  // !
-	TGLayoutHints       *fMenuBarItemLayout; // !
-	TGLayoutHints       *fMenuBarHelpLayout; // !
+  TGLayoutHints       *fMenuBarLayout;	  // !
+  TGLayoutHints       *fMenuBarItemLayout; // !
+  TGLayoutHints       *fMenuBarHelpLayout; // !
 
-	TGTextButton *trkrBtnXY, *trkrBtnRZ, *calBtn, *crvBtn, *updaterBtn;
-	TGDoubleHSlider *timeWindowSlider;
-	TGTextBuffer *timeWindowLowBuff, *timeWindowHighBuff;
-	TGTextEntry *timeWindowLowDisp, *timeWindowHighDisp;
+  TGTextButton        *trkrBtnXY, *trkrBtnRZ, *calBtn, *crvBtn, *updaterBtn;
+  TGDoubleHSlider     *timeWindowSlider;
+  TGTextBuffer        *timeWindowLowBuff, *timeWindowHighBuff;
+  TGTextEntry         *timeWindowLowDisp, *timeWindowHighDisp;
+//-----------------------------------------------------------------------------
+// vis. manager also holds a list of objects to be displayed.
+// The list has to be the same for all the views
+//-----------------------------------------------------------------------------
+  TObjArray*          fListOfDetectors;
+  TSubdetector*       fClosestSubdetector;
 
+  TTrkXYView*         fTrkXYView;
+  TTrkRZView*         fTrkRZView;
+  TCalView*           fCalView[4];	// 4: provides for the now obsolete vane-based geometry
+  TCrvView*	      fCrvView[6];
 
-	// vis. manager also holds a list of
-	// objects to be displayed: has to be
-	// the same for all the views
+  TExtrapolator*      fExtrapolator;
 
-	TObjArray*          fListOfDetectors;
-	TSubdetector*       fClosestSubdetector;
+  const art::Event*   fEvent;
 
-	TTrkXYView*         fTrkXYView;
-	TTrkRZView*         fTrkRZView;
-	TCalView*           fCalView[4];	// to provide for the now obsolete 
-										// vane-based geometry
-	TCrvView*			fCrvView[6];
-	//TCrvView*			fCrvView[10]	// extra views for new detector subdivisions
+  int                 fMinStation;
+  int                 fMaxStation;
+  int                 fTimeCluster;
+  int                 fDebugLevel;
+					// to display all the data in a given time window
+  double              fTMin;
+  double              fTMax;
 
-	TExtrapolator*      fExtrapolator;
+  int                 fDisplayStrawDigiMC;
 
-	const art::Event*   fEvent;
-
-	int                 fMinStation;
-	int                 fMaxStation;
-	int                 fTimeCluster;
-	int                 fDebugLevel;
-	// to display all the data in a given time window
-	double              fTMin;
-	double              fTMax;
-
-	int                 fDisplayStrawDigiMC;
-
-	//-----------------------------------------------------------------------------
-	//  functions
-	//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//  functions
+//-----------------------------------------------------------------------------
 public:
 
 	TStnVisManager(const char* name = "TStnVisManager",	const char* title = "TStnVisManager");

@@ -15,3 +15,13 @@ for d in alg ana base geom gui loop mod obj val ; do
 	ln -s ../../Stntuple/$d/$d ../$dir/Stntuple/$d
     fi
 done
+#------------------------------------------------------------------------------
+# SCons-related things: executed from Stntuple
+#------------------------------------------------------------------------------
+if [ ! -d ../site_scons ] ; then
+    mkdir ../site_scons
+    cp site_init.py ../site_scons/.
+fi
+
+if [ ! -f ../.rootrc     ] ; then cp ./.rootrc     ../. ; fi
+if [ ! -f ../rootlogon.C ] ; then cp ./rootlogon.C ../. ; fi

@@ -32,177 +32,175 @@
 ClassImp(TStnVisManager)
 
 //_____________________________________________________________________________
-TStnVisManager::TStnVisManager(const char* Name, const char* Title) :
-TVisManager(Name, Title)
-{
-	if (gROOT->IsBatch()) return;
+TStnVisManager::TStnVisManager(const char* Name, const char* Title) : TVisManager(Name, Title) {
+  if (gROOT->IsBatch()) return;
 
-	fMain = new  TEvdMainFrame(gClient->GetRoot(), 200, 100,
-		kMainFrame | kVerticalFrame);
-	//-----------------------------------------------------------------------------
-	//  create menu bar
-	//-----------------------------------------------------------------------------
+  fMain = new  TEvdMainFrame(gClient->GetRoot(), 200, 100,
+			     kMainFrame | kVerticalFrame);
+  //-----------------------------------------------------------------------------
+  //  create menu bar
+  //-----------------------------------------------------------------------------
 	
-	fMenuBarLayout = new TGLayoutHints(kLHintsTop | kLHintsLeft | kLHintsExpandX, 0, 0, 1, 1);
-	fMenuBarItemLayout = new TGLayoutHints(kLHintsTop | kLHintsLeft, 0, 4, 0, 0);
-	fMenuBarHelpLayout = new TGLayoutHints(kLHintsTop | kLHintsRight);
+  fMenuBarLayout = new TGLayoutHints(kLHintsTop | kLHintsLeft | kLHintsExpandX, 0, 0, 1, 1);
+  fMenuBarItemLayout = new TGLayoutHints(kLHintsTop | kLHintsLeft, 0, 4, 0, 0);
+  fMenuBarHelpLayout = new TGLayoutHints(kLHintsTop | kLHintsRight);
 
-	fMenu = new TGPopupMenu(gClient->GetRoot());
-	fMenu->AddEntry("&Exit", M_EXIT);
-	fMenu->Associate(fMain);
+  fMenu = new TGPopupMenu(gClient->GetRoot());
+  fMenu->AddEntry("&Exit", M_EXIT);
+  fMenu->Associate(fMain);
 
-	fMenuHelp = new TGPopupMenu(gClient->GetRoot());
-	fMenuHelp->AddEntry("&Contents", M_HELP_CONTENTS);
-	fMenuHelp->AddEntry("&Search...", M_HELP_SEARCH);
-	fMenuHelp->AddSeparator();
-	fMenuHelp->AddEntry("&About", M_HELP_ABOUT);
-	fMenuHelp->Associate(fMain);
+  fMenuHelp = new TGPopupMenu(gClient->GetRoot());
+  fMenuHelp->AddEntry("&Contents", M_HELP_CONTENTS);
+  fMenuHelp->AddEntry("&Search...", M_HELP_SEARCH);
+  fMenuHelp->AddSeparator();
+  fMenuHelp->AddEntry("&About", M_HELP_ABOUT);
+  fMenuHelp->Associate(fMain);
 
-	fMenuBar = new TGMenuBar(fMain, 1, 1, kHorizontalFrame);
-	fMenuBar->AddPopup("&Menu", fMenu, fMenuBarItemLayout);
-	fMenuBar->AddPopup("&Help", fMenuHelp, fMenuBarHelpLayout);
+  fMenuBar = new TGMenuBar(fMain, 1, 1, kHorizontalFrame);
+  fMenuBar->AddPopup("&Menu", fMenu, fMenuBarItemLayout);
+  fMenuBar->AddPopup("&Help", fMenuHelp, fMenuBarHelpLayout);
 
-	fMain->AddFrame(fMenuBar, fMenuBarLayout);
+  fMain->AddFrame(fMenuBar, fMenuBarLayout);
 
-	trkrBtnXY = new TGTextButton(fMain, "Tracker XY", kXYView);
-	trkrBtnXY->Connect("Clicked()", "TStnVisManager", this, "HandleButtons()");
-	trkrBtnXY->SetTextJustify(36);
-	trkrBtnXY->SetMargins(0, 0, 0, 0);
-	trkrBtnXY->SetWrapLength(-1);
-	trkrBtnXY->MoveResize(16, 26, 98, 24);
+  trkrBtnXY = new TGTextButton(fMain, "Tracker XY", kXYView);
+  trkrBtnXY->Connect("Clicked()", "TStnVisManager", this, "HandleButtons()");
+  trkrBtnXY->SetTextJustify(36);
+  trkrBtnXY->SetMargins(0, 0, 0, 0);
+  trkrBtnXY->SetWrapLength(-1);
+  trkrBtnXY->MoveResize(16, 26, 98, 24);
 
-	trkrBtnRZ = new TGTextButton(fMain, "Tracker RZ", kRZView);
-	trkrBtnRZ->Connect("Clicked()", "TStnVisManager", this, "HandleButtons()");
-	trkrBtnRZ->SetTextJustify(36);
-	trkrBtnRZ->SetMargins(0, 0, 0, 0);
-	trkrBtnRZ->SetWrapLength(-1);
-	trkrBtnRZ->MoveResize(16, 58, 98, 24);
+  trkrBtnRZ = new TGTextButton(fMain, "Tracker RZ", kRZView);
+  trkrBtnRZ->Connect("Clicked()", "TStnVisManager", this, "HandleButtons()");
+  trkrBtnRZ->SetTextJustify(36);
+  trkrBtnRZ->SetMargins(0, 0, 0, 0);
+  trkrBtnRZ->SetWrapLength(-1);
+  trkrBtnRZ->MoveResize(16, 58, 98, 24);
 
-	calBtn = new TGTextButton(fMain, "Calorimeter", kCalView);
-	calBtn->Connect("Clicked()", "TStnVisManager", this, "HandleButtons()");
-	calBtn->SetTextJustify(36);
-	calBtn->SetMargins(0, 0, 0, 0);
-	calBtn->SetWrapLength(-1);
-	calBtn->MoveResize(16, 90, 98, 24);
+  calBtn = new TGTextButton(fMain, "Calorimeter", kCalView);
+  calBtn->Connect("Clicked()", "TStnVisManager", this, "HandleButtons()");
+  calBtn->SetTextJustify(36);
+  calBtn->SetMargins(0, 0, 0, 0);
+  calBtn->SetWrapLength(-1);
+  calBtn->MoveResize(16, 90, 98, 24);
 
-	crvBtn = new TGTextButton(fMain, "CRV", kCrvView);
-	crvBtn->Connect("Clicked()", "TStnVisManager", this, "HandleButtons()");
-	crvBtn->SetTextJustify(36);
-	crvBtn->SetMargins(0, 0, 0, 0);
-	crvBtn->SetWrapLength(-1);
-	crvBtn->MoveResize(16, 122, 98, 24);
+  crvBtn = new TGTextButton(fMain, "CRV", kCrvView);
+  crvBtn->Connect("Clicked()", "TStnVisManager", this, "HandleButtons()");
+  crvBtn->SetTextJustify(36);
+  crvBtn->SetMargins(0, 0, 0, 0);
+  crvBtn->SetWrapLength(-1);
+  crvBtn->MoveResize(16, 122, 98, 24);
 
-	timeWindowSlider = new TGDoubleHSlider(fMain, 100, kDoubleScaleBoth, TIMESLIDER_ID);
-	timeWindowSlider->SetRange(0, 1695);
-	timeWindowSlider->SetPosition(400, 1695);
-	timeWindowSlider->MoveResize(150, 45, 200, 20);
-	timeWindowSlider->Connect("PositionChanged()", "TStnVisManager", this, "HandleSlider()");
+  timeWindowSlider = new TGDoubleHSlider(fMain, 100, kDoubleScaleBoth, TIMESLIDER_ID);
+  timeWindowSlider->SetRange(0, 1695);
+  timeWindowSlider->SetPosition(400, 1695);
+  timeWindowSlider->MoveResize(150, 45, 200, 20);
+  timeWindowSlider->Connect("PositionChanged()", "TStnVisManager", this, "HandleSlider()");
 	
-	timeWindowLowDisp = new TGTextEntry(fMain, timeWindowLowBuff = new TGTextBuffer(10), TIMELOW_DISP);
-	timeWindowLowBuff->AddText(0, "400");
-	timeWindowLowDisp->MoveResize(150, 70, 40, 20);
-	timeWindowLowDisp->Connect("ReturnPressed()", "TStnVisManager", this, "HandleText()");
+  timeWindowLowDisp = new TGTextEntry(fMain, timeWindowLowBuff = new TGTextBuffer(10), TIMELOW_DISP);
+  timeWindowLowBuff->AddText(0, "400");
+  timeWindowLowDisp->MoveResize(150, 70, 40, 20);
+  timeWindowLowDisp->Connect("ReturnPressed()", "TStnVisManager", this, "HandleText()");
 
-	timeWindowHighDisp = new TGTextEntry(fMain, timeWindowHighBuff = new TGTextBuffer(10), TIMEHIGH_DISP);
-	timeWindowHighBuff->AddText(0, "1695");
-	timeWindowHighDisp->MoveResize(310, 70, 40, 20);
-	timeWindowHighDisp->Connect("ReturnPressed()", "TStnVisManager", this, "HandleText()");
+  timeWindowHighDisp = new TGTextEntry(fMain, timeWindowHighBuff = new TGTextBuffer(10), TIMEHIGH_DISP);
+  timeWindowHighBuff->AddText(0, "1695");
+  timeWindowHighDisp->MoveResize(310, 70, 40, 20);
+  timeWindowHighDisp->Connect("ReturnPressed()", "TStnVisManager", this, "HandleText()");
 
-	TGLabel *sliderLabelLow = new TGLabel(fMain, "0");
-	sliderLabelLow->SetTextJustify(36);
-	sliderLabelLow->SetMargins(0, 0, 0, 0);
-	sliderLabelLow->SetWrapLength(-1);
-	sliderLabelLow->MoveResize(140, 25, 30, 20);
+  TGLabel *sliderLabelLow = new TGLabel(fMain, "0");
+  sliderLabelLow->SetTextJustify(36);
+  sliderLabelLow->SetMargins(0, 0, 0, 0);
+  sliderLabelLow->SetWrapLength(-1);
+  sliderLabelLow->MoveResize(140, 25, 30, 20);
 
-	TGLabel *sliderLabelHigh = new TGLabel(fMain, "1695");
-	sliderLabelHigh->SetTextJustify(36);
-	sliderLabelHigh->SetMargins(0, 0, 0, 0);
-	sliderLabelHigh->SetWrapLength(-1);
-	sliderLabelHigh->MoveResize(330, 25, 30, 20);
+  TGLabel *sliderLabelHigh = new TGLabel(fMain, "1695");
+  sliderLabelHigh->SetTextJustify(36);
+  sliderLabelHigh->SetMargins(0, 0, 0, 0);
+  sliderLabelHigh->SetWrapLength(-1);
+  sliderLabelHigh->MoveResize(330, 25, 30, 20);
 
-	updaterBtn = new TGTextButton(fMain, "Update", UPDATER_BTN);
-	updaterBtn->Connect("Clicked()", "TStnVisManager", this, "HandleButtons()");
-	updaterBtn->SetTextJustify(36);
-	updaterBtn->SetMargins(0, 0, 0, 0);
-	updaterBtn->SetWrapLength(-1);
-	updaterBtn->MoveResize(220, 120, 60, 20);
+  updaterBtn = new TGTextButton(fMain, "Update", UPDATER_BTN);
+  updaterBtn->Connect("Clicked()", "TStnVisManager", this, "HandleButtons()");
+  updaterBtn->SetTextJustify(36);
+  updaterBtn->SetMargins(0, 0, 0, 0);
+  updaterBtn->SetWrapLength(-1);
+  updaterBtn->MoveResize(220, 120, 60, 20);
 
-	//-----------------------------------------------------------------------------
-	// views
-	//-----------------------------------------------------------------------------
-	fTrkXYView = new TTrkXYView();
-	fTrkRZView = new TTrkRZView();
-	// for vanes - 4 "views"
-	fCalView[0] = new TCalView(0);
-	fCalView[1] = new TCalView(1);
+  //-----------------------------------------------------------------------------
+  // views
+  //-----------------------------------------------------------------------------
+  fTrkXYView = new TTrkXYView();
+  fTrkRZView = new TTrkRZView();
+  // for vanes - 4 "views"
+  fCalView[0] = new TCalView(0);
+  fCalView[1] = new TCalView(1);
 
-	fCrvView[0] = new TCrvView(0); //right
-	fCrvView[0]->SetTimeWindow(0, 1695);
-	fCrvView[1] = new TCrvView(1); //left
-	fCrvView[1]->SetTimeWindow(0, 1695);
-	fCrvView[2] = new TCrvView(2); //topds
-	fCrvView[2]->SetTimeWindow(0, 1695);
-	fCrvView[3] = new TCrvView(3); //downstream
-	fCrvView[3]->SetTimeWindow(0, 1695);
-	fCrvView[4] = new TCrvView(4); //upstream
-	fCrvView[4]->SetTimeWindow(0, 1695);
-	fCrvView[5] = new TCrvView(8); //topts
-	fCrvView[5]->SetTimeWindow(0, 1695);
+  fCrvView[0] = new TCrvView(0); //right
+  fCrvView[0]->SetTimeWindow(0, 1695);
+  fCrvView[1] = new TCrvView(1); //left
+  fCrvView[1]->SetTimeWindow(0, 1695);
+  fCrvView[2] = new TCrvView(2); //topds
+  fCrvView[2]->SetTimeWindow(0, 1695);
+  fCrvView[3] = new TCrvView(3); //downstream
+  fCrvView[3]->SetTimeWindow(0, 1695);
+  fCrvView[4] = new TCrvView(4); //upstream
+  fCrvView[4]->SetTimeWindow(0, 1695);
+  fCrvView[5] = new TCrvView(8); //topts
+  fCrvView[5]->SetTimeWindow(0, 1695);
 	
 
-	fListOfDetectors = new TObjArray(10);
+  fListOfDetectors = new TObjArray(10);
 
-	//-----------------------------------------------------------------------------
-	// final actions
-	//-----------------------------------------------------------------------------
-	fMain->MapSubwindows();
-	fMain->Resize(fMain->GetDefaultSize());
-	fMain->Resize(400, 150);
+  //-----------------------------------------------------------------------------
+  // final actions
+  //-----------------------------------------------------------------------------
+  fMain->MapSubwindows();
+  fMain->Resize(fMain->GetDefaultSize());
+  fMain->Resize(400, 150);
 
-	fMain->SetWindowName(Title);
+  fMain->SetWindowName(Title);
 
-	fMain->MapWindow();
+  fMain->MapWindow();
 
-	fMinStation = 0;
-	fMaxStation = 50;
-	// by default, no timing constraints
-	fTMin = 0;
-	fTMax = 1.e5;
+  fMinStation = 0;
+  fMaxStation = 50;
+  // by default, no timing constraints
+  fTMin = 0;
+  fTMax = 1.e5;
 
-	fTimeCluster = -1;
+  fTimeCluster = -1;
 }
 
 //_____________________________________________________________________________
 TStnVisManager::~TStnVisManager() {
 
-	if (!gROOT->IsBatch()) {
+  if (!gROOT->IsBatch()) {
 
-		// delete tracking views
-		delete fTrkXYView;
-		delete fTrkRZView;
-		// only two views for disk calorimeter
-		delete fCalView[0];
-		delete fCalView[1];
+    // delete tracking views
+    delete fTrkXYView;
+    delete fTrkRZView;
+    // only two views for disk calorimeter
+    delete fCalView[0];
+    delete fCalView[1];
 
-		delete fCrvView[0];
-		delete fCrvView[1];
-		delete fCrvView[2];
-		delete fCrvView[3];
-		delete fCrvView[4];
-		delete fCrvView[5];
+    delete fCrvView[0];
+    delete fCrvView[1];
+    delete fCrvView[2];
+    delete fCrvView[3];
+    delete fCrvView[4];
+    delete fCrvView[5];
 
-		delete fMenuBarHelpLayout;
+    delete fMenuBarHelpLayout;
 
-		delete fMenuBarItemLayout;
-		delete fMenu;
+    delete fMenuBarItemLayout;
+    delete fMenu;
 
-		delete fMenuBarLayout;
-		delete fMenuBar;
+    delete fMenuBarLayout;
+    delete fMenuBar;
 
-		delete fMain;
+    delete fMain;
 
-		delete fListOfDetectors;
-	}
+    delete fListOfDetectors;
+  }
 }
 
 //_____________________________________________________________________________
@@ -740,73 +738,69 @@ void TStnVisManager::HandleButtons()
 }
 
 //_____________________________________________________________________________
-void TStnVisManager::HandleSlider()
-{
-	// Handle slider widget
+void TStnVisManager::HandleSlider() {
+  // Handle slider widget
 
-	Int_t id;
-	TGFrame *frm = (TGFrame *) gTQSender;
-	TGDoubleSlider *sd = (TGDoubleSlider *) frm;
-	id = sd->WidgetId();
+  Int_t id;
+  TGFrame *frm = (TGFrame *) gTQSender;
+  TGDoubleSlider *sd = (TGDoubleSlider *) frm;
+  id = sd->WidgetId();
 
-	switch (id) {
-		//case TStnVisManager::TIMESLIDER_ID:
-		// Update text boxes with max and min values
+  switch (id) {
+    //case TStnVisManager::TIMESLIDER_ID:
+    // Update text boxes with max and min values
 		
-	case TIMESLIDER_ID:
-		timeWindowLowDisp->SetText(boost::lexical_cast<std::string>((int) timeWindowSlider->GetMinPosition()).c_str());
-		gClient->NeedRedraw(timeWindowLowDisp);
+  case TIMESLIDER_ID:
+    timeWindowLowDisp->SetText(boost::lexical_cast<std::string>((int) timeWindowSlider->GetMinPosition()).c_str());
+    gClient->NeedRedraw(timeWindowLowDisp);
 
-		timeWindowHighDisp->SetText(boost::lexical_cast<std::string>((int) timeWindowSlider->GetMaxPosition()).c_str());
-		gClient->NeedRedraw(timeWindowHighDisp);
-		break;
-	default:
-		break;
-	}
+    timeWindowHighDisp->SetText(boost::lexical_cast<std::string>((int) timeWindowSlider->GetMaxPosition()).c_str());
+    gClient->NeedRedraw(timeWindowHighDisp);
+    break;
+  default:
+    break;
+  }
 }
 
 //_____________________________________________________________________________
-void TStnVisManager::HandleText() //const char * /*text*/)
-{
-	// Handle text entry widgets
+void TStnVisManager::HandleText() {
+  // Handle text entry widgets
 
-	TGTextEntry *te = (TGTextEntry *) gTQSender;
-	Int_t id = te->WidgetId();
+  TGTextEntry *te = (TGTextEntry *) gTQSender;
+  Int_t id = te->WidgetId();
 
-	float textBoxNum;
+  float textBoxNum;
 
-	switch (id) {
-	case TIMELOW_DISP:
-		try{
-			textBoxNum = boost::lexical_cast<float>(timeWindowLowDisp->GetText());
-			if (textBoxNum < 0 || textBoxNum > timeWindowSlider->GetMaxPosition())
-				timeWindowLowDisp->SetText(boost::lexical_cast<std::string>((int) timeWindowSlider->GetMinPosition()).c_str());
-			else
-			{
-				timeWindowSlider->SetPosition(textBoxNum, timeWindowSlider->GetMaxPosition());
-				timeWindowLowDisp->SetText(boost::lexical_cast<std::string>(textBoxNum).c_str());
-			}
-		}
-		catch (boost::bad_lexical_cast &){
-			timeWindowLowDisp->SetText(boost::lexical_cast<std::string>((int) timeWindowSlider->GetMinPosition()).c_str());
-		}		
-		break;
-	case TIMEHIGH_DISP:
-		try{
-			textBoxNum = boost::lexical_cast<float>(timeWindowHighDisp->GetText());
-			if (textBoxNum > 1695 || textBoxNum < timeWindowSlider->GetMinPosition())
-				timeWindowHighDisp->SetText(boost::lexical_cast<std::string>((int) timeWindowSlider->GetMaxPosition()).c_str());
-			else
-			{
-				timeWindowSlider->SetPosition(timeWindowSlider->GetMinPosition(), textBoxNum);
-				timeWindowHighDisp->SetText(boost::lexical_cast<std::string>(textBoxNum).c_str());
-			}
-		}
-		catch (boost::bad_lexical_cast &){
-			timeWindowHighDisp->SetText(boost::lexical_cast<std::string>((int) timeWindowSlider->GetMaxPosition()).c_str());
-		}
-		break;
-	default:
-		break;
-	}
+  switch (id) {
+  case TIMELOW_DISP:
+    try{
+      textBoxNum = boost::lexical_cast<float>(timeWindowLowDisp->GetText());
+      if (textBoxNum < 0 || textBoxNum > timeWindowSlider->GetMaxPosition())
+	timeWindowLowDisp->SetText(boost::lexical_cast<std::string>((int) timeWindowSlider->GetMinPosition()).c_str());
+      else {
+	timeWindowSlider->SetPosition(textBoxNum, timeWindowSlider->GetMaxPosition());
+	timeWindowLowDisp->SetText(boost::lexical_cast<std::string>(textBoxNum).c_str());
+      }
+    }
+    catch (boost::bad_lexical_cast &){
+      timeWindowLowDisp->SetText(boost::lexical_cast<std::string>((int) timeWindowSlider->GetMinPosition()).c_str());
+    }		
+    break;
+  case TIMEHIGH_DISP:
+    try{
+      textBoxNum = boost::lexical_cast<float>(timeWindowHighDisp->GetText());
+      if (textBoxNum > 1695 || textBoxNum < timeWindowSlider->GetMinPosition())
+	timeWindowHighDisp->SetText(boost::lexical_cast<std::string>((int) timeWindowSlider->GetMaxPosition()).c_str());
+      else {
+	timeWindowSlider->SetPosition(timeWindowSlider->GetMinPosition(), textBoxNum);
+	timeWindowHighDisp->SetText(boost::lexical_cast<std::string>(textBoxNum).c_str());
+      }
+    }
+    catch (boost::bad_lexical_cast &){
+      timeWindowHighDisp->SetText(boost::lexical_cast<std::string>((int) timeWindowSlider->GetMaxPosition()).c_str());
+    }
+    break;
+  default:
+    break;
+  }
 }

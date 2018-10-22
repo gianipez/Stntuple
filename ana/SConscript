@@ -16,7 +16,7 @@ if ( not ("RGL"  in rootlibs)): rootlibs.insert(rootlibs.index("Geom"   )+1,"RGL
 
 
 debug = False
-stn_helper = stntuple_helper(debug);
+stn_helper = stntuple_helper(env,debug);
 
 dict_skip_list = []
 if (os.getenv("STNTUPLE_MC_GEN") == None): 
