@@ -1,8 +1,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 ///////////////////////////////////////////////////////////////////////////////
-#ifndef TPhotosAnaModule_hh
-#define TPhotosAnaModule_hh
+#ifndef TStnPhotosAnaModule_hh
+#define TStnPhotosAnaModule_hh
 
 #include "TH1.h"
 #include "TH2.h"
@@ -14,7 +14,7 @@
 
 #include "mc/photos/TPhotos.hh"
 
-class TPhotosAnaModule: public TStnModule {
+class TStnPhotosAnaModule: public TStnModule {
 public:
 
   struct EventHist_t {
@@ -59,8 +59,8 @@ public:
 //  functions
 //-----------------------------------------------------------------------------
 public:
-  TPhotosAnaModule(const char* name="PhotosAna", const char* title="PhotosAna");
-  ~TPhotosAnaModule();
+  TStnPhotosAnaModule(const char* name="StnPhotosAna", const char* title="StnPhotosAna");
+  ~TStnPhotosAnaModule();
 //-----------------------------------------------------------------------------
 // accessors
 //-----------------------------------------------------------------------------
@@ -93,7 +93,7 @@ public:
 //-----------------------------------------------------------------------------
   void         Print(Option_t* opt) const ;
 
-  ClassDef(TPhotosAnaModule,0)
+  ClassDef(TStnPhotosAnaModule,0)
 };
 
 #endif

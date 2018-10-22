@@ -3,23 +3,23 @@
 //   EvtDisplayUtils, NavState, and EvtDisplayService.
 //
 #include "TEnv.h"
-#include "Stntuple/ana/TEventDisplayModule.hh"
+#include "Stntuple/ana/TStnEventDisplayModule.hh"
 
 #include <string.h>
 
-ClassImp(TEventDisplayModule)
+ClassImp(TStnEventDisplayModule)
 
 using namespace std;
 
 //-----------------------------------------------------------------------------
-TEventDisplayModule::TEventDisplayModule(const char* Name, const char* Title):
+TStnEventDisplayModule::TStnEventDisplayModule(const char* Name, const char* Title):
   TStnModule(Name,Title) {
 
   fTrkMaxStepSize = 5.;
   fTrkMaxZ        = 1300.;
   fTrkMaxR        = 1000.;
 
-  fEvdUtils      = new TEventDisplayUtils();
+  fEvdUtils      = new TStnEventDisplayUtils();
   fHitsList      = NULL;
   fTrackList     = NULL;
   fDisplayTracks = 1;
@@ -34,7 +34,7 @@ TEventDisplayModule::TEventDisplayModule(const char* Name, const char* Title):
   TGeoVolume*  topvol = gGeoManager->GetTopVolume();
   gGeoManager->SetTopVolume(topvol);
 
-  fBField = new TMu2eEveMagField();
+  fBField = new TStnMu2eEveMagField();
 
   fTrackPropagator = new TEveTrackPropagator("my","",fBField,kFALSE);
   fTrackPropagator->SetMagFieldObj(fBField,kTRUE);
@@ -54,7 +54,7 @@ TEventDisplayModule::TEventDisplayModule(const char* Name, const char* Title):
 }
 
 //-----------------------------------------------------------------------------
-TEventDisplayModule::~TEventDisplayModule() {
+TStnEventDisplayModule::~TStnEventDisplayModule() {
   delete fEvdUtils;
 }
 
@@ -62,7 +62,7 @@ TEventDisplayModule::~TEventDisplayModule() {
 //-----------------------------------------------------------------------------
 // Create control panel for event navigation
 //-----------------------------------------------------------------------------
-void TEventDisplayModule::MakeNavPanel() {
+void TStnEventDisplayModule::MakeNavPanel() {
 
   TEveBrowser* browser = gEve->GetBrowser();
   browser->StartEmbedding(TRootBrowser::kLeft); // insert nav frame as new tab in left pane
@@ -80,12 +80,12 @@ void TEventDisplayModule::MakeNavPanel() {
     // ... Create back button and connect to "PrevEvent" rcvr in visutils
     b = new TGPictureButton(navFrame, gClient->GetPicture(icondir + "GoBack.gif"));
     navFrame->AddFrame(b);
-    b->Connect("Clicked()", "TEventDisplayUtils", fEvdUtils, "PrevEvent()");
+    b->Connect("Clicked()", "TStnEventDisplayUtils", fEvdUtils, "PrevEvent()");
 
     // ... Create forward button and connect to "NextEvent" rcvr in visutils
     b = new TGPictureButton(navFrame, gClient->GetPicture(icondir + "GoForward.gif"));
     navFrame->AddFrame(b);
-    b->Connect("Clicked()", "TEventDisplayUtils", fEvdUtils, "NextEvent()");
+    b->Connect("Clicked()", "TStnEventDisplayUtils", fEvdUtils, "NextEvent()");
 
     // ... Create run num text entry widget and connect to "GotoEvent" rcvr in visutils
     TGHorizontalFrame* runoFrame = new TGHorizontalFrame(evtidFrame);
@@ -96,7 +96,7 @@ void TEventDisplayModule::MakeNavPanel() {
     
     fTeRun = new TGTextEntry(runoFrame, fEvdUtils->fTbRun = new TGTextBuffer(5), 1);
     fEvdUtils->fTbRun->AddText(0, "1");
-    fTeRun->Connect("ReturnPressed()","TEventDisplayUtils", fEvdUtils,"GotoEvent()");
+    fTeRun->Connect("ReturnPressed()","TStnEventDisplayUtils", fEvdUtils,"GotoEvent()");
     runoFrame->AddFrame(fTeRun,new TGLayoutHints(kLHintsExpandX));
 
     // ... Create evt num text entry widget and connect to "GotoEvent" rcvr in visutils
@@ -108,7 +108,7 @@ void TEventDisplayModule::MakeNavPanel() {
 
     fTeEvt = new TGTextEntry(evnoFrame, fEvdUtils->fTbEvt = new TGTextBuffer(5), 1);
     fEvdUtils->fTbEvt->AddText(0, "1");
-    fTeEvt->Connect("ReturnPressed()","TEventDisplayUtils", fEvdUtils,"GotoEvent()");
+    fTeEvt->Connect("ReturnPressed()","TStnEventDisplayUtils", fEvdUtils,"GotoEvent()");
     evnoFrame->AddFrame(fTeEvt,new TGLayoutHints(kLHintsExpandX));
 
     // ... Add horizontal run & event number subframes to vertical evtidFrame
@@ -131,7 +131,7 @@ void TEventDisplayModule::MakeNavPanel() {
 }
 
 //-----------------------------------------------------------------------------
-int TEventDisplayModule::BeginJob() {
+int TStnEventDisplayModule::BeginJob() {
 
   RegisterDataBlock("TrackBlock"     ,"TStnTrackBlock"   ,&fTrackBlock);
   RegisterDataBlock("GenpBlock"      ,"TGenpBlock"       ,&fGenpBlock );
@@ -207,7 +207,7 @@ int TEventDisplayModule::BeginJob() {
 }
 
 //-----------------------------------------------------------------------------
-int TEventDisplayModule::BeginRun() {
+int TStnEventDisplayModule::BeginRun() {
 
   // if(gGeoManager){
   //   gGeoManager->GetListOfNodes()->Delete();
@@ -285,7 +285,7 @@ int TEventDisplayModule::BeginRun() {
 
 
 //-----------------------------------------------------------------------------
-int TEventDisplayModule::Event(int IEntry) {
+int TStnEventDisplayModule::Event(int IEntry) {
 
   // ... Update the run and event numbers in the TGTextEntry widgets in the Navigation panel
   //  std::ostringstream sstr;
@@ -458,6 +458,6 @@ int TEventDisplayModule::Event(int IEntry) {
 
 
 //-----------------------------------------------------------------------------
-int TEventDisplayModule::EndJob() {
+int TStnEventDisplayModule::EndJob() {
   return 0;
 }

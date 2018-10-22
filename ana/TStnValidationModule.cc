@@ -41,13 +41,12 @@
 //------------------------------------------------------------------------------
 // Mu2e offline includes
 //-----------------------------------------------------------------------------
-// #include "CalorimeterGeom/inc/HexMap.hh"
+#include "ana/TStnValidationModule.hh"
 
-#include "ana/TValidationModule.hh"
+ClassImp(TStnValidationModule)
 
-ClassImp(TValidationModule)
 //-----------------------------------------------------------------------------
-TValidationModule::TValidationModule(const char* name, const char* title):
+TStnValidationModule::TStnValidationModule(const char* name, const char* title):
   TStnModule(name,title)
 {
   fPtMin  = 1.;
@@ -69,20 +68,21 @@ TValidationModule::TValidationModule(const char* name, const char* title):
 }
 
 //-----------------------------------------------------------------------------
-TValidationModule::~TValidationModule() {
+TStnValidationModule::~TStnValidationModule() {
 }
 
 
 //-----------------------------------------------------------------------------
-void TValidationModule::BookTimeClusterHistograms   (TimeClusterHist_t*   Hist, const char* Folder){
+void TStnValidationModule::BookTimeClusterHistograms   (TimeClusterHist_t*   Hist, const char* Folder){
   
     HBook1F(Hist->fNHits         ,"nhits"      ,Form("%s: # of straw hits"              ,Folder), 150,   0,   150,Folder);
     HBook1F(Hist->fNComboHits    ,"ncombohits" ,Form("%s: # of combo hits"              ,Folder), 150,   0,   150,Folder);
     HBook1F(Hist->fT0            ,"t0"         ,Form("%s: TimeCluster; t_{0}[ns]"       ,Folder), 800, 400,  1700,Folder);
     HBook1F(Hist->fClusterEnergy ,"clusterE"   ,Form("%s: cluster energy; E [MeV]      ",Folder), 400,   0,  200,Folder);  
 }
+
 //-----------------------------------------------------------------------------
-void TValidationModule::BookHelixHistograms   (HelixHist_t*   Hist, const char* Folder){
+void TStnValidationModule::BookHelixHistograms   (HelixHist_t*   Hist, const char* Folder){
   
     HBook1F(Hist->fNHits         ,"nhits"      ,Form("%s: # of straw hits"              ,Folder), 150,   0,   150,Folder);
     HBook1F(Hist->fClusterTime   ,"clusterTime",Form("%s: cluster time; t_{cluster}[ns]",Folder), 800, 400,  1700,Folder);
@@ -99,7 +99,7 @@ void TValidationModule::BookHelixHistograms   (HelixHist_t*   Hist, const char* 
 }
 
 //-----------------------------------------------------------------------------
-void TValidationModule::BookTrackSeedHistograms   (TrackSeedHist_t*   Hist, const char* Folder){
+void TStnValidationModule::BookTrackSeedHistograms   (TrackSeedHist_t*   Hist, const char* Folder){
   
     HBook1F(Hist->fNHits         ,"nhits"    ,Form("%s: # of straw hits"              ,Folder), 150,   0,   150,Folder);
     HBook1F(Hist->fClusterTime ,"clusterTime",Form("%s: cluster time; t_{cluster}[ns]",Folder), 800, 400,  1700,Folder);
@@ -111,13 +111,10 @@ void TValidationModule::BookTrackSeedHistograms   (TrackSeedHist_t*   Hist, cons
     HBook1F(Hist->fChi2          ,"chi2"   ,Form("%s: #chi^{2}-XY; #chi^{2}/ndof"     ,Folder), 100,   0,    10,Folder);
     HBook1F(Hist->fFitCons      ,"FitCons" ,Form("%s: Fit consistency; Fit-cons"      ,Folder), 100,   0,    1, Folder);
     HBook1F(Hist->fD0            ,"d0"       ,Form("%s: D0; d0 [mm]"                  ,Folder), 1600,   -400,    400,Folder);
-
-  
 }
 
-
 //-----------------------------------------------------------------------------
-void TValidationModule::BookCaloHistograms(CaloHist_t* Hist, const char* Folder) {
+void TStnValidationModule::BookCaloHistograms(CaloHist_t* Hist, const char* Folder) {
   //     char name [200];
   //     char title[200];
   //-----------------------------------------------------------------------------
@@ -142,7 +139,7 @@ void TValidationModule::BookCaloHistograms(CaloHist_t* Hist, const char* Folder)
 }
 
 //-----------------------------------------------------------------------------
-void TValidationModule::BookClusterHistograms(ClusterHist_t* Hist, const char* Folder) {
+void TStnValidationModule::BookClusterHistograms(ClusterHist_t* Hist, const char* Folder) {
 //   char name [200];
 //   char title[200];
 
@@ -169,7 +166,7 @@ void TValidationModule::BookClusterHistograms(ClusterHist_t* Hist, const char* F
 }
 
 //-----------------------------------------------------------------------------
-void TValidationModule::BookGenpHistograms(GenpHist_t* Hist, const char* Folder) {
+void TStnValidationModule::BookGenpHistograms(GenpHist_t* Hist, const char* Folder) {
 //   char name [200];
 //   char title[200];
 
@@ -184,7 +181,7 @@ void TValidationModule::BookGenpHistograms(GenpHist_t* Hist, const char* Folder)
 }
 
 //-----------------------------------------------------------------------------
-void TValidationModule::BookTrackHistograms(TrackHist_t* Hist, const char* Folder) {
+void TStnValidationModule::BookTrackHistograms(TrackHist_t* Hist, const char* Folder) {
 //   char name [200];
 //   char title[200];
 
@@ -282,7 +279,7 @@ void TValidationModule::BookTrackHistograms(TrackHist_t* Hist, const char* Folde
 }
 
 //-----------------------------------------------------------------------------
-void TValidationModule::BookEventHistograms(EventHist_t* Hist, const char* Folder) {
+void TStnValidationModule::BookEventHistograms(EventHist_t* Hist, const char* Folder) {
   char name [200];
   //  char title[200];
 
@@ -332,7 +329,7 @@ void TValidationModule::BookEventHistograms(EventHist_t* Hist, const char* Folde
 }
 
 //-----------------------------------------------------------------------------
-void TValidationModule::BookSimpHistograms(SimpHist_t* Hist, const char* Folder) {
+void TStnValidationModule::BookSimpHistograms(SimpHist_t* Hist, const char* Folder) {
   //  char name [200];
   //  char title[200];
 
@@ -341,19 +338,21 @@ void TValidationModule::BookSimpHistograms(SimpHist_t* Hist, const char* Folder)
   HBook1F(Hist->fMomTargetEnd    ,"ptarg" ,Form("%s: CE mom after Stopping Target" ,Folder),400,  90,110,Folder);
   HBook1F(Hist->fMomTrackerFront ,"pfront",Form("%s: CE mom at the Tracker Front"  ,Folder),400,  90,110,Folder);
 }
+
+
 //_____________________________________________________________________________
-void TValidationModule::BookHistograms() {
+void TStnValidationModule::BookHistograms() {
 
   //  char name [200];
   //  char title[200];
-
+  
   TFolder* fol;
   TFolder* hist_folder;
   char     folder_name[200];
-
+  
   DeleteHistograms();
   hist_folder = (TFolder*) GetFolder()->FindObject("Hist");
-
+  
 //-----------------------------------------------------------------------------
 // book crystal histograms
 //-----------------------------------------------------------------------------
@@ -370,7 +369,7 @@ void TValidationModule::BookHistograms() {
   book_timecluster_histset[1] = 1;   // timeclusters with NHits>10
   book_timecluster_histset[2] = 1;   // timeclusters with NHits>15
 
-   for (int i=0; i<kNTrackSeedHistSets; i++) {
+  for (int i=0; i<kNTrackSeedHistSets; i++) {
     if (book_timecluster_histset[i] != 0) {
       sprintf(folder_name,"timecluster_%i",i);
       fol = (TFolder*) hist_folder->FindObject(folder_name);
@@ -379,8 +378,6 @@ void TValidationModule::BookHistograms() {
       BookTimeClusterHistograms(fHist.fTimeCluster[i],Form("Hist/%s",folder_name));
     }
   }
-
-
 //--------------------------------------------------------------------------------
 // book trackSeed histograms
 //--------------------------------------------------------------------------------
@@ -395,7 +392,7 @@ void TValidationModule::BookHistograms() {
   book_trackSeed_histset[5] = 1;   // events with at least one trackSeed with nhits >= 15
   book_trackSeed_histset[6] = 1;   // events with at least one trackSeed with nhits >= 15 and chi2(ZPhi)<4
 
-   for (int i=0; i<kNTrackSeedHistSets; i++) {
+  for (int i=0; i<kNTrackSeedHistSets; i++) {
     if (book_trackSeed_histset[i] != 0) {
       sprintf(folder_name,"trkseed_%i",i);
       fol = (TFolder*) hist_folder->FindObject(folder_name);
@@ -404,7 +401,6 @@ void TValidationModule::BookHistograms() {
       BookTrackSeedHistograms(fHist.fTrackSeed[i],Form("Hist/%s",folder_name));
     }
   }
-  
 //--------------------------------------------------------------------------------
 // book helix histograms
 //--------------------------------------------------------------------------------
@@ -419,7 +415,7 @@ void TValidationModule::BookHistograms() {
   book_helix_histset[5] = 1;   // events with at least one helix with nhits >= 15
   book_helix_histset[6] = 1;   // events with at least one helix with nhits >= 15 and chi2(ZPhi)<4
 
-   for (int i=0; i<kNHelixHistSets; i++) {
+  for (int i=0; i<kNHelixHistSets; i++) {
     if (book_helix_histset[i] != 0) {
       sprintf(folder_name,"helix_%i",i);
       fol = (TFolder*) hist_folder->FindObject(folder_name);
@@ -428,8 +424,6 @@ void TValidationModule::BookHistograms() {
       BookHelixHistograms(fHist.fHelix[i],Form("Hist/%s",folder_name));
     }
   }
-  
-
 //-----------------------------------------------------------------------------
 // book event histograms
 //-----------------------------------------------------------------------------
@@ -547,8 +541,6 @@ void TValidationModule::BookHistograms() {
   book_track_histset[ 61] = 1;		// Set "C" tracks, alg_mask = 3
   book_track_histset[ 62] = 1;		// Set "C" tracks, alg_mask = 3, T > 700
 
-  
-
   for (int i=0; i<kNTrackHistSets; i++) {
     if (book_track_histset[i] != 0) {
       sprintf(folder_name,"trk_%i",i);
@@ -625,10 +617,11 @@ void TValidationModule::BookHistograms() {
 
 }
 
+
 //-----------------------------------------------------------------------------
 // need MC truth branch
 //-----------------------------------------------------------------------------
-void TValidationModule::FillEventHistograms(EventHist_t* Hist) {
+void TStnValidationModule::FillEventHistograms(EventHist_t* Hist) {
   double            cos_th, dio_wt, xv, yv, rv, zv, p;
   double            e, m, r;
   TLorentzVector    mom;
@@ -868,7 +861,7 @@ void TValidationModule::FillEventHistograms(EventHist_t* Hist) {
 //--------------------------------------------------------------------------------
 // function to fill TrasckSeedHit block
 //--------------------------------------------------------------------------------
-void TValidationModule::FillTrackSeedHistograms(TrackSeedHist_t*   Hist, TStnTrackSeed*    TrkSeed){
+void TStnValidationModule::FillTrackSeedHistograms(TrackSeedHist_t*   Hist, TStnTrackSeed*    TrkSeed){
   
   int         nhits    = TrkSeed->NHits      ();
   double      clusterT = TrkSeed->ClusterTime();
@@ -900,7 +893,7 @@ void TValidationModule::FillTrackSeedHistograms(TrackSeedHist_t*   Hist, TStnTra
 //--------------------------------------------------------------------------------
 // function to fill Helix block
 //--------------------------------------------------------------------------------
-void TValidationModule::FillTimeClusterHistograms(TimeClusterHist_t*   Hist, TStnTimeCluster*    TimeCluster){
+void TStnValidationModule::FillTimeClusterHistograms(TimeClusterHist_t*   Hist, TStnTimeCluster*    TimeCluster){
   
   int         nhits      = TimeCluster->NHits      ();
   int         ncombohits = TimeCluster->NComboHits ();
@@ -918,7 +911,7 @@ void TValidationModule::FillTimeClusterHistograms(TimeClusterHist_t*   Hist, TSt
 //--------------------------------------------------------------------------------
 // function to fill Helix block
 //--------------------------------------------------------------------------------
-void TValidationModule::FillHelixHistograms(HelixHist_t*   Hist, TStnHelix*    Helix){
+void TStnValidationModule::FillHelixHistograms(HelixHist_t*   Hist, TStnHelix*    Helix){
   
   int         nhits    = Helix->NHits      ();
   double      clusterT = Helix->ClusterTime();
@@ -948,7 +941,7 @@ void TValidationModule::FillHelixHistograms(HelixHist_t*   Hist, TStnHelix*    H
 }
 
 //-----------------------------------------------------------------------------
-void TValidationModule::FillCaloHistograms(CaloHist_t* Hist, TStnCrystal* Cr) {
+void TStnValidationModule::FillCaloHistograms(CaloHist_t* Hist, TStnCrystal* Cr) {
 
   int                    nhits;
   float                  t, e, r, e700, n700;
@@ -997,7 +990,7 @@ void TValidationModule::FillCaloHistograms(CaloHist_t* Hist, TStnCrystal* Cr) {
 
 
 //-----------------------------------------------------------------------------
-void TValidationModule::FillClusterHistograms(ClusterHist_t* Hist, TStnCluster* Cluster) {
+void TStnValidationModule::FillClusterHistograms(ClusterHist_t* Hist, TStnCluster* Cluster) {
   int   row, col;
   float  x, y, z, r;
 
@@ -1036,7 +1029,7 @@ void TValidationModule::FillClusterHistograms(ClusterHist_t* Hist, TStnCluster* 
 }
 
 //-----------------------------------------------------------------------------
-void TValidationModule::FillGenpHistograms(GenpHist_t* Hist, TGenParticle* Genp) {
+void TStnValidationModule::FillGenpHistograms(GenpHist_t* Hist, TGenParticle* Genp) {
   int    gen_id;
   float  p, cos_th, z0, t0, r0, x0, y0;
 
@@ -1067,7 +1060,7 @@ void TValidationModule::FillGenpHistograms(GenpHist_t* Hist, TGenParticle* Genp)
 }
 
 //-----------------------------------------------------------------------------
-void TValidationModule::FillSimpHistograms(SimpHist_t* Hist, TSimParticle* Simp) {
+void TStnValidationModule::FillSimpHistograms(SimpHist_t* Hist, TSimParticle* Simp) {
 
   Hist->fPdgCode->Fill(Simp->fPdgCode);
   Hist->fMomTargetEnd->Fill(Simp->fMomTargetEnd);
@@ -1078,7 +1071,7 @@ void TValidationModule::FillSimpHistograms(SimpHist_t* Hist, TSimParticle* Simp)
 //-----------------------------------------------------------------------------
 // for DIO : ultimately, one would need to renormalize the distribution
 //-----------------------------------------------------------------------------
-void TValidationModule::FillTrackHistograms(TrackHist_t* Hist, TStnTrack* Track) {
+void TStnValidationModule::FillTrackHistograms(TrackHist_t* Hist, TStnTrack* Track) {
 
   TLorentzVector  mom;
   double          r;
@@ -1116,7 +1109,7 @@ void TValidationModule::FillTrackHistograms(TrackHist_t* Hist, TStnTrack* Track)
   Hist->fNActive->Fill(Track->NActive());
   Hist->fT0->Fill(Track->fT0);
   Hist->fT0Err->Fill(Track->fT0Err);
-  //  printf("TValidationModule::FillTrackHistograms: track charge is not defined yet\n");
+  //  printf("TStnValidationModule::FillTrackHistograms: track charge is not defined yet\n");
   Hist->fQ->Fill(-1);
   Hist->fFitCons[0]->Fill(Track->fFitCons);
   Hist->fFitCons[1]->Fill(Track->fFitCons);
@@ -1285,7 +1278,7 @@ void TValidationModule::FillTrackHistograms(TrackHist_t* Hist, TStnTrack* Track)
 //-----------------------------------------------------------------------------
 // register data blocks and book histograms
 //-----------------------------------------------------------------------------
-int TValidationModule::BeginJob() {
+int TStnValidationModule::BeginJob() {
 //-----------------------------------------------------------------------------
 // register data blocks
 //-----------------------------------------------------------------------------
@@ -1316,7 +1309,7 @@ int TValidationModule::BeginJob() {
 
 
 //_____________________________________________________________________________
-int TValidationModule::BeginRun() {
+int TStnValidationModule::BeginRun() {
   int rn = GetHeaderBlock()->RunNumber();
   TStntuple::Init(rn);
   return 0;
@@ -1324,7 +1317,7 @@ int TValidationModule::BeginRun() {
 
 
 //_____________________________________________________________________________
-void TValidationModule::FillHistograms() {
+void TStnValidationModule::FillHistograms() {
 
   double       cos_th (-2.),  cl_e(-1.);
   int          disk_id(-1), alg_mask, nsh, nactive;
@@ -1935,7 +1928,7 @@ void TValidationModule::FillHistograms() {
 // 2014-04-30: it looks that reading the straw hits takes a lot of time - 
 //              turn off by default by commenting it out
 //-----------------------------------------------------------------------------
-int TValidationModule::Event(int ientry) {
+int TStnValidationModule::Event(int ientry) {
 
   double                xs, p;
   TEmuLogLH::PidData_t  dat;
@@ -2106,7 +2099,7 @@ int TValidationModule::Event(int ientry) {
     }
 
     if ((tp->fEp > 0) && (track->fEp > 0) && (fabs(tp->fEp-track->fEp) > 1.e-6)) {
-      GetHeaderBlock()->Print(Form(" TValidationModule ERROR: tp->fEp = %10.5f  track->fEp = %10.5f",tp->fEp,track->fEp));
+      GetHeaderBlock()->Print(Form(" TStnValidationModule ERROR: tp->fEp = %10.5f  track->fEp = %10.5f",tp->fEp,track->fEp));
     }
 //-----------------------------------------------------------------------------
 // PID likelihoods
@@ -2152,7 +2145,7 @@ int TValidationModule::Event(int ientry) {
 }
 
 //-----------------------------------------------------------------------------
-void TValidationModule::Debug() {
+void TStnValidationModule::Debug() {
 
   TStnTrack* trk;
   TrackPar_t* tp;
@@ -2219,13 +2212,13 @@ void TValidationModule::Debug() {
 }
 
 //_____________________________________________________________________________
-int TValidationModule::EndJob() {
+int TStnValidationModule::EndJob() {
   printf("----- end job: ---- %s\n",GetName());
   return 0;
 }
 
 //_____________________________________________________________________________
-void TValidationModule::Test001() {
+void TStnValidationModule::Test001() {
 
   // mu2e::HexMap* hmap      = new mu2e::HexMap();
 
@@ -2236,4 +2229,3 @@ void TValidationModule::Test001() {
   //   printf(" i,l,k = %5i %5i %5i\n",i,hex_index._l,hex_index._k);
   // }
 }
-

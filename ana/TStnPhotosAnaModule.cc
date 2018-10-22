@@ -6,23 +6,23 @@
 #include "Stntuple/obj/TStnNode.hh"
 #include "Stntuple/obj/TStnEvent.hh"
 
-#include "ana/TPhotosAnaModule.hh"
+#include "ana/TStnPhotosAnaModule.hh"
 
-ClassImp(TPhotosAnaModule)
+ClassImp(TStnPhotosAnaModule)
 
 //_____________________________________________________________________________
-TPhotosAnaModule::TPhotosAnaModule(const char* name, const char* title):
+TStnPhotosAnaModule::TStnPhotosAnaModule(const char* name, const char* title):
   TStnModule(name,title)
 {
   fPhotos = TPhotos::Instance();
 }
 
 //_____________________________________________________________________________
-TPhotosAnaModule::~TPhotosAnaModule() {
+TStnPhotosAnaModule::~TStnPhotosAnaModule() {
 }
 
 //_____________________________________________________________________________
-void TPhotosAnaModule::BookEventHistograms(EventHist_t* Hist, const char* Folder) {
+void TStnPhotosAnaModule::BookEventHistograms(EventHist_t* Hist, const char* Folder) {
   //  char name [200];
   //  char title[200];
 					// book histograms
@@ -37,7 +37,7 @@ void TPhotosAnaModule::BookEventHistograms(EventHist_t* Hist, const char* Folder
 }
 
 //_____________________________________________________________________________
-void TPhotosAnaModule::BookGenpHistograms(GenpHist_t* Hist, const char* Folder) {
+void TStnPhotosAnaModule::BookGenpHistograms(GenpHist_t* Hist, const char* Folder) {
   //  char name [200];
   //  char title[200];
 					// book histograms
@@ -49,7 +49,7 @@ void TPhotosAnaModule::BookGenpHistograms(GenpHist_t* Hist, const char* Folder) 
 }
 
 //_____________________________________________________________________________
-void TPhotosAnaModule::FillEventHistograms(EventHist_t* Hist) {
+void TStnPhotosAnaModule::FillEventHistograms(EventHist_t* Hist) {
   
   //  Hist->fRunNumber->Fill(GetHeaderBlock()->RunNumber());
 
@@ -64,7 +64,7 @@ void TPhotosAnaModule::FillEventHistograms(EventHist_t* Hist) {
 }
 
 //_____________________________________________________________________________
-void TPhotosAnaModule::FillGenpHistograms(GenpHist_t* Hist, TGenParticle* Genp) {
+void TStnPhotosAnaModule::FillGenpHistograms(GenpHist_t* Hist, TGenParticle* Genp) {
   
   TLorentzVector mom;
   float          p, e;
@@ -82,7 +82,7 @@ void TPhotosAnaModule::FillGenpHistograms(GenpHist_t* Hist, TGenParticle* Genp) 
 
 
 //_____________________________________________________________________________
-void TPhotosAnaModule::BookHistograms() {
+void TStnPhotosAnaModule::BookHistograms() {
   //  char name [200];
   //  char title[200];
 					// book histograms
@@ -131,7 +131,7 @@ void TPhotosAnaModule::BookHistograms() {
 }
 
 //_____________________________________________________________________________
-int TPhotosAnaModule::BeginJob() {
+int TStnPhotosAnaModule::BeginJob() {
 
 				// register data blocks
 
@@ -144,14 +144,14 @@ int TPhotosAnaModule::BeginJob() {
 }
 
 //_____________________________________________________________________________
-int TPhotosAnaModule::BeginRun() {
+int TStnPhotosAnaModule::BeginRun() {
   // initialize run-dependent calibration constants
   
   return 0;
 }
 
 //_____________________________________________________________________________
-int TPhotosAnaModule::Event(int ientry) {
+int TStnPhotosAnaModule::Event(int ientry) {
 //-----------------------------------------------------------------------------
 // in case of a TChain, ientry is the entry number in the current file
 //-----------------------------------------------------------------------------
@@ -188,7 +188,7 @@ int TPhotosAnaModule::Event(int ientry) {
 }
 
 //-----------------------------------------------------------------------------
-void TPhotosAnaModule::FillHistograms() {
+void TStnPhotosAnaModule::FillHistograms() {
 
   FillEventHistograms(fHist.fEvent[0]);
 
@@ -211,23 +211,23 @@ void TPhotosAnaModule::FillHistograms() {
 }
 
 //_____________________________________________________________________________
-int TPhotosAnaModule::Debug() {
+int TStnPhotosAnaModule::Debug() {
 
   return 0;
 }
 
 //_____________________________________________________________________________
-int TPhotosAnaModule::EndRun() {
+int TStnPhotosAnaModule::EndRun() {
   return 0;
 }
 
 //_____________________________________________________________________________
-int TPhotosAnaModule::EndJob() {
+int TStnPhotosAnaModule::EndJob() {
   printf("----- end job: ---- %s\n",GetName());
   return 0;
 }
 
 //_____________________________________________________________________________
-void TPhotosAnaModule::Print(Option_t* opt) const {
+void TStnPhotosAnaModule::Print(Option_t* opt) const {
 }
 

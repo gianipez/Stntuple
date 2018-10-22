@@ -4,28 +4,28 @@
 //   by the ROOT events.  A ROOT dictionary needs to be generated for this.
 //
 
-#ifndef __murat_ana_TEventDisplayUtils_hh__
-#define __murat_ana_TEventDisplayUtils_hh__
+#ifndef __murat_ana_TStnEventDisplayUtils_hh__
+#define __murat_ana_TStnEventDisplayUtils_hh__
 
 #include <TObject.h>
 #include <TApplication.h>
 #include <TGTextBuffer.h>
 #include <iostream>
 
-class TEventDisplayUtils: public TObject {
+class TStnEventDisplayUtils: public TObject {
 public:
 
   TGTextBuffer *fTbRun;
   TGTextBuffer *fTbEvt;
 
-  TEventDisplayUtils();
-  ~TEventDisplayUtils();
+  TStnEventDisplayUtils();
+  ~TStnEventDisplayUtils();
   
   void     PrevEvent         ();
   void     NextEvent         ();
   void     GotoEvent         ();
 
-  ClassDef(TEventDisplayUtils,0)
+  ClassDef(TStnEventDisplayUtils,0)
 };
 
 #endif 

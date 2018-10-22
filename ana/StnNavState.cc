@@ -5,40 +5,39 @@
 //   event display service.
 //
 
-#include "Stntuple/ana/NavState.hh"
+#include "Stntuple/ana/StnNavState.hh"
 #include "TROOT.h"
 #include "TApplication.h"
 
-static int gsNavState    = 0;
+static int gsStnNavState = 0;
 static int gsTargetRun   = 0;
 static int gsTargetEvent = 0;
+//......................................................................
+
+int StnNavState::Which() { return gsStnNavState; }
 
 //......................................................................
 
-int NavState::Which() { return gsNavState; }
-
-//......................................................................
-
-void NavState::Set(int which) {
-  gsNavState = which;
+void StnNavState::Set(int which) {
+  gsStnNavState = which;
   gROOT->GetApplication()->Terminate();
 }
 
 //......................................................................
 
-void NavState::SetTarget(int run, int event) {
+void StnNavState::SetTarget(int run, int event) {
   gsTargetRun = run;
   gsTargetEvent = event;
 }
 
 //......................................................................
 
-int NavState::TargetRun() {
+int StnNavState::TargetRun() {
   return gsTargetRun;
 }
 
 //......................................................................
 
-int NavState::TargetEvent() {
+int StnNavState::TargetEvent() {
   return gsTargetEvent;
 }

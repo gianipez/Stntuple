@@ -25,7 +25,7 @@ void  photos(int Mode = 1, int DebugLevel = 0) {
   ph->SetXPHCUT(1.e-6);
   printf("XPHCUT = %12.5f\n",ph->GetPhocop()->XPHCUT);
   
-  stntuple::m_pho = (TPhotosAnaModule*) g.x->AddModule("TPhotosAnaModule",0);
+  stntuple::m_pho = (TStnPhotosAnaModule*) g.x->AddModule("TStnPhotosAnaModule",0);
   g.x->SetNEventsToReport(10000);
 }
 
@@ -44,7 +44,7 @@ void  photos_no_isec(int Mode = 2, int DebugLevel = 0) {
 
   ph->SetISEC(0);
   
-  stntuple::m_pho = (TPhotosAnaModule*) g.x->AddModule("TPhotosAnaModule",0);
+  stntuple::m_pho = (TStnPhotosAnaModule*) g.x->AddModule("TStnPhotosAnaModule",0);
   g.x->SetNEventsToReport(10000);
 }
 
@@ -63,7 +63,7 @@ void  photos_iexp(int Mode = 2, int DebugLevel = 0) {
 
   ph->SetIEXP(1);
   
-  stntuple::m_pho = (TPhotosAnaModule*) g.x->AddModule("TPhotosAnaModule",0);
+  stntuple::m_pho = (TStnPhotosAnaModule*) g.x->AddModule("TStnPhotosAnaModule",0);
   g.x->SetNEventsToReport(10000);
 }
 

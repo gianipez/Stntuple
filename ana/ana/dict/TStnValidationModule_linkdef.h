@@ -3,7 +3,8 @@
 #pragma link off all   classes;
 #pragma link off all   functions;
 
-#pragma link C++ class TEventDisplayModule;
+#pragma link C++ class TStnValidationModule;
+#pragma link C++ class TStnValidationModule::TrackPar_t;
 
 #endif
 

@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
 
-#ifndef __murat_ana_TEventDisplayModule_hh__
-#define __murat_ana_TEventDisplayModule_hh__
+#ifndef __murat_ana_TStnEventDisplayModule_hh__
+#define __murat_ana_TStnEventDisplayModule_hh__
 
 // ROOT includes
 // ... libCore
@@ -42,8 +42,8 @@
 #include <TEveTrack.h>
 #include <TEveTrackPropagator.h>
 
-#include "Stntuple/ana/TEventDisplayUtils.hh"
-#include "Stntuple/ana/TMu2eEveMagField.hh"
+#include "Stntuple/ana/TStnEventDisplayUtils.hh"
+#include "Stntuple/ana/TStnMu2eEveMagField.hh"
 
 #include "Stntuple/loop/TStnModule.hh"
 #include "Stntuple/obj/TStnTrackBlock.hh"
@@ -51,7 +51,7 @@
 #include "Stntuple/obj/TSimpBlock.hh"
 #include "Stntuple/gui/TStnGeoManager.hh"
 
-class TEventDisplayModule : public TStnModule {
+class TStnEventDisplayModule : public TStnModule {
 protected:
 
   // Set by parameter set variables.
@@ -66,11 +66,11 @@ protected:
   double          camRotateCenterV_;
   double          camDollyDelta_;
   
-  TEventDisplayUtils*     fEvdUtils;
+  TStnEventDisplayUtils*     fEvdUtils;
   TEveGeoShape*           fSimpleGeom;
 
   TStnGeoManager*         fGeoManager;
-  TMu2eEveMagField*       fBField;
+  TStnMu2eEveMagField*    fBField;
   TEveTrackPropagator*    fTrackPropagator;
   TEveTrackPropagator*    fBeamPropagator;
 
@@ -100,8 +100,8 @@ protected:
 // functions
 //-----------------------------------------------------------------------------
   public:
-  TEventDisplayModule(const char* Name = "EventDisplay", const char* Title = "EventDisplay");
-  ~TEventDisplayModule();
+  TStnEventDisplayModule(const char* Name = "EventDisplay", const char* Title = "EventDisplay");
+  ~TStnEventDisplayModule();
 
   virtual int  BeginJob()           ;
   virtual int  BeginRun()           ;
@@ -113,7 +113,7 @@ protected:
   void SetDisplayBeamMuMinus(int OnOff) { fDisplayBeamMuMinus = OnOff; }
   void SetDisplayBeamMuPlus (int OnOff) { fDisplayBeamMuPlus  = OnOff; }
 
-  ClassDef(TEventDisplayModule,0)
+  ClassDef(TStnEventDisplayModule,0)
 };
 
 #endif

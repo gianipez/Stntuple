@@ -3,8 +3,7 @@
 #pragma link off all   classes;
 #pragma link off all   functions;
 
-#pragma link C++ class TValidationModule;
-#pragma link C++ class TValidationModule::TrackPar_t;
+#pragma link C++ class TStnMu2eEveMagField;
 
 #endif
 

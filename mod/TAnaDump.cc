@@ -2480,7 +2480,34 @@ void TAnaDump::printComboHitCollection(const char* StrawHitCollTag   ,
   fEvent->getByLabel<mu2e::StrawHitFlagCollection>(FlagBgrHitsCollTag,shfcH);
   if (shfcH.isValid()) shfcol = shfcH.product();
   else {
-    printf("ERROR: cant find StrawHitFlagCollection tag=%s, EXIT\n",FlagBgrHitsCollTag);
+    printf("ERROR: cant find StrawHitFlagCollection tag=%s, avalable collections are:\n",FlagBgrHitsCollTag);
+
+    std::vector<art::Handle<mu2e::StrawHitFlagCollection>> list;
+
+    //    const mu2e::StrawHitFlagCollection*  coll(0);
+    const art::Provenance*               prov;
+
+    //  art::Selector  selector(art::ProductInstanceNameSelector("mu2e::GenParticleCollection"));
+    art::Selector  selector(art::ProductInstanceNameSelector(""));
+
+    fEvent->getMany(selector,list);
+
+    const art::Handle<mu2e::StrawHitFlagCollection>* handle;
+
+    for (auto it = list.begin(); it != list.end(); it++) {
+      handle = it.operator -> ();
+
+      if (handle->isValid()) {
+	//	coll = handle->product();
+	prov = handle->provenance();
+	
+	printf("moduleLabel: %-20s, productInstanceName: %-20s, processName:= %-30s\n" ,
+	       prov->moduleLabel().data(),
+	       prov->productInstanceName().data(),
+	       prov->processName().data()
+	       );
+      }
+    }
     return;
   }
 

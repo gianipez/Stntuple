@@ -3,8 +3,8 @@
 //-----------------------------------------------------------------------------
 #include "Stntuple/scripts/global_vars.h"
 
-int debug(TDebugModule* Module) {
-  Module = (TDebugModule*) g.x->AddModule("TDebugModule",0);
+int debug(TStnDebugModule* Module) {
+  Module = (TStnDebugModule*) g.x->AddModule("TStnDebugModule",0);
   return 0;
 }
 

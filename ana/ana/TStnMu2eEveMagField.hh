@@ -1,8 +1,8 @@
 //-----------------------------------------------------------------------------
 // apparenty , the field is in Tesla, not in Gauss
 //-----------------------------------------------------------------------------
-#ifndef murat_ana_TMu2eEveMagField
-#define murat_ana_TMu2eEveMagField
+#ifndef murat_ana_TStnMu2eEveMagField
+#define murat_ana_TStnMu2eEveMagField
 
 #include "TObject.h"
 #include "TEveTrackPropagator.h"
@@ -15,7 +15,7 @@ namespace mu2e {
   class BFieldManager;
 }
 
-class TMu2eEveMagField: public TEveMagField {
+class TStnMu2eEveMagField: public TEveMagField {
 protected:
   int    fN;
   float* fZ;
@@ -27,13 +27,13 @@ protected:
   mu2e::BFieldManager*      fBmgr;
   
 public:
-  TMu2eEveMagField();
-  ~TMu2eEveMagField();
+  TStnMu2eEveMagField();
+  ~TStnMu2eEveMagField();
   
   virtual Float_t    GetMaxFieldMag() const { return 5. ; }
   virtual TEveVector GetField(float X, float Y, float Z) const ;
 
-  ClassDef(TMu2eEveMagField, 0);
+  ClassDef(TStnMu2eEveMagField, 0);
 };
 
 #endif
