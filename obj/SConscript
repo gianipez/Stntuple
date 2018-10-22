@@ -5,9 +5,6 @@
 import os
 Import('env')
 Import('stntuple_helper')
-
-# env.Append(BUILDERS = {'StntupleCodegen' : stntuple_codegen})
-# env.Append(BUILDERS = {'StntupleRootCint' : stntuple_my_rootcint})
 #------------------------------------------------------------------------------
 # 2016-10-10: STNTUPLE link: add ROOT 'EG' library after 'Physics' library
 #------------------------------------------------------------------------------

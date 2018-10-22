@@ -43,7 +43,7 @@ class stntuple_helper:
 #------------------------------------------------------------------------------
 # generate dictionaries
 #------------------------------------------------------------------------------
-        list_of_linkdef_files = Glob(self.subdir+'/dict/*_linkdef.h', strings=True)
+        list_of_linkdef_files = self._env.Glob(self.subdir+'/dict/*_linkdef.h', strings=True)
         if (self._debug):
             print ("[Stntuple."+self.subdir+"] handle_dictionaries: list_of_linkdef_files = \n",list_of_linkdef_files)
             

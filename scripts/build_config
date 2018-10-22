@@ -2,26 +2,27 @@
 
 dir=include
 
-# echo pwd  `pwd`
+echo [build_config]: pwd  `pwd`
 #------------------------------------------------------------------------------
 # Stntuple and its subpackages
 #------------------------------------------------------------------------------
-if [ ! -d ../$dir/Stntuple ] ; then mkdir -p ../$dir/Stntuple ; fi
+if [ ! -d $dir/Stntuple ] ; then mkdir -p $dir/Stntuple ; fi
 
 # for d in alg base gui loop mod obj val ; do
 for d in alg ana base geom gui loop mod obj val ; do
-    if [ ! -e ../$dir/Stntuple/$d ] ; then 
-	echo `pwd`$0 : creating symbolic link ../$dir/Stntuple/$d
-	ln -s ../../Stntuple/$d/$d ../$dir/Stntuple/$d
+    if [ ! -e $dir/Stntuple/$d ] ; then 
+	echo `pwd`$0 : creating symbolic link $dir/Stntuple/$d
+	ln -s ../../Stntuple/$d/$d $dir/Stntuple/$d
     fi
 done
 #------------------------------------------------------------------------------
 # SCons-related things: executed from Stntuple
 #------------------------------------------------------------------------------
-if [ ! -d ../site_scons ] ; then
-    mkdir ../site_scons
-    cp site_init.py ../site_scons/.
+if [ ! -d ./site_scons ] ; then
+    mkdir ./site_scons
+    cp Stntuple/scripts/site_init.py       ./site_scons/.
+    cp Stntuple/scripts/stntuple_helper.py ./site_scons/.
 fi
 
-if [ ! -f ../.rootrc     ] ; then cp ./.rootrc     ../. ; fi
-if [ ! -f ../rootlogon.C ] ; then cp ./rootlogon.C ../. ; fi
+if [ ! -f ./.rootrc     ] ; then cp Stntuple/scripts/.rootrc     ./. ; fi
+if [ ! -f ./rootlogon.C ] ; then cp Stntuple/scripts/rootlogon.C ./. ; fi

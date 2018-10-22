@@ -18,7 +18,7 @@ stn_helper = stntuple_helper(env,debug);
 dict_skip_list = []
 stn_helper.handle_dictionaries(dict_skip_list);
 
-list_of_cc_files =  Glob('*.cc', strings=True);
+list_of_cc_files = Glob('*.cc', strings=True);
 skip_list        = []
 libs             = ['Stntuple_base', rootlibs];
 
