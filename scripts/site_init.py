@@ -1,13 +1,4 @@
 import os, re, string, subprocess
-# Import('env')
-#------------------------------------------------------------------------------
-# last two components of the path. Ex: /not/this/but/THIS/AND_THIS
-#                                      "AND_THIS" is usually "src"
-#------------------------------------------------------------------------------
-#  >> x = subprocess.call('scripts/build_config',shell=True)
-#  >> env['CXXFLAGS'].append('-I'+os.environ['MU2E_BASE_RELEASE']+'/include');
-#------------------------------------------------------------------------------
-# done
 #------------------------------------------------------------------------------
 def stntuple_codegen_script(source, target, env, for_signature):
 #    print "\n>>> mod_codegen called: pwd = "+os.environ['PWD'];
@@ -24,13 +15,11 @@ def stntuple_codegen_script(source, target, env, for_signature):
 #    print ">>> cmd = %s"%cmd
     return cmd
 
-
 stntuple_codegen = Builder(generator     = stntuple_codegen_script,
                            single_source = 0,
                            suffix        = '.cc',
                            src_suffix    = '.sh')
 
-# env.Append(BUILDERS = {'StntupleCodegen' : stntuple_codegen})
 #------------------------------------------------------------------------------
 def stntuple_gen_rootcint(source, target, env, for_signature):
 #    print "\n>>> stntuple_gen_rootcint called:"
@@ -66,9 +55,7 @@ def stntuple_gen_rootcint(source, target, env, for_signature):
 #    print ">>> cmd = %s"%cmd
     return cmd
 
-stntuple_my_rootcint = Builder(generator     = stntuple_gen_rootcint,
-                               single_source = 0,
-                               suffix        = '.o',
-                               src_suffix    = '.h')
-
-# env.Append(BUILDERS = {'StntupleRootCint' : stntuple_my_rootcint})
+stntuple_rootcint = Builder(generator     = stntuple_gen_rootcint,
+                            single_source = 0,
+                            suffix        = '.o',
+                            src_suffix    = '.h')

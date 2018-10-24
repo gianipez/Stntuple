@@ -2,7 +2,6 @@
 #
 #
 import os, re, string, subprocess
-
 #------------------------------------------------------------------------------
 class stntuple_helper:
     """mu2e_helper: class to produce library names"""
