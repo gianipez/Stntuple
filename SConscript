@@ -15,7 +15,7 @@ env['CXXFLAGS'].append('-I'+os.environ['MU2E_BASE_RELEASE']+'/include');
 #------------------------------------------------------------------------------
 from stntuple_helper import *
 
-env.Append(BUILDERS = {'StntupleCodegen'  : stntuple_codegen})
-env.Append(BUILDERS = {'StntupleRootCint' : stntuple_my_rootcint})
+env.Append(BUILDERS = {'StntupleCodegen'  : stntuple_codegen })
+env.Append(BUILDERS = {'StntupleRootCint' : stntuple_rootcint})
 
 Export('stntuple_helper')
