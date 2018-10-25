@@ -601,8 +601,8 @@ void TAnaDump::printTrackSeed(const mu2e::KalSeed* TrkSeed        ,
   if ((opt == "") || (opt == "banner")) {
     printf("-------------------------------------------------------------");
     printf("---------------------------------------------------------------------------------\n");
-    printf("  TrkID       Address    N      P      pT      T0     T0err    fmin   fmax");
-    printf("      D0       Z0      Phi0   TanDip    radius    caloEnergy     chi2      FitCon\n");
+    printf("  TrkID       Address    N      P      pT      T0       T0err    fmin   fmax");
+    printf("      D0       Z0      Phi0    TanDip    radius    caloEnergy     chi2      FitCon\n");
     printf("-------------------------------------------------------------");
     printf("---------------------------------------------------------------------------------\n");
   }
@@ -2280,12 +2280,12 @@ void TAnaDump::printHelixHit(const mu2e::HelixHit*    HelHit, const mu2e::ComboH
     opt.ToLower();
 
     if ((opt == "") || (opt.Index("banner") >= 0)) {
-      printf("----------------------------------------------------------------------------------------------------------------------");
-      printf("------------------------------------------------------------------\n");
-      printf("   I nsh  SHID  Flags      Plane   Panel  Layer Straw       x          y           z          phi      Time       eDep");
-      printf("           PDG       PDG(M)   Generator         ID       p      pT\n");
-      printf("----------------------------------------------------------------------------------------------------------------------");
-      printf("------------------------------------------------------------------\n");
+      printf("-----------------------------------------------------------------------------------");
+      printf("---------------------------------------------------------------------------------------------------------------\n");
+      printf("   I   NSH   SHID  Flags      Plane   Panel  Layer Straw     x          y           z          phi      Time          eDep ");
+      printf("           PDG       PDG(M)   Generator         ID       p      pT     pZ\n");
+      printf("-----------------------------------------------------------------------------------");
+      printf("---------------------------------------------------------------------------------------------------------------\n");
     }
 
     if (opt == "banner") return;
@@ -2304,7 +2304,7 @@ void TAnaDump::printHelixHit(const mu2e::HelixHit*    HelHit, const mu2e::ComboH
     const mu2e::SimParticle * sim (0);
     
     int      pdg_id(-1), mother_pdg_id(-1), generator_id(-1), sim_id(-1);
-    double   mc_mom(-1.), mc_pT(-1.);
+    double   mc_mom(-1.), mc_pT(-1.), mc_pZ(0.);
     double   x(0), y(0), z(0), phi(0);
 
     XYZVec shPos = HelHit->pos();
@@ -2332,6 +2332,7 @@ void TAnaDump::printHelixHit(const mu2e::HelixHit*    HelHit, const mu2e::ComboH
       sim_id        = simptr->id().asInt();
       mc_mom        = Step->momentum().mag();
       mc_pT         = sqrt(Step->momentum().x()*Step->momentum().x() + Step->momentum().y()*Step->momentum().y());
+      mc_pZ         = Step->momentum().z();
     }
     
     if ((opt == "") || (opt == "data")) {
@@ -2344,7 +2345,7 @@ void TAnaDump::printHelixHit(const mu2e::HelixHit*    HelHit, const mu2e::ComboH
 
       if (Flags >= 0) printf(" %08x",Flags);
       else            printf("        ");
-      printf("  %5i  %5i   %5i   %5i   %8.3f   %8.3f    %10.3f    %6.3f   %8.3f   %9.6f   %10i   %10i  %10i  %10i %8.3f %8.3f\n",
+      printf("  %5i  %5i   %5i   %5i   %8.3f   %8.3f    %10.3f    %6.3f   %8.3f   %8.3f   %10i   %10i  %10i  %10i %8.3f %8.3f %8.3f\n",
 	     straw->id().getPlane(),
 	     straw->id().getPanel(),
 	     straw->id().getLayer(),
@@ -2357,7 +2358,8 @@ void TAnaDump::printHelixHit(const mu2e::HelixHit*    HelHit, const mu2e::ComboH
 	     generator_id,
 	     sim_id,
 	     mc_mom,
-	     mc_pT);
+	     mc_pT,
+	     mc_pZ);
     }
   }
 

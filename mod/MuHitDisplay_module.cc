@@ -679,12 +679,13 @@ namespace mu2e {
       art::Handle<mu2e::StrawHitFlagCollection> shfH;
       Evt->getByLabel(fStrawHitFlagMaker, shfH);
 
-
+ 
       if (shfH.isValid()) fStrawHitFlagColl = shfH.product();
       else {
-	printf(">>> [%s] ERROR: StrawHitFlagCollection by %s is missing. BAIL OUT\n",
-	       oname, fStrawHitFlagMaker.data());
-	return -1;
+	fStrawHitFlagColl = 0;
+	// printf(">>> [%s] ERROR: StrawHitFlagCollection by %s is missing. BAIL OUT\n",
+	//        oname, fStrawHitFlagMaker.data());
+	// return -1;
       }
 //-----------------------------------------------------------------------------
 // calorimeter crystal hit data
@@ -1195,8 +1196,11 @@ namespace mu2e {
       ihit = ih;
 
       hit         = &fComboHitColl->at(ihit);
-      hit_id_word = &fStrawHitFlagColl->at(ihit);
 
+      if (fStrawHitFlagColl)
+	hit_id_word = &fStrawHitFlagColl->at(ihit);
+      else 
+	hit_id_word = &hit->flag();
       int    nsh = hit->nStrawHits();
       
       for (int ish=0; ish<nsh; ++ish){
