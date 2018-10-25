@@ -799,10 +799,10 @@ void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix,
       double d0     = robustHel->rcent() - radius;
 
       double lambda = robustHel->lambda();
-      double tandip = lambda/radius;
+      //      double tandip = lambda/radius;
 
       double mm2MeV = 3/10.;
-      double mom    = radius*mm2MeV/std::cos( std::atan(tandip));
+      double mom    = robustHel->momentum()*mm2MeV;//radius*mm2MeV/std::cos( std::atan(tandip));
       double pt     = radius*mm2MeV;
 
       double x0     = robustHel->centerx();

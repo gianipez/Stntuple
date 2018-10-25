@@ -78,7 +78,7 @@
 #include "RecoDataProducts/inc/CaloCrystalHitCollection.hh"
 #include "RecoDataProducts/inc/CaloClusterCollection.hh"
 #include "RecoDataProducts/inc/ComboHit.hh"
-#include "RecoDataProducts/inc/XYZVec.hh"
+#include "DataProducts/inc/XYZVec.hh"
 #include "RecoDataProducts/inc/StrawHitFlagCollection.hh"
 
 #include "RecoDataProducts/inc/CrvRecoPulseCollection.hh"
@@ -164,7 +164,7 @@ namespace mu2e {
     TrkParticle        fParticleHypo;
 
 
-    int                fGeneratorID;
+    mu2e::GenId        fGeneratorID;
     string             _trackerStepPoints;
     string             fDirectionAndParticle;
 
@@ -307,7 +307,7 @@ namespace mu2e {
     fTrkDirection((TrkFitDirection::FitDirection)(pset.get<int>("fitDirection"))),
     fParticleHypo((TrkParticle::type)            (pset.get<int>("fitParticle"))),
 
-    fGeneratorID(pset.get<int>("generatorID", GenId::conversionGun)),
+    fGeneratorID(pset.get<mu2e::GenId>("generatorID", mu2e::GenId::conversionGun)),
     _trackerStepPoints(pset.get<std::string>("trackerStepPoints")),
     _minEnergyDep(pset.get<double>("minEnergyDep", 0)),
     _timeWindow(pset.get<double>("timeWindow", 1.e6)),

@@ -99,6 +99,8 @@ Int_t StntupleInitMu2eVirtualDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent, 
   float mc_momX, mc_momY, mc_momZ;
   float mc_posX, mc_posY, mc_posZ;
 
+  float min_energy(40.);
+
   for (int i=0; i<nhits; i++) {
     step  = &list_of_hits->at(i);
 
@@ -117,6 +119,7 @@ Int_t StntupleInitMu2eVirtualDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent, 
     mass      = info.ref().mass();
     energy    = sqrt(step->momentum().mag2() + mass*mass);
     energyKin = energy - mass;
+    if (energy < min_energy) goto NEXT_VHIT;
 
     gen_index = sim->genParticle()->generatorId().id();
           
