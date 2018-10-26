@@ -17,6 +17,7 @@ class stntuple_helper:
         self.subdir  = os.path.basename(self.dd);
         self.libname = self.dirname+'_'+self.subdir
         self.d1      = self.libname+'-shared';
+        self.suffix  = ".hh" ;
         self.tmp_dir = "tmp/src/"+self.d1;
         self._debug  = debug
         if (debug) : print "-------------- building directory: "+self.dirname+'/'+self.subdir
@@ -38,13 +39,14 @@ class stntuple_helper:
         self._env.SharedObject(obj,cc)
         self._list_of_object_files.append(obj);
 
-    def handle_dictionaries(self,skip_list = []):
+    def handle_dictionaries(self,suffix = ".hh",skip_list = []):
+        self.suffix = suffix ;
 #------------------------------------------------------------------------------
 # generate dictionaries
 #------------------------------------------------------------------------------
         list_of_linkdef_files = self._env.Glob(self.subdir+'/dict/*_linkdef.h', strings=True)
         if (self._debug):
-            print ("[Stntuple."+self.subdir+"] handle_dictionaries: list_of_linkdef_files = \n",list_of_linkdef_files)
+            print ("["+self.dirname+"/"+self.subdir+"] handle_dictionaries: list_of_linkdef_files = ",list_of_linkdef_files)
             
         list_of_dict_files    = []
 
@@ -57,7 +59,7 @@ class stntuple_helper:
 
             if (not linkdef_fn in skip_list):
                 clname        = string.replace(linkdef_fn,"_linkdef.h","");
-                include       = self.subdir+'/'+clname+'.hh';
+                include       = self.subdir+'/'+clname+self.suffix;
             
                 dict          = '#/tmp/src/'+self.d1+'/'+clname+'_dict.cxx';
                 list_of_dict_files.append(dict);
@@ -94,7 +96,7 @@ class stntuple_helper:
 
     def build_libs(self,list_of_cc_files, skip_list = [],libs = []):
         if (self._debug):
-            print ("[Stntuple.build_libs]: list_of_cc_files:"+self.subdir,list_of_cc_files)
+            print ("["+self.dirname+".build_libs]: list_of_cc_files:"+self.subdir,list_of_cc_files)
 
         for cc in list_of_cc_files:
             if (not cc in skip_list):
@@ -105,12 +107,10 @@ class stntuple_helper:
                 self._list_of_object_files.append(o);
                 self._env.SharedObject(o,cc)
 
-        #        libs     = [ 'Stntuple_base' ]
-
         lib_name = os.environ['MU2E_BASE_RELEASE']+'/lib/'+self.libname+'.so';
 
         if (self._debug):
-            print ("Stntuple/obj list_of_object_files:",self._list_of_object_files)
+            print ("list_of_object_files:",self._list_of_object_files)
 
         self._env.SharedLibrary(lib_name,self._list_of_object_files,LIBS = [libs])
 

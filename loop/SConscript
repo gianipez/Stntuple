@@ -19,7 +19,7 @@ dict_skip_list = []
 if (os.getenv("STNTUPLE_MC_GEN") == None): 
     dict_skip_list.append("TStnGeneratorModule_linkdef.h");
 
-stn_helper.handle_dictionaries(dict_skip_list);
+stn_helper.handle_dictionaries(skip_list=dict_skip_list);
 
 list_of_cc_files =  Glob('*.cc', strings=True);
 skip_list        = []

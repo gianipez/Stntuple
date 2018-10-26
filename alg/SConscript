@@ -15,8 +15,7 @@ if ( not ("EG" in rootlibs)):
 debug=False
 stn_helper = stntuple_helper(env,debug);
 
-dict_skip_list = []
-stn_helper.handle_dictionaries(dict_skip_list);
+stn_helper.handle_dictionaries();
 
 list_of_cc_files = Glob('*.cc', strings=True);
 skip_list        = []
