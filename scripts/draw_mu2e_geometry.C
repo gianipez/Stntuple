@@ -19,8 +19,17 @@ public:
   TGeoManager* gm;
 
   TGeoNode*    fTop; 
-  TGeoNode*    fDs2Vacuum; 
-  TGeoNode*    fDs3Vacuum; 
+
+  TGeoNode*    fDS1Vacuum; 
+  TGeoNode*    fDS2Vacuum; 
+  TGeoNode*    fDS3Vacuum; 
+
+  TGeoNode*    fTS1Vacuum; 
+  TGeoNode*    fTS2Vacuum; 
+  TGeoNode*    fTS3Vacuum; 
+  TGeoNode*    fTS4Vacuum; 
+  TGeoNode*    fTS5Vacuum; 
+
   TGeoNode*    fSttMother; 
   TGeoNode*    fCalMother; 
   TGeoNode*    fTrkMother;
@@ -76,14 +85,21 @@ DrawMu2eGeometry::DrawMu2eGeometry(const char* Fn, int KeepOriginalColors) {
 
   fTop       = gGeoManager->GetTopNode();
 
-  fDs2Vacuum = FindNodeByVolumeName(fTop,"DS2Vacuum");
-  fDs3Vacuum = FindNodeByVolumeName(fTop,"DS3Vacuum");
+  fDS1Vacuum = FindNodeByVolumeName(fTop,"DS1Vacuum");
+  fDS2Vacuum = FindNodeByVolumeName(fTop,"DS2Vacuum");
+  fDS3Vacuum = FindNodeByVolumeName(fTop,"DS3Vacuum");
 
-  fSttMother = FindNodeByVolumeName(fDs2Vacuum,"StoppingTargetMother");
+  fTS1Vacuum = FindNodeByVolumeName(fTop,"TS1Vacuum");
+  fTS2Vacuum = FindNodeByVolumeName(fTop,"TS2Vacuum");
+  fTS3Vacuum = FindNodeByVolumeName(fTop,"TS3Vacuum");
+  fTS4Vacuum = FindNodeByVolumeName(fTop,"TS4Vacuum");
+  fTS5Vacuum = FindNodeByVolumeName(fTop,"TS5Vacuum");
 
-  fTrkMother = FindNodeByVolumeName(fDs3Vacuum,"TrackerMother");
-  fCalMother = FindNodeByVolumeName(fDs3Vacuum,"CalorimeterMother");
-  fMbsMother = FindNodeByVolumeName(fDs3Vacuum,"MBSMother");
+  fSttMother = FindNodeByVolumeName(fDS2Vacuum,"StoppingTargetMother");
+
+  fTrkMother = FindNodeByVolumeName(fDS3Vacuum,"TrackerMother");
+  fCalMother = FindNodeByVolumeName(fDS3Vacuum,"CalorimeterMother");
+  fMbsMother = FindNodeByVolumeName(fDS3Vacuum,"MBSMother");
 
   fTransp = 40;
   
@@ -467,9 +483,9 @@ void DrawMu2eGeometry::HideBuilding(int KeepOriginalColors) {
 //-----------------------------------------------------------------------------
 // inside DS3Vacuum: hide calorimeter electronics, MBS
 //-----------------------------------------------------------------------------
-  SetRecursiveVisibilityByName(fDs3Vacuum,"VPSP_"     ,0);
-  SetRecursiveVisibilityByName(fDs3Vacuum,"IFB_"      ,0);
-  SetRecursiveVisibilityByName(fDs3Vacuum,"protonabs4",0);
+  SetRecursiveVisibilityByName(fDS3Vacuum,"VPSP_"     ,0);
+  SetRecursiveVisibilityByName(fDS3Vacuum,"IFB_"      ,0);
+  SetRecursiveVisibilityByName(fDS3Vacuum,"protonabs4",0);
 
   SetRecursiveVisibilityByName(fCalMother,"DiskFEB"    ,0);
 
