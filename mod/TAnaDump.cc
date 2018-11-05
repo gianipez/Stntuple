@@ -74,6 +74,8 @@
 #include "BTrk/TrkBase/HelixParams.hh"
 #include "BTrk/ProbTools/ChisqConsistency.hh"
 
+using namespace std;
+
 ClassImp(TAnaDump)
 
 TAnaDump* TAnaDump::fgInstance = 0;
@@ -170,7 +172,7 @@ double TAnaDump::evalWeight(const mu2e::ComboHit* Hit   ,
   double wt(0), wtXY(1), wtPhiZ(1);
 
   //  fhicl::ParameterSet const& pset = helix_handle.provenance()->parameterSet();
-  std::string                module     = Pset.get<std::string>("module_type");
+  string                module     = Pset.get<string>("module_type");
   
   if ( module == "CalHelixFinder"){
     fhicl::ParameterSet const& psetHelFit = Pset.get<fhicl::ParameterSet>("HelixFinderAlg", fhicl::ParameterSet());
@@ -205,9 +207,21 @@ TAnaDump::TAnaDump(const char* TimeOffsetsTag) {
   fStrawDigiMCCollTag     = "makeSD";
 
   if (TimeOffsetsTag) {
-    std::vector<std::string> maps;
-    maps.push_back(std::string(TimeOffsetsTag)+":protonTimeMap");
-    maps.push_back(std::string(TimeOffsetsTag)+":muonTimeMap");
+    vector<string> maps;
+    string  proton_map_tag, muon_map_tag;
+
+    if (TimeOffsetsTag[0] == 0)  {
+      proton_map_tag = "protonTimeMap";
+      muon_map_tag   = "muonTimeMap";
+    }
+    else {
+      proton_map_tag  = TimeOffsetsTag;
+      proton_map_tag += ":protonTimeMap";
+      muon_map_tag    = TimeOffsetsTag;
+      muon_map_tag   += ":muonTimeMap";
+    }
+    maps.push_back(proton_map_tag);
+    maps.push_back(muon_map_tag);
     
     fhicl::ParameterSet  pset;
     pset.put("inputs", maps);
@@ -632,7 +646,7 @@ void TAnaDump::printTrackSeed(const mu2e::KalSeed* TrkSeed        ,
       double tandip = kalSeg.helix().tanDip();
       double mm2MeV = 3/10.;
       double mom    = kalSeg.mom();
-      double pt     = mom*std::cos( std::atan(tandip));
+      double pt     = mom*cos(atan(tandip));
       double radius = pt/mm2MeV;
 
 
@@ -758,12 +772,12 @@ void TAnaDump::printTrackSeedCollection(const char* ModuleLabel,
 }
 
 //-----------------------------------------------------------------------------
-void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix, 
-			      const char* ModuleLabel, 
-			      const char* ModuleLabelStrawHit, 
-			      const char* Opt                ,
-			      const char* StrawDigiMCCollTag) {
-  TString opt = Opt;
+void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix  , 
+			      const char* HelixSeedCollTag  , 
+			      const char* StrawHitCollTag   , 
+			      const char* StrawDigiMCCollTag,
+			      const char* Opt                ) {
+  TString opt(Opt);
   
   if ((opt == "") || (opt == "banner")) {
     printf("----------------------------------------------------------------------------------");
@@ -777,7 +791,7 @@ void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix,
   if ((opt = "") || (opt.Index("data") >= 0)) {
     const mu2e::StrawDigiMCCollection* mcdigis(0);
     art::Handle<mu2e::StrawDigiMCCollection> mcdH;
-    fEvent->getByLabel(StrawDigiMCCollTag/*"makeSD"*/, mcdH);
+    fEvent->getByLabel(StrawDigiMCCollTag, mcdH);
     if (mcdH.isValid()) mcdigis = mcdH.product();
     else {
       printf("ERROR in TAnaDump::printHelixSeed : no StrawDigiMCCollection tag=%s, BAIL OUT\n",StrawDigiMCCollTag);
@@ -802,7 +816,7 @@ void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix,
       //      double tandip = lambda/radius;
 
       double mm2MeV = 3/10.;
-      double mom    = robustHel->momentum()*mm2MeV;//radius*mm2MeV/std::cos( std::atan(tandip));
+      double mom    = robustHel->momentum()*mm2MeV;
       double pt     = radius*mm2MeV;
 
       double x0     = robustHel->centerx();
@@ -823,7 +837,7 @@ void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix,
 	     mom, pt, t0, t0err );
 
       // eval the chi2
-      auto helix_handle = fEvent->getValidHandle<mu2e::HelixSeedCollection>(ModuleLabel);
+      auto helix_handle = fEvent->getValidHandle<mu2e::HelixSeedCollection>(HelixSeedCollTag);
       fhicl::ParameterSet const& pset = helix_handle.provenance()->parameterSet();
 //-----------------------------------------------------------------------------
 // helix is made out of ComboHits, so 'nsh' is the number of those
@@ -914,12 +928,12 @@ void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix,
       if (ProductName[0] != 0) {
 	art::Selector  selector(art::ProductInstanceNameSelector(ProductName) &&
 				art::ProcessNameSelector(ProcessName)         && 
-				art::ModuleLabelSelector(ModuleLabelStrawHit)           );
+				art::ModuleLabelSelector(StrawHitCollTag)        );
 	fEvent->get(selector, shcHandle);
       }
       else {
-	art::Selector  selector(art::ProcessNameSelector(ProcessName)         && 
-				art::ModuleLabelSelector(ModuleLabelStrawHit)           );
+	art::Selector  selector(art::ProcessNameSelector(ProcessName    ) && 
+				art::ModuleLabelSelector(StrawHitCollTag)    );
 	fEvent->get(selector, shcHandle);
       }
     
@@ -930,7 +944,7 @@ void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix,
 	const mu2e::ComboHit*  helHit = &Helix->hits().at(i);
 	int  hitIndex                 = helHit->index(0);     // index of the first straw hit
       
-	std::vector<StrawDigiIndex> shids;
+	vector<StrawDigiIndex> shids;
 	Helix->hits().fillStrawDigiIndices(*(fEvent),i,shids);
 
 	const mu2e::ComboHit* hit     = &shcol->at(hitIndex);
@@ -952,26 +966,43 @@ void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix,
 }
 
 //-----------------------------------------------------------------------------
-void TAnaDump::printHelixSeedCollection(const char* ModuleLabel        , 
-					const char* ModuleLabelStrawHit,
-					const char* ModuleLabelStrawDigi,
-					const char* ProductName, 
-					const char* ProcessName,
+void TAnaDump::printHelixSeedCollection(const char* HelixSeedCollTag, 
+					const char* StrawHitCollTag ,
+					const char* StrawDigiCollTag,
+					const char* ProductName     , 
+					const char* ProcessName     ,
 					int         hitOpt     ) {
   
 
-  auto helicesHandle = fEvent->getValidHandle<mu2e::HelixSeedCollection>(ModuleLabel);
-//-----------------------------------------------------------------------------
-// make sure collection exists
-//-----------------------------------------------------------------------------
-  if (! helicesHandle.isValid()) {
-    printf("TAnaDump::printHelixSeedCollection: no HelixSeedCollection for module %s, BAIL OUT\n",
-	   ModuleLabel);
+  const mu2e::HelixSeedCollection*       list_of_helixSeeds;
+  art::Handle<mu2e::HelixSeedCollection> hsH;
+
+  fEvent->getByLabel<mu2e::HelixSeedCollection>(HelixSeedCollTag,hsH);
+
+  if (hsH.isValid()) list_of_helixSeeds = hsH.product();
+  else {
+    printf("ERROR: cant find HelixSeedCollection tag=%s, avalable collections are:\n",HelixSeedCollTag);
+
+    vector<art::Handle<mu2e::HelixSeedCollection>> list;
+    const art::Handle<mu2e::HelixSeedCollection>*  handle;
+    const art::Provenance*                         prov;
+
+    fEvent->getManyByType(list);
+
+    for (auto it = list.begin(); it != list.end(); it++) {
+      handle = it.operator -> ();
+      if (handle->isValid()) {
+	prov = handle->provenance();
+	
+	printf("moduleLabel: %-20s, productInstanceName: %-20s, processName:= %-30s\n" ,
+	       prov->moduleLabel().data(),
+	       prov->productInstanceName().data(),
+	       prov->processName().data()
+	       );
+      }
+    }
     return;
   }
-  
-  mu2e::HelixSeedCollection*  list_of_helixSeeds;
-  list_of_helixSeeds    = (mu2e::HelixSeedCollection*) &(*helicesHandle);
 
   int nhelices = list_of_helixSeeds->size();
 
@@ -981,10 +1012,10 @@ void TAnaDump::printHelixSeedCollection(const char* ModuleLabel        ,
   for (int i=0; i<nhelices; i++) {
     helix = &list_of_helixSeeds->at(i);
     if (banner_printed == 0) {
-      printHelixSeed(helix,ModuleLabel,ModuleLabelStrawHit,"banner",ModuleLabelStrawDigi);
+      printHelixSeed(helix,HelixSeedCollTag,StrawHitCollTag,StrawDigiCollTag,"banner");
       banner_printed = 1;
     }
-    if (hitOpt>0) printHelixSeed(helix,ModuleLabel,ModuleLabelStrawHit,"data",ModuleLabelStrawDigi);
+    if (hitOpt>0) printHelixSeed(helix,HelixSeedCollTag,StrawHitCollTag,StrawDigiCollTag,"data");
 
   }
 }
@@ -1073,7 +1104,7 @@ void TAnaDump::printHelixSeedCollection(const char* ModuleLabel        ,
 //   double tandip = TrkSeed->tanDip();
   
 //   double mm2MeV = 3/10.;
-//   double mom    = radius*mm2MeV/std::cos( std::atan(tandip));
+//   double mom    = radius*mm2MeV/cos(atan(tandip));
 //   double pt     = radius*mm2MeV;
   
 //   double dfdz   = 1./(radius*tandip);
@@ -1255,7 +1286,7 @@ void TAnaDump::printTimeCluster(const mu2e::TimeCluster* TPeak, const char* Opt,
       for (int i=0; i<nhits; i++) {
 	loc         = int(TPeak->hits().at(i));
 	hit         = &(ChColl->at(loc));
-	std::vector<StrawDigiIndex> shids;
+	vector<StrawDigiIndex> shids;
 	ChColl->fillStrawDigiIndices(*(fEvent),loc,shids);
 	mu2e::StrawDigiMC const&     mcdigi = mcdigis->at(shids[0]);
 	art::Ptr<mu2e::StepPointMC>  spmcp;
@@ -1437,7 +1468,7 @@ void TAnaDump::printKalRep(const KalRep* Krep, const char* Opt, const char* Pref
 //-----------------------------------------------------------------------------
     double s1     = Krep->firstHit()->kalHit()->hit()->fltLen();
     double s2     = Krep->lastHit ()->kalHit()->hit()->fltLen();
-    double s      = std::min(s1,s2);
+    double s      = min(s1,s2);
 
     double d0     = Krep->helix(s).d0();
     double z0     = Krep->helix(s).z0();
@@ -1688,7 +1719,7 @@ void TAnaDump::printKalRepCollection(const char* ModuleLabel,
     art::Ptr<KalRep> kptr = krepsHandle->at(i);
     //    fEvent->get(kptr.id(), krepsHandle);
     fhicl::ParameterSet const& pset = krepsHandle.provenance()->parameterSet();
-    std::string module_type = pset.get<std::string>("module_type");
+    string module_type = pset.get<string>("module_type");
  
     trk = kptr.get();
     if (banner_printed == 0) {
@@ -1715,7 +1746,7 @@ void TAnaDump::printGenParticle(const mu2e::GenParticle* P, const char* Opt) {
   
   if ((opt == "") || (opt == "data")) {
     int    gen_code   = P->generatorId().id();
-    std::string gen_name   = P->generatorId().name();
+    string gen_name   = P->generatorId().name();
     int    pdg_code   = P->pdgId();
     double time       = P->time();
     
@@ -1733,7 +1764,7 @@ void TAnaDump::printGenParticle(const mu2e::GenParticle* P, const char* Opt) {
 //-----------------------------------------------------------------------------
 void TAnaDump::printGenParticleCollections() {
   
-  std::vector<art::Handle<mu2e::GenParticleCollection>> list_of_gp;
+  vector<art::Handle<mu2e::GenParticleCollection>> list_of_gp;
 
   const mu2e::GenParticleCollection*        coll(0);
   const mu2e::GenParticle*        genp(0);
@@ -1748,7 +1779,7 @@ void TAnaDump::printGenParticleCollections() {
   const art::Handle<mu2e::GenParticleCollection>* handle;
 
   int banner_printed;
-  for (std::vector<art::Handle<mu2e::GenParticleCollection>> ::const_iterator it = list_of_gp.begin();
+  for (vector<art::Handle<mu2e::GenParticleCollection>> ::const_iterator it = list_of_gp.begin();
        it != list_of_gp.end(); it++) {
     handle = it.operator -> ();
 
@@ -1762,7 +1793,7 @@ void TAnaDump::printGenParticleCollections() {
 	     prov->productInstanceName().data());
 
       banner_printed = 0;
-      for (std::vector<mu2e::GenParticle>::const_iterator ip = coll->begin();
+      for (vector<mu2e::GenParticle>::const_iterator ip = coll->begin();
 	   ip != coll->end(); ip++) {
 	genp = ip.operator -> ();
 	if (banner_printed == 0) {
@@ -2299,7 +2330,7 @@ void TAnaDump::printHelixHit(const mu2e::HelixHit*    HelHit, const mu2e::ComboH
 
 // 12 - 11 -2013 giani added some MC info of the straws
     //Hep3Vector mom = Step->momentum();
-    // double pt = std::sqrt(mom.mag()*mom.mag() - mom.z()*mom.z());
+    // double pt = sqrt(mom.mag()*mom.mag() - mom.z()*mom.z());
 
     const mu2e::SimParticle * sim (0);
     
@@ -2478,29 +2509,22 @@ void TAnaDump::printComboHitCollection(const char* StrawHitCollTag   ,
   }
 
   art::Handle<mu2e::StrawHitFlagCollection> shfcH;
-  const mu2e::StrawHitFlagCollection* shfcol(nullptr);
+  const mu2e::StrawHitFlagCollection*       shfcol(nullptr);
   fEvent->getByLabel<mu2e::StrawHitFlagCollection>(FlagBgrHitsCollTag,shfcH);
   if (shfcH.isValid()) shfcol = shfcH.product();
   else {
     printf("ERROR: cant find StrawHitFlagCollection tag=%s, avalable collections are:\n",FlagBgrHitsCollTag);
 
-    std::vector<art::Handle<mu2e::StrawHitFlagCollection>> list;
+    vector<art::Handle<mu2e::StrawHitFlagCollection>> list;
+    const art::Provenance*                            prov;
+    const art::Handle<mu2e::StrawHitFlagCollection>*  handle;
 
-    //    const mu2e::StrawHitFlagCollection*  coll(0);
-    const art::Provenance*               prov;
-
-    //  art::Selector  selector(art::ProductInstanceNameSelector("mu2e::GenParticleCollection"));
     art::Selector  selector(art::ProductInstanceNameSelector(""));
-
     fEvent->getMany(selector,list);
-
-    const art::Handle<mu2e::StrawHitFlagCollection>* handle;
 
     for (auto it = list.begin(); it != list.end(); it++) {
       handle = it.operator -> ();
-
       if (handle->isValid()) {
-	//	coll = handle->product();
 	prov = handle->provenance();
 	
 	printf("moduleLabel: %-20s, productInstanceName: %-20s, processName:= %-30s\n" ,
@@ -2534,7 +2558,7 @@ void TAnaDump::printComboHitCollection(const char* StrawHitCollTag   ,
   for (int i=0; i<nhits; i++) {
     hit         = &shc->at(i);
     size_t ish  = hit-hit0;
-    std::vector<StrawDigiIndex> shids;
+    vector<StrawDigiIndex> shids;
     shc->fillStrawDigiIndices(*(fEvent),ish,shids);
 
 
@@ -2737,11 +2761,11 @@ void TAnaDump::printStepPointMC(const mu2e::StepPointMC* Step, const char* Detec
     double mass = sim->startMomentum().m();
 
     double pabs = Step->momentum().mag();
-    double energy = std::sqrt(pabs*pabs+mass*mass);
+    double energy = sqrt(pabs*pabs+mass*mass);
     double ekin  = energy-mass;
         
     Hep3Vector mom = Step->momentum();
-    double pt = std::sqrt(pabs*pabs - mom.z()*mom.z());
+    double pt = sqrt(pabs*pabs - mom.z()*mom.z());
 
     art::Handle<mu2e::PhysicalVolumeInfoCollection> volumes;
     fEvent->getRun().getByLabel("g4run", volumes);
@@ -3013,7 +3037,7 @@ void TAnaDump::printTrackClusterMatchCollection(const char* ModuleLabel,
   else {
     printf(">>> ERROR in TAnaDump::printTrackClusterMatchCollection: failed to locate requested collection. Available:");
 
-    std::vector<art::Handle<mu2e::TrackClusterMatchCollection>> list_of_handles;
+    vector<art::Handle<mu2e::TrackClusterMatchCollection>> list_of_handles;
 
     fEvent->getManyByType(list_of_handles);
 
@@ -3108,9 +3132,9 @@ void TAnaDump::Test_000(const KalRep* Krep, mu2e::TrkStrawHit* Hit) {
 // // 					// local track trajectory
 // //   ptraj = krep->localTrajectory(s,slen);
 
-//   std::vector<KalSite*>::const_iterator itt;
+//   vector<KalSite*>::const_iterator itt;
 //   int found = 0;
-//   for (auto /* std::vector<KalSite*>::const_iterator */ it=krep->siteList().begin();
+//   for (auto /* vector<KalSite*>::const_iterator */ it=krep->siteList().begin();
 //        it!= krep->siteList().end(); it++) {
 //     const KalHit* kalhit = (*it)->kalHit();
 //     if (kalhit && (kalhit->hitOnTrack() == Hit)) {

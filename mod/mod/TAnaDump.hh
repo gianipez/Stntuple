@@ -161,24 +161,18 @@ public:
 				int         hitOpt              = 0,
 				const char* ModuleLabelStrawHit ="makeSH"); 
 
-  void printHelixSeed          (const mu2e::HelixSeed*         Helix, 
-				const char* ModuleLabel             ,
-				const char* ModuleLabelStrawHit     ,  // usually - "makeSH"
-				const char* Opt = ""                ,
-				const char* ModuleLabelStrawDigi = "makeSD");
+  void printHelixSeed          (const mu2e::HelixSeed*         Helix   , 
+				const char* HelixSeedCollTag           ,
+				const char* StrawHitCollTag            ,  // usually - "makeSH"
+				const char* StrawDigiCollTag = "makeSD",
+				const char* Opt              = ""      );
 
-  void printHelixSeedCollection(const char* ModuleLabel                   ,  // always needed
-				const char* ModuleLabelStrawHit  = "makeSH",  // usually - "makeSH"
-				const char* ModuleLabelStrawDigi = "makeSD",
-				const char* ProductName         = ""      , 
-				const char* ProcessName         = ""      ,
-				int         hitOpt              = 0       ); 
-
-//   void plotTrackSeed           (int Index                      , 
-// 				const char* ModuleLabelTrkSeeds,
-// 				const char* ModuleLabelHitPos   );
-
-
+  void printHelixSeedCollection(const char* HelixSeedCollTag            ,  // always needed
+				const char* StrawHitCollTag  = "makeSH",  // usually - "makeSH"
+				const char* StrawDigiCollTag = "makeSD",
+				const char* ProductName      = ""      , 
+				const char* ProcessName      = ""      ,
+				int         hitOpt           = 0       ); 
 
   void printTrkCaloHit(const KalRep* Krep, mu2e::TrkCaloHit* CaloHit);
 
