@@ -339,7 +339,7 @@ Stntuple : { @table::Stntuple  # defined in Stntuple/fcl/prolog.fcl
 # FIXME	    detail: { @table::mixerTemplate.detail g4ModuleLabel:deuteronMixer genModuleLabel:deuteronMixer }
 # FIXME	}
 #------------------------------------------------------------------------------
-# Andrej's filter
+# Andrej's filter: Filters/src/FilterStepPointMomentum_module.cc
 # Reject events with no hits from signal-like tracks in the detectors.  
 # The filter does not look at the background hits from mixed events.
 #------------------------------------------------------------------------------
@@ -349,7 +349,7 @@ Stntuple : { @table::Stntuple  # defined in Stntuple/fcl/prolog.fcl
     }
 
     analyzers : {
-	genCountLogger      : { module_type: GenEventCountReader }
+	genCountLogger      : { module_type: GenEventCountReader } # defalt: 1 StepPointMC, 10 MeV
     }
 
     outputs: {

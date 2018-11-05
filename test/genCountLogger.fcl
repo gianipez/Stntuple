@@ -1,0 +1,52 @@
+# -*- mode:tcl -*-
+#------------------------------------------------------------------------------
+# make STNTUPLE from the output of the stage 3 simulation - stopped muons (tgtStopFilter)
+#------------------------------------------------------------------------------
+#include "fcl/minimalMessageService.fcl"
+#include "fcl/standardProducers.fcl"
+#include "fcl/standardServices.fcl"
+
+#include "Stntuple/fcl/prolog.fcl"
+
+BEGIN_PROLOG
+  pdgCode    : @local::Particle.eminus
+  bgHitFiles : @nil
+END_PROLOG
+
+#include "Stntuple/fcl/templates.fcl"
+
+process_name : GenCountLogger
+
+source       : { module_type : RootInput 
+# use one of the concatenated Stage1 files 
+    fileNames : ["/mu2e/data/users/murat/datasets/ts3_tooth/v2/g4s3/00000/sim.murat.cd3-beam-g4s3-tgtstops.v622.001002_00010600.art"]
+}
+
+outputs      : { @table::Stntuple.outputs   }
+producers    : { @table::Stntuple.producers }
+filters      : { @table::Stntuple.filters   }
+analyzers    : { @table::Stntuple.analyzers }
+paths        : { @table::Stntuple.paths     }
+
+physics : {
+    producers : { @table::producers 
+	generate             : { @table::producers.egun }
+    }
+    filters   : { @table::filters   }
+    analyzers : { @table::analyzers }
+
+    @table::paths
+
+    p1            : [  ]
+
+    trigger_paths : [  ]
+    
+    #    out : [detectorOutput]  # detectorOutput is defined in Stntuple/fcl/templates.fcl
+    out           : []
+    end_paths     : [ gcl, out ]   # gcl defined in paths
+}
+
+services.TFileService.fileName            : "nts._USER_._DATASET_.genCountLogger.000001.root"
+#------------------------------------------------------------------------------
+# everything below is appended by murat/scripts/submit_mu2e_job
+#------------------------------------------------------------------------------
