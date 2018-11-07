@@ -18,6 +18,8 @@
 
 #include "TString.h"
 
+using namespace std;
+
 //-----------------------------------------------------------------------------
 TModule::TModule(fhicl::ParameterSet const& PSet, const char* Name):
   TNamed(Name,Name)
@@ -31,12 +33,11 @@ TModule::TModule(fhicl::ParameterSet const& PSet, const char* Name):
 
   memset(fDebugBit,0,kNDebugBits*sizeof(int));
 
-  fFclDebugBits                = PSet.get<fhicl::ParameterSet>("debugBits"          );
-  fInteractiveMode             = PSet.get<int>                ("interactiveMode",  0);
-  std::string time_offsets_tag = PSet.get<std::string>        ("timeOffsetsTag" , "");
+  fFclDebugBits               = PSet.get<fhicl::ParameterSet>("debugBits"      );
+  fInteractiveMode            = PSet.get<int>                ("interactiveMode");
 
   fAnaRint         = TAnaRint::Instance(0,dummy);
-  fDump            = TAnaDump::Instance(time_offsets_tag.data());
+  fDump            = TAnaDump::Instance(&PSet);
 
   const char* key;
                                         // a flag is an integer!

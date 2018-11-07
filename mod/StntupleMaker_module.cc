@@ -135,7 +135,7 @@ protected:
 
   TNamedHandle*            fDarHandle;
   TNamedHandle*            fKalDiagHandle;
-  TNamedHandle*            fTimeOffsetsHandle;
+  TNamedHandle*            fTimeOffsetMapsHandle;
   TNamedHandle*            fMinSimpEnergyHandle;
 
   DoubletAmbigResolver*    fDar;
@@ -238,25 +238,22 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
   fVersion      = new TNamed(ver,text);
   TModule::fFolder->Add(fVersion);
 
-  fhicl::ParameterSet pset_to = PSet.get<fhicl::ParameterSet>("TimeOffsets");
+  fhicl::ParameterSet to_maps = PSet.get<fhicl::ParameterSet>("timeOffsetMaps");
   
-  int len = pset_to.get_names().size();
-  if (len > 0) fTimeOffsets       = new SimParticleTimeOffset(pset_to);
+  int len = to_maps.get_names().size();
+  if (len > 0) fTimeOffsets       = new SimParticleTimeOffset(to_maps);
   else         fTimeOffsets       = NULL;
 
-  fTimeOffsetsHandle = new TNamedHandle("TimeOffsetsHandle",fTimeOffsets);
-
-  fDar           = new DoubletAmbigResolver (PSet.get<fhicl::ParameterSet>("DoubletAmbigResolver"),0.,0,0);
-  fDarHandle     = new TNamedHandle("DarHandle",fDar);
-
-  fKalDiag       = new KalDiag(PSet.get<fhicl::ParameterSet>("KalDiag",fhicl::ParameterSet()));
-  fKalDiagHandle = new TNamedHandle("KalDiagHandle",fKalDiag);
-
-  fMinSimpEnergyHandle = new TNamedHandle("MinSimpEnergyHandle",&fMinSimpEnergy);
+  fTimeOffsetMapsHandle = new TNamedHandle("TimeOffsetMapsHandle",fTimeOffsets);
+  fDar                  = new DoubletAmbigResolver (PSet.get<fhicl::ParameterSet>("DoubletAmbigResolver"),0.,0,0);
+  fDarHandle            = new TNamedHandle("DarHandle",fDar);
+  fKalDiag              = new KalDiag(PSet.get<fhicl::ParameterSet>("KalDiag",fhicl::ParameterSet()));
+  fKalDiagHandle        = new TNamedHandle("KalDiagHandle",fKalDiag);
+  fMinSimpEnergyHandle  = new TNamedHandle("MinSimpEnergyHandle",&fMinSimpEnergy);
 
   fFolder->Add(fDarHandle);
   fFolder->Add(fKalDiagHandle);
-  fFolder->Add(fTimeOffsetsHandle);
+  fFolder->Add(fTimeOffsetMapsHandle);
   fFolder->Add(fMinSimpEnergyHandle);
 }
 
@@ -781,8 +778,8 @@ void StntupleMaker::beginJob() {
 				 compression_level);
 
     if (vdet_hit_data) {
-      vdet_hit_data->AddCollName("mu2e::StepPointMCCollection",fMakeVdetHitsModuleLabel.data(),"virtualdetector");
-      vdet_hit_data->AddCollName("TimeOffsetsHandle"          ,GetName()                      ,"TimeOffsetsHandle");
+      vdet_hit_data->AddCollName("mu2e::StepPointMCCollection",fMakeVdetHitsModuleLabel.data(),"virtualdetector"     );
+      vdet_hit_data->AddCollName("TimeOffsetMapsHandle"       ,GetName()                      ,"TimeOffsetMapsHandle");
     }
   }  
 

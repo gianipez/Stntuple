@@ -195,37 +195,17 @@ double TAnaDump::evalWeight(const mu2e::ComboHit* Hit   ,
   return wt;
 }
 
+//-----------------------------------------------------------------------------
+TAnaDump::TAnaDump(const fhicl::ParameterSet* PSet) {
 
-//______________________________________________________________________________
-TAnaDump::TAnaDump(const char* TimeOffsetsTag) {
-//   if (! TROOT::Initialized()) {
-//     static TROOT a ("ROOT@Mu2e","hmm",initfuncs);
-//   }
-  fEvent = 0;
+  fEvent                  = nullptr;
   fListOfObjects          = new TObjArray();
   fFlagBgrHitsModuleLabel = "FlagBkgHits";
   fStrawDigiMCCollTag     = "makeSD";
 
-  if (TimeOffsetsTag) {
-    vector<string> maps;
-    string  proton_map_tag, muon_map_tag;
-
-    if (TimeOffsetsTag[0] == 0)  {
-      proton_map_tag = "protonTimeMap";
-      muon_map_tag   = "muonTimeMap";
-    }
-    else {
-      proton_map_tag  = TimeOffsetsTag;
-      proton_map_tag += ":protonTimeMap";
-      muon_map_tag    = TimeOffsetsTag;
-      muon_map_tag   += ":muonTimeMap";
-    }
-    maps.push_back(proton_map_tag);
-    maps.push_back(muon_map_tag);
-    
-    fhicl::ParameterSet  pset;
-    pset.put("inputs", maps);
-    fTimeOffsets = new mu2e::SimParticleTimeOffset(pset);
+  if (PSet) {
+    fhicl::ParameterSet to_maps = PSet->get<fhicl::ParameterSet>("timeOffsetMaps" );
+    fTimeOffsets = new mu2e::SimParticleTimeOffset(to_maps);
   }
   else {
     fTimeOffsets = NULL;
@@ -233,13 +213,12 @@ TAnaDump::TAnaDump(const char* TimeOffsetsTag) {
 }
 
 //------------------------------------------------------------------------------
-TAnaDump* TAnaDump::Instance(const char* TimeOffsetsTag) {
+TAnaDump* TAnaDump::Instance(const fhicl::ParameterSet* PSet) {
   static TAnaDump::Cleaner cleaner;
 
-  if  (! fgInstance) fgInstance  = new TAnaDump(TimeOffsetsTag);
+  if  (! fgInstance) fgInstance  = new TAnaDump(PSet);
   return fgInstance;
 }
-
 
 
 //______________________________________________________________________________

@@ -73,7 +73,7 @@ public:
 
 private:
 
-  TAnaDump(const char* TimeOffsetsTag = "compressDigiMCs");
+  TAnaDump(const fhicl::ParameterSet* Pset = NULL);
   ~TAnaDump();
   
   class  Cleaner {
@@ -90,8 +90,9 @@ public:
 
 //-----------------------------------------------------------------------------
 // methods
+// TAnaDump gets initialized by the first TModule instantiated
 //-----------------------------------------------------------------------------
-  static TAnaDump*  Instance(const char* TimeOffsetsTag = "compressDigiMCs");
+  static TAnaDump*  Instance(const fhicl::ParameterSet* PSet = NULL);
 
 
   void   AddObject      (const char* Name, void* Object);

@@ -1,11 +1,28 @@
 # -*- mode: tcl -*-
 BEGIN_PROLOG
 #------------------------------------------------------------------------------
-# Stntuple maker sequence
+# all STNTUPLE modules inherit from the same base class, all of them are filters
+# the base class defaults need to be included into every STNTUPLE module FCL 
+# initialization template
+# 
+# they can be redefined 
+#------------------------------------------------------------------------------
+TimeOffsetMaps : { inputs : [ "compressDigiMCs:protonTimeMap", "compressDigiMCs:muonTimeMap" ] }
+
+StntupleModuleFclDefaults : {
+    interactiveMode : 0
+    timeOffsetMaps  : @local::TimeOffsetMaps
+    debugBits       : { 
+	# bit0:1  
+	# bit1:1 
+	# bit51:1
+    }
+}
 #------------------------------------------------------------------------------
 # default configuration of StntupleMaker
 #------------------------------------------------------------------------------
 StntupleMakerTemplate : { module_type:StntupleMaker
+    @table::StntupleModuleFclDefaults                   # defaults of the base class
     module_name         : StntupleMaker
     processName         : undefined
 #------------------------------------------------------------------------------
@@ -26,8 +43,6 @@ StntupleMakerTemplate : { module_type:StntupleMaker
     makeHelices         : 0
     makeVirtualHits     : 1
     
-    TimeOffsets          : { inputs : [ "compressDigiMCs:protonTimeMap", "compressDigiMCs:muonTimeMap" ] }
-
     KalDiag              : { @table::KalDiagDirect    }
     DoubletAmbigResolver : { @table::TrkReco.DoubletAmbigResolver }
 
@@ -85,20 +100,13 @@ StntupleMakerTemplate : { module_type:StntupleMaker
     stepPointMCBlockName    : [ "SpmcBlock"      ]
     stepPointMCModuleLabel  : [ "muonBeamFilter" ]
     stepPointMCProductName  : [ "mubeam"         ]
-
-    debugBits           : { 
-	# bit0:1  
-	# bit1:1 
-	# bit51:1
-    }
 }
 
 #------------------------------------------------------------------------------
 # 
 #------------------------------------------------------------------------------
 MuHitDisplay: { module_type:MuHitDisplay                 # the class name;
-    debugBits                    : { }                   # passed to TModule
-    timeOffsetsTag               : "compressDigiMCs"     # passed to TModule
+    @table::StntupleModuleFclDefaults                    # defaults of the base class
 
     interactiveMode              : 1
     
@@ -163,28 +171,20 @@ Stntuple : {
 
     filters : {
 	InitStntuple : { module_type:InitStntuple
+	    @table::StntupleModuleFclDefaults                   # defaults of the base class
 	    module_name       : InitStntuple
 	    histFileName      : "default.stn"
 	    splitLevel        : 0
-	    debugBits         : { 
-		# bit0:1  # bit1:1 # bit51:1
-	    }
 	}
 
 	FillStntuple : { module_type:FillStntuple
+	    @table::StntupleModuleFclDefaults                   # defaults of the base class
 	    module_name       : FillStntuple
-	    debugBits         : { 
-		# bit0:1  # bit1:1 # bit51:1
-	    }
 	}
 
 	StntupleEventDump : { module_type:StntupleEventDump 
+	    @table::StntupleModuleFclDefaults                   # defaults of the base class
 	    module_name       : StntupleEventDump
-	    histFileName      : "default.stn"
-	    splitLevel        : 0
-	    debugBits         : { 
-		# bit0:1  # bit1:1 # bit51:1
-	    }
 	}
 #------------------------------------------------------------------------------
 # downstream electrons - explicitly - the same as default

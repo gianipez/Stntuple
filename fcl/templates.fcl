@@ -29,7 +29,7 @@ BEGIN_PROLOG
 #  tprPrepHitSeq : [ FlagBkgHits ]
 
 # CalPatRec
-  cprPrepHitSeq : [ DeltaFinder ]
+#  cprPrepHitSeq : [ DeltaFinder ]
 
   trkPatRecSeq     : [ @sequence::Tracking.TPRDeM, MergePatRec ]  # an attempt to ensure that the track collection has a fixed name
 

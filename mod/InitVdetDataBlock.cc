@@ -44,8 +44,8 @@ Int_t StntupleInitMu2eVirtualDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent, 
   if (initialized == 0) {
     initialized = 1;
 
-    data->GetModuleLabel("TimeOffsetsHandle",module_name);
-    data->GetDescription("TimeOffsetsHandle",time_offsets_name);
+    data->GetModuleLabel("TimeOffsetMapsHandle",module_name);
+    data->GetDescription("TimeOffsetMapsHandle",time_offsets_name);
 
    THistModule*  m  = static_cast<THistModule*>  (THistModule::GetListOfModules()->FindObject(module_name));
    TNamedHandle* nh = static_cast<TNamedHandle*> (m->GetFolder()->FindObject(time_offsets_name));
