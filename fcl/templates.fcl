@@ -296,7 +296,7 @@ Stntuple : { @table::Stntuple             # defined in Stntuple/fcl/prolog.fcl
 	@table::CaloReco.producers        # defined in CaloReco
 	@table::CaloCluster.producers     # defined in CaloCluster
 	@table::CaloCluster.producersMC   # defined in CaloCluster
-	@table::CaloClusterFast.producers # defined in CaloCluster
+	@table::CaloClusterTrigger.producers # defined in CaloCluster
 	@table::CalPatRec.producers
 	@table::ParticleID.producers
 	@table::TrackCaloMatching.producers
