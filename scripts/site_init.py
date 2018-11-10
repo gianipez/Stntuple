@@ -6,11 +6,10 @@ def stntuple_codegen_script(source, target, env, for_signature):
 #    print ">>> target = ",len(target),str(target[0])+'\n'
 #    print ">>> env[\'MU2E_BASE_RELEASE\']:"+os.environ['MU2E_BASE_RELEASE']
     
-    tmpdir        = os.path.dirname(str(target[0]));
-    
-    cmd = 'if [ ! -d '+tmpdir+' ] ; then mkdir -p '+tmpdir+'; fi ; ';
+    tmpdir = os.path.dirname(str(target[0]));
 
-    cmd = cmd+'source '+os.environ['MU2E_BASE_RELEASE']+'/Stntuple/scripts/create_print_header_routine.sh '+str(target[0]);
+    cmd    = 'if [ ! -d '+tmpdir+' ] ; then mkdir -p '+tmpdir+'; fi ; ';
+    cmd    = cmd+'source '+str(source[0]) + ' ' +str(target[0]);
 
 #    print ">>> cmd = %s"%cmd
     return cmd
@@ -32,7 +31,8 @@ def stntuple_gen_rootcint(source, target, env, for_signature):
 #    print "[stntuple_gen_rootcint] class_include = %s"%class_include
 #    print "[stntuple_gen_rootcint] linkdef       = %s"%linkdef
     
-    includes =   "-Iinclude -I"+os.environ['ART_INC'     ];
+    includes =   "-Iinclude -I"+os.environ['MU2E_BASE_RELEASE'];
+    includes = includes + " -I"+os.environ['ART_INC'     ];
     includes = includes + " -I"+os.environ['BTRK_INC'    ];
     includes = includes + " -I"+os.environ['CETLIB_INC'  ];
     includes = includes + " -I"+os.environ['CETLIB_EXCEPT_INC'];
