@@ -816,78 +816,78 @@ void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix  ,
 	     mom, pt, t0, t0err );
 
       // eval the chi2
-      auto helix_handle = fEvent->getValidHandle<mu2e::HelixSeedCollection>(HelixSeedCollTag);
-      fhicl::ParameterSet const& pset = helix_handle.provenance()->parameterSet();
+      //      auto helix_handle = fEvent->getValidHandle<mu2e::HelixSeedCollection>(HelixSeedCollTag);
+      //      fhicl::ParameterSet const& pset = helix_handle.provenance()->parameterSet();
 //-----------------------------------------------------------------------------
 // helix is made out of ComboHits, so 'nsh' is the number of those
 //-----------------------------------------------------------------------------
-      const mu2e::HelixHitCollection* hits = &Helix->hits();
-      const mu2e::ComboHit*           hit(0);
-      XYZVec                          pos(0,0,0), wdir(0,0,0), sdir(0,0,0), helix_center(0,0,0);
-      double                          phi(0), helix_phi(0);
+//      const mu2e::HelixHitCollection* hits = &Helix->hits();
+      //      const mu2e::ComboHit*           hit(0);
+      //      XYZVec                          pos(0,0,0), wdir(0,0,0), sdir(0,0,0), helix_center(0,0,0);
+      //      double                          phi(0), helix_phi(0);
 
-      int nsh      = hits->size();
-      helix_center = robustHel->center();
-      //add the stopping target center as in CalHeliFinderAlg.cc
-      LsqSums4 sxy;
-      sxy.addPoint(0., 0., 1./900.);
+      //      int nsh      = hits->size();
+      // helix_center = robustHel->center();
+      // //add the stopping target center as in CalHeliFinderAlg.cc
+      // LsqSums4 sxy;
+      // sxy.addPoint(0., 0., 1./900.);
 
-      LsqSums4 srphi;
-      static const XYZVec zdir(0.0,0.0,1.0);
+      // LsqSums4 srphi;
+      // static const XYZVec zdir(0.0,0.0,1.0);
 
-      for (int j=0; j<nsh; ++j){
-	hit       = &hits->at(j);
-	pos       = hit->pos();
-	wdir      = hit->wdir();
-	sdir      = zdir.Cross(wdir);
-	phi       = hit->helixPhi();
-	helix_phi = fz0 + pos.z()/lambda;
-	double    weightXY   = evalWeight(hit, sdir, helix_center, radius, 1, pset);
+      // for (int j=0; j<nsh; ++j){
+      // 	hit       = &hits->at(j);
+      // 	pos       = hit->pos();
+      // 	wdir      = hit->wdir();
+      // 	sdir      = zdir.Cross(wdir);
+      // 	phi       = hit->helixPhi();
+      // 	helix_phi = fz0 + pos.z()/lambda;
+      // 	double    weightXY   = evalWeight(hit, sdir, helix_center, radius, 1, pset);
 
-	sxy.addPoint(pos.x(), pos.y(), weightXY);
+      // 	sxy.addPoint(pos.x(), pos.y(), weightXY);
 
-	double    dPhi     = helix_phi - phi- M_PI/2.;
-	while (dPhi > M_PI){
-	  phi    += 2*M_PI;
-	  dPhi   = helix_phi - phi;
-	}
-	while (dPhi < -M_PI){
-	  phi   -= 2*M_PI; 
-	  dPhi  = helix_phi - phi;
-	}
-	double weight    = evalWeight(hit, sdir, helix_center, radius, 0, pset);
-	srphi.addPoint(pos.z(), phi, weight);
-      }
-      if (cluster != 0){
-	double     weight_cl_xy = 1./100.;//FIX ME!
-	mu2e::GeomHandle<mu2e::Calorimeter> ch;
-	const mu2e::Calorimeter* _calorimeter = ch.get();      
-	CLHEP::Hep3Vector        gpos = _calorimeter->geomUtil().diskToMu2e(cluster->diskId(),cluster->cog3Vector());
-	CLHEP::Hep3Vector        tpos = _calorimeter->geomUtil().mu2eToTracker(gpos);
+      // 	double    dPhi     = helix_phi - phi- M_PI/2.;
+      // 	while (dPhi > M_PI){
+      // 	  phi    += 2*M_PI;
+      // 	  dPhi   = helix_phi - phi;
+      // 	}
+      // 	while (dPhi < -M_PI){
+      // 	  phi   -= 2*M_PI; 
+      // 	  dPhi  = helix_phi - phi;
+      // 	}
+      // 	double weight    = evalWeight(hit, sdir, helix_center, radius, 0, pset);
+      // 	srphi.addPoint(pos.z(), phi, weight);
+      // }
+      // if (cluster != 0){
+      // 	double     weight_cl_xy = 1./100.;//FIX ME!
+      // 	mu2e::GeomHandle<mu2e::Calorimeter> ch;
+      // 	const mu2e::Calorimeter* _calorimeter = ch.get();      
+      // 	CLHEP::Hep3Vector        gpos = _calorimeter->geomUtil().diskToMu2e(cluster->diskId(),cluster->cog3Vector());
+      // 	CLHEP::Hep3Vector        tpos = _calorimeter->geomUtil().mu2eToTracker(gpos);
 
-	pos       = XYZVec(tpos.x(), tpos.y(), tpos.z());
-	sxy.addPoint(pos.x(), pos.y(), weight_cl_xy);
+      // 	pos       = XYZVec(tpos.x(), tpos.y(), tpos.z());
+      // 	sxy.addPoint(pos.x(), pos.y(), weight_cl_xy);
       
-	phi       = XYZVec(pos - helix_center).phi();
-	phi       = TVector2::Phi_0_2pi(phi);
-	helix_phi = fz0  + pos.z()/lambda;
-	double     dPhi        = helix_phi - phi;
-	while (dPhi > M_PI){
-	  phi    += 2*M_PI;
-	  dPhi   = helix_phi - phi;
-	}
-	while (dPhi < -M_PI){
-	  phi   -= 2*M_PI; 
-	  dPhi  = helix_phi - phi;
-	}
+      // 	phi       = XYZVec(pos - helix_center).phi();
+      // 	phi       = TVector2::Phi_0_2pi(phi);
+      // 	helix_phi = fz0  + pos.z()/lambda;
+      // 	double     dPhi        = helix_phi - phi;
+      // 	while (dPhi > M_PI){
+      // 	  phi    += 2*M_PI;
+      // 	  dPhi   = helix_phi - phi;
+      // 	}
+      // 	while (dPhi < -M_PI){
+      // 	  phi   -= 2*M_PI; 
+      // 	  dPhi  = helix_phi - phi;
+      // 	}
 
-	double     weight_cl_phiz = 10.;//1./(err_cl*err_cl);
-	srphi.addPoint(pos.z(), phi, weight_cl_phiz);
-      }
+      // 	double     weight_cl_phiz = 10.;//1./(err_cl*err_cl);
+      // 	srphi.addPoint(pos.z(), phi, weight_cl_phiz);
+      // }
 
 
-      float chi2xy   = sxy.chi2DofCircle();
-      float chi2zphi = srphi.chi2DofLine();
+      float chi2xy   = robustHel->chi2dXY();    //sxy.chi2DofCircle();
+      float chi2zphi = robustHel->chi2dZPhi();  //srphi.chi2DofLine();
 
       printf(" %8.3f %8.3f %8.3f %8.3f %10.3f %10.3f %12.3f %12.3f %12.3f %08x\n",
 	     d0,fz0,x0,y0,lambda,radius,clusterEnergy,chi2xy,chi2zphi, flag);
@@ -2752,13 +2752,13 @@ void TAnaDump::printStepPointMC(const mu2e::StepPointMC* Step, const char* Detec
 //2014-26-11 gianipez added the timeoffsets to the steppoints time
 
     double stepTime(-9999.);
-    if (fTimeOffsets) {
-      fTimeOffsets->updateMap(*fEvent);
-      stepTime = fTimeOffsets->timeWithOffsetsApplied(*Step);
-    }
-    else {
+    // if (fTimeOffsets) {
+    //   fTimeOffsets->updateMap(*fEvent);
+    //   stepTime = fTimeOffsets->timeWithOffsetsApplied(*Step);
+    // }
+    // else {
       stepTime = Step->time();
-    }
+    // }
 
     //    const mu2e::PhysicalVolumeInfo& pvinfo = volumes->at(sim->startVolumeIndex());
     //    const mu2e::PhysicalVolumeInfo& pvinfo = volumes->at(Step->volumeId()); - sometimes crashes..
