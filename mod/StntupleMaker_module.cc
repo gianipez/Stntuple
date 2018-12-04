@@ -411,6 +411,7 @@ void StntupleMaker::beginJob() {
       if (trackSeed_data) {
 	trackSeed_data->AddCollName("mu2e::KalSeedCollection"    ,fShortTrackSeedModuleLabel[i].data(),"");
 	trackSeed_data->AddCollName("ShortTrackSeedBlockName"    ,fShortTrackSeedBlockName[i].data()  ,"");
+	trackSeed_data->AddCollName("mu2e::ComboHitCollection"   ,fMakeStrawHitModuleLabel.data()     ,"");
 	trackSeed_data->AddCollName("mu2e::StrawDigiMCCollection",fMakeStrawDigiModuleLabel.data()    ,"");
 	trackSeed_data->AddCollName("mu2e::StepPointMCCollection",fG4ModuleLabel.data()               ,"tracker");
       }

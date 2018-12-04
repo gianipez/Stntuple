@@ -649,25 +649,27 @@ void TAnaDump::printTrackSeed(const mu2e::KalSeed* TrkSeed        ,
   if ((opt == "") || (opt.Index("hits") >= 0) ){
     int nsh = TrkSeed->hits().size();
 
-    const mu2e::StrawHit* hit(0);
+    const mu2e::ComboHit* hit(0), *hit_0(0);
     const mu2e::StepPointMC* step(0);
 
-    art::Handle<mu2e::StrawHitCollection> shcolH;
-    const mu2e::StrawHitCollection*       shcol(0);
-    fEvent->getByLabel<mu2e::StrawHitCollection>(StrawHitCollTag,shcolH);
+    art::Handle<mu2e::ComboHitCollection> shcolH;
+    const mu2e::ComboHitCollection*       shcol(0);
+    fEvent->getByLabel<mu2e::ComboHitCollection>(StrawHitCollTag,shcolH);
     if (shcolH.isValid()) shcol = shcolH.product();
     else {
-      printf("ERROR in TAnaDump::printTrackSeed: no StrawHitCollection with tag=%s, BAIL OUT\n",StrawHitCollTag);
+      printf("ERROR in TAnaDump::printTrackSeed: no ComboHitCollection with tag=%s, BAIL OUT\n",StrawHitCollTag);
       return;
     }
 
+    hit_0    = &shcol->at(0);
+    int      loc(-1);
     int banner_printed(0);
     for (int i=0; i<nsh; ++i){
       int  hitIndex  = int(TrkSeed->hits().at(i).index());
       hit            = &shcol->at(hitIndex);
-
+      loc            = hit - hit_0;
       if (sdmcc) {
-	const mu2e::StrawDigiMC* sdmc = &sdmcc->at(i);
+	const mu2e::StrawDigiMC* sdmc = &sdmcc->at(loc);
 	if (sdmc->wireEndTime(mu2e::StrawEnd::cal) < sdmc->wireEndTime(mu2e::StrawEnd::hv)) {
 	  step = sdmc->stepPointMC(mu2e::StrawEnd::cal).get();
 	}
@@ -677,10 +679,12 @@ void TAnaDump::printTrackSeed(const mu2e::KalSeed* TrkSeed        ,
       }
 
       if (banner_printed == 0){
-	printStrawHit(hit, step, "banner", -1, 0);
+	// printStrawHit(hit, step, "banner", -1, 0);
+	printComboHit(hit, step, "banner", -1, 0);
 	banner_printed = 1;
       } else {
-	printStrawHit(hit, step, "data"  , -1, 0);
+	//	printStrawHit(hit, step, "data"  , -1, 0);
+	printComboHit(hit, step, "data"  , -1, 0);
       }
      
     }

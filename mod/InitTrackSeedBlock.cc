@@ -46,9 +46,11 @@
 //-----------------------------------------------------------------------------
 int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
 
-  mu2e::KalSeedCollection*  list_of_trackSeeds;
+  const mu2e::KalSeedCollection*  list_of_trackSeeds;
+  const mu2e::ComboHitCollection* list_of_combo_hits(0);
 
-  static char                 trkSeed_module_label[100], trkSeed_description[100]; 
+  char                      trkSeed_module_label[100], trkSeed_description[100]; 
+  char                      cmbh_module_label   [100], cmbh_description[100];
 
   TStnTrackSeedBlock*         cb = (TStnTrackSeedBlock*) Block;
   TStnTrackSeed*              trackSeed(0);
@@ -67,6 +69,17 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
   else                          Evt->getByLabel(trkSeed_module_label, trkSeed_description, trackSeed_handle);
   list_of_trackSeeds = (mu2e::KalSeedCollection*) &(*trackSeed_handle);
 
+  cb->GetModuleLabel("mu2e::ComboHitCollection",cmbh_module_label);
+  cb->GetDescription("mu2e::ComboHitCollection",cmbh_description );
+
+  art::Handle<mu2e::ComboHitCollection> shHandle;
+  if (cmbh_module_label[0] != 0) {
+    if (cmbh_description[0] == 0) Evt->getByLabel(cmbh_module_label,shHandle);
+    else                          Evt->getByLabel(cmbh_module_label,cmbh_description,shHandle);
+    if (shHandle.isValid()) list_of_combo_hits = shHandle.product();
+  }
+  
+  
   const mu2e::KalSeed         *trkSeed(0);
   int                           ntrkseeds(0);
   
@@ -142,26 +155,35 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
     trackSeed->fFitCons      = trkSeed->fitConsistency();
 
     //now loop over the hits to search the particle that generated the track
-    int nsh = trkSeed->hits().size();
-    
+    int                      nsh = trkSeed->hits().size();
+    const mu2e::ComboHit*    hit(0), *hit_0(0);
+    hit_0     = &list_of_combo_hits->at(0);
+
+    int                   loc(-1);
+
     for (int j=0; j<nsh; ++j){
       int  hitIndex  = int(trkSeed->hits().at(j).index());
+      hit            = &list_of_combo_hits->at(hitIndex);
+      loc            = hit - hit_0;
+      
+      const mu2e::StepPointMC* step(0);
+      if (mcdigis) {
+	const mu2e::StrawDigiMC* sdmc = &mcdigis->at(loc);
+	if (sdmc->wireEndTime(mu2e::StrawEnd::cal) < sdmc->wireEndTime(mu2e::StrawEnd::hv)) {
+	  step = sdmc->stepPointMC(mu2e::StrawEnd::cal).get();
+	}
+	else {
+	  step = sdmc->stepPointMC(mu2e::StrawEnd::hv ).get();
+	}
+      }
 
-      // mu2e::PtrStepPointMCVector const& mcptr(hits_mcptrStraw->at(hitIndex));
-      // const mu2e::StepPointMC* Step = mcptr[0].get();
-      //      const mu2e::StepPointMC* Step = &hits_mcptrStraw->at(hitIndex);
-      mu2e::StrawDigiMC const&     mcdigi = mcdigis->at(hitIndex);
-      art::Ptr<mu2e::StepPointMC>  spmcp;
-      mu2e::TrkMCTools::stepPoint(spmcp,mcdigi);
-      const mu2e::StepPointMC* Step = spmcp.get();
-
-      if (Step) {
-	art::Ptr<mu2e::SimParticle> const& simptr = Step->simParticle(); 
+      if (step) {
+	art::Ptr<mu2e::SimParticle> const& simptr = step->simParticle(); 
 	int sim_id        = simptr->id().asInt();
 
 	hits_simp_id.push_back   (sim_id); 
-	hits_simp_index.push_back(hitIndex);
-	hits_simp_z.push_back(Step->position().z());
+	hits_simp_index.push_back(loc);
+	hits_simp_z.push_back(step->position().z());
      }
     }//end loop over the hits
     
@@ -188,16 +210,20 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
     // trackSeed->fSimpId2     = -1;
     trackSeed->fSimpId2Hits = -1;
 
-    // mu2e::PtrStepPointMCVector const& mcptr(hits_mcptrStraw->at(mostvalueindex) );
-    // const mu2e::StepPointMC* Step = mcptr[0].get();
-    mu2e::StrawDigiMC const&     mcdigi = mcdigis->at(mostvalueindex);
-    art::Ptr<mu2e::StepPointMC>  spmcp;
-    mu2e::TrkMCTools::stepPoint(spmcp,mcdigi);
-    const mu2e::StepPointMC* Step =spmcp.get();
+    const mu2e::StepPointMC* step(0);
+    const mu2e::StrawDigiMC* sdmc = &mcdigis->at(mostvalueindex);
+    if (mcdigis) {
+      if (sdmc->wireEndTime(mu2e::StrawEnd::cal) < sdmc->wireEndTime(mu2e::StrawEnd::hv)) {
+	step = sdmc->stepPointMC(mu2e::StrawEnd::cal).get();
+      }
+      else {
+	step = sdmc->stepPointMC(mu2e::StrawEnd::hv ).get();
+      }
+    }
     const mu2e::SimParticle * sim (0);
 
-    if (Step) {
-      art::Ptr<mu2e::SimParticle> const& simptr = Step->simParticle(); 
+    if (step) {
+      art::Ptr<mu2e::SimParticle> const& simptr = step->simParticle(); 
       trackSeed->fSimpPDG1    = simptr->pdgId();
       art::Ptr<mu2e::SimParticle> mother = simptr;
       part   = pdg_db->GetParticle(trackSeed->fSimpPDG1);
@@ -221,8 +247,6 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
       const CLHEP::Hep3Vector* sp = &simptr->startPosition();
       trackSeed->fOrigin1.SetXYZT(sp->x(),sp->y(),sp->z(),simptr->startGlobalTime());
   
-      // trackSeed->fSimp1P      = Step->momentum().mag();
-      // trackSeed->fSimp1Pt     = sqrt(pow(Step->momentum().x(),2.) + pow(Step->momentum().y(),2.));
     }
     
     //look for the second most frequent hit
@@ -243,20 +267,22 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
 	  }
 	}
       }
-      //      trackSeed->fSimpId2     = secondmostvalue;
       trackSeed->fSimpId2Hits = max;
 
       if (secondmostvalueindex >=0){
-	// mu2e::PtrStepPointMCVector const& mcptr(hits_mcptrStraw->at(secondmostvalueindex) );
-	// const mu2e::StepPointMC* Step = mcptr[0].get();
-	mu2e::StrawDigiMC const&     mcdigi = mcdigis->at(secondmostvalueindex);
-	art::Ptr<mu2e::StepPointMC>  spmcp;
-	mu2e::TrkMCTools::stepPoint(spmcp,mcdigi);
-	const mu2e::StepPointMC* Step = spmcp.get();
+	const mu2e::StepPointMC* step(0);
+	const mu2e::StrawDigiMC* sdmc = &mcdigis->at(secondmostvalueindex);
+	if (sdmc->wireEndTime(mu2e::StrawEnd::cal) < sdmc->wireEndTime(mu2e::StrawEnd::hv)) {
+	  step = sdmc->stepPointMC(mu2e::StrawEnd::cal).get();
+	}
+	else {
+	  step = sdmc->stepPointMC(mu2e::StrawEnd::hv ).get();
+	}
+		
 	const mu2e::SimParticle * sim (0);
 
-	if (Step) {
-	  art::Ptr<mu2e::SimParticle> const& simptr = Step->simParticle(); 
+	if (step) {
+	  art::Ptr<mu2e::SimParticle> const& simptr = step->simParticle(); 
 	  trackSeed->fSimpPDG2    = simptr->pdgId();
 	  art::Ptr<mu2e::SimParticle> mother = simptr;
 	  part   = pdg_db->GetParticle(trackSeed->fSimpPDG2);
@@ -279,10 +305,7 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
 
 	  const CLHEP::Hep3Vector* sp = &simptr->startPosition();
 	  trackSeed->fOrigin2.SetXYZT(sp->x(),sp->y(),sp->z(),simptr->startGlobalTime());
-  
-	  // trackSeed->fSimp2P      = Step->momentum().mag();
-	  // trackSeed->fSimp2Pt     = sqrt(pow(Step->momentum().x(),2.) + pow(Step->momentum().y(),2.));
-	}      
+  	}      
       }
     }
     
