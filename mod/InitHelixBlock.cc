@@ -57,52 +57,52 @@
 using namespace ROOT::Math::VectorUtil;
 
 
-namespace {
-  double evalWeight(const mu2e::HelixHit*  Hit   ,
-		    XYZVec& StrawDir ,
-		    XYZVec& HelCenter, 
-		    double             Radius   ,
-		    int                WeightMode,
-		    fhicl::ParameterSet const& Pset) {//WeightMode = 1 is for XY chi2 , WeightMode = 0 is for Phi-z chi2
+// namespace {
+//   double evalWeight(const mu2e::HelixHit*  Hit   ,
+// 		    XYZVec& StrawDir ,
+// 		    XYZVec& HelCenter, 
+// 		    double             Radius   ,
+// 		    int                WeightMode,
+// 		    fhicl::ParameterSet const& Pset) {//WeightMode = 1 is for XY chi2 , WeightMode = 0 is for Phi-z chi2
   
-    //    double    rs(2.5);   // straw radius, mm
-    double    transErr = 5./sqrt(12.);
-    if (Hit->nStrawHits() > 1) transErr *= 1.5;
-    double    transErr2 = transErr*transErr;
-    // double    ew(30.0);  // assumed resolution along the wire, mm
+//     //    double    rs(2.5);   // straw radius, mm
+//     double    transErr = 5./sqrt(12.);
+//     if (Hit->nStrawHits() > 1) transErr *= 1.5;
+//     double    transErr2 = transErr*transErr;
+//     // double    ew(30.0);  // assumed resolution along the wire, mm
 
-    double x  = Hit->pos().x();
-    double y  = Hit->pos().y();
-    double dx = x-HelCenter.x();
-    double dy = y-HelCenter.y();
+//     double x  = Hit->pos().x();
+//     double y  = Hit->pos().y();
+//     double dx = x-HelCenter.x();
+//     double dy = y-HelCenter.y();
   
-    double costh  = (dx*StrawDir.x()+dy*StrawDir.y())/sqrt(dx*dx+dy*dy);
-    double sinth2 = 1-costh*costh;
+//     double costh  = (dx*StrawDir.x()+dy*StrawDir.y())/sqrt(dx*dx+dy*dy);
+//     double sinth2 = 1-costh*costh;
   
-    double wt(0), wtXY(1), wtPhiZ(1);
+//     double wt(0), wtXY(1), wtPhiZ(1);
 
-    //  fhicl::ParameterSet const& pset = helix_handle.provenance()->parameterSet();
-    std::string                module     = Pset.get<std::string>("module_type");
+//     //  fhicl::ParameterSet const& pset = helix_handle.provenance()->parameterSet();
+//     std::string                module     = Pset.get<std::string>("module_type");
   
-    if ( module == "CalHelixFinder"){
-      fhicl::ParameterSet const& psetHelFit = Pset.get<fhicl::ParameterSet>("HelixFinderAlg", fhicl::ParameterSet());
-      wtXY   = psetHelFit.get<double>("weightXY");
-      wtPhiZ = psetHelFit.get<double>("weightZPhi");
-    }
-    //scale the weight for having chi2/ndof distribution peaking at 1
-    if ( WeightMode == 1){//XY-Fit
-      double e2     = Hit->wireErr2()*sinth2+transErr2*costh*costh; //ew*ew*sinth2+rs*rs*costh*costh;
-      wt  = 1./e2;
-      wt *= wtXY;
-    } else if (WeightMode ==0 ){//Phi-Z Fit
-      double e2     = Hit->wireErr2()*costh*costh+transErr2*sinth2; //ew*ew*costh*costh+rs*rs*sinth2;
-      wt     = Radius*Radius/e2;
-      wt    *= wtPhiZ;
-    }
+//     if ( module == "CalHelixFinder"){
+//       fhicl::ParameterSet const& psetHelFit = Pset.get<fhicl::ParameterSet>("HelixFinderAlg", fhicl::ParameterSet());
+//       wtXY   = psetHelFit.get<double>("weightXY");
+//       wtPhiZ = psetHelFit.get<double>("weightZPhi");
+//     }
+//     //scale the weight for having chi2/ndof distribution peaking at 1
+//     if ( WeightMode == 1){//XY-Fit
+//       double e2     = Hit->wireErr2()*sinth2+transErr2*costh*costh; //ew*ew*sinth2+rs*rs*costh*costh;
+//       wt  = 1./e2;
+//       wt *= wtXY;
+//     } else if (WeightMode ==0 ){//Phi-Z Fit
+//       double e2     = Hit->wireErr2()*costh*costh+transErr2*sinth2; //ew*ew*costh*costh+rs*rs*sinth2;
+//       wt     = Radius*Radius/e2;
+//       wt    *= wtPhiZ;
+//     }
   
-    return wt;
-  }
-}
+//     return wt;
+//   }
+// }
 
 //-----------------------------------------------------------------------------
 // assume that the collection name is set, so we could grab it from the event
@@ -214,45 +214,42 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
     const mu2e::HelixHitCollection* hits      = &tmpHel->hits();
     const mu2e::ComboHit*           hit(0);
     // CLHEP::Hep3Vector         pos(0), /*helix_pos(0),*/ wdir(0), sdir(0), helix_center(0);
-    XYZVec                    pos(0,0,0), /*helix_pos(0),*/ wdir(0,0,0), sdir(0,0,0), helix_center(0,0,0);
-    double                    phi(0), helix_phi(0);
-    double                    radius    = robustHel->radius();
-    helix_center = robustHel->center();
+    //    XYZVec                    pos(0,0,0), /*helix_pos(0),*/ wdir(0,0,0), sdir(0,0,0), helix_center(0,0,0);
+    //    double                    phi(0), helix_phi(0);
+    //    double                    radius    = robustHel->radius();
+    //    helix_center = robustHel->center();
 
     //    double                    chi2xy(0), chi2phiz(0);
     int                       nhits(hits->size());
 
-    LsqSums4 sxy;
- 
-    LsqSums4 srphi;
-    // static const CLHEP::Hep3Vector zdir(0.0,0.0,1.0);
-    static const XYZVec zdir(0.0,0.0,1.0);
-    float          rpullScaleF(0.);
-    //    float          minrerr(0.);
-    float          cradres(0.);
-    float          cperpres(0.);
+    // LsqSums4 sxy;
+    // LsqSums4 srphi;
+    // static const XYZVec zdir(0.0,0.0,1.0);
+    // float          rpullScaleF(0.);
+    // float          cradres(0.);
+    // float          cperpres(0.);
 
     fhicl::ParameterSet const& pset = helix_handle.provenance()->parameterSet();
     std::string    module     = pset.get<std::string>("module_type");
   
-    if ( module == "RobustHelixFinder"){
-      rpullScaleF  = pset.get<float>("RPullScaleF", 1.0);//0.895);
-      //      minrerr      = pset.get<float>("MinRadiusErr", 20.0);
-      cradres      = pset.get<float>("CenterRadialResolution", 20.0);
-      cperpres     = pset.get<float>("CenterPerpResolution"  , 20.0);
-    }
+    // if ( module == "RobustHelixFinder"){
+    //   rpullScaleF  = pset.get<float>("RPullScaleF", 1.0);//0.895);
+    //   //      minrerr      = pset.get<float>("MinRadiusErr", 20.0);
+    //   cradres      = pset.get<float>("CenterRadialResolution", 20.0);
+    //   cperpres     = pset.get<float>("CenterPerpResolution"  , 20.0);
+    // }
 
-    if ( module == "CalHelixFinder" ){
-      fhicl::ParameterSet const& psetHelFit = pset.get<fhicl::ParameterSet>("HelixFinderAlg", fhicl::ParameterSet());
-      int addST  = psetHelFit.get<int>("targetconsistent");//0.895);
+    // if ( module == "CalHelixFinder" ){
+    //   fhicl::ParameterSet const& psetHelFit = pset.get<fhicl::ParameterSet>("HelixFinderAlg", fhicl::ParameterSet());
+    //   int addST  = psetHelFit.get<int>("targetconsistent");//0.895);
 
-      if (addST == 1) { //add the stopping target center as in CalHeliFinderAlg.cc
-	sxy.addPoint(0., 0., 1./900.);
-      }
-    }
+    //   if (addST == 1) { //add the stopping target center as in CalHeliFinderAlg.cc
+    // 	sxy.addPoint(0., 0., 1./900.);
+    //   }
+    // }
 
     int      nStrawHits(0);
-    float    chi2TprZPhi(0.), chi2TprXY(0.);
+    //    float    chi2TprZPhi(0.), chi2TprXY(0.);
 
     for (int j=0; j<nhits; ++j){      //this loop is made over the ComboHits
       hit       = &hits->at(j);
@@ -261,7 +258,7 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
       if (hit->_flag.hasAnyProperty(mu2e::StrawHitFlag::outlier))         continue;
 
       std::vector<StrawDigiIndex> shids;
-      tmpHel->hits().fillStrawDigiIndices(*(Evt),j,shids);
+      hits->fillStrawDigiIndices(*(Evt),j,shids);
 
       for (size_t k=0; k<shids.size(); ++k) {
 	mu2e::StrawDigiMC const&     mcdigi = mcdigis->at(shids[k]);
@@ -280,34 +277,34 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
 	}
       }
 
-      pos       = hit->pos();
-      wdir      = hit->wdir();
-      sdir      = zdir.Cross(wdir);
-      phi       = hit->helixPhi();
-      //      helix_phi = robustHel->circleAzimuth(pos.z());//helix->fFZ0 + pos.z()/helix->fLambda;
-      double    weightXY   = hit->_xyWeight;
-      if (weightXY<1e-6) weightXY = evalWeight(hit, sdir, helix_center, radius, 1, pset);
+      // pos       = hit->pos();
+      // wdir      = hit->wdir();
+      // sdir      = zdir.Cross(wdir);
+      // phi       = hit->helixPhi();
+      // //      helix_phi = robustHel->circleAzimuth(pos.z());//helix->fFZ0 + pos.z()/helix->fLambda;
+      // double    weightXY   = hit->_xyWeight;
+      // if (weightXY<1e-6) weightXY = evalWeight(hit, sdir, helix_center, radius, 1, pset);
 
-      sxy.addPoint(pos.x(), pos.y(), weightXY);
+      // sxy.addPoint(pos.x(), pos.y(), weightXY);
 
-      double weight    = hit->_zphiWeight;
-      if (weight < 1e-6) weight = evalWeight(hit, sdir, helix_center, radius, 0, pset);
+      // double weight    = hit->_zphiWeight;
+      // if (weight < 1e-6) weight = evalWeight(hit, sdir, helix_center, radius, 0, pset);
 
-      if ( module == "CalHelixFinder"){
-	phi       = XYZVec(pos - helix_center).phi();
-	phi       = TVector2::Phi_0_2pi(phi);
-	helix_phi = helix->fFZ0 + pos.z()/helix->fLambda;
-	double     dPhi        = helix_phi - phi;
-	while (dPhi > M_PI){
-	  phi    += 2*M_PI;
-	  dPhi   = helix_phi - phi;
-	}
-	while (dPhi < -M_PI){
-	  phi   -= 2*M_PI; 
-	  dPhi  = helix_phi - phi;
-	}
-      }
-      srphi.addPoint(pos.z(), phi, weight);
+      // if ( module == "CalHelixFinder"){
+      // 	phi       = XYZVec(pos - helix_center).phi();
+      // 	phi       = TVector2::Phi_0_2pi(phi);
+      // 	helix_phi = helix->fFZ0 + pos.z()/helix->fLambda;
+      // 	double     dPhi        = helix_phi - phi;
+      // 	while (dPhi > M_PI){
+      // 	  phi    += 2*M_PI;
+      // 	  dPhi   = helix_phi - phi;
+      // 	}
+      // 	while (dPhi < -M_PI){
+      // 	  phi   -= 2*M_PI; 
+      // 	  dPhi  = helix_phi - phi;
+      // 	}
+      // }
+      // srphi.addPoint(pos.z(), phi, weight);
 
       //increase the counter of the StrawHits
       nStrawHits += hit->nStrawHits();
@@ -315,44 +312,44 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
 
       //For RobustHelixFinder: calulate sum of the residuals 
       //RobustHelix: X-Y part
-      XYZVec cvec  = PerpVector(hit->pos() - robustHel->center(),Geom::ZDir()); // direction from the circle center to the hit
-      XYZVec cdir  = cvec.Unit(); // direction from the circle center to the hit
-      float  rwdot = wdir.Dot(cdir); // compare directions of radius and wire
-      float  dr    = sqrtf(cvec.mag2()) - robustHel->radius();
+      // XYZVec cvec  = PerpVector(hit->pos() - robustHel->center(),Geom::ZDir()); // direction from the circle center to the hit
+      // XYZVec cdir  = cvec.Unit(); // direction from the circle center to the hit
+      // float  rwdot = wdir.Dot(cdir); // compare directions of radius and wire
+      // float  dr    = sqrtf(cvec.mag2()) - robustHel->radius();
 
-      float rwdot2 = rwdot*rwdot;
-      // compute radial difference and pull
-      float werr   = hit->posRes(mu2e::StrawHitPosition::wire);
-      float terr   = hit->posRes(mu2e::StrawHitPosition::trans);
-      // the resolution is dominated the resolution along the wire
-      //      float rres   = std::max(sqrtf(werr*werr*rwdot2 + terr*terr*(1.0-rwdot2)),minrerr);
-      float rres   = sqrtf(werr*werr*rwdot2 + terr*terr*(1.0-rwdot2));
-      float rpull  = fabs(dr/rres)*rpullScaleF;
+      // float rwdot2 = rwdot*rwdot;
+      // // compute radial difference and pull
+      // float werr   = hit->posRes(mu2e::StrawHitPosition::wire);
+      // float terr   = hit->posRes(mu2e::StrawHitPosition::trans);
+      // // the resolution is dominated the resolution along the wire
+      // //      float rres   = std::max(sqrtf(werr*werr*rwdot2 + terr*terr*(1.0-rwdot2)),minrerr);
+      // float rres   = sqrtf(werr*werr*rwdot2 + terr*terr*(1.0-rwdot2));
+      // float rpull  = fabs(dr/rres)*rpullScaleF;
 
-      chi2TprXY += rpull*rpull;
+      // chi2TprXY += rpull*rpull;
 
-      //RobustHelix: Z-Phi 
-      XYZVec wtdir = zaxis.Cross(wdir);   // transverse direction to the wire
-      // XYZVec cvec = PerpVector(hit->pos() - helix.center(),Geom::ZDir()); // direction from the circle center to the hit
-      // XYZVec cdir = cvec.Unit();          // direction from the circle center to the hit
-      XYZVec cperp = zaxis.Cross(cdir);   // direction perp to the radius
+      // //RobustHelix: Z-Phi 
+      // XYZVec wtdir = zaxis.Cross(wdir);   // transverse direction to the wire
+      // // XYZVec cvec = PerpVector(hit->pos() - helix.center(),Geom::ZDir()); // direction from the circle center to the hit
+      // // XYZVec cdir = cvec.Unit();          // direction from the circle center to the hit
+      // XYZVec cperp = zaxis.Cross(cdir);   // direction perp to the radius
 
-      XYZVec hpos = hit->pos(); // this sets the z position to the hit z
-      robustHel->position(hpos);                // this computes the helix expectation at that z
-      XYZVec dh = hit->pos() - hpos;   // this is the vector between them
-      float dtrans = fabs(dh.Dot(wtdir)); // transverse projection
-      float dwire = fabs(dh.Dot(wdir));   // projection along wire direction
+      // XYZVec hpos = hit->pos(); // this sets the z position to the hit z
+      // robustHel->position(hpos);                // this computes the helix expectation at that z
+      // XYZVec dh = hit->pos() - hpos;   // this is the vector between them
+      // float dtrans = fabs(dh.Dot(wtdir)); // transverse projection
+      // float dwire = fabs(dh.Dot(wdir));   // projection along wire direction
 
-      // compute the total resolution including hit and helix parameters first along the wire
-      float wres2 = std::pow(hit->posRes(mu2e::StrawHitPosition::wire),(int)2) +
-	std::pow(cradres*cdir.Dot(wdir),(int)2) +
-	std::pow(cperpres*cperp.Dot(wdir),(int)2);
-      // transverse to the wires
-      float wtres2 = std::pow(hit->posRes(mu2e::StrawHitPosition::trans),(int)2) +
-	std::pow(cradres*cdir.Dot(wtdir),(int)2) +
-	std::pow(cperpres*cperp.Dot(wtdir),(int)2);
+      // // compute the total resolution including hit and helix parameters first along the wire
+      // float wres2 = std::pow(hit->posRes(mu2e::StrawHitPosition::wire),(int)2) +
+      // 	std::pow(cradres*cdir.Dot(wdir),(int)2) +
+      // 	std::pow(cperpres*cperp.Dot(wdir),(int)2);
+      // // transverse to the wires
+      // float wtres2 = std::pow(hit->posRes(mu2e::StrawHitPosition::trans),(int)2) +
+      // 	std::pow(cradres*cdir.Dot(wtdir),(int)2) +
+      // 	std::pow(cperpres*cperp.Dot(wtdir),(int)2);
 
-      chi2TprZPhi += dwire*dwire/wres2 + dtrans*dtrans/wtres2;
+      // chi2TprZPhi += dwire*dwire/wres2 + dtrans*dtrans/wtres2;
 
     } 
 
@@ -494,37 +491,38 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
     helix->fNComboHits = tmpHel->hits().size();
     helix->fNHits      = nStrawHits;
 
-    if ( module == "CalHelixFinder"){
-      double     weight_cl_xy = 1./100.;//FIX ME!
-      pos       = XYZVec(helix->fClusterX, helix->fClusterY, helix->fClusterZ);
-      sxy.addPoint(pos.x(), pos.y(), weight_cl_xy);
+    // if ( module == "CalHelixFinder"){
+    //   double     weight_cl_xy = 1./100.;//FIX ME!
+    //   pos       = XYZVec(helix->fClusterX, helix->fClusterY, helix->fClusterZ);
+    //   sxy.addPoint(pos.x(), pos.y(), weight_cl_xy);
       
-      phi       = XYZVec(pos - helix_center).phi();
-      phi       = TVector2::Phi_0_2pi(phi);
-      helix_phi = helix->fFZ0 + pos.z()/helix->fLambda;
-      double     dPhi        = helix_phi - phi;
-      while (dPhi > M_PI){
-	phi    += 2*M_PI;
-        dPhi   = helix_phi - phi;
-      }
-      while (dPhi < -M_PI){
-	phi   -= 2*M_PI; 
-	dPhi  = helix_phi - phi;
-      }
+    //   phi       = XYZVec(pos - helix_center).phi();
+    //   phi       = TVector2::Phi_0_2pi(phi);
+    //   helix_phi = helix->fFZ0 + pos.z()/helix->fLambda;
+    //   double     dPhi        = helix_phi - phi;
+    //   while (dPhi > M_PI){
+    // 	phi    += 2*M_PI;
+    //     dPhi   = helix_phi - phi;
+    //   }
+    //   while (dPhi < -M_PI){
+    // 	phi   -= 2*M_PI; 
+    // 	dPhi  = helix_phi - phi;
+    //   }
 
-      double     weight_cl_phiz = 784.;//10.;//1./(err_cl*err_cl);
-      srphi.addPoint(pos.z(), phi, weight_cl_phiz);
-    }
+    //   double     weight_cl_phiz = 784.;//10.;//1./(err_cl*err_cl);
+    //   srphi.addPoint(pos.z(), phi, weight_cl_phiz);
+    // }
     
-    //Gainipez, 20180911
-    //commented for making a test
-    if ( module == "CalHelixFinder"){
-      helix->fChi2XYNDof   = sxy.chi2DofCircle();
-      helix->fChi2PhiZNDof = srphi.chi2DofLine();
-    } else {
-      helix->fChi2XYNDof   = chi2TprXY/sxy.qn();
-      helix->fChi2PhiZNDof = chi2TprZPhi/srphi.qn();    
-    }
+    // if ( module == "CalHelixFinder"){
+    //   helix->fChi2XYNDof   = sxy.chi2DofCircle();
+    //   helix->fChi2PhiZNDof = srphi.chi2DofLine();
+    // } else {
+    //   helix->fChi2XYNDof   = chi2TprXY/sxy.qn();
+    //   helix->fChi2PhiZNDof = chi2TprZPhi/srphi.qn();    
+    // }
+    helix->fChi2XYNDof   = robustHel->chi2dXY();
+    helix->fChi2PhiZNDof = robustHel->chi2dZPhi();
+
     mask = (0x0001 << 16) | 0x0000;
 
     if (list_of_algs) {
