@@ -20,9 +20,9 @@ void TStnTrackSeed::ReadV1(TBuffer &R__b) {
     int                       fNHits;
     int                       fHelixIndex;
     int                       fTrackIndex;
-    //-----------------------------------------------------------------------------
-    // floats
-    //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// floats
+//-----------------------------------------------------------------------------
     float                     fT0;    
     float                     fT0Err; 
     float                     fD0;    
@@ -94,6 +94,7 @@ void TStnTrackSeed::ReadV1(TBuffer &R__b) {
   fCluster           = data.fCluster;
 }
 
+//-----------------------------------------------------------------------------
 void TStnTrackSeed::Streamer(TBuffer& R__b) {
   int   nwi, nwf;
   
@@ -122,26 +123,26 @@ void TStnTrackSeed::Streamer(TBuffer& R__b) {
 
     R__b.WriteFastArray(&fNHits, nwi);
     R__b.WriteFastArray(&fT0    , nwf);
-    
-    
   }
 }
 
-TStnTrackSeed::TStnTrackSeed(int i) {
+//-----------------------------------------------------------------------------
+TStnTrackSeed::TStnTrackSeed(int Number) {
   fMom1.SetPxPyPzE(0.,0.,0.,0.);
   fOrigin1.SetXYZT(0.,0.,0.,0.);
   
   fMom2.SetPxPyPzE(0.,0.,0.,0.);
   fOrigin2.SetXYZT(0.,0.,0.,0.);
  
-  fNHits   = 0;
-  fHelixIndex = 0;
-  fTrackIndex = 0;
-  fSimpPDG1 = 0;   
-  fSimpPDGM1 = 0;  
+  fNumber      = Number;
+  fNHits       = 0;
+  fHelixIndex  = -1;
+  fTrackIndex  = -1;
+  fSimpPDG1    = 0;   
+  fSimpPDGM1   = 0;  
   fSimpId1Hits = 0;
-  fSimpPDG2 = 0;   
-  fSimpPDGM2 = 0;  
+  fSimpPDG2    = 0;   
+  fSimpPDGM2   = 0;  
   fSimpId2Hits = 0;
   
   fT0      = 0;    

@@ -8,16 +8,16 @@ ClassImp(TStnHelixBlock)
 
 //_____________________________________________________________________________
 void TStnHelixBlock::Streamer(TBuffer &R__b) {
-  // Stream an object of class TStnTrackBlock.
+  // Stream in/out an object of class TStnHelixBlock.
 
   if (R__b.IsReading()) {
     Version_t R__v = R__b.ReadVersion(); if (R__v) { }
     R__b >> fNHelices;
     fListOfHelices->Streamer(R__b);
-    // for (int i=0; i<fNTracks; i++) {
-    //   Track(i)->SetNumber(i);
-    // }
-  } 
+    for (int i=0; i<fNHelices; i++) {
+       Helix(i)->SetNumber(i);
+    }
+  }
   else {
     R__b.WriteVersion(TStnHelixBlock::IsA());
     R__b << fNHelices;

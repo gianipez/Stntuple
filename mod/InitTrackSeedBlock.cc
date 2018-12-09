@@ -33,7 +33,6 @@
 #include "RecoDataProducts/inc/StrawHitCollection.hh"
 #include "RecoDataProducts/inc/StrawHit.hh"
 
-#include "MCDataProducts/inc/PtrStepPointMCVectorCollection.hh"
 #include "MCDataProducts/inc/SimParticle.hh"
 #include "MCDataProducts/inc/SimParticleCollection.hh"
 #include "MCDataProducts/inc/StepPointMC.hh"
@@ -52,25 +51,28 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
   char                      trkSeed_module_label[100], trkSeed_description[100]; 
   char                      cmbh_module_label   [100], cmbh_description[100];
 
-  TStnTrackSeedBlock*         cb = (TStnTrackSeedBlock*) Block;
+  int  ev_number, rn_number;
+
+  ev_number = Evt->event();
+  rn_number = Evt->run();
+
+  if (Block->Initialized(ev_number,rn_number)) return 0;
+
   TStnTrackSeed*              trackSeed(0);
+  TStnTrackSeedBlock*         data = (TStnTrackSeedBlock*) Block;
 
+  data->Clear();
 
-  cb->Clear();
+  data->GetModuleLabel("mu2e::KalSeedCollection", trkSeed_module_label);
+  data->GetDescription("mu2e::KalSeedCollection", trkSeed_description );
 
-  cb->GetModuleLabel("mu2e::KalSeedCollection", trkSeed_module_label);
-  cb->GetDescription("mu2e::KalSeedCollection", trkSeed_description );
-
-  if (trkSeed_module_label[0] == 0) {
-    cb->GetModuleLabel("ShortTrackSeedBlockName", trkSeed_module_label);
-  }
   art::Handle<mu2e::KalSeedCollection>               trackSeed_handle;
   if (trkSeed_description[0] == 0) Evt->getByLabel(trkSeed_module_label, trackSeed_handle);
   else                          Evt->getByLabel(trkSeed_module_label, trkSeed_description, trackSeed_handle);
   list_of_trackSeeds = (mu2e::KalSeedCollection*) &(*trackSeed_handle);
 
-  cb->GetModuleLabel("mu2e::ComboHitCollection",cmbh_module_label);
-  cb->GetDescription("mu2e::ComboHitCollection",cmbh_description );
+  data->GetModuleLabel("mu2e::ComboHitCollection",cmbh_module_label);
+  data->GetDescription("mu2e::ComboHitCollection",cmbh_description );
 
   art::Handle<mu2e::ComboHitCollection> shHandle;
   if (cmbh_module_label[0] != 0) {
@@ -85,43 +87,23 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
   
   const mu2e::CaloCluster       *cluster(0);
  
-  // mu2e::GeomHandle<mu2e::TTracker> th;
-  // const mu2e::TTracker* tracker = th.get();
-
   ntrkseeds = list_of_trackSeeds->size();    
 
-  // art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandleStraw;
-  // Evt->getByLabel("compressDigiMCs"/*"makeSD"*/,"",mcptrHandleStraw);
-  // mu2e::PtrStepPointMCVectorCollection const* hits_mcptrStraw = mcptrHandleStraw.product();
-  //  Evt->getByLabel("compressDigiMCs"/*"makeSD"*/,"",mcptrHandleStraw);
-  //  mu2e::PtrStepPointMCVectorCollection const* hits_mcptrStraw = mcptrHandleStraw.product();
-  // char                 stepPointMC_module_label[100], stepPointMC_description[100];
-  // cb->GetModuleLabel("mu2e::StepPointMCCollection", stepPointMC_module_label);
-  // cb->GetDescription("mu2e::StepPointMCCollection", stepPointMC_description );
   char                 makeSD_module_label[100];
-  cb->GetModuleLabel("mu2e::StrawDigiMCCollection",makeSD_module_label);
+  data->GetModuleLabel("mu2e::StrawDigiMCCollection",makeSD_module_label);
 
-  // art::Handle<mu2e::StepPointMCCollection> mcptrHandleStraw;
-  // if (stepPointMC_description[0] == 0) Evt->getByLabel(stepPointMC_module_label/*"makeSD"*/,mcptrHandleStraw);
-  // else                                 Evt->getByLabel(stepPointMC_module_label, stepPointMC_description, mcptrHandleStraw);
-  // mu2e::StepPointMCCollection const* hits_mcptrStraw(0);
-  // if (mcptrHandleStraw.isValid()) hits_mcptrStraw = mcptrHandleStraw.product();
   const mu2e::StrawDigiMCCollection* mcdigis(0);
   art::Handle<mu2e::StrawDigiMCCollection> mcdH;
-  Evt->getByLabel(makeSD_module_label/*"makeSD"*/, mcdH);
+  Evt->getByLabel(makeSD_module_label, mcdH);
   mcdigis = mcdH.product();
   
   TParticlePDG*        part(0);
   TDatabasePDG*        pdg_db = TDatabasePDG::Instance();
  
   for (int i=0; i<ntrkseeds; i++) {
-    //clear vector content
-    // hits_simp_id.clear();
-    // hits_simp_index.clear();
-    // hits_simp_z.clear();
     std::vector<int>     hits_simp_id, hits_simp_index, hits_simp_z;
     
-    trackSeed                  = cb->NewTrackSeed();
+    trackSeed                  = data->NewTrackSeed();
     trkSeed                    = &list_of_trackSeeds->at(i);
     cluster                    = trkSeed->caloCluster().get();
 
@@ -133,10 +115,10 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
       trackSeed->fClusterZ       = cluster->cog3Vector().z();
     }else {
       trackSeed->fClusterTime    = 0; 
-      trackSeed->fClusterEnergy  = 0; 
-      trackSeed->fClusterX       = 0; 
-      trackSeed->fClusterY       = 0; 
-      trackSeed->fClusterZ       = 0; 
+      trackSeed->fClusterEnergy  = -1; 
+      trackSeed->fClusterX       = -1.e6; 
+      trackSeed->fClusterY       = -1.e6; 
+      trackSeed->fClusterZ       = -1.e6; 
     }
     
     mu2e::KalSegment kalSeg  = trkSeed->segments().at(0);//take the KalSegment closer to the entrance of the tracker
@@ -185,10 +167,10 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
 	hits_simp_index.push_back(loc);
 	hits_simp_z.push_back(step->position().z());
      }
-    }//end loop over the hits
-    
-
- //find the simparticle that created the majority of the hits
+    } 
+//-----------------------------------------------------------------------------
+// find the simparticle that created the majority of the hits
+//-----------------------------------------------------------------------------
     int     max(0), mostvalueindex(-1), mostvalue= hits_simp_id[0];
     float   dz_most(1e4);
     for (int k=0; k<(int)hits_simp_id.size(); ++k){
@@ -204,10 +186,7 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
       }
     }
 
-    //    trackSeed->fSimpId1     = mostvalue;
     trackSeed->fSimpId1Hits = max;
-    //set defaults
-    // trackSeed->fSimpId2     = -1;
     trackSeed->fSimpId2Hits = -1;
 
     const mu2e::StepPointMC* step(0);
@@ -236,8 +215,8 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
       double   px = simptr->startMomentum().x();
       double   py = simptr->startMomentum().y();
       double   pz = simptr->startMomentum().z();
-      double   mass(-1.);//  = part->Mass();
-      double   energy(-1.);// = sqrt(px*px+py*py+pz*pz+mass*mass);
+      double   mass  (-1.);
+      double   energy(-1.);
       if (part) {
 	mass   = part->Mass();
 	energy = sqrt(px*px+py*py+pz*pz+mass*mass);
@@ -295,8 +274,8 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
 	  double   px = simptr->startMomentum().x();
 	  double   py = simptr->startMomentum().y();
 	  double   pz = simptr->startMomentum().z();
-	  double   mass(-1.);//  = part->Mass();
-	  double   energy(-1.);// = sqrt(px*px+py*py+pz*pz+mass*mass);
+	  double   mass  (-1.);
+	  double   energy(-1.);
 	  if (part) {
 	    mass   = part->Mass();
 	    energy = sqrt(px*px+py*py+pz*pz+mass*mass);
@@ -305,24 +284,14 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
 
 	  const CLHEP::Hep3Vector* sp = &simptr->startPosition();
 	  trackSeed->fOrigin2.SetXYZT(sp->x(),sp->y(),sp->z(),simptr->startGlobalTime());
-  	}      
+	}      
       }
     }
-    
-    
-  }//end loop over the trackSeeds
-
-  //------------------------------------------------------------------------------------------
-  // 2016-07-11 G. Pezzullo: how do we want to propagate information of each strawhit 
-  //  present in the track candidate?
-  //------------------------------------------------------------------------------------------
-  // int    ev_number,  rn_number;
-  // ev_number = Evt->event();
-  // rn_number = Evt->run();
-  // cb->f_RunNumber   = rn_number;
-  // cb->f_EventNumber = ev_number;
-
-
+  }
+					// on return set event and run numbers
+					// to mark block as initialized
+  data->f_RunNumber   = rn_number;
+  data->f_EventNumber = ev_number;
 
   return 0;
 }
@@ -343,38 +312,34 @@ Int_t StntupleInitMu2eTrackSeedBlockLinks(TStnDataBlock* Block, AbsEvent* AnEven
 
   if (Block->LinksInitialized()) return 0;
 
-  TStnTrackSeedBlock* tsb, *ftsb;
-  TStnTrackSeed*      trkseed, *ftrkseed;
+  TStnTrackSeedBlock* tsb; // , *ftsb;
+  TStnTrackSeed*      trkseed; // , *ftrkseed;
   TStnHelixBlock*     hb;//, *fhb;
   TStnHelix          *helix;//, *fhelix;
   TStnEvent*          ev;
 
   const mu2e::HelixSeed* khelix, *fkhelix;
-  const mu2e::KalSeed*   kseed, *fkseed;
+  const mu2e::KalSeed*   kseed; // , *fkseed;
 
   tsb    = (TStnTrackSeedBlock*) Block;
 
-  char                kseed_module_label[100], helix_block_name[100], short_helix_block_name[100], short_seed_block_name[100];
+  char                kseed_module_label[100], helix_block_name[100]; // , short_helix_block_name[100], short_seed_block_name[100];
   tsb->GetModuleLabel("mu2e::KalSeedCollection"  , kseed_module_label);
   tsb->GetModuleLabel("HelixBlockName"           , helix_block_name  );
-  tsb->GetModuleLabel("ShortHelixBlockName"      , short_helix_block_name  );
-  tsb->GetModuleLabel("ShortTrackSeedBlockName"  , short_seed_block_name);
 
   ev     = Block->GetEvent();
   hb     = (TStnHelixBlock*)     ev->GetDataBlock(helix_block_name      );
-  //  fhb    = (TStnHelixBlock*)     ev->GetDataBlock(short_helix_block_name);
-  ftsb   = (TStnTrackSeedBlock*) ev->GetDataBlock(short_seed_block_name );
   
   int    ntrkseed = tsb ->NTrackSeeds();
-  int    ntrk     = ftsb->NTrackSeeds();
-  int    nhelix   = hb  ->NHelices();
+  int    nhelix(0);
+
+  if (hb) nhelix = hb->NHelices();
   
   for (int i=0; i<ntrkseed; i++) {
     trkseed = tsb->TrackSeed(i);
     kseed   = trkseed->fTrackSeed;
 
-    //    fhelix   =  fhb  ->Helix(i);
-    fkhelix  = kseed->helix().get();//fhelix->fHelix;
+    fkhelix  = kseed->helix().get();
     int  helixIndex(-1);
     for (int j=0; j<nhelix; ++j){
       helix  = hb->Helix(j);
@@ -390,23 +355,27 @@ Int_t StntupleInitMu2eTrackSeedBlockLinks(TStnDataBlock* Block, AbsEvent* AnEven
       continue;
     }
     trkseed->SetHelixIndex(helixIndex);
+//-----------------------------------------------------------------------------
+// a track seed may be used as an input for diferent track fits, so the track index
+// is not a well defined concept - leave it to the analysis code
+//-----------------------------------------------------------------------------
     
-    int      trkIndex(-1);
-    for (int k=0; k<ntrk; ++k){
-      ftrkseed = ftsb->TrackSeed(k);
-      fkseed   = ftrkseed->fTrackSeed;
-      fkseed   = fkseed->kalSeed().get();
-      if (kseed == fkseed) {
-	trkIndex = k;
-	break;
-      }
-    }
+    // int      trkIndex(-1);
+    // for (int k=0; k<ntrk; ++k){
+    //   ftrkseed = ftsb->TrackSeed(k);
+    //   fkseed   = ftrkseed->fTrackSeed;
+    //   fkseed   = fkseed->kalSeed().get();
+    //   if (kseed == fkseed) {
+    // 	trkIndex = k;
+    // 	break;
+    //   }
+    // }
     
-    if (trkIndex < 0) {
-      printf(">>> ERROR: %s trackseed %i -> no KalRep associated\n", kseed_module_label, i);
-      continue;
-    }
-    trkseed->SetTrackIndex(trkIndex);
+    // if (trkIndex < 0) {
+    //   printf(">>> ERROR: %s trackseed %i -> no KalRep associated\n", kseed_module_label, i);
+    //   continue;
+    // }
+    // trkseed->SetTrackIndex(trkIndex);
    
   }
 //-----------------------------------------------------------------------------

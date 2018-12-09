@@ -55,20 +55,38 @@ TStnDataBlock::~TStnDataBlock() {
 }
 
 //-----------------------------------------------------------------------------
-// label coding: ModuleLabel@Description;Processname
+// label coding: CollTag@Description;ProcessName
+// it is possible that on entry CollTag = 'ModuleLabel:Description'
+// in that case description has to be empty
 //-----------------------------------------------------------------------------
 TNamed*  TStnDataBlock::AddCollName(const char* CollName, 
-				    const char* ModuleLabel, 
+				    const char* CollTag, 
 				    const char* Description, 
 				    const char* ProcessName) {
   TNamed* n;
 
+//-----------------------------------------------------------------------------
+// make sure we're not reeeeedefining anything
+//-----------------------------------------------------------------------------
   n = (TNamed*) fListOfCollNames->FindObject(CollName);
-
   if (n == 0) {
-    TString s = ModuleLabel;
+    TString label, desc, tag(CollTag);
+
+    int loc = tag.Index(':');
+    if (loc >= 0) {
+      label = tag(0,loc);
+//-----------------------------------------------------------------------------
+// 'CollTag' already contains description, ignore 'Description'
+//-----------------------------------------------------------------------------
+      desc  = tag(loc+1,tag.Length());
+    }
+    else {
+      label = CollTag;
+      desc  = Description;
+    }
+    TString s = label;
     s        += '@';
-    s        += Description;
+    s        += desc;
     s        += ';';
     if (ProcessName[0] != 0) {
       s      += ProcessName;
@@ -106,6 +124,9 @@ void TStnDataBlock::SetCollName(const char* Process,
 }
 
 //-----------------------------------------------------------------------------
+// collection tag is stored in the n.Title() as 'label@description;process'
+// where '@' and ';' are used as special characters - separators
+//-----------------------------------------------------------------------------
 void TStnDataBlock::GetModuleLabel(const char* CollName, char* ModuleLabel) {
 
   int len(0);
@@ -118,12 +139,9 @@ void TStnDataBlock::GetModuleLabel(const char* CollName, char* ModuleLabel) {
     len = s.Index('@');
     strncpy(ModuleLabel,s.Data(),len);
     ModuleLabel[len] = 0;
-
-    //    printf(" collname = %-40s  n = %-s\n",CollName,n->GetTitle());
   }
   else {
     ModuleLabel[0] = 0;
-    //    printf(" collname = %-40s  n = ... undefined...\n",CollName);
   }
 }
 

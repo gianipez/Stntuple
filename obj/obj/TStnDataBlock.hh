@@ -116,10 +116,9 @@ public:
   void  SetEvent      (TStnEvent*  ev) { fEvent = ev; }
   void  SetValid      (Int_t    Valid) { fValid = Valid; }
 
-
-  TNamed*  AddCollName(const char* CollName        , 
-		       const char* ModuleLabel     , 
-		       const char* Description     ,
+  TNamed*  AddCollName(const char* CollName         , 
+		       const char* CollTag          , 
+		       const char* Description = "" ,
 		       const char* ProcessName = "" );
 
   void  SetExternalInit(Int_t (*f)(TStnDataBlock*, AbsEvent*, Int_t)) { 

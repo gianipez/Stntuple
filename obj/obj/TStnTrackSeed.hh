@@ -79,16 +79,17 @@ public:
 //-----------------------------------------------------------------------------
   const mu2e::KalSeed*      fTrackSeed;  //!
   const mu2e::CaloCluster*  fCluster;    //!
-  //  const std::vector<art::Ptr<mu2e::StrawHit> > *fSelectedTrkHits;
+  int                       fNumber;     //! sequential number in the list
 //-----------------------------------------------------------------------------
 // methods
 //-----------------------------------------------------------------------------
-  TStnTrackSeed(int i = -1);
+  TStnTrackSeed(int Number = -1);
   ~TStnTrackSeed();
 //-----------------------------------------------------------------------------
 // accessors
 //-----------------------------------------------------------------------------
   int     NHits      () { return  fNHits;      }
+  int     Number     () { return  fNumber;     } 
   int     HelixIndex () { return  fHelixIndex; }
   int     TrackIndex () { return  fTrackIndex; }
   int     PDG1       () { return  fSimpPDG1; }
@@ -120,14 +121,12 @@ public:
   TLorentzVector  Origin1  () { return fOrigin1; }
   TLorentzVector  Mom2     () { return fMom2; }
   TLorentzVector  Origin2  () { return fOrigin2; }
-
-
 //-----------------------------------------------------------------------------
 // setters
 //-----------------------------------------------------------------------------
   void    SetHelixIndex(int I) { fHelixIndex = I; }
   void    SetTrackIndex(int I) { fTrackIndex = I; }
-
+  void    SetNumber    (int I) { fNumber     = I; }
 //-----------------------------------------------------------------------------
 // overloaded methods of TObject
 //-----------------------------------------------------------------------------

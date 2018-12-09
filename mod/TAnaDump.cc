@@ -771,7 +771,7 @@ void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix  ,
     printf("---------------------------------------------------------------------------------------------------------\n");
   }
  
-  if ((opt = "") || (opt.Index("data") >= 0)) {
+  if ((opt == "") || (opt.Index("data") >= 0)) {
     const mu2e::StrawDigiMCCollection* mcdigis(0);
     art::Handle<mu2e::StrawDigiMCCollection> mcdH;
     fEvent->getByLabel(StrawDigiMCCollTag, mcdH);
@@ -950,13 +950,10 @@ void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix  ,
 
 //-----------------------------------------------------------------------------
 void TAnaDump::printHelixSeedCollection(const char* HelixSeedCollTag, 
+					int         PrintHits       ,
 					const char* StrawHitCollTag ,
-					const char* StrawDigiCollTag,
-					const char* ProductName     , 
-					const char* ProcessName     ,
-					int         hitOpt     ) {
+					const char* StrawDigiCollTag) {
   
-
   const mu2e::HelixSeedCollection*       list_of_helixSeeds;
   art::Handle<mu2e::HelixSeedCollection> hsH;
 
@@ -992,14 +989,19 @@ void TAnaDump::printHelixSeedCollection(const char* HelixSeedCollTag,
   const mu2e::HelixSeed *helix;
 
   int banner_printed = 0;
+
+  char popt[20];
+  strcpy(popt,"data");
+  if (PrintHits > 0) strcat(popt,"+hits");
+
   for (int i=0; i<nhelices; i++) {
     helix = &list_of_helixSeeds->at(i);
     if (banner_printed == 0) {
       printHelixSeed(helix,HelixSeedCollTag,StrawHitCollTag,StrawDigiCollTag,"banner");
       banner_printed = 1;
     }
-    if (hitOpt>0) printHelixSeed(helix,HelixSeedCollTag,StrawHitCollTag,StrawDigiCollTag,"data");
 
+    printHelixSeed(helix,HelixSeedCollTag,StrawHitCollTag,StrawDigiCollTag,popt);
   }
 }
 
@@ -2756,13 +2758,13 @@ void TAnaDump::printStepPointMC(const mu2e::StepPointMC* Step, const char* Detec
 //2014-26-11 gianipez added the timeoffsets to the steppoints time
 
     double stepTime(-9999.);
-    // if (fTimeOffsets) {
-    //   fTimeOffsets->updateMap(*fEvent);
-    //   stepTime = fTimeOffsets->timeWithOffsetsApplied(*Step);
-    // }
-    // else {
+    if (fTimeOffsets) {
+      fTimeOffsets->updateMap(*fEvent);
+      stepTime = fTimeOffsets->timeWithOffsetsApplied(*Step);
+    }
+    else {
       stepTime = Step->time();
-    // }
+    }
 
     //    const mu2e::PhysicalVolumeInfo& pvinfo = volumes->at(sim->startVolumeIndex());
     //    const mu2e::PhysicalVolumeInfo& pvinfo = volumes->at(Step->volumeId()); - sometimes crashes..

@@ -11,7 +11,8 @@
 #include "Stntuple/obj/TStnTrackSeed.hh"
 
 class TStnTrackSeedBlock: public TStnDataBlock {
-  friend Int_t StntupleInitMu2eTrackSeedBlockLinks(TStnDataBlock*, AbsEvent* , int);
+  friend Int_t StntupleInitMu2eTrackSeedBlock     (TStnDataBlock*, AbsEvent*, int);
+  friend Int_t StntupleInitMu2eTrackSeedBlockLinks(TStnDataBlock*, AbsEvent*, int);
 public:
 //----------------------------------------------------------------------------
 //  data members
@@ -40,7 +41,6 @@ public:
   TStnTrackSeed*   TrackSeed(int I) {
     return (TStnTrackSeed*) fListOfTrackSeeds->UncheckedAt(I); 
   }
-
 //-----------------------------------------------------------------------------
 // overloaded functions of TObject
 //-----------------------------------------------------------------------------

@@ -1,12 +1,21 @@
 # -*- mode: tcl -*-
 #------------------------------------------------------------------------------
 # defines templates, assume that standardProducers.fcl has been included 
+# a 'templates' file should include everything needed
+# package 'prolog' files shouldn't be including anything
 #------------------------------------------------------------------------------
+#include "fcl/minimalMessageService.fcl"
+#include "fcl/standardProducers.fcl"
+#include "fcl/standardServices.fcl"
+#------------------------------------------------------------------------------
+# local prolog
+#------------------------------------------------------------------------------
+#include "Stntuple/fcl/prolog.fcl"
+
 BEGIN_PROLOG
 #------------------------------------------------------------------------------
 # declarations of sequences do not require the sequence elements to be defined
 #------------------------------------------------------------------------------
-#  generatorSeq  : [ generate, g4run, detectorFilter, @sequence::EventMixing.TimeMaps ]
   generatorSeq  : [ generate, g4run, detectorFilter, @sequence::CommonMC.DigiSim ]
 
 #  gen_mix_seq   : [ generate, g4run, detectorFilter,
@@ -21,15 +30,6 @@ BEGIN_PROLOG
 # MC generator and hit makers
 
   gen_hits_seq  : [ @sequence::generatorSeq, @sequence::hitMakerSeq ]
-
-# calorimeter cluster reconstruction
-#  calRecoSeq    : [ @sequence::CaloCluster.Reco ]
-
-# hit pre-making for TrkPatRec;
-#  tprPrepHitSeq : [ FlagBkgHits ]
-
-# CalPatRec
-#  cprPrepHitSeq : [ DeltaFinder ]
 
   trkPatRecSeq     : [ @sequence::Tracking.TPRDeM, MergePatRec ]  # an attempt to ensure that the track collection has a fixed name
 
@@ -51,7 +51,6 @@ BEGIN_PROLOG
   trkPatRecDmmSeq  : [ @sequence::Tracking.TPRDmuM, MergePatRecDmm ]
 
   calPatRecDemSeq  : [ @sequence::CalPatRec.dem_reco, MergePatRecDem ]
-
 
 # event for the downstream particles, avikPID requires running both electron and muon track reconstruction 
 # hit making - just once, but two modules
@@ -192,41 +191,6 @@ BEGIN_PROLOG
 #                                          @sequence::TrackCaloMatching.matching,
 # 					   ParticleID, 
 # 					   MuHitDisplay]
-# 
-# OBSOLETE   trkpatrec_dem_reco_stnmaker_seq : [ @sequence::CaloCluster.Reco, 
-# OBSOLETE 				      @sequence::trkPatRecDemSeq,
-# OBSOLETE                                       @sequence::TrackCaloMatching.matching_dem,
-# OBSOLETE #				      AvikPID, 
-# OBSOLETE 				      @sequence::stnmaker_dem_seq ]
-# OBSOLETE 
-# OBSOLETE   calpatrec_dem_reco_stnmaker_seq : [ @sequence::CaloCluster.Reco, @sequence::calPatRecDemSeq,
-# OBSOLETE 				      @sequence::trkPatRecDemSeq,
-# OBSOLETE #				      AvikPID, 
-# OBSOLETE 				      @sequence::stnmaker_dem_seq ]
-# OBSOLETE 
-# OBSOLETE   allpatrec_dem_reco_stnmaker_seq : [ @sequence::CaloCluster.Reco, @sequence::allPatRecDemSeq,
-# OBSOLETE                                       @sequence::TrackCaloMatching.matching_dem,
-# OBSOLETE #				      ParticleIDDem,
-# OBSOLETE #				      AvikPID,
-# OBSOLETE 				      @sequence::stnmaker_dem_seq ]
-# OBSOLETE #------------------------------------------------------------------------------
-# OBSOLETE   trkpatrec_dem_dmm_reco_stnmaker_seq : [ @sequence::CaloCluster.Reco, 
-# OBSOLETE 					  @sequence::trkPatRecDemDmmSeq,
-# OBSOLETE 					  @sequence::avikPidSeq, @sequence::stnmaker_dem_dmm_seq ]
-# OBSOLETE 
-# OBSOLETE   calpatrec_dem_dmm_reco_stnmaker_seq : [ @sequence::CaloCluster.Reco, @sequence::calPatRecDemDmmSeq,
-# OBSOLETE 					  @sequence::avikPidSeq, @sequence::stnmaker_dem_dmm_seq ]
-# OBSOLETE 
-# OBSOLETE   allpatrec_dem_dmm_reco_stnmaker_seq : [ @sequence::CaloCluster.Reco, 
-# OBSOLETE 					  @sequence::allPatRecDemDmmSeq,
-# OBSOLETE #					  @sequence::avikPidSeq, 
-# OBSOLETE 					  @sequence::stnmaker_dem_dmm_seq ]
-# OBSOLETE #------------------------------------------------------------------------------
-# gen_allpatrec_dem_dmm_reco_stnmaker_seq : [ @sequence::generatorSeq, @sequence::hitMakerSeq       ,
-#					      @sequence::allpatrec_dem_dmm_reco_stnmaker_seq ]
-#
-#   genmix_allpatrec_dem_dmm_reco_stnmaker_seq : [ @sequence::gen_mix_seq , @sequence::hitMakerSeq       ,FIXME
-# 						 @sequence::allpatrec_dem_dmm_reco_stnmaker_seq ]
 END_PROLOG
 #------------------------------------------------------------------------------
 # input module definition
@@ -303,6 +267,7 @@ Stntuple : { @table::Stntuple             # defined in Stntuple/fcl/prolog.fcl
 	@table::TrackerMC.producers       # defined in TrackerMC
 	@table::Tracking.producers        # defined in TrkPatRec
 	@table::TrkHitReco.producers      # defined in TrkHitReco
+	@table::CommonTrk.producers
 
 	compressDigiMCs : { @table::DigiCompression.Primary  # defined in Filters/fcl/
 	    crvDigiMCTag         : ""
@@ -378,7 +343,9 @@ Stntuple.mix                 : [ dioMixer, protonMixer, neutronMixer, photonMixe
 Stntuple.mix_time_map        : [ @sequence::Stntuple.mix, @sequence::CommonMC.DigiSim ]
 Stntuple.gen_g4_mix_time_map : [ @sequence::Stntuple.gen_g4, @sequence::Stntuple.mix, @sequence::CommonMC.DigiSim ]
 Stntuple.digis               : [ @sequence::CaloDigiMC.DigiSim, @sequence::TrackerMC.DigiSim,  compressDigiMCs ]
-
+#------------------------------------------------------------------------------
+# proton reconstruction
+#------------------------------------------------------------------------------
 kludge_Tracking_TPRDpP       : [ TimeClusterFinder, HelixFinder, KSFDpP, KFFDpP ]
 
 Stntuple.trk_hit_reco        : [ makeSH, makePH, FlagBkgHits]
@@ -444,6 +411,25 @@ Stntuple.dep_reco        : [ @sequence::Tracking.TPRDeP  , @sequence::CalPatRec.
 
 Stntuple.dmp_reco        : [ @sequence::Tracking.TPRDmuP , @sequence::CalPatRec.dmp_reco, MergePatRecDmp, 
 			     @sequence::TrackCaloMatching.matching_dmp, AvikPIDNewDmp ]
+#------------------------------------------------------------------------------
+# new tracking sequences: 2 lists in the end, 'MH' is the new default (MergeHelix)
+#------------------------------------------------------------------------------
+Stntuple.reco_De       : [ @sequence::CommonTrk.reco_DeMH                  ,
+			   @sequence::TrackCaloMatching.matching_DeMHPar   ,
+			   AvikPIDNewDeMHPar                               ,
+			   @sequence::TrackCaloMatching.matching_DeMHDar   ,
+			   AvikPIDNewDeMHDar
+			  ]
+#------------------------------------------------------------------------------
+# muon reconstruction path
+# new tracking sequences: 2 lists in the end, 'MH' is the new default (MergeHelix)
+#------------------------------------------------------------------------------
+Stntuple.reco_Dmu      : [ @sequence::CommonTrk.reco_DmuMH                 ,
+			   @sequence::TrackCaloMatching.matching_DmuMHPar  ,
+			   AvikPIDNewDmuMHPar                              ,
+			   @sequence::TrackCaloMatching.matching_DmuMHDar  ,
+			   AvikPIDNewDmuMHDar
+			  ]
 #----------------------------------------------------------------------------------------------------
 # CalPatRec is not used for upstream reconstruction
 #----------------------------------------------------------------------------------------------------
@@ -523,26 +509,6 @@ Stntuple.paths : {
 				       @sequence::Stntuple.stnmaker_dem_ump
 				      ]
 
-    path_gen_digi_reco_stn_dem_dmp_ump : [ @sequence::Stntuple.gen_g4_time_map,
-					   @sequence::Stntuple.digis          ,
-					   @sequence::Stntuple.trk_hit_reco       ,
-					   @sequence::Stntuple.cal_reco       ,
-					   @sequence::Stntuple.dem_reco       ,
-					   @sequence::Stntuple.dmp_reco       ,
-					   @sequence::Stntuple.ump_reco       ,
-					   @sequence::Stntuple.stnmaker
-					  ]
-
-    path_gen_digi_reco_stn_dem_dmm_umm : [ @sequence::Stntuple.gen_g4_time_map,
-					   @sequence::Stntuple.digis          ,
-					   @sequence::Stntuple.trk_hit_reco       ,
-					   @sequence::Stntuple.cal_reco       ,
-					   @sequence::Stntuple.dem_reco       ,
-					   @sequence::Stntuple.dmm_reco       ,
-					   @sequence::Stntuple.umm_reco       ,
-					   @sequence::Stntuple.stnmaker
-					  ]
-
     path_gen_digi_reco_stn_tcm : [ @sequence::Stntuple.gen_g4_time_map,
 				   @sequence::Stntuple.digis          ,
 				   @sequence::Stntuple.trk_hit_reco       ,
@@ -584,23 +550,6 @@ Stntuple.paths : {
 # FIXME				   @sequence::Stntuple.mpr_reco       ,
 # FIXME				   @sequence::Stntuple.stnmaker_tcm
 # FIXME				  ]
-#------------------------------------------------------------------------------
-# run all 8 reconstruction passes - never tried
-#------------------------------------------------------------------------------
-    path_gen_digi_all_reco_ump : [ @sequence::Stntuple.gen_g4_time_map,
-				   @sequence::Stntuple.digis          ,
-				   @sequence::Stntuple.trk_hit_reco   ,
-				   @sequence::Stntuple.cal_reco       ,
-				   @sequence::Stntuple.dem_reco       ,
-				   @sequence::Stntuple.dmm_reco       ,
-				   @sequence::Stntuple.dep_reco       ,
-				   @sequence::Stntuple.dmp_reco       ,
-				   @sequence::Stntuple.uem_reco       ,
-				   @sequence::Stntuple.umm_reco       ,
-				   @sequence::Stntuple.uep_reco       ,
-				   @sequence::Stntuple.ump_reco       ,
-				   @sequence::Stntuple.stnmaker_all
-				  ]
 }
 
 
@@ -616,11 +565,9 @@ physics : {
 # MakeStereoHits also produces the StrawHitPosition collection
 #	   , dioMixer, protonMixer, neutronMixer, photonMixer, ootMixer, flashMixer
 #------------------------------------------------------------------------------
-    event_filter   : [ EventFilter ]
-
+    event_filter   : [ EventFilter             ]
     gen_hits       : [ @sequence::gen_hits_seq ]
-
-    mc             : [ @sequence::gen_hits_seq, @sequence::CaloCluster.Reco ]
+    mc             : [ @sequence::gen_hits_seq , @sequence::CaloCluster.Reco ]
 #
     allpatrec_reco              : [ @sequence::CaloCluster.Reco, @sequence::allPatRecSeq ]
     trkpatrec_reco              : [ @sequence::CaloCluster.Reco, @sequence::trkPatRecSeq ]
@@ -656,20 +603,6 @@ physics : {
 #------------------------------------------------------------------------------
 # AvikPID requires both electron and muon reconstruction sequences
 #------------------------------------------------------------------------------
-#    allpatrec_dem_reco_stnmaker : [ @sequence::allpatrec_dem_reco_stnmaker_seq ]
-#    calpatrec_dem_reco_stnmaker : [ @sequence::calpatrec_dem_reco_stnmaker_seq ]
-#    trkpatrec_dem_reco_stnmaker : [ @sequence::trkpatrec_dem_reco_stnmaker_seq ]
-
-#    allpatrec_dem_dmm_reco_stnmaker : [ @sequence::allpatrec_dem_dmm_reco_stnmaker_seq ]
-#    calpatrec_dem_dmm_reco_stnmaker : [ @sequence::calpatrec_dem_dmm_reco_stnmaker_seq ]
-#    trkpatrec_dem_dmm_reco_stnmaker : [ @sequence::trkpatrec_dem_dmm_reco_stnmaker_seq ]
-
-#    gen_allpatrec_dem_dmm_reco_stnmaker : [ @sequence::gen_hits_seq, 
-#					    @sequence::allpatrec_dem_dmm_reco_stnmaker_seq ]
-
-#     genmix_allpatrec_dem_dmm_reco_stnmaker : [ @sequence::gen_mix_seq , @sequence::hitMakerSeq       ,  FIXME
-# 					       @sequence::CaloCluster.Reco, @sequence::allPatRecDemDmmSeq,
-# 					       @sequence::avikPidSeq, @sequence::stnmaker_seq        ]
 #------------------------------------------------------------------------------
 # event display paths
 #------------------------------------------------------------------------------

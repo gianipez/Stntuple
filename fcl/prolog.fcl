@@ -11,7 +11,9 @@ TimeOffsetMaps : { inputs : [ "compressDigiMCs:protonTimeMap", "compressDigiMCs:
 
 StntupleModuleFclDefaults : {
     interactiveMode : 0
-    timeOffsetMaps  : @local::TimeOffsetMaps
+    TAnaDump : {
+	timeOffsetMaps  : @local::TimeOffsetMaps
+    }
     debugBits       : { 
 	# bit0:1  
 	# bit1:1 
@@ -28,78 +30,69 @@ StntupleMakerTemplate : { module_type:StntupleMaker
 #------------------------------------------------------------------------------
 # define which branches to fill by default
 #------------------------------------------------------------------------------    
-    makeCalData         : 0
-    makeClusters        : 1
-    makeGenp            : 1
-    makePid             : 1
-    makeSimp            : 1
-    makeStepPointMC     : 0
-    makeStrawData       : 0
-    makeTracks          : 1
-    makeTrackStrawHits  : 0
-    makeTrigger         : 0
-    makeTrackSeeds      : 0
-    makeTimeClusters    : 0
-    makeHelices         : 0
-    makeVirtualHits     : 1
+    makeCalData          : 0
+    makeClusters         : 1
+    makeGenp             : 1
+    makePid              : 1
+    makeSimp             : 1
+    makeStepPointMC      : 0
+    makeStrawData        : 0
+    makeTracks           : 1
+    makeTrackStrawHits   : 0
+    makeTrigger          : 0
+    makeTrackSeeds       : 0
+    makeTimeClusters     : 0
+    makeHelices          : 0
+    makeVDHits           : 1
     
     KalDiag              : { @table::KalDiagDirect    }
     DoubletAmbigResolver : { @table::TrkReco.DoubletAmbigResolver }
 
-    g4ModuleLabel        : "compressDigiMCs"
     caloCrystalHitsMaker : "CaloCrystalHitFromHit"
     caloClusterMaker     : "CaloClusterFromProtoCluster"
 #------------------------------------------------------------------------------
 # sometimes may need to store multiple track blocks, thus - vectors
 # by default, always run MergePatRec, which, in case only one track reconstruction
 # module is running upstream, simply copies its output
+# 'spmc' stands for 'StepPointMC'
 #------------------------------------------------------------------------------
-    makeStrawHitModuleLabel : "makeSH"
-    makeStrawDigiModuleLabel: "compressDigiMCs"    # was "makeSD"
-    makeSimpModuleLabel     : "compressDigiMCs"    # was "g4run" before
-    vdCollName              : "virtualdetector"
-    makeVdetHitsModuleLabel : "compressDigiMCs"    # was "g4run" before
-    generatorModuleLabel    : "compressDigiMCs"    # was "generate" 
+    strawHitsCollTag     : "makeSH"
+    strawDigiCollTag     : "compressDigiMCs"     # was "makeSD"
+    simpCollTag          : "compressDigiMCs"     # was "g4run" before
+    spmcCollTag          : "compressDigiMCs"     # StepPointMC Coll Tag
+    vdHitsCollTag        : "compressDigiMCs"     # was "g4run" before
+    genpCollTag          : "compressDigiMCs"     # was "generate" 
+    
+    timeClusterBlockName : ["TimeClusterBlock" ] # to be renamed, *FIXME*
+    timeClusterCollTag   : ["CalTimePeakFinder"] # to be renamed into CalTimeClusterFinder *FIXME* 
 
-    timeClusterBlockName    : ["TimeClusterBlock"    ]   # to be renamed, *FIXME*
-    timeClusterModuleLabel  : ["CalTimePeakFinder"]   # to be renamed into CalTimeCLusterFinder *FIXME* 
+    helixBlockName       : []
+    helixModuleLabel     : []
 
-    helixBlockName          : []
-    helixModuleLabel        : []
+    trackSeedBlockName   : []
+    trackSeedModuleLabel : []
 
-    trackSeedBlockName      : []
-    trackSeedModuleLabel    : []
+    trackBlockName       : [ "TrackBlock"   ]
+    trackCollTag         : [ "MergePatRec"  ]
+    trackTsBlockName     : [                ]
+    trackTsCollTag       : [                ]
+    tciCollTag           : [ "TrkExtrapol"  ]
+    tcmCollTag           : [ "CaloMatching" ]
+    pidBlockName         : [ "PidBlock"     ]
+    pidCollTag           : [ "ParticleID"   ]    #   [ "AvikPID"      ]
+    trackSHBlockName     : [ "TrackHitBlock"] 
 
-    shortHelixBlockName       : []
-    shortHelixModuleLabel     : []
+    trkExtrapol          : TrkExtrapol
+    trkCalMatch          : CaloMatching
 
-    shortTrackSeedBlockName   : []
-    shortTrackSeedModuleLabel : []
-
-    trackBlockName          : [ "TrackBlock"   ]
-    trkRecoModuleLabel      : [ "MergePatRec"  ]
-    trkExtrapolModuleLabel  : [ "TrkExtrapol"  ]
-    trkCaloMatchModuleLabel : [ "CaloMatching" ]
-    pidBlockName            : [ "PidBlock"     ]
-    pidModuleLabel          : [ "ParticleID"   ]
-    #    pidModuleLabel          : [ "AvikPID"      ]
-    fitParticle             : [             11 ] # 11:electron  , 13:muon etc
-    fitDirection            : [              0 ] #  0:downstream,  1:upstrea
-    trackStrawHitBlockName  : [ "TrackHitBlock"] 
-
-    trkExtrapol             : TrkExtrapol
-    trkCalMatch             : CaloMatching
-    pidDem                  : ParticleID
-
-    minTActive              : 0.     # ns
-    minECrystal             : 1.0    # MeV
-    minSimpEnergy           : 1.0    # MeV
+    minTActive           : 0.     # ns
+    minECrystal          : 1.0    # MeV
+    minSimpEnergy        : 1.0    # MeV
 #------------------------------------------------------------------------------
 # this is the default for Stage1 simulation
 #------------------------------------------------------------------------------
-    stepPointMCBlockName    : [ "SpmcBlock"      ]
-    stepPointMCModuleLabel  : [ "muonBeamFilter" ]
-    stepPointMCProductName  : [ "mubeam"         ]
+    spmcBlockName        : [ "SpmcBlock"             ]
+    spmcCollName         : [ "muonBeamFilter:mubeam" ]
 }
 
 #------------------------------------------------------------------------------
@@ -110,34 +103,31 @@ MuHitDisplay: { module_type:MuHitDisplay                 # the class name;
 
     interactiveMode              : 1
     
-    crvRecoPulsesModuleLabel     : CrvRecoPulses
+    crvRecoPulsesCollTag         : CrvRecoPulses
     showCRVOnly 		 : false
     showTracks                   : true
     
-    generatorModuleLabel         : generate
-    g4ModuleLabel                : g4run
-    strawHitMakerModuleLabel     : makeSH
-    strawDigiMakerModuleLabel    : "compressDigiMCs" #  was "makeSD"
-    strawHitFlagMakerModuleLabel : "DeltaFinder:StrawHits"
-    comboHitMakerModuleLabel     : makePH
+    genpCollTag                  : generate
+    spmcCollTag                  : g4run
+    strawHitCollTag              : makeSH
+    strawDigiCollTag             : "compressDigiMCs" #  was "makeSD"
+    strawHitFlagCollTag          : "DeltaFinder:StrawHits"
+    comboHitCollTag              : makePH
 
-    caloCrystalHitsMaker         : CaloCrystalHitFromHit
-    caloClusterModuleLabel       : CaloClusterFromProtoCluster
+    caloCrystalHitsCollTag       : CaloCrystalHitFromHit
+    caloClusterCollTag           : CaloClusterFromProtoCluster
 
-    timeClusterModuleLabel       : CalTimePeakFinder
-    trkRecoModuleLabel           : MergePatRec
+    timeClusterCollTag           : CalTimePeakFinder
+    trackCollTag                 : MergePatRec
+
     trkExtrapol                  : TrackCaloIntersection
     trkCalMatch                  : TrackCaloMatching
 
-    fitParticle                  : 11  # 11:electron
-    fitDirection                 : 0   # 0:downstream, 1:upstream
-
-    pidModuleLabel               : ParticleID
+    pidCollTag                   : ParticleID
     
     # if set to true, all hits will be displayed unconditionally
     # otherwise, display only hits with right flags
     displayBackgroundHits        : true
-    useStereoHits                : false
 
     #      goodHitMask                 : ["EnergySelection","RadiusSelection","TimeSelection"]
     goodHitMask                  : ["EnergySelection", "RadiusSelection"]
@@ -192,61 +182,52 @@ Stntuple : {
 	StntupleMaker     : { @table::StntupleMakerTemplate }
 
 	StntupleMakerCpr  : { @table::StntupleMakerTemplate 
-	    fitParticle               : [                         11 ]
-	    fitDirection              : [                          0 ]
 	    trackBlockName            : [ "TrackBlock"               ] 
-	    trackStrawHitBlockName    : [ "TrackHitBlock"            ] 
-	    trkRecoModuleLabel        : [ "MergePatRecCpr"           ]
-	    trkExtrapolModuleLabel    : [ "TrackCaloIntersectionCpr" ]
-	    trkCaloMatchModuleLabel   : [ "TrackCaloMatchingCpr"     ]
+	    trackSHBlockName          : [ "TrackHitBlock"            ] 
+	    trackCollTag              : [ "MergePatRecCpr"           ]
+	    tciCollTag                : [ "TrackCaloIntersectionCpr" ]
+	    tcmCollTag                : [ "TrackCaloMatchingCpr"     ]
 
 	    makePid                   : 0
 	    pidBlockName              : [ "PidBlock"                 ] 
-	    pidModuleLabel            : [ "AvikPIDNewCpr"            ]
+	    pidCollTag                : [ "AvikPIDNewCpr"            ]
 
 	    makeTrackSeeds            : 1
-	    shortTrackSeedModuleLabel : ["MergePatRecCpr"            ]
 	}
 
 	StntupleMakerDem  : { @table::StntupleMakerTemplate 
 	    makePid                 : 1
 	    trackBlockName          : [ "TrackBlockDem"            ] 
-	    trackStrawHitBlockName  : [ "TrackHitBlockDem"         ] 
-	    trkRecoModuleLabel      : [ "MergePatRecDem"           ]
-	    trkExtrapolModuleLabel  : [ "TrackCaloIntersectionDem" ]
-	    trkCaloMatchModuleLabel : [ "TrackCaloMatchingDem"     ]
+	    trackSHBlockName        : [ "TrackHitBlockDem"         ] 
+	    trackCollTag            : [ "MergePatRecDem"           ]
+	    tciCollTag              : [ "TrackCaloIntersectionDem" ]
+	    tcmCollTag              : [ "TrackCaloMatchingDem"     ]
 	    pidBlockName            : [ "PidBlockDem"              ] 
-	    pidModuleLabel          : [ "AvikPIDNewDem"            ]
-	    fitParticle             : [                         11 ]
-	    fitDirection            : [                          0 ]
+	    pidCollTag              : [ "AvikPIDNewDem"            ]
 	}
 
 	StntupleMakerDep  : { @table::StntupleMakerTemplate 
 	    makePid                 : 1
 	    trackBlockName          : [ "TrackBlockDep"            ] 
-	    trackStrawHitBlockName  : [ "TrackHitBlockDep"         ] 
-	    trkRecoModuleLabel      : [ "MergePatRecDep"           ]
-	    trkExtrapolModuleLabel  : [ "TrackCaloIntersectionDep" ]
-	    trkCaloMatchModuleLabel : [ "TrackCaloMatchingDep"     ]
+	    trackSHBlockName        : [ "TrackHitBlockDep"         ] 
+	    trackCollTag            : [ "MergePatRecDep"           ]
+	    tciCollTag              : [ "TrackCaloIntersectionDep" ]
+	    tcmCollTag              : [ "TrackCaloMatchingDep"     ]
 	    pidBlockName            : [ "PidBlockDep"              ] 
-	    pidModuleLabel          : [ "AvikPIDNewDep"            ]
-	    fitParticle             : [                        -11 ]
-	    fitDirection            : [                          0 ]
+	    pidCollTag              : [ "AvikPIDNewDep"            ]
 	}
 #------------------------------------------------------------------------------
 # downstream proton reco
 #------------------------------------------------------------------------------
 	StntupleMakerDpp  : { @table::StntupleMakerTemplate 
 	    makePid                 : 0
-	    trackBlockName          : [ "TrackBlockDpp"            ] 
-	    trackStrawHitBlockName  : [ "TrackHitBlockDpp"         ] 
-	    trkRecoModuleLabel      : [ "MergePatRecDpp"           ]
-	    trkExtrapolModuleLabel  : [ "TrackCaloIntersectionDpp" ]
-	    trkCaloMatchModuleLabel : [ "TrackCaloMatchingDpp"     ]
-	    pidBlockName            : [ "PidBlockDpp"              ] 
-	    pidModuleLabel          : [ "AvikPIDNewDpp"            ]
-	    fitParticle             : [                       2212 ]
-	    fitDirection            : [                          0 ]
+	    trackBlockName          : [ "TrackBlockDpp"            ]
+	    trackSHBlockName        : [ "TrackHitBlockDpp"         ]
+	    trackCollTag            : [ "MergePatRecDpp"           ]
+	    tciCollTag              : [ "TrackCaloIntersectionDpp" ]
+	    tcmCollTag              : [ "TrackCaloMatchingDpp"     ]
+	    pidBlockName            : [ "PidBlockDpp"              ]
+	    pidCollTag              : [ "AvikPIDNewDpp"            ]
 	}
 #------------------------------------------------------------------------------
 # downstream mu- reco
@@ -254,14 +235,12 @@ Stntuple : {
 	StntupleMakerDmm  : { @table::StntupleMakerTemplate 
 	    makePid                 : 1
 	    trackBlockName          : [ "TrackBlockDmm"            ] 
-	    trackStrawHitBlockName  : [ "TrackHitBlockDmm"         ] 
-	    trkRecoModuleLabel      : [ "MergePatRecDmm"           ]
-	    trkExtrapolModuleLabel  : [ "TrackCaloIntersectionDmm" ]
-	    trkCaloMatchModuleLabel : [ "TrackCaloMatchingDmm"     ]
+	    trackSHBlockName        : [ "TrackHitBlockDmm"         ] 
+	    trackCollTag            : [ "MergePatRecDmm"           ]
+	    tciCollTag              : [ "TrackCaloIntersectionDmm" ]
+	    tcmCollTag              : [ "TrackCaloMatchingDmm"     ]
 	    pidBlockName            : [ "PidBlockDmm"              ] 
-	    pidModuleLabel          : [ "AvikPIDNewDmm"            ]
-	    fitParticle             : [                         13 ]
-	    fitDirection            : [                          0 ]
+	    pidCollTag              : [ "AvikPIDNewDmm"            ]
 	}
 #------------------------------------------------------------------------------
 # upstream mu+ reco - explicitly 
@@ -269,14 +248,11 @@ Stntuple : {
 	StntupleMakerUmp  : { @table::StntupleMakerTemplate 
 	    makePid                 : 0
 	    trackBlockName          : [ "TrackBlockUmp"            ] 
-	    trackStrawHitBlockName  : [ "TrackHitBlockUmp"         ] 
-	    trkRecoModuleLabel      : [ "MergePatRecUmp"           ]
-	    trkExtrapolModuleLabel  : [ "TrackCaloIntersectionUmp" ]
-	    trkCaloMatchModuleLabel : [ "TrackCaloMatchingUmp"     ]
-	    pidModuleLabel          : [ "AvikPIDNewUmp"            ]
-	    fitParticle             : [                        -13 ]
-	    fitDirection            : [                          1 ]
-	    trackStrawHitBlockName  : [ "TrackHitBlockUmp"         ] 
+	    trackSHBlockName        : [ "TrackHitBlockUmp"         ] 
+	    trackCollTag            : [ "MergePatRecUmp"           ]
+	    tciCollTag              : [ "TrackCaloIntersectionUmp" ]
+	    tcmCollTag              : [ "TrackCaloMatchingUmp"     ]
+	    pidCollTag              : [ "AvikPIDNewUmp"            ]
 	}
 #------------------------------------------------------------------------------
 # explicitly store 2 versions of track reco - downstream e- and mu- reco
@@ -284,14 +260,12 @@ Stntuple : {
 	StntupleMakerDemDmm  : { @table::StntupleMakerTemplate 
 	    makePid                 : 1
 	    trackBlockName          : [ "TrackBlockDem"            , "TrackBlockDmm"           ] 
-	    trackStrawHitBlockName  : [ "TrackHitBlockDem"         , "TrackHitBlockDmm"        ] 
-	    trkRecoModuleLabel      : [ "MergePatRecDem"           , "MergePatRecDmm"          ]
-	    trkExtrapolModuleLabel  : [ "TrackCaloIntersectionDem" , "TrackCaloIntersectionDmm"]
-	    trkCaloMatchModuleLabel : [ "TrackCaloMatchingDem"     , "TrackCaloMatchingDmm"    ]
+	    trackSHBlockName        : [ "TrackHitBlockDem"         , "TrackHitBlockDmm"        ] 
+	    trackCollTag            : [ "MergePatRecDem"           , "MergePatRecDmm"          ]
+	    tciCollTag              : [ "TrackCaloIntersectionDem" , "TrackCaloIntersectionDmm"]
+	    tcmCollTag              : [ "TrackCaloMatchingDem"     , "TrackCaloMatchingDmm"    ]
 	    pidBlockName            : [ "PidBlockDem"              , "PidBlockDmm"             ] 
-	    pidModuleLabel          : [ "AvikPIDNewDem"            , "AvikPIDNewDmm"           ]
-	    fitParticle             : [                11,                13 ]
-	    fitDirection            : [                 0,                 0 ]
+	    pidCollTag              : [ "AvikPIDNewDem"            , "AvikPIDNewDmm"           ]
 	}
 #------------------------------------------------------------------------------
 # explicitly store 2 versions of track reco - downstream e- and e+ reco
@@ -299,14 +273,12 @@ Stntuple : {
 	StntupleMakerDemDep  : { @table::StntupleMakerTemplate 
 	    makePid                 : 1
 	    trackBlockName          : [ "TrackBlockDem"            , "TrackBlockDep"           ] 
-	    trackStrawHitBlockName  : [ "TrackHitBlockDem"         , "TrackHitBlockDep"        ] 
-	    trkRecoModuleLabel      : [ "MergePatRecDem"           , "MergePatRecDep"          ]
-	    trkExtrapolModuleLabel  : [ "TrackCaloIntersectionDem" , "TrackCaloIntersectionDep"]
-	    trkCaloMatchModuleLabel : [ "TrackCaloMatchingDem"     , "TrackCaloMatchingDep"    ]
+	    trackSHBlockName        : [ "TrackHitBlockDem"         , "TrackHitBlockDep"        ] 
+	    trackCollTag            : [ "MergePatRecDem"           , "MergePatRecDep"          ]
+	    tciCollTag              : [ "TrackCaloIntersectionDem" , "TrackCaloIntersectionDep"]
+	    tcmCollTag              : [ "TrackCaloMatchingDem"     , "TrackCaloMatchingDep"    ]
 	    pidBlockName            : [ "PidBlockDem"              , "PidBlockDep"             ] 
-	    pidModuleLabel          : [ "AvikPIDNewDem"            , "AvikPIDNewDep"           ]
-	    fitParticle             : [                11,               -11 ]
-	    fitDirection            : [                 0,                 0 ]
+	    pidCollTag              : [ "AvikPIDNewDem"            , "AvikPIDNewDep"           ]
 	}
 #------------------------------------------------------------------------------
 # generate upstream mu+ 
@@ -314,13 +286,11 @@ Stntuple : {
 	StntupleMakerDemUmp  : { @table::StntupleMakerTemplate 
 	    makePid                 : 0
 	    trackBlockName          : [ "TrackBlockDem"            , "TrackBlockUmp"           ] 
-	    trackStrawHitBlockName  : [ "TrackHitBlockDem"         , "TrackHitBlockUmp"        ] 
-	    trkRecoModuleLabel      : [ "MergePatRecDem"           , "MergePatRecUmp"          ]
-	    trkExtrapolModuleLabel  : [ "TrackCaloIntersectionDem" , "TrackCaloIntersectionUmp"]
-	    trkCaloMatchModuleLabel : [ "TrackCaloMatchingDem"     , "TrackCaloMatchingUmp"    ]
-	    pidModuleLabel          : [ "AvikPIDNewDem"            , "AvikPIDNewUmp"           ]
-	    fitParticle             : [                          11,               -13         ]
-	    fitDirection            : [                           0,                 1         ]
+	    trackSHBlockName        : [ "TrackHitBlockDem"         , "TrackHitBlockUmp"        ] 
+	    trackCollTag            : [ "MergePatRecDem"           , "MergePatRecUmp"          ]
+	    tciCollTag              : [ "TrackCaloIntersectionDem" , "TrackCaloIntersectionUmp"]
+	    tcmCollTag              : [ "TrackCaloMatchingDem"     , "TrackCaloMatchingUmp"    ]
+	    pidCollTag              : [ "AvikPIDNewDem"            , "AvikPIDNewUmp"           ]
 	}
 #------------------------------------------------------------------------------
 # generate upstream mu-  
@@ -329,49 +299,11 @@ Stntuple : {
 	    makePid                 : 1
 	    makeTrackStrawHits      : 1
 	    trackBlockName          : [ "TrackBlockDem"            , "TrackBlockUmm"           ] 
-	    trackStrawHitBlockName  : [ "TrackHitBlockDem"         , "TrackHitBlockUmm"        ] 
-	    trkRecoModuleLabel      : [ "MergePatRecDem"           , "MergePatRecUmm"          ]
-	    trkExtrapolModuleLabel  : [ "TrackCaloIntersectionDem" , "TrackCaloIntersectionUmm"]
-	    trkCaloMatchModuleLabel : [ "TrackCaloMatchingDem"     , "TrackCaloMatchingUmm"    ]
-	    pidModuleLabel          : [ "AvikPIDNewDem"            , "AvikPIDNewUmm"           ]
-	    fitParticle             : [                          11,                13         ]
-	    fitDirection            : [                           0,                 1         ]
-	}
-#--------------------------------------------------------------------------------------------------------------------------
-# generate upstream mu-  and reconstruct  as dem (downstream leg, true, if any), dmm(downstream leg, if any) , umm (upstream leg)
-#--------------------------------------------------------------------------------------------------------------------------
-	StntupleMakerDemDmmUmm  : { @table::StntupleMakerTemplate 
-	    makePid                 : 1
-	    makeTrackStrawHits      : 1
-	    trackBlockName          : [ "TrackBlockDem"            , "TrackBlockDmm"           , "TrackBlockUmm"           ] 
-	    trackStrawHitBlockName  : [ "TrackHitBlockDem"         , "TrackHitBlockDmm"        , "TrackHitBlockUmm"        ] 
-	    trkRecoModuleLabel      : [ "MergePatRecDem"           , "MergePatRecDmm"          , "MergePatRecUmm"          ]
-	    trkExtrapolModuleLabel  : [ "TrackCaloIntersectionDem" , "TrackCaloIntersectionDmm", "TrackCaloIntersectionUmm"]
-	    trkCaloMatchModuleLabel : [ "TrackCaloMatchingDem"     , "TrackCaloMatchingDmm"    , "TrackCaloMatchingUmm"    ]
-	    pidBlockName            : [ "PidBlockDem"              , "PidBlockDmm"             , "PidBlockUmm"             ] 
-	    pidModuleLabel          : [ "AvikPIDNewDem"            ,  "AvikPIDNewDmm"          , "AvikPIDNewUmm"           ]
-	    fitParticle             : [                          11,                13         ,                13         ]
-	    fitDirection            : [                           0,                 0         ,                 1         ]
-	}
-#------------------------------------------------------------------------------
-# generate upstream mu+  and reconstruct  as dem (upstream leg), dmm(upstream leg) , mu+ (downstream leg)
-#------------------------------------------------------------------------------
-	StntupleMakerDemDmpUmp  : { @table::StntupleMakerTemplate 
-	    makePid                   : 1
-	    makeTrackStrawHits        : 1
-#	    shortHelixBlockName       : [ "ShortTprHelixBlock"    , "ShortCprHelixBlock"      ]
-#	    shortHelixModuleLabel     : [ "KSFDeM"                , "CalSeedFit"              ]
-	    shortTrackSeedBlockName   : [ "ShortDemTrackSeedBlock"   , "ShortDmpTrackSeedBlock"  , "ShortUmpTrackSeedBlock"]
-	    shortTrackSeedModuleLabel : [ "MergePatRecDem"           , "MergePatRecDmp"          , "MergePatRecUmp"          ]
-	    trackBlockName            : [ "TrackBlockDem"            , "TrackBlockDmp"           , "TrackBlockUmp"             ] 
-	    trackStrawHitBlockName    : [ "TrackHitBlockDem"         , "TrackHitBlockDmp"        , "TrackHitBlockUmp"          ] 
-	    trkRecoModuleLabel        : [ "MergePatRecDem"           , "MergePatRecDmp"          , "MergePatRecUmp"            ]
-	    trkExtrapolModuleLabel    : [ "TrackCaloIntersectionDem" , "TrackCaloIntersectionDmp", "TrackCaloIntersectionUmp"  ]
-	    trkCaloMatchModuleLabel   : [ "TrackCaloMatchingDem"     , "TrackCaloMatchingDmp"    , "TrackCaloMatchingUmp"      ]
-	    pidBlockName              : [ "PidBlockDem"              , "PidBlockDmp"             , "PidBlockUmp"               ] 
-	    pidModuleLabel            : [ "AvikPIDNewDem"            , "AvikPIDNewDmp"           , "AvikPIDNewUmp"             ]
-	    fitParticle               : [                          11,               -13         ,               -13           ]
-	    fitDirection              : [                           0,                 0         ,                 1           ]
+	    trackSHBlockName        : [ "TrackHitBlockDem"         , "TrackHitBlockUmm"        ] 
+	    trackCollTag            : [ "MergePatRecDem"           , "MergePatRecUmm"          ]
+	    tciCollTag              : [ "TrackCaloIntersectionDem" , "TrackCaloIntersectionUmm"]
+	    tcmCollTag              : [ "TrackCaloMatchingDem"     , "TrackCaloMatchingUmm"    ]
+	    pidCollTag              : [ "AvikPIDNewDem"            , "AvikPIDNewUmm"           ]
 	}
 #------------------------------------------------------------------------------
 # track reconstruction studies: 
@@ -383,24 +315,18 @@ Stntuple : {
 	    makeTimeClusters           : 1
 	    makeHelices                : 1
 	    timeClusterBlockName       : [ "TprTimeClusterBlock"     , "CprTimeClusterBlock"     ]
-	    timeClusterModuleLabel     : [ "TimeClusterFinder"       , "CalTimePeakFinder"       ]
+	    timeClusterCollTag         : [ "TimeClusterFinder"       , "CalTimePeakFinder"       ]
 	    helixBlockName             : [ "TprHelixBlock"           , "CprHelixBlock"           ]
-	    helixModuleLabel           : [ "HelixFinder:Positive"    , "CalHelixFinder"          ]
+	    helixCollTag               : [ "HelixFinder:Positive"    , "CalHelixFinder"          ]
 	    trackSeedBlockName         : [ "TprTrackSeedBlock"       , "CprTrackSeedBlock"       ]
 	    trackSeedModuleLabel       : [ "KSFDeM"                  , "CalSeedFit"              ]
-	    shortHelixBlockName        : [ "ShortTprHelixBlock"      , "ShortCprHelixBlock"      , "ShortHelixBlock"        ]
-	    shortHelixModuleLabel      : [ "KSFDeM"                  , "CalSeedFit"              , "MergePatRec"            ]
-	    shortTrackSeedBlockName    : [ "ShortTprTrackSeedBlock"  , "ShortCprTrackSeedBlock"  , "ShortTrackSeedBlock"    ]
-	    shortTrackSeedModuleLabel  : [ "MergePatRecTpr"          , "MergePatRecCpr"          , "MergePatRec"            ]
 	    trackBlockName             : [ "TprTrackBlock"           , "CprTrackBlock"           , "TrackBlock"             ]
-	    trkRecoModuleLabel         : [ "MergePatRecTpr"          , "MergePatRecCpr"          , "MergePatRec"            ]
-	    trkExtrapolModuleLabel     : [ "TrackCaloIntersectionTpr", "TrackCaloIntersectionCpr", "TrackCaloIntersection"  ]
-	    trkCaloMatchModuleLabel    : [ "TrackCaloMatchingTpr"    , "TrackCaloMatchingCpr"    , "TrackCaloMatching"      ]
-	    trackStrawHitBlockName     : [ "TrackHitBlockTpr"        , "TrackHitBlockCpr"        , "TrackHitBlock"          ] 
+	    trackCollTag               : [ "MergePatRecTpr"          , "MergePatRecCpr"          , "MergePatRec"            ]
+	    tciCollTag                 : [ "TrackCaloIntersectionTpr", "TrackCaloIntersectionCpr", "TrackCaloIntersection"  ]
+	    tcmCollTag                 : [ "TrackCaloMatchingTpr"    , "TrackCaloMatchingCpr"    , "TrackCaloMatching"      ]
+	    trackSHBlockName           : [ "TrackHitBlockTpr"        , "TrackHitBlockCpr"        , "TrackHitBlock"          ] 
 	    pidBlockName               : [ ""                        , ""                        , "PidBlock"               ] 
-	    pidModuleLabel             : [                        "" ,                         "", "AvikPIDNew"             ]
-	    fitParticle                : [                         11,                         11,                       11 ]
-	    fitDirection               : [                          0,                          0,                        0 ]
+	    pidCollTag                 : [                        "" ,                         "", "AvikPIDNew"             ]
 	}
 #------------------------------------------------------------------------------
 # track reconstruction studies: 
@@ -411,25 +337,24 @@ Stntuple : {
 	    makeTrackSeeds             : 1
 	    makeTimeClusters           : 1
 	    makeHelices                : 1
-	    timeClusterBlockName       : [ "TimeClusterBlockTpr"        , "TimeClusterBlockCpr"     ]
-	    timeClusterModuleLabel     : [ "TimeClusterFinder"          , "CalTimePeakFinder"       ]
-	    helixBlockName             : [ "HelixBlockTpr"              , "HelixBlockCpr"               ]
-	    helixModuleLabel           : [ "HelixFinder:Positive"       , "CalHelixFinderDem"           ]
-	    trackSeedBlockName         : [ "TrackSeedBlockTpr"          , "TrackSeedBlockCpr"           ]
-	    trackSeedModuleLabel       : [ "KSFDeM"                     , "CalSeedFitDem"               ]
-	    shortHelixBlockName        : [ "ShortTprHelixBlock"         , "ShortCprHelixBlock"         , "ShortHelixBlock"          ]
-	    shortHelixModuleLabel      : [ "KSFDeM"                     , "CalSeedFitDem"              , "MergePatRecDem"           ]
-	    shortTrackSeedBlockName    : [ "ShortTrackSeedBlockTpr"     , "ShortTrackSeedBlockCpr"     , "ShortTrackSeedBlock"      ]
-	    shortTrackSeedModuleLabel  : [ "MergePatRecTprDem"          , "MergePatRecCprDem"          , "MergePatRecDem"           ]
+	    timeClusterBlockName       : [ "TimeClusterBlockTpr"        , "TimeClusterBlockCpr"        ]
+	    timeClusterCollTag         : [ "TimeClusterFinder"          , "CalTimePeakFinder"          ]
+	    helixBlockName             : [ "HelixBlockTpr"              , "HelixBlockCpr"              ]
+	    helixCollTag               : [ "HelixFinder:Positive"       , "CalHelixFinderDem"          ]
+
+	    trackSeedBlockName         : [ "TrackSeedBlockTpr"          , "TrackSeedBlockCpr"          , "TrackSeedBlock"           ]
+	    trackSeedCollTag           : [ "KSFDeM"                     , "CalSeedFitDem"              , "MergePatRecDem"           ]
+
 	    trackBlockName             : [ "TrackBlockTpr"              , "TrackBlockCpr"              , "TrackBlock"               ]
-	    trkRecoModuleLabel         : [ "MergePatRecTprDem"          , "MergePatRecCprDem"          , "MergePatRecDem"           ]
-	    trkExtrapolModuleLabel     : [ "TrackCaloIntersectionTprDem", "TrackCaloIntersectionCprDem", "TrackCaloIntersectionDem" ]
-	    trkCaloMatchModuleLabel    : [ "TrackCaloMatchingTprDem"    , "TrackCaloMatchingCprDem"    , "TrackCaloMatchingDem"     ]
-	    trackStrawHitBlockName     : [ "TrackHitBlockTpr"           , "TrackHitBlockCpr"           , "TrackHitBlock"            ] 
+	    trackCollTag               : [ "MergePatRecTprDem"          , "MergePatRecCprDem"          , "MergePatRecDem"           ]
+	    trackTsBlockName           : [ "TrackSeedBlockTpr"          , "TrackSeedBlockCpr"          , "TrackSeedBlock"           ]
+	    trackTsCollTag             : [ "KSFDeM"                     , "CalSeedFitDem"              , "MergePatRecDem"           ]
+
+	    tciCollTag                 : [ "TrackCaloIntersectionTprDem", "TrackCaloIntersectionCprDem", "TrackCaloIntersectionDem" ]
+	    tcmCollTag                 : [ "TrackCaloMatchingTprDem"    , "TrackCaloMatchingCprDem"    , "TrackCaloMatchingDem"     ]
+	    trackSHBlockName           : [ "TrackHitBlockTpr"           , "TrackHitBlockCpr"           , "TrackHitBlock"            ] 
 	    pidBlockName               : [ ""                           , ""                           , "PidBlock"                 ] 
-	    pidModuleLabel             : [                        ""    ,                         ""   , "AvikPIDNew"               ]
-	    fitParticle                : [                         11   ,                         11   ,                       11   ]
-	    fitDirection               : [                          0   ,                          0   ,                        0   ]
+	    pidCollTag                 : [                        ""    ,                         ""   , "AvikPIDNew"               ]
 	}
 #------------------------------------------------------------------------------
 # track reconstruction studies: 
@@ -440,29 +365,84 @@ Stntuple : {
 	    makeTrackSeeds             : 1
 	    makeTimeClusters           : 1
 	    makeHelices                : 1
-	    timeClusterBlockName       : [ "TimeClusterBlockTpr"        , "TimeClusterBlockCpr"     ]
-	    timeClusterModuleLabel     : [ "TimeClusterFinder"          , "CalTimePeakFinder"       ]
-	    helixBlockName             : [ "HelixBlockTpr"              , "HelixBlockCpr"           ]
-	    helixModuleLabel           : [ "HelixFinder:Negative"       , "CalHelixFinderDep"       ]
-	    trackSeedBlockName         : [ "TrackSeedBlockTpr"          , "TrackSeedBlockCpr"       ]
-	    trackSeedModuleLabel       : [ "KSFDeP"                     , "CalSeedFitDep"           ]
-	    shortHelixBlockName        : [ "ShortHelixBlockTpr"         , "CprHelixBlockShort"         , "ShortHelixBlock"          ]
-	    shortHelixModuleLabel      : [ "KSFDeP"                     , "CalSeedFitDep"              , "MergePatRecDep"           ]
-	    shortTrackSeedBlockName    : [ "ShortTrackSeedBlockTpr"     , "ShortTrackSeedBlockCpr"     , "ShortTrackSeedBlock"      ]
-	    shortTrackSeedModuleLabel  : [ "MergePatRecTprDep"          , "MergePatRecCprDep"          , "MergePatRecDep"           ]
+	    timeClusterBlockName       : [ "TimeClusterBlockTpr"        , "TimeClusterBlockCpr"        ]
+	    timeClusterCollTag         : [ "TimeClusterFinder"          , "CalTimePeakFinder"          ]
+
+	    helixBlockName             : [ "HelixBlockTpr"              , "HelixBlockCpr"              , "HelixBlock"               ]
+	    helixCollTag               : [ "HelixFinder:Negative"       , "CalHelixFinderDep"          , "" ]
+
+	    trackSeedBlockName         : [ "TrackSeedBlockTpr"          , "TrackSeedBlockCpr"          , "TrackSeedBlock"           ]
+	    trackSeedCollTag           : [ "KSFDeP"                     , "CalSeedFitDep"              , "MergePatRecDep"           ]
+
 	    trackBlockName             : [ "TrackBlockTpr"              , "TrackBlockCpr"              , "TrackBlock"               ]
-	    trkRecoModuleLabel         : [ "MergePatRecTprDep"          , "MergePatRecCprDep"          , "MergePatRecDep"           ]
-	    trkExtrapolModuleLabel     : [ "TrackCaloIntersectionTprDep", "TrackCaloIntersectionCprDep", "TrackCaloIntersectionDep" ]
-	    trkCaloMatchModuleLabel    : [ "TrackCaloMatchingTprDep"    , "TrackCaloMatchingCprDep"    , "TrackCaloMatchingDep"     ]
-	    trackStrawHitBlockName     : [ "TrackHitBlockTpr"           , "TrackHitBlockCpr"           , "TrackHitBlock"            ] 
+	    trackCollTag               : [ "MergePatRecTprDep"          , "MergePatRecCprDep"          , "MergePatRecDep"           ]
+	    trackTsBlockName           : [ "TrackSeedBlockTpr"          , "TrackSeedBlockCpr"          , "TrackSeedBlock"           ]
+	    trackTsCollTag             : [ "KSFDeP"                     , "CalSeedFitDep"              , "MergePatRecDep"           ]
+
+	    tciCollTag                 : [ "TrackCaloIntersectionTprDep", "TrackCaloIntersectionCprDep", "TrackCaloIntersectionDep" ]
+	    tcmCollTag                 : [ "TrackCaloMatchingTprDep"    , "TrackCaloMatchingCprDep"    , "TrackCaloMatchingDep"     ]
+	    trackSHBlockName           : [ "TrackHitBlockTpr"           , "TrackHitBlockCpr"           , "TrackHitBlock"            ] 
 	    pidBlockName               : [ ""                           , ""                           , "PidBlock"                 ] 
-	    pidModuleLabel             : [                        ""    ,                         ""   , "AvikPIDNew"               ]
-	    fitParticle                : [                        -11   ,                        -11   ,                      -11   ]
-	    fitDirection               : [                          0   ,                          0   ,                        0   ]
+	    pidCollTag                 : [                        ""    ,                         ""   , "AvikPIDNew"               ]
 	}
 #------------------------------------------------------------------------------
-# track reconstruction studies: 
-# make 3 track blocks, for the moment need to specify all other labels
+# analysis prototype II: start using the merged helix list, make 2 track blocks, 
+# combine electrons and positrons
+# 3 helix blocks: merged, HelixFindex, CalHelixFinder
+# 1 track seed block : merged sequence
+# 2 track fit blocks : Panel AR and Doublet AR
+#------------------------------------------------------------------------------
+	StntupleMakerDe : { @table::StntupleMakerTemplate 
+	    makePid                    : 0
+	    makeTrackSeeds             : 1
+	    makeTimeClusters           : 1
+	    makeHelices                : 1
+	    timeClusterBlockName       : [ "TimeClusterBlockTpr" , "TimeClusterBlockCpr"  ]
+	    timeClusterCollTag         : [ "TimeClusterFinder"   , "CalTimePeakFinder"    ]
+	    helixBlockName             : [ "HelixBlock"          , "HelixBlockTpr"        , "HelixBlockCpr" ]
+	    helixCollTag               : [ "MHFinderDe"          , "MHFinderTprDe"        , "MHFinderCprDe"   ]
+
+	    trackSeedBlockName         : [ "TrackSeedBlock"      ]
+	    trackSeedCollTag           : [ "KSFDeMH"             ]
+
+	    trackBlockName             : [ "TrackBlockPar"       , "TrackBlockDar"        ]
+	    trackCollTag               : [ "KFFDeMHPar"          , "KFFDeMHDar"           ]
+	    trackTsBlockName           : [ "TrackSeedBlock"      , "TrackSeedBlock"       ]
+	    trackTsCollTag             : [ "KSFDeMH"             , "KSFDeMH"              ]
+
+	    tciCollTag                 : [ "TciDeMHPar"          , "TciDeMHDar"           ]
+	    tcmCollTag                 : [ "TcmDeMHPar"          , "TcmDeMHDar"           ]
+	    trackSHBlockName           : [ "TrackHitBlockPar"    , "TrackHitBlockDar"     ]
+	    pidBlockName               : [ ""                    , "PidBlock"             ]
+	    pidCollTag                 : [       ""              , "AvikPIDNew"           ]
+	}
+
+	StntupleMakerDmu : { @table::StntupleMakerTemplate 
+	    makePid                    : 0
+	    makeTrackSeeds             : 1
+	    makeTimeClusters           : 1
+	    makeHelices                : 1
+	    timeClusterBlockName       : [ "TimeClusterBlockTpr" , "TimeClusterBlockCpr"  ]
+	    timeClusterCollTag         : [ "TimeClusterFinder"   , "CalTimePeakFinder"    ]
+	    helixBlockName             : [ "HelixBlock"          , "HelixBlockTpr"        , "HelixBlockCpr"  ]
+	    helixCollTag               : [ "MHFinderDmu"         , "MHFinderTprDmu"       , "MHFinderCprDmu" ]
+
+	    trackSeedBlockName         : [ "TrackSeedBlock"      ]
+	    trackSeedCollTag           : [ "KSFDmuMH"            ]
+
+	    trackBlockName             : [ "TrackBlockPar"       , "TrackBlockDar"        ]
+	    trackCollTag               : [ "KFFDmuMHPar"         , "KFFDmuMHDar"          ]
+	    trackTsBlockName           : [ "TrackSeedBlock"      , "TrackSeedBlock"       ]
+	    trackTsCollTag             : [ "KSFDmuMH"            , "KSFDmuMH"             ]
+
+	    tciCollTag                 : [ "TciDmuMHPar"         , "TciDmuMHDar"          ]
+	    tcmCollTag                 : [ "TcmDmuMHPar"         , "TcmDmuMHDar"          ]
+	    trackSHBlockName           : [ "TrackHitBlockPar"    , "TrackHitBlockDar"     ]
+	    pidBlockName               : [ ""                    , "PidBlock"             ]
+	    pidCollTag                 : [       ""              , "AvikPIDNew"           ]
+	}
+#------------------------------------------------------------------------------
+# trigger studies
 #------------------------------------------------------------------------------
 	StntupleMakerTcmTrig : { @table::StntupleMakerTemplate 
 	    makePid                    : 0
@@ -470,70 +450,60 @@ Stntuple : {
 	    makeTimeClusters           : 1
 	    makeHelices                : 1
 	    timeClusterBlockName       : [ "TimeClusterBlockDepTpr"     , "TimeClusterBlockDepCpr"     , "TimeClusterBlockDemTpr"     , "TimeClusterBlockDemCpr"     ]
-	    timeClusterModuleLabel     : [ "TimeClusterFinder"          , "CalTimePeakFinder"          , "TimeClusterFinder"          , "CalTimePeakFinder"          ]
+	    timeClusterCollTag         : [ "TimeClusterFinder"          , "CalTimePeakFinder"          , "TimeClusterFinder"          , "CalTimePeakFinder"          ]
 	    helixBlockName             : [ "HelixBlockDepTpr"           , "HelixBlockDepCpr"           , "HelixBlockDemTpr"           , "HelixBlockDemCpr"           ]
-	    helixModuleLabel           : [ "HelixFinder:Negative"       , "CalHelixFinderDep"          , "HelixFinder:Positive"       , "CalHelixFinderDem"          ]
+	    helixCollTag               : [ "HelixFinder:Negative"       , "CalHelixFinderDep"          , "HelixFinder:Positive"       , "CalHelixFinderDem"          ]
 	    trackSeedBlockName         : [ "TrackSeedBlockDepTpr"       , "TrackSeedBlockDepCpr"       , "TrackSeedBlockDemTpr"       , "TrackSeedBlockDemCpr"       ]
 	    trackSeedModuleLabel       : [ "KSFDeP"                     , "CalSeedFitDep"              , "KSFDeM"                     , "CalSeedFitDem"              ]
-	    shortHelixBlockName        : [ "ShortHelixBlockDepTpr"      , "CprHelixBlockDepShort"      , "ShortTprHelixBlockDem"      , "ShortCprHelixBlockDem"      ]
-	    shortHelixModuleLabel      : [ "KSFDeP"                     , "CalSeedFitDep"              , "KSFDeM"                     , "CalSeedFitDem"              ]
-	    shortTrackSeedBlockName    : [ "ShortTrackSeedBlockDepTpr"  , "ShortTrackSeedBlockDepCpr"  , "ShortTrackSeedBlockDemTpr"  , "ShortTrackSeedBlockDemCpr"  ]
-	    shortTrackSeedModuleLabel  : [ "MergePatRecTprDep"          , "MergePatRecCprDep"          , "MergePatRecTprDem"          , "MergePatRecCprDem"          ]
 	    trackBlockName             : [ "TrackBlockDepTpr"           , "TrackBlockDepCpr"           , "TrackBlockDemTpr"           , "TrackBlockDemCpr"           ]
-	    trkRecoModuleLabel         : [ "MergePatRecTprDep"          , "MergePatRecCprDep"          , "MergePatRecTprDem"          , "MergePatRecCprDem"          ]
-	    trkExtrapolModuleLabel     : [ "TrackCaloIntersectionTprDep", "TrackCaloIntersectionCprDep", "TrackCaloIntersectionTprDem", "TrackCaloIntersectionCprDem"]
-	    trkCaloMatchModuleLabel    : [ "TrackCaloMatchingTprDep"    , "TrackCaloMatchingCprDep"    , "TrackCaloMatchingTprDem"    , "TrackCaloMatchingCprDem"    ]
-	    trackStrawHitBlockName     : [ "TrackHitBlockDepTpr"        , "TrackHitBlockDepCpr"        , "TrackHitBlockDemTpr"        , "TrackHitBlockDemCpr"        ] 
+	    trackCollTag               : [ "MergePatRecTprDep"          , "MergePatRecCprDep"          , "MergePatRecTprDem"          , "MergePatRecCprDem"          ]
+	    tciCollTag                 : [ "TrackCaloIntersectionTprDep", "TrackCaloIntersectionCprDep", "TrackCaloIntersectionTprDem", "TrackCaloIntersectionCprDem"]
+	    tcmCollTag                 : [ "TrackCaloMatchingTprDep"    , "TrackCaloMatchingCprDep"    , "TrackCaloMatchingTprDem"    , "TrackCaloMatchingCprDem"    ]
+	    trackSHBlockName           : [ "TrackHitBlockDepTpr"        , "TrackHitBlockDepCpr"        , "TrackHitBlockDemTpr"        , "TrackHitBlockDemCpr"        ] 
 	    pidBlockName               : [ ""                           , ""                           , ""                           , ""                           ] 
-	    pidModuleLabel             : [                        ""    ,                         ""   ,                        ""    ,                         ""   ]
-	    fitParticle                : [                        -11   ,                        -11   ,                         11   ,                         11   ]
-	    fitDirection               : [                          0   ,                          0   ,                          0   ,                          0   ]
+	    pidCollTag                 : [                        ""    ,                         ""   ,                        ""    ,                         ""   ]
 	}
+#------------------------------------------------------------------------------
+# trigger studies - new
+# two merged helix collections: 
+#------------------------------------------------------------------------------
+	StntupleMakerTrig : { @table::StntupleMakerTemplate 
+	    makePid                : 0
+	    makeTimeClusters       : 1
+	    makeHelices            : 1
+	    makeTrackSeeds         : 1
+	    timeClusterBlockName   : [ "TimeClusterBlockTpr" , "TimeClusterBlockCpr" ]
+	    timeClusterCollTag     : [ "TimeClusterFinder"   , "CalTimePeakFinder"   ]
+
+	    helixBlockName         : [ "HelixBlockDe"        , "HelixBlockTprDe"     , "HelixBlockCprDe" ]
+	    helixCollTag           : [ "MHFinderDe"          , "MHFinderTprDe"       , "MHFinderCprDe"   ]
+
+	    trackSeedBlockName     : [ "TrackSeedBlockDeM"     , "TrackSeedBlockDeP" ]
+	    trackSeedCollTag       : [ "KSFDeMMergeHelix"      , "KSFDePMergeHelix"  ]
+
+	    trackBlockName         : [ "TrackBlockPar"         , "TrackBlockDar"     ]
+	    trackCollTag           : [ "KFFDeMHPar"            , "KFFDeMHDar"        ]
+	    trackTsBlockName       : [ "TrackSeedBlock"        , "TrackSeedBlock"    ]
+	    trackTsCollTag         : [ "KSFDeMH"               , "KSFDeMH"           ]
+	    tciCollTag             : [ "TciDeMHPar"            , "TciDeMHDar"        ]
+	    tcmCollTag             : [ "TcmDeMHPar"            , "TcmDeMHDar"        ]
+
+	    trackSHBlockName       : [ "TrackHitBlockPar"      , "TrackHitBlockDar"  ] 
+	    pidBlockName           : [ ""                      , ""                  ] 
+	    pidCollTag             : [                   ""    ,           ""        ]
+        }
 #------------------------------------------------------------------------------
 # make 4 track blocks: train PID
 #------------------------------------------------------------------------------
 	StntupleMaker4 : { @table::StntupleMakerTemplate 
-	    trackBlockName          : [ "TrackBlockDem"           , "TrackBlockDmm"           , "TrackBlockUep"           , "TrackBlockUmp"            ]
-	    trackStrawHitBlockName  : [ "TrackHitBlockDem"        , "TrackHitBlockDmm"        , "TrackHitBlockUep"        , "TrackHitBlockUmp"         ] 
-	    trkRecoModuleLabel      : [ "MergePatRecDem"          , "MergePatRecDmm"          , "MergePatRecUep"          , "MergePatRecUmp"           ]
-	    trkExtrapolModuleLabel  : [ "TrackCaloIntersectionDem", "TrackCaloIntersectionDmm", "TrackCaloIntersectionUep", "TrackCaloIntersectionUmp" ]
-	    trkCaloMatchModuleLabel : [ "TrackCaloMatchingDem"    , "TrackCaloMatchingDmm"    , "TrackCaloMatchingUep"    , "TrackCaloMatchingUmp"     ]
-	    pidModuleLabel          : [ ""                        ,  ""                       , ""                        , ""                         ]
-	    fitParticle             : [                         11,                         13,                        -11,                         -13]
-	    fitDirection            : [                          0,                          0,                          1,                           1]
+	    trackBlockName         : [ "TrackBlockDem"           , "TrackBlockDmm"           , "TrackBlockUep"           , "TrackBlockUmp"            ]
+	    trackSHBlockName       : [ "TrackHitBlockDem"        , "TrackHitBlockDmm"        , "TrackHitBlockUep"        , "TrackHitBlockUmp"         ] 
+	    trackCollTag           : [ "MergePatRecDem"          , "MergePatRecDmm"          , "MergePatRecUep"          , "MergePatRecUmp"           ]
+	    tciCollTag             : [ "TrackCaloIntersectionDem", "TrackCaloIntersectionDmm", "TrackCaloIntersectionUep", "TrackCaloIntersectionUmp" ]
+	    tcmCollTag             : [ "TrackCaloMatchingDem"    , "TrackCaloMatchingDmm"    , "TrackCaloMatchingUep"    , "TrackCaloMatchingUmp"     ]
+	    pidCollTag             : [ ""                        ,  ""                       , ""                        , ""                         ]
 
-	    makePid                 : 0
-	}
-#------------------------------------------------------------------------------
-# ultimately, will have to run all 8 versions of the reconstruction code 
-#------------------------------------------------------------------------------
-	StntupleMakerAll : { @table::StntupleMakerTemplate 
-
-	    trackBlockName          : [ "TrackBlockDem", "TrackBlockDmm", "TrackBlockDep", "TrackBlockDmp", 
-					"TrackBlockUem", "TrackBlockUmm", "TrackBlockUep", "TrackBlockUmp"]
-
-	    trackStrawHitBlockName  : [ "TrackHitBlockDem"        , "TrackHitBlockDmm"        , "TrackHitBlockDep"        , "TrackHitBlockDmp",
-				        "TrackHitBlockUem"        , "TrackHitBlockUmm"        , "TrackHitBlockUep"        , "TrackHitBlockUmp"] 
-
-	    trkRecoModuleLabel      : [ "MergePatRecDem", "MergePatRecDmm", "MergePatRecDep", "MergePatRecDmp", 
-					"MergePatRecUem", "MergePatRecUmm", "MergePatRecUep", "MergePatRecUmp" ]
-
-	    trkExtrapolModuleLabel  : [ "TrackCaloIntersectionDem", "TrackCaloIntersectionDmm", "TrackCaloIntersectionDem", "TrackCaloIntersectionDmm", 
-					"TrackCaloIntersectionUem", "TrackCaloIntersectionUmm", "TrackCaloIntersectionUep", "TrackCaloIntersectionUmp" ]
-
-	    trkCaloMatchModuleLabel : [ "TrackCaloMatchingDem"    , "TrackCaloMatchingDmm"    , "TrackCaloMatchingDep"    , "TrackCaloMatchingDmp"    , 
-					"TrackCaloMatchingUem"    , "TrackCaloMatchingUmm"    , "TrackCaloMatchingUep"    , "TrackCaloMatchingUmp"     ]
-
-	    pidBlockName            : [ "PidBlockDem"             , "PidBlockDmm"             , "PidBlockDep"             , "PidBlockDmp",
-				        "PidBlockUem"             , "PidBlockUmm"             , "PidBlockUep"             , "PidBlockUmp"    ] 
-
-	    pidModuleLabel          : [ "AvikPIDNewDem"           , "AvikPIDNewDmm"           , "AvikPIDNewDep"           , "AvikPIDNewDmp",  
-				        "AvikPIDNewUem"           , "AvikPIDNewUmm"           , "AvikPIDNewUep"           , "AvikPIDNewUmp"  ]
-
-	    fitParticle             : [ 11, 13, -11, -13, 11,  13, -11, -13 ]
-	    fitDirection            : [  0,  0,   0,   0,  1,   1,   1,   1 ]
-
-	    makePid                 : 1
+	    makePid                : 0
 	}
 #------------------------------------------------------------------------------
 # 
@@ -546,36 +516,40 @@ Stntuple : {
 	MuHitDisplay    : { @table::MuHitDisplay }
 
 	MuHitDisplayDem : { @table::MuHitDisplay 
-	    trkRecoModuleLabel           : MergePatRecDem
-	    trkExtrapol                  : TrackCaloIntersectionDem
-	    trkCalMatch                  : TrackCaloMatchingDem
-	    fitParticle                  : @local::Particle.eminus
-	    fitDirection                 : @local::FitDir.downstream
+	    trackCollTag           : MergePatRecDem
+	    trkExtrapol            : TrackCaloIntersectionDem
+	    trkCalMatch            : TrackCaloMatchingDem
 	}
 
 	MuHitDisplayDep : { @table::MuHitDisplay 
-	    trkRecoModuleLabel           : MergePatRecDep
-	    trkExtrapol                  : TrackCaloIntersectionDep
-	    trkCalMatch                  : TrackCaloMatchingDep
-	    fitParticle                  : @local::Particle.eplus
-	    fitDirection                 : @local::FitDir.downstream
+	    trackCollTag           : MergePatRecDep
+	    trkExtrapol            : TrackCaloIntersectionDep
+	    trkCalMatch            : TrackCaloMatchingDep
 	}
 
 	MuHitDisplayDpp : { @table::MuHitDisplay 
-	    trkRecoModuleLabel           : MergePatRecDpp
-	    strawHitFlagMakerModuleLabel : "FlagBkgHits:StrawHits"    # run TrkPatRec only
-	    trkExtrapol                  : TrackCaloIntersectionDpp
-	    trkCalMatch                  : TrackCaloMatchingDpp
-	    fitParticle                  : @local::Particle.proton
-	    fitDirection                 : @local::FitDir.downstream
+	    trackCollTag           : MergePatRecDpp
+	    strawHitFlagCollTag    : "FlagBkgHits:StrawHits"    # run TrkPatRec only
+	    trkExtrapol            : TrackCaloIntersectionDpp
+	    trkCalMatch            : TrackCaloMatchingDpp
 	}
 
 	MuHitDisplayDmm : { @table::MuHitDisplay 
-	    trkRecoModuleLabel           : MergePatRecDmm
-	    trkExtrapol                  : TrackCaloIntersectionDmm
-	    trkCalMatch                  : TrackCaloMatchingDmm
-	    fitParticle                  : @local::Particle.muminus
-	    fitDirection                 : @local::FitDir.downstream
+	    trackCollTag           : MergePatRecDmm
+	    trkExtrapol            : TrackCaloIntersectionDmm
+	    trkCalMatch            : TrackCaloMatchingDmm
+	}
+
+	MuHitDisplayDeMHPar : { @table::MuHitDisplay 
+	    trackCollTag           : KFFDeMHPar
+	    trkExtrapol            : TciDeMHPar
+	    trkCalMatch            : TcmDeMHPar
+	}
+
+	MuHitDisplayDeMHDar : { @table::MuHitDisplay 
+	    trackCollTag           : KFFDeMHDar
+	    trkExtrapol            : TciDeMHDar
+	    trkCalMatch            : TcmDeMHDar
 	}
     }
 }
@@ -597,7 +571,10 @@ Stntuple.stnmaker_tcm     : [ InitStntuple, StntupleMakerTcm,                   
 Stntuple.stnmaker_tcm_dem : [ InitStntuple, StntupleMakerTcmDem,                FillStntuple ]
 Stntuple.stnmaker_tcm_dep : [ InitStntuple, StntupleMakerTcmDep,                FillStntuple ]
 Stntuple.stnmaker_trig    : [ InitStntuple, StntupleMakerTrig  ,                FillStntuple ]
-Stntuple.stnmaker4        : [ InitStntuple, StntupleMaker4  ,                   FillStntuple ]
-Stntuple.stnmaker_all     : [ InitStntuple, StntupleMakerAll,                   FillStntuple ]
+#------------------------------------------------------------------------------
+# new sequences
+#------------------------------------------------------------------------------
+Stntuple.stnmaker_De      : [ InitStntuple, StntupleMakerDe  ,                  FillStntuple ]
+Stntuple.stnmaker_Dmu     : [ InitStntuple, StntupleMakerDmu ,                  FillStntuple ]
 
 END_PROLOG

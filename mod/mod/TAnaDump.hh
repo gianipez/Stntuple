@@ -84,17 +84,19 @@ private:
   
   friend class Cleaner;
 
+  static TAnaDump*  fgInstance;
 public:
-
-  static TAnaDump* fgInstance;
-
 //-----------------------------------------------------------------------------
-// methods
 // TAnaDump gets initialized by the first TModule instantiated
 //-----------------------------------------------------------------------------
   static TAnaDump*  Instance(const fhicl::ParameterSet* PSet = NULL);
-
-
+//-----------------------------------------------------------------------------
+// accessors
+//-----------------------------------------------------------------------------
+  mu2e::SimParticleTimeOffset*   TimeOffsets() { return fTimeOffsets; }
+//-----------------------------------------------------------------------------
+// other methods
+//-----------------------------------------------------------------------------
   void   AddObject      (const char* Name, void* Object);
   void*  FindNamedObject(const char* Name);
 
@@ -168,12 +170,10 @@ public:
 				const char* StrawDigiCollTag = "makeSD",
 				const char* Opt              = ""      );
 
-  void printHelixSeedCollection(const char* HelixSeedCollTag            ,  // always needed
-				const char* StrawHitCollTag  = "makeSH",  // usually - "makeSH"
-				const char* StrawDigiCollTag = "makeSD",
-				const char* ProductName      = ""      , 
-				const char* ProcessName      = ""      ,
-				int         hitOpt           = 0       ); 
+  void printHelixSeedCollection(const char* HelixSeedCollTag           ,  // always needed
+				int         PrintHits        = 0       ,
+				const char* StrawHitCollTag  = "makeSH",  // usually, "makeSH"
+				const char* StrawDigiCollTag = "makeSD");
 
   void printTrkCaloHit(const KalRep* Krep, mu2e::TrkCaloHit* CaloHit);
 

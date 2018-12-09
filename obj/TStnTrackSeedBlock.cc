@@ -14,9 +14,9 @@ void TStnTrackSeedBlock::Streamer(TBuffer &R__b) {
     Version_t R__v = R__b.ReadVersion(); if (R__v) { }
     R__b >> fNTrackSeeds;
     fListOfTrackSeeds->Streamer(R__b);
-    // for (int i=0; i<fNTracks; i++) {
-    //   Track(i)->SetNumber(i);
-    // }
+    for (int i=0; i<fNTrackSeeds; i++) {
+       TrackSeed(i)->SetNumber(i);
+     }
   } 
   else {
     R__b.WriteVersion(TStnTrackSeedBlock::IsA());
@@ -24,6 +24,8 @@ void TStnTrackSeedBlock::Streamer(TBuffer &R__b) {
     fListOfTrackSeeds->Streamer(R__b);
   }
 }
+
+//-----------------------------------------------------------------------------
 TStnTrackSeedBlock::TStnTrackSeedBlock() {
   fNTrackSeeds      = 0;
   fListOfTrackSeeds = new TClonesArray("TStnTrackSeed",100);
