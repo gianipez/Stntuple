@@ -2,14 +2,14 @@
 // 2014-07-15 G. Pezzullo
 //
 
-#include "Stntuple/obj/TVdetDataBlock.hh"
+#include "Stntuple/obj/TVDetDataBlock.hh"
 
-ClassImp(TVdetDataBlock)
+ClassImp(TVDetDataBlock)
 
 //-----------------------------------------------------------------------------
 // TBuffer::ReadVersion returns an integer, however so far it is not used 
 //-----------------------------------------------------------------------------
-  void TVdetDataBlock::Streamer(TBuffer &R__b) {
+  void TVDetDataBlock::Streamer(TBuffer &R__b) {
   if(R__b.IsReading()) {
     //    Version_t R__v = R__b.ReadVersion();
     R__b.ReadVersion();
@@ -17,43 +17,43 @@ ClassImp(TVdetDataBlock)
     fListOfHits->Streamer(R__b);
   }
   else {
-    R__b.WriteVersion(TVdetDataBlock::IsA());
+    R__b.WriteVersion(TVDetDataBlock::IsA());
     R__b << fNHits;
     fListOfHits->Streamer(R__b);
   }
 }
 
 //______________________________________________________________________________
-TVdetDataBlock::TVdetDataBlock() {
-  fListOfHits = new TClonesArray("TVdetHitData",30240);
+TVDetDataBlock::TVDetDataBlock() {
+  fListOfHits = new TClonesArray("TVDetHitData",30240);
   fListOfHits->BypassStreamer(kFALSE);
   Clear();
 }
 
 //______________________________________________________________________________
-TVdetDataBlock::~TVdetDataBlock() {
+TVDetDataBlock::~TVDetDataBlock() {
   fListOfHits->Delete();
   delete fListOfHits;
 }
 
 //______________________________________________________________________________
-void TVdetDataBlock::Clear(Option_t* opt) {
+void TVDetDataBlock::Clear(Option_t* opt) {
   fListOfHits->Clear();
   fNHits=0;
 }
 
 //______________________________________________________________________________
-void TVdetDataBlock::Print(Option_t* Option) const {
+void TVDetDataBlock::Print(Option_t* Option) const {
   // print all hits in the virtual detectors
 
   int banner_printed(0);
-  const TVdetHitData* hit;
+  const TVDetHitData* hit;
 
   TString opt = Option;
   opt.ToLower();
 
   for(int i=0; i<fNHits; i++) {
-    hit = ((TVdetDataBlock*) this)->Hit(i);
+    hit = ((TVDetDataBlock*) this)->Hit(i);
     if ((opt == "") || (opt.Index("banner") >= 0)) {
       if (banner_printed == 0) {
 	hit->Print("banner");

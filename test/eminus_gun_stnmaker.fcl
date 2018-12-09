@@ -1,15 +1,9 @@
 # -*- mode:tcl -*-
 #------------------------------------------------------------------------------
 # generate 105 MeV/c electrons and make STNTUPLE
+# choose p2 and use RootInput as source to ntuple MDC'2018 files
 #------------------------------------------------------------------------------
-#include "fcl/minimalMessageService.fcl"
-#include "fcl/standardProducers.fcl"
-#include "fcl/standardServices.fcl"
-
-#include "Stntuple/fcl/prolog.fcl"
-
 BEGIN_PROLOG
-  pdgCode    : @local::Particle.eminus
   bgHitFiles : @nil
 END_PROLOG
 
@@ -18,40 +12,52 @@ END_PROLOG
 process_name : EMinusGunStnmaker
 
 source       : { module_type : EmptyEvent   }
+# source       : { module_type : RootInput   }
 
 outputs      : { @table::Stntuple.outputs   }
-producers    : { @table::Stntuple.producers }
-filters      : { @table::Stntuple.filters   }
-paths        : { @table::Stntuple.paths     }
 
 physics : {
-    producers: { @table::producers 
-	generate                 : { @table::producers.egun }
-    }
+    producers: { @table::Stntuple.producers }
+    filters  : { @table::Stntuple.filters   }
+    analyzers: { @table::Stntuple.analyzers }
+
+    p1       : [ @sequence::Stntuple.gen_g4_time_map,
+		 @sequence::Stntuple.digis          ,
+		 @sequence::Stntuple.trk_hit_reco   ,
+		 @sequence::Stntuple.cal_reco       ,
+		 @sequence::Stntuple.reco_De        ,
+		 @sequence::Stntuple.stnmaker_De
+		]
+
+    p2       : [ # @sequence::Stntuple.gen_g4_time_map,
+		 # @sequence::Stntuple.digis          ,
+		 @sequence::Stntuple.trk_hit_reco   ,
+		 @sequence::Stntuple.cal_reco       ,
+		 @sequence::Stntuple.reco_De        ,
+		 @sequence::Stntuple.stnmaker_De
+		]
     
-    filters  : { @table::filters 
-	InitStntuple : { @table::filters.InitStntuple histFileName : "nts.user.eminus_gun_stnmaker.xxx.000001.stn" }
-    }
-
-    @table::paths
-
-    trigger_paths : [ path_gen_digi_reco_stn_tcm_dem ]
+    trigger_paths : [ p1  ]
     out           : [     ]
     end_paths     : [ out ]
 }
-
-services.TFileService.fileName            : "nts.user.eminus_gun_stnmaker.xxx.000001.root"
 #------------------------------------------------------------------------------
 # uncomment the next 2 lines if you want the DST (.art) file to be written out
 #-----------------------------------------------------------------------------
-#physics.out                               : [ detectorOutput ]
-#outputs.detectorOutput.SelectEvents       : [ path_gen_digi_reco_stn_tcm_dem]
-outputs.detectorOutput.fileName           : "sim.user.eminus_gun_stnmaker.xxx.000001.art"
+# physics.out                               : [ detectorOutput ]
+# outputs.detectorOutput.SelectEvents       : [ p1 ]
+#------------------------------------------------------------------------------
+# output file names 
+#------------------------------------------------------------------------------
+services.TFileService.fileName            : "nts._USER_.eminus_gun_stnmaker.xxx.000001.root"
+physics.filters.InitStntuple.histFileName : "nts._USER_.eminus_gun_stnmaker.xxx.000001.stn"
+outputs.detectorOutput.fileName           : "sim._USER_.eminus_gun_stnmaker.xxx.000001.art"
 #------------------------------------------------------------------------------
 # uncomment to avoid waisting time on the initialization of detailed neutron 
 # cross sections - that shouldn't affect the electron simulation 
 #------------------------------------------------------------------------------
-# physics.producers.g4run.physics.physicsListName : "QGSP_BERT"
+physics.producers.generate                      : { @table::Stntuple.producers.egun }
+physics.producers.g4run.physics.physicsListName : "QGSP_BERT"
 #------------------------------------------------------------------------------
 # debugging
 #------------------------------------------------------------------------------
@@ -61,4 +67,3 @@ outputs.detectorOutput.fileName           : "sim.user.eminus_gun_stnmaker.xxx.00
 #------------------------------------------------------------------------------
 # everything below is appended by murat/scripts/submit_mu2e_job
 #------------------------------------------------------------------------------
-physics.producers.generate.muonStops.inputFiles : [ "mergedMuonStops/nts.mu2e.DS-TGTstops.MDC2018a.001002_00000000.root" ]

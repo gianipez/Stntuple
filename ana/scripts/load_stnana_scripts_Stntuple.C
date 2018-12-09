@@ -8,7 +8,8 @@
 // TG3Pythia6*              py      = NULL;
 //-----------------------------------------------------------------------------
 // the first parameter is the script, the second - env.var telling whether 
-// the script has to be loaded
+// the script has to be loaded. If the corresponding env. variable is not defined,
+// the script is not loaded. PWD is always defined
 //-----------------------------------------------------------------------------
 int load_stnana_scripts_Stntuple() {
   char        macro[200];
@@ -16,6 +17,7 @@ int load_stnana_scripts_Stntuple() {
   const char* script[] = { 
     "catalog.C"   , "PWD",
     "debug.C"     , "PWD",
+    "helix.C"     , "PWD",
     "lumi.C"      , "PWD",
     "photos.C"    , "STNTUPLE_MC_GEN",
     "validation.C", "PWD",

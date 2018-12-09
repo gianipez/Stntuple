@@ -47,11 +47,10 @@ physics : {
 	    makeTracks      : 0  # default: 1
 	    makeVirtualHits : 0  # default: 1
 
-	    makeSimpModuleLabel     : "muonBeamFilter"
+	    simpCollTag     : "muonBeamFilter"
 
-	    stepPointMCBlockName    : ["SpmcBlock"     , "VDetBlock"      ]
-	    stepPointMCModuleLabel  : ["muonBeamFilter", "muonBeamFilter" ]
-	    stepPointMCProductName  : ["DSVacuum"      , "virtualdetector"]
+	    spmcBlockName   : ["SpmcBlock"              , "VDetBlock"      ]
+	    spmcCollTag     : ["muonBeamFilter:DSVacuum", "muonBeamFilter:virtualdetector" ]
 	}
 	InitStntuple : { @table::filters.InitStntuple histFileName : "nts.USER.PROJECT.g4s2_mubeam.000001.stn" }
     }

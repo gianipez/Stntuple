@@ -152,8 +152,5 @@ physics.producers.CaloReadoutHitsMaker.TimeOffsets :  { inputs : [ "protonTimeMa
 physics.producers.TrkExtrapol.fitterModuleLabel                 : TrkPatRec
 physics.producers.CaloMatching.fitterModuleLabel                : TrkPatRec
 physics.producers.ParticleID.fitterModuleLabel                  : TrkPatRec
-
-physics.filters.MuHitDisplay.strawHitMakerModuleLabel           : makeSH
-physics.filters.MuHitDisplay.strawHitPosMakerModuleLabel        : MakeStereoHits
-physics.filters.MuHitDisplay.trkRecoModuleLabel                 : TrkPatRec
-physics.filters.MuHitDisplay.useStereoHits                      : true
+physics.filters.MuHitDisplay.strawHitCollTag                    : makeSH
+physics.filters.MuHitDisplay.trackCollTag                       : TrkPatRec

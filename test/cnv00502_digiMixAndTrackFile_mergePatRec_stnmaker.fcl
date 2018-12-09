@@ -210,4 +210,3 @@ physics.producers.ParticleID.fitterModuleLabel                   : MergePatRec
 physics.filters.InitStntuple.histFileName                        : {OUTPUT_STNTUPLE}
 physics.filters.StntupleMaker.trkPatRecDem                       : MergePatRec
 physics.filters.StntupleMaker.makeStrawData                      : 1
-physics.filters.StntupleMaker.g4ModuleLabel                      : detectorFilter

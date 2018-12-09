@@ -171,7 +171,7 @@ physics : {
 	}
 	
 	StntupleMakerTcm : { @table::Stntuple.filters.StntupleMakerTcm 
-	    pidModuleLabel          : [ "ParticleID", "" , "" ]
+	    pidCollTag   : [ "ParticleID", "" , "" ]
 	}
 	#------------------------------------------------------------------------------
 	# event mixing modules - all clones of the same module.
@@ -193,9 +193,9 @@ physics : {
 	# event display
 	#------------------------------------------------------------------------------
 	MuHitDisplay  : { @table::MuHitDisplay 
-	    generatorModuleLabel         : ""
-	    g4ModuleLabel                : ""
- 	    trkRecoModuleLabel           : CalTrkFit
+	    generatorModuleLabel   : ""
+	    g4ModuleLabel          : ""
+ 	    trackCollTag           : CalTrkFit
 	}
     }
 

@@ -8,13 +8,6 @@ END_PROLOG
 #------------------------------------------------------------------------------
 # 2. includes
 #------------------------------------------------------------------------------
-#include "fcl/minimalMessageService.fcl"
-#include "fcl/standardProducers.fcl"
-#include "fcl/standardServices.fcl"
-#include "Stntuple/fcl/prolog.fcl"
-#------------------------------------------------------------------------------
-# 3. templates
-#------------------------------------------------------------------------------
 #include "Stntuple/fcl/templates.fcl"
 
 process_name : GenCountLogger

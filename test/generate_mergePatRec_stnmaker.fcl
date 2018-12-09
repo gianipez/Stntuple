@@ -85,19 +85,18 @@ physics : {
 	    histFileName : "mergePatRec_stnmaker.stn"
 	}
 	StntupleMaker        : { @table::StntupleMaker
-	    g4ModuleLabel            : "g4run"
 #------------------------------------------------------------------------------
 # just one track block "TrackBlock" with output of MergePatRec
 #------------------------------------------------------------------------------
-	    # trkRecoModuleLabel   : [ "MergePatRec" ]
+	    # trackCollTag         : [ "MergePatRec" ]
 #------------------------------------------------------------------------------
 #  3 track blocks, for the moment need to specify all other labels
 #------------------------------------------------------------------------------
 	    trackBlockName          : [ "TrackBlock" , "TrkPatRec" , "CalPatRec" ] 
-	    trkRecoModuleLabel      : [ "MergePatRec", "TrkPatRec" , "CalPatRec" ]
-	    trkExtrapolModuleLabel  : [ "TrkExtrapol",          "" ,          "" ]
-	    trkCaloMatchModuleLabel : [            "",          "" ,          "" ]
-	    pidModuleLabel          : [            "",          "" ,          "" ]
+	    trackCollTag            : [ "MergePatRec", "TrkPatRec" , "CalPatRec" ]
+	    tciCollTag              : [ "TrkExtrapol",          "" ,          "" ]
+	    tcmCollTag              : [            "",          "" ,          "" ]
+	    pidCollTag              : [            "",          "" ,          "" ]
 	    fitParticle             : [            11,           11,          11 ]
 	    fitDirection            : [             0,            0,           0 ]
 	}

@@ -937,7 +937,6 @@ void TStnValidationModule::FillHelixHistograms(HelixHist_t*   Hist, TStnHelix*  
   		       
   Hist->fAlg           ->Fill(Helix->AlgorithmID());
   Hist->fD0            ->Fill(Helix->D0());
-
 }
 
 //-----------------------------------------------------------------------------
@@ -1283,14 +1282,14 @@ int TStnValidationModule::BeginJob() {
 // register data blocks
 //-----------------------------------------------------------------------------
   RegisterDataBlock("CprTimeClusterBlock" ,"TStnTimeClusterBlock",&fTimeClusterBlock);
-  RegisterDataBlock("CalTrackSeedBlock","TStnTrackSeedBlock",&fTrackSeedBlock);
-  RegisterDataBlock("HelixBlock"    ,"TStnHelixBlock"    ,&fHelixBlock);
-  RegisterDataBlock("TrackBlock"    ,"TStnTrackBlock"    ,&fTrackBlock  );
-  RegisterDataBlock("ClusterBlock"  ,"TStnClusterBlock"  ,&fClusterBlock);
-  RegisterDataBlock("CalDataBlock"  ,"TCalDataBlock"     ,&fCalDataBlock);
-  RegisterDataBlock("StrawDataBlock","TStrawDataBlock"   ,&fStrawDataBlock);
-  RegisterDataBlock("GenpBlock"     ,"TGenpBlock"        ,&fGenpBlock);
-  RegisterDataBlock("SimpBlock"     ,"TSimpBlock"        ,&fSimpBlock);
+  RegisterDataBlock("CalTrackSeedBlock"   ,"TStnTrackSeedBlock"  ,&fTrackSeedBlock  );
+  RegisterDataBlock("HelixBlock"          ,"TStnHelixBlock"      ,&fHelixBlock      );
+  RegisterDataBlock("TrackBlock"          ,"TStnTrackBlock"      ,&fTrackBlock      );
+  RegisterDataBlock("ClusterBlock"        ,"TStnClusterBlock"    ,&fClusterBlock    );
+  RegisterDataBlock("CalDataBlock"        ,"TCalDataBlock"       ,&fCalDataBlock    );
+  RegisterDataBlock("StrawDataBlock"      ,"TStrawDataBlock"     ,&fStrawDataBlock  );
+  RegisterDataBlock("GenpBlock"           ,"TGenpBlock"          ,&fGenpBlock       );
+  RegisterDataBlock("SimpBlock"           ,"TSimpBlock"          ,&fSimpBlock       );
 //-----------------------------------------------------------------------------
 // book histograms
 //-----------------------------------------------------------------------------

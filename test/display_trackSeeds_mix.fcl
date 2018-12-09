@@ -66,17 +66,16 @@ source       : {
 physics : { @table::physics 
     filters : { @table::physics.filters 
 	StntupleMaker : { @table::StntupleMaker	
-	    g4ModuleLabel  : ""      
 	    makeTracks     : 0
 	    makeTrackSeeds : 1
-	    makeVirtualHits: 0
+	    makeVDHits     : 0
 	}
 	InitStntuple  : { @table::InitStntuple  histFileName  : "dispaly-test.stn" }
 #	InitStntuple  : { @table::InitStntuple  histFileName  : "ce-test.stn" }
 
 	MuHitDisplay   : { @table::MuHitDisplay 
 	    showTracks         : false
-	    trkRecoModuleLabel : ""
+	    trackCollTag       : ""
 	    trkExtrapol        : ""
 	    trkCalMatch        : ""
 	}

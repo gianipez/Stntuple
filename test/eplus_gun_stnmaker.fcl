@@ -1,18 +1,8 @@
 # -*- mode:tcl -*-
 #------------------------------------------------------------------------------
-# generate 105 MeV/c electrons
-# make STNTUPLE in one go, without creating an intermediate file
-# for 105 MeV/c electron : E = 105.00124           MeV
-# for 105 MeV/c muon     : E = 148.9584269653785   MeV
+# generate 105 MeV/c electrons and make STNTUPLE
 #------------------------------------------------------------------------------
-#include "fcl/minimalMessageService.fcl"
-#include "fcl/standardProducers.fcl"
-#include "fcl/standardServices.fcl"
-
-#include "Stntuple/fcl/prolog.fcl"
-
 BEGIN_PROLOG
-  pdgCode    : @local::Particle.eplus
   bgHitFiles : @nil
 END_PROLOG
 
@@ -23,41 +13,41 @@ process_name : EPlusGunStnmaker
 source       : { module_type : EmptyEvent   }
 
 outputs      : { @table::Stntuple.outputs   }
-producers    : { @table::Stntuple.producers }
-filters      : { @table::Stntuple.filters   }
-paths        : { @table::Stntuple.paths     }
 
 physics : {
-    producers: { @table::producers 
-	generate                 : { @table::producers.egun 
-	    physics : { @table::producers.egun.physics
-		pdgId  : -11
-	    }
-	}
-    }
+    producers: { @table::Stntuple.producers }
+    filters  : { @table::Stntuple.filters   }
+    analyzers: { @table::Stntuple.analyzers }
+
+    p1       : [ @sequence::Stntuple.gen_g4_time_map,
+		 @sequence::Stntuple.digis          ,
+		 @sequence::Stntuple.trk_hit_reco   ,
+		 @sequence::Stntuple.cal_reco       ,
+		 @sequence::Stntuple.reco_De        ,
+		 @sequence::Stntuple.stnmaker_De
+		]
     
-    filters  : { @table::filters 
-	InitStntuple : { @table::filters.InitStntuple histFileName : "nts.user.eplus_gun_stnmaker.xxx.000001.stn" }
-    }
-
-    @table::paths
-
-    trigger_paths : [ path_gen_digi_reco_stn_tcm_dep ]
+    trigger_paths : [ p1  ]
     out           : [     ]
     end_paths     : [ out ]
 }
-
-services.TFileService.fileName            : "nts.user.eplus_gun_stnmaker.xxx.000001.root"
 #------------------------------------------------------------------------------
-# uncomment the next 2 lines if you want the DST file to be written out
+# uncomment the next 2 lines if you want the DST (.art) file to be written out
 #-----------------------------------------------------------------------------
 # physics.out                               : [ detectorOutput ]
-# outputs.detectorOutput.SelectEvents       : [ path_gen_digi_reco_stn_tcm_dep ]
-outputs.detectorOutput.fileName           : "sim.user.eplus_gun_stnmaker.xxx.000001.art"
+# outputs.detectorOutput.SelectEvents       : [ p1 ]
+#------------------------------------------------------------------------------
+# output file names 
+#------------------------------------------------------------------------------
+services.TFileService.fileName            : "nts._USER_.eplus_gun_stnmaker.xxx.000001.root"
+physics.filters.InitStntuple.histFileName : "nts._USER_.eplus_gun_stnmaker.xxx.000001.stn"
+outputs.detectorOutput.fileName           : "sim._USER_.eplus_gun_stnmaker.xxx.000001.art"
 #------------------------------------------------------------------------------
 # uncomment to avoid waisting time on the initialization of detailed neutron 
-# cross sections - that shouldn't affect the CE simulation 
+# cross sections - that shouldn't affect the electron simulation 
 #------------------------------------------------------------------------------
+physics.producers.generate                      : { @table::Stntuple.producers.egun }
+physics.producers.generate.physics.pdgId        : -11
 physics.producers.g4run.physics.physicsListName : "QGSP_BERT"
 #------------------------------------------------------------------------------
 # debugging

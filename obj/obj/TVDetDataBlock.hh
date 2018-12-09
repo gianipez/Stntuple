@@ -1,18 +1,18 @@
-#ifndef STNTUPLE_TVdetDataBlock
-#define STNTUPLE_TVdetDataBlock
+#ifndef STNTUPLE_TVDetDataBlock
+#define STNTUPLE_TVDetDataBlock
 
 #include "TClonesArray.h"
 
 #include "Stntuple/obj/TStnDataBlock.hh"
-#include "Stntuple/obj/TVdetHitData.hh"
+#include "Stntuple/obj/TVDetHitData.hh"
 
 #include "Stntuple/mod/InitStntupleDataBlocks.hh"
 #include "TBuffer.h"
 
-class TVdetDataBlock: public TStnDataBlock {
-  friend Int_t StntupleInitMu2eVirtualDataBlock(TStnDataBlock* block, 
-					      AbsEvent*      event, 
-					      int            mode);
+class TVDetDataBlock: public TStnDataBlock {
+  friend Int_t StntupleInitMu2eVDetDataBlock(TStnDataBlock* block, 
+					     AbsEvent*      event, 
+					     int            mode);
 public:
   Int_t          fNHits;	        // number of hits in the virtual detectors
   TClonesArray*  fListOfHits;		// list of hits
@@ -21,11 +21,11 @@ public:
 //-----------------------------------------------------------------------------
 public:
 					// ****** constructors and destructor
-  TVdetDataBlock();
-  virtual ~TVdetDataBlock();
+  TVDetDataBlock();
+  virtual ~TVDetDataBlock();
 					// ****** accessors
   Int_t          NHits    () { return fNHits; }
-  TVdetHitData* Hit (int i) { return (TVdetHitData*) fListOfHits->UncheckedAt(i); }
+  TVDetHitData* Hit (int i) { return (TVDetHitData*) fListOfHits->UncheckedAt(i); }
   
   TClonesArray* GetListOfHits () { return fListOfHits; }
 //-----------------------------------------------------------------------------
@@ -33,14 +33,14 @@ public:
 //-----------------------------------------------------------------------------
                                         //Create hit, increse number of hits
 
-  TVdetHitData* NewHit() { return new ((*fListOfHits)[fNHits++]) TVdetHitData(); } 
+  TVDetHitData* NewHit() { return new ((*fListOfHits)[fNHits++]) TVDetHitData(); } 
 //-----------------------------------------------------------------------------
 // overloaded methods of TObject
 //-----------------------------------------------------------------------------
   void Clear(Option_t* opt="");
   void Print(Option_t* opt="") const;
 
-  ClassDef(TVdetDataBlock,1)	// virtual data block
+  ClassDef(TVDetDataBlock,1)	// virtual data block
 };
 
 

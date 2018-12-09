@@ -44,18 +44,18 @@ physics : {
 # disable everything, enable StepPointMC
 # VDET block is just yet another step point MC block
 #------------------------------------------------------------------------------
-	    makeClusters        : 0
-	    makePid             : 0
-	    makeSimp            : 1
-	    makeTracks          : 0
-	    makeVirtualHits     : 0
-	    makeStepPointMC     : 1
+	    makeClusters     : 0
+	    makePid          : 0
+	    makeSimp         : 1
+	    makeTracks       : 0
+	    makeVDHits       : 0
+	    makeStepPointMC  : 1
 
-	    makeSimpModuleLabel : "muonBeamFilter"
+	    simpCollTag      : "muonBeamFilter"
 
-	    stepPointMCBlockName    : ["SpmcBlock"     , "VdetBlock"      ]
-	    stepPointMCModuleLabel  : ["muonBeamFilter", "muonBeamFilter" ]
-	    stepPointMCProductName  : ["mubeam"        , "virtualdetector"]
+	    spmcBlockName    : ["SpmcBlock"     , "VDetBlock"      ]
+	    spmcCollTag      : ["muonBeamFilter", "muonBeamFilter" ]
+	    spmcCollDesc     : ["mubeam"        , "virtualdetector"]
 	}
 	InitStntuple : { @table::filters.InitStntuple histFileName : "nts.murat.xxx_xxxx.g4s1_mubeam.000001.stn" }
     }

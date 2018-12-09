@@ -225,7 +225,6 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
 
       const CLHEP::Hep3Vector* sp = &simptr->startPosition();
       trackSeed->fOrigin1.SetXYZT(sp->x(),sp->y(),sp->z(),simptr->startGlobalTime());
-  
     }
     
     //look for the second most frequent hit

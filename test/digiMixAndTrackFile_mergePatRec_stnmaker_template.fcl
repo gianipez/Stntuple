@@ -1,8 +1,7 @@
 # -*- mode: tcl -*-
 // 2014-06-02: run local, write output file
-//
-// Andrei Gaponenko, 2014
 #------------------------------------------------------------------------------
+// 018-11-20: likely, obsolete
 # quick comments: reads signal MC and also background MC inputs with steppoints
 # so need to define input and 
 #------------------------------------------------------------------------------
@@ -204,8 +203,4 @@ physics.producers.CaloMatching.fitterModuleLabel                 : MergePatRec
 physics.producers.ParticleID.fitterModuleLabel                   : MergePatRec
 
 # physics.filters.InitStntuple.histFileName                        : {OUTPUT_STNTUPLE}
-physics.filters.StntupleMaker.trkPatRecDem                       : MergePatRec
 physics.filters.StntupleMaker.makeStrawData                      : 1
-physics.filters.StntupleMaker.g4ModuleLabel                      : "detectorFilter"
-# physics.filters.StntupleMaker.g4ModuleLabel                      : "g4run"     # 
-# physics.filters.StntupleMaker.g4ModuleLabel                      : "g4filter"  # for Ralf's new cosmic dataset

@@ -187,4 +187,3 @@ physics.filters.StntupleMaker.trkPatRecDmm         : TrkPatRecDmm
 physics.filters.StntupleMaker.trkPatRecUmm         : TrkPatRecUmm
 
 physics.filters.StntupleMaker.makeStrawData        : 1
-physics.filters.StntupleMaker.g4ModuleLabel        : "g4filter"     # 

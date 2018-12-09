@@ -7,6 +7,7 @@ class TStnPhotosAnaModule;
 class TStnEventDisplayModule;
 class TStnValidationModule;
 class TStnDebugModule;
+class TStnHelixAnaModule;
 class TStnLumiMonModule;
 
 namespace stntuple {
@@ -17,6 +18,7 @@ namespace stntuple {
   TStnEventDisplayModule*     m_evd   = NULL;
   TStnPhotosAnaModule*        m_pho   = NULL;
   TStnValidationModule*       m_val   = NULL;
+  TStnHelixAnaModule*         m_hel   = NULL;
 };
 
 #endif

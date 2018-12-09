@@ -260,7 +260,7 @@ Stntuple : { @table::Stntuple             # defined in Stntuple/fcl/prolog.fcl
 	@table::CaloReco.producers        # defined in CaloReco
 	@table::CaloCluster.producers     # defined in CaloCluster
 	@table::CaloCluster.producersMC   # defined in CaloCluster
-	@table::CaloClusterTrigger.producers # defined in CaloCluster
+#	@table::CaloClusterTrigger.producers # defined in CaloCluster
 	@table::CalPatRec.producers
 	@table::ParticleID.producers
 	@table::TrackCaloMatching.producers
@@ -397,7 +397,7 @@ Stntuple.mpr_reco_dep    : [ @sequence::Tracking.TPRDeP ,
 			     AvikPIDNewDep
 			    ]
 
-Stntuple.dem_reco        : [ @sequence::Tracking.TPRDeM , @sequence::CalPatRec.dem_reco, MergePatRecDem, 
+Stntuple.dem_reco        : [ @sequence::Tracking.TPRDeM  , @sequence::CalPatRec.dem_reco, MergePatRecDem, 
 			     @sequence::TrackCaloMatching.matching_dem, AvikPIDNewDem ]
 
 Stntuple.dpp_reco        : [ @sequence::kludge_Tracking_TPRDpP, MergePatRecDpp,
@@ -569,9 +569,9 @@ physics : {
     gen_hits       : [ @sequence::gen_hits_seq ]
     mc             : [ @sequence::gen_hits_seq , @sequence::CaloCluster.Reco ]
 #
-    allpatrec_reco              : [ @sequence::CaloCluster.Reco, @sequence::allPatRecSeq ]
-    trkpatrec_reco              : [ @sequence::CaloCluster.Reco, @sequence::trkPatRecSeq ]
-    calpatrec_reco              : [ @sequence::CaloCluster.Reco, @sequence::calPatRecSeq ]
+#    allpatrec_reco              : [ @sequence::CaloCluster.Reco, @sequence::allPatRecSeq ]
+#    trkpatrec_reco              : [ @sequence::CaloCluster.Reco, @sequence::trkPatRecSeq ]
+#    calpatrec_reco              : [ @sequence::CaloCluster.Reco, @sequence::calPatRecSeq ]
 #
     allpatrec_reco_stnmaker     : [ @sequence::CaloCluster.Reco, @sequence::allPatRecSeq, @sequence::pidSeq, @sequence::stnmaker_seq ]
     trkpatrec_reco_stnmaker     : [ @sequence::CaloCluster.Reco, @sequence::trkPatRecSeq, @sequence::pidSeq, @sequence::stnmaker_seq ]

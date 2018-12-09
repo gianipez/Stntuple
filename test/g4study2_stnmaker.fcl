@@ -40,19 +40,19 @@ physics : {
 #------------------------------------------------------------------------------
 # disable everything, enable SimParticles
 #------------------------------------------------------------------------------
-	    makeClusters        : 0
-	    makePid             : 0
-	    makeSimp            : 1
-	    makeTracks          : 0
-	    makeVirtualHits     : 0
-	    makeStepPointMC     : 0
+	    makeClusters    : 0
+	    makePid         : 0
+	    makeSimp        : 1
+	    makeTracks      : 0
+	    makeVDHits      : 0
+	    makeStepPointMC : 0
 
-	    makeSimpModuleLabel : "g4run"
-	    vdCollName          : "stepper"
+	    simpCollTag     : "g4run"
+	    vdHitsCollTag   : "stepper"
 
-	    stepPointMCBlockName    : ["SpmcBlock"     , "VdetBlock"    ]
-	    stepPointMCModuleLabel  : ["g4run"         , "g4run"          ]
-	    stepPointMCProductName  : ["stepper"       , "timeVD"         ]
+	    spmcBlockName   : ["SpmcBlock"     , "VDetBlock" ]
+	    spmcCollTag     : ["g4run"         , "g4run"     ]
+	    spmcCollDesc    : ["stepper"       , "timeVD"    ]
 	}
 	InitStntuple : { @table::filters.InitStntuple histFileName : "nts.murat.project.g4study2.simp.stn" }
     }

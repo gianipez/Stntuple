@@ -172,14 +172,8 @@ services.scheduler.wantSummary: true
 # physics.producers.CaloMatching.fitterModuleLabel   : MergePatRec
 # physics.producers.ParticleID.fitterModuleLabel     : MergePatRec
 
-# physics.filters.MuHitDisplay.strawHitPosMakerModuleLabel : CalPatRecMakeStereoHits
-# physics.filters.MuHitDisplay.strawHitFlagMakerModuleLabel: CalPatRecFlagBkgHits
-
 physics.filters.InitStntuple.histFileName          : "read_stnmaker_two_track_blocks.stn"
-physics.filters.StntupleMaker.g4ModuleLabel        : "g4run"
 
 physics.filters.StntupleMaker.trackBlockName       : [ "TrkPatRec" , "CalPatRec" ] 
-physics.filters.StntupleMaker.trkRecoModuleLabel   : [ "TrkPatRec" , "CalPatRec" ]
-physics.filters.StntupleMaker.fitParticle          : [           11,          11 ]
-physics.filters.StntupleMaker.fitDirection         : [            0,           0 ]
+physics.filters.StntupleMaker.trackCollTag         : [ "TrkPatRec" , "CalPatRec" ]
 

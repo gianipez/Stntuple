@@ -48,11 +48,11 @@ physics : {
 	    makeVirtualHits : 1
 	    makeStepPointMC : 1
 
-	    makeSimpModuleLabel     : "crvFilter"
+	    simpCollTag     : "crvFilter"
 
-	    stepPointMCBlockName    : ["SpmcBlock"     , "VdetBlock"      ]
-	    stepPointMCModuleLabel  : ["crvFilter"     , "crvFilter"      ]
-	    stepPointMCProductName  : [""              , "virtualdetector"]
+	    spmcBlockName    : ["SpmcBlock"     , "VDetBlock"      ]
+	    spmcCollTag      : ["crvFilter"     , "crvFilter"      ]
+	    spmcCollDesc     : [""              , "virtualdetector"]
 	}
 	InitStntuple : { @table::filters.InitStntuple histFileName : "nts._USER_._DATASET_.g3s3_crv_stn.000001.stn" }
     }

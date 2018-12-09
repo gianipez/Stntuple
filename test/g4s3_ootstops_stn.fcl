@@ -45,14 +45,14 @@ physics : {
 	    makePid         : 0
 	    makeSimp        : 1
 	    makeTracks      : 0
-	    makeVirtualHits : 0
+	    makeVDHits      : 0
 	    makeStepPointMC : 1
 
-	    makeSimpModuleLabel     : "ootStopFilter"
+	    simpCollTag     : "ootStopFilter"
 
-	    stepPointMCBlockName    : ["SpmcBlock"     , "VdetBlock"    ]
-	    stepPointMCModuleLabel  : ["ootStopFilter" , "ootStopFilter" ]
-	    stepPointMCProductName  : [""              , "virtualdetector"]
+	    spmcBlockName    : ["SpmcBlock"     , "VDetBlock"    ]
+	    spmcCollTag      : ["ootStopFilter" , "ootStopFilter" ]
+	    spmcCollDesc     : [""              , "virtualdetector"]
 	}
 	InitStntuple : { @table::filters.InitStntuple histFileName : "nts._USER_._DATASET_.s3_ootstops_stn.000001.stn" }
     }

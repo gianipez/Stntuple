@@ -30,7 +30,7 @@ public:
   virtual ~TStnHelixBlock();
 
   TStnHelix* NewHelix() {
-    TStnHelix* helixSeed = new ((*fListOfHelices)[fNHelices]) TStnHelix();
+    TStnHelix* helixSeed = new ((*fListOfHelices)[fNHelices]) TStnHelix(fNHelices);
     fNHelices++;
     return helixSeed;
   }

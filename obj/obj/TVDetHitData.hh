@@ -1,15 +1,15 @@
 //-----------------------------------------------------------------------------
-//  2014-07-15 TVdetHitData
+//  2014-07-15 TVDetHitData
 //-----------------------------------------------------------------------------
-#ifndef TVdetHitData_hh
-#define TVdetHitData_hh
+#ifndef TVDetHitData_hh
+#define TVDetHitData_hh
 
 #include <math.h>
 #include "TMath.h"
 #include "TObject.h"
 #include "TBuffer.h"
 
-class TVdetHitData : public TObject {
+class TVDetHitData : public TObject {
 protected:
   int     fIndex;
   int     fPdgCode;
@@ -28,8 +28,8 @@ protected:
   
 public:
                                         // ****** constructors and destructors
-  TVdetHitData();
-  virtual ~TVdetHitData();
+  TVDetHitData();
+  virtual ~TVDetHitData();
 //-----------------------------------------------------------------------------
 // accessors
 //-----------------------------------------------------------------------------
@@ -70,7 +70,7 @@ public:
 //-----------------------------------------------------------------------------
   void ReadV1(TBuffer &R__b);
 
-  ClassDef (TVdetHitData,2)
+  ClassDef (TVDetHitData,2)
 };
 
 #endif

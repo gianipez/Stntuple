@@ -124,9 +124,8 @@ physics.producers.makeSH.g4ModuleLabel              : @local::g4ModuleLabel
 physics.producers.CaloShowerStepFromStepPt.physVolInfoInput     : "g4run"
 
 
-physics.filters.MuHitDisplay.strawHitPosMakerModuleLabel  : MakeStereoHits
-physics.filters.MuHitDisplay.strawHitFlagMakerModuleLabel : FlagBkgHits
-physics.filters.MuHitDisplay.trkRecoModuleLabel           : KFFDeM
+physics.filters.MuHitDisplay.strawHitFlagCollTag : FlagBkgHits
+physics.filters.MuHitDisplay.trackCollTag        : KFFDeM
 
 services.scheduler.defaultExceptions : false
 services.user.SeedService.policy           :  autoIncrement

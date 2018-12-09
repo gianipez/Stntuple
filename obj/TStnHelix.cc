@@ -324,19 +324,19 @@ void TStnHelix::Streamer(TBuffer& R__b) {
 
 //-----------------------------------------------------------------------------
 TStnHelix::TStnHelix(int Number) {
+
   fMom1.SetPxPyPzE(0.,0.,0.,0.);
   fOrigin1.SetXYZT(0.,0.,0.,0.);
   
   fMom2.SetPxPyPzE(0.,0.,0.,0.);
   fOrigin2.SetXYZT(0.,0.,0.,0.);
   
-  fNumber      = Number;
-  fNHits       = 0;
-  fNComboHits  = -1;
-  fAlgorithmID = -1;
-
+  fNumber           = Number;
+  fNHits            =  0;
+  fAlgorithmID      = -1;
   fTimeClusterIndex = -1;
   fTrackSeedIndex   = -1;
+  fNComboHits       = -1;
 
   fSimpPDG1     = 0;    
   fSimpPDGM1    = 0;    
@@ -347,6 +347,7 @@ TStnHelix::TStnHelix(int Number) {
   fHelicity     = 0;
 
   for (int i=0; i<kNFreeInts; i++) fInt[i] = 0;
+
   fT0     = 0;    
   fT0Err  = 0; 
   fRCent  = 0;    
@@ -364,6 +365,8 @@ TStnHelix::TStnHelix(int Number) {
   fClusterX      = 0;     
   fClusterY      = 0;     
   fClusterZ      = 0;     
+
+  for (int i=0; i<kNFreeFloats; i++) fFloat[i] = 0;
 }
 
 //_____________________________________________________________________________

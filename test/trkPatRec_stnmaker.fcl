@@ -212,4 +212,3 @@ physics.producers.CaloMatching.fitterModuleLabel                 : TrkPatRec
 physics.producers.ParticleID.fitterModuleLabel                   : TrkPatRec
 
 physics.filters.InitStntuple.histFileName                        : "trkPatRec_stnmaker.stn"
-physics.filters.StntupleMaker.trkPatRecDem                       : TrkPatRec

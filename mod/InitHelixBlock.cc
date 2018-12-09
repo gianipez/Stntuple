@@ -200,7 +200,7 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
 
     int      nStrawHits(0);
 
-    for (int j=0; j<nhits; ++j){      //this loop is made over the ComboHits
+    for (int j=0; j<nhits; ++j) {      //this loop is made over the ComboHits
       hit       = &hits->at(j);
       //get the MC truth info
       if (hit->_flag.hasAnyProperty(mu2e::StrawHitFlag::outlier))         continue;

@@ -1,15 +1,15 @@
 ///////////////////////////////////////////////////////////////////////////////
-//  2014-07-15 TVdetHitData
+//  2014-07-15 TVDetHitData
 ///////////////////////////////////////////////////////////////////////////////
 #include "TString.h"
 
-#include "Stntuple/obj/TVdetHitData.hh"
+#include "Stntuple/obj/TVDetHitData.hh"
 
-ClassImp(TVdetHitData)
+ClassImp(TVDetHitData)
 
 //-----------------------------------------------------------------------------
-void TVdetHitData::ReadV1(TBuffer &R__b) {
-  struct TVdetHitDataV1_t {
+void TVDetHitData::ReadV1(TBuffer &R__b) {
+  struct TVDetHitDataV1_t {
     int     fIndex;
     float   fTime;
     float   fMass;
@@ -24,7 +24,7 @@ void TVdetHitData::ReadV1(TBuffer &R__b) {
     float   fMcPositionZ;			
   };
 
-  TVdetHitDataV1_t data;
+  TVDetHitDataV1_t data;
 
   int nwf_v1 = 11;
 
@@ -49,7 +49,7 @@ void TVdetHitData::ReadV1(TBuffer &R__b) {
 
 
 //_____________________________________________________________________________
-void TVdetHitData::Streamer(TBuffer &R__b) {
+void TVDetHitData::Streamer(TBuffer &R__b) {
 
   int nwi = ((int*) &fTime) - &fIndex;
   int nwf = &fMcPositionZ - &fTime +1;
@@ -66,23 +66,23 @@ void TVdetHitData::Streamer(TBuffer &R__b) {
     }
   }
   else {
-    R__b.WriteVersion(TVdetHitData::IsA());
+    R__b.WriteVersion(TVDetHitData::IsA());
     R__b.WriteFastArray(&fIndex,nwi);
     R__b.WriteFastArray(&fTime ,nwf);
   } 
 }
 
 //_____________________________________________________________________________
-TVdetHitData::TVdetHitData(): TObject() {
+TVDetHitData::TVDetHitData(): TObject() {
   Clear();
 }
 
 //_____________________________________________________________________________
-TVdetHitData::~TVdetHitData() {
+TVDetHitData::~TVDetHitData() {
 }
 
 //_____________________________________________________________________________
-void TVdetHitData::Set(int Index, float Time,  float Mass, float EnergyKin,
+void TVDetHitData::Set(int Index, float Time,  float Mass, float EnergyKin,
 			  float Energy,
 			  int PdgID, int GenCode,
 			  float McMomentum, 
@@ -109,7 +109,7 @@ void TVdetHitData::Set(int Index, float Time,  float Mass, float EnergyKin,
 }
 
 //_____________________________________________________________________________
-void TVdetHitData::Clear(Option_t* opt) {
+void TVDetHitData::Clear(Option_t* opt) {
   fIndex         = -1;
   fTime          = 1.e6;
   fMass          = -1;
@@ -127,7 +127,7 @@ void TVdetHitData::Clear(Option_t* opt) {
 }
 
 //_____________________________________________________________________________
-void TVdetHitData::Print(Option_t* Option) const {
+void TVDetHitData::Print(Option_t* Option) const {
   // print Virtual hit properties
   //  printf("Superlayer: %d, Wire: %d, Cell: %d,\n",fSuperLayer,fWire,fCell);
   

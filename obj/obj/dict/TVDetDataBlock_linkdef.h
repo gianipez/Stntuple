@@ -6,7 +6,5 @@
 #pragma link C++  nestedclasses;
 #pragma link C++  nestedtypedefs;
 #
-#pragma link C++  class  TVdetHitData-;
+#pragma link C++  class  TVDetDataBlock-;
 #endif
-
-

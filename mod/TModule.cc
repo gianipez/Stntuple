@@ -33,11 +33,13 @@ TModule::TModule(fhicl::ParameterSet const& PSet, const char* Name):
 
   memset(fDebugBit,0,kNDebugBits*sizeof(int));
 
-  fFclDebugBits               = PSet.get<fhicl::ParameterSet>("debugBits"      );
-  fInteractiveMode            = PSet.get<int>                ("interactiveMode");
+  fFclDebugBits    = PSet.get<fhicl::ParameterSet>("debugBits"      );
+  fInteractiveMode = PSet.get<int>                ("interactiveMode");
 
   fAnaRint         = TAnaRint::Instance(0,dummy);
-  fDump            = TAnaDump::Instance(&PSet);
+
+  fhicl::ParameterSet tadPset = PSet.get<fhicl::ParameterSet>("TAnaDump");
+  fDump                       = TAnaDump::Instance(&tadPset);
 
   const char* key;
                                         // a flag is an integer!

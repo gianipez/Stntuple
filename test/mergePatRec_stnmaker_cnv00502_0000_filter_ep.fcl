@@ -221,9 +221,7 @@ physics.producers.CaloMatching.fitterModuleLabel                 : MergePatRec
 physics.producers.ParticleID.fitterModuleLabel                   : MergePatRec
 
 physics.filters.InitStntuple.histFileName                        : "mergePatRec_stnmaker_cnv00502_0000.stn"
-physics.filters.StntupleMaker.trkPatRecDem                       : MergePatRec
 physics.filters.StntupleMaker.makeStrawData                      : 1
-physics.filters.StntupleMaker.g4ModuleLabel                      : detectorFilter
 services.scheduler.defaultExceptions : false
 services.user.SeedService.policy           :  autoIncrement
 services.user.SeedService.maxUniqueEngines :  20

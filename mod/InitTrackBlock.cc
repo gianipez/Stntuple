@@ -216,13 +216,13 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 
   char   module_name      [100], dar_name        [100], kaldiag_name[100];
 
-  mu2e::GeomHandle<mu2e::TTracker> ttHandle;
-  tracker = ttHandle.get();
-
   ev_number = AnEvent->event();
   rn_number = AnEvent->run();
 
   if (Block->Initialized(ev_number,rn_number)) return 0;
+
+  mu2e::GeomHandle<mu2e::TTracker> ttHandle;
+  tracker = ttHandle.get();
 
   data = (TStnTrackBlock*) Block;
   data->Clear();
@@ -467,7 +467,7 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 					// rename later
     track->fTBack         = tback;
 //-----------------------------------------------------------------------------
-// fP2 : track momentum at Z0, just for fun,should not be used for anything
+// fP2 : track momentum at Z0, just for fun, should not be used for anything
 //-----------------------------------------------------------------------------
     track->fP2 = krep->momentum(szb).mag();
 //-----------------------------------------------------------------------------
@@ -1043,8 +1043,6 @@ Int_t StntupleInitMu2eTrackBlockLinks(TStnDataBlock* Block, AbsEvent* AnEvent, i
   if (calo_module_label[0] != 0) {
     if (calo_description[0] == 0) AnEvent->getByLabel(calo_module_label,cch);
     else                          AnEvent->getByLabel(calo_module_label,calo_description,cch);
-
-    //    if (cch.isValid()) list_of_clusters = cch.product();
   }
 //-----------------------------------------------------------------------------
 // TStnTrackBlock is already initialized
@@ -1053,79 +1051,57 @@ Int_t StntupleInitMu2eTrackBlockLinks(TStnDataBlock* Block, AbsEvent* AnEvent, i
   char                 krep_module_label[100];
   tb->GetModuleLabel("mu2e::KalRepCollection",krep_module_label);
   
-  TStnTrackSeedBlock*  ftsb    , *tsb;
-  TStnTrackSeed*       ftrkseed, *trkseed;
+  TStnTrackSeedBlock   *tsb;
+  //  TStnTrackSeed*       ftrkseed, *trkseed;
 
   TStnTrack*           trk;
 
-  const mu2e::KalSeed*   kseed, *fkseed;
+  //  mu2e::KalSeed*   kseed, *fkseed;
 
-  char                 kseed_block_name     [100], hseed_block_name[100];
-  char                 short_seed_block_name[100], short_helix_block_name[100];
-
-  tb->GetModuleLabel("HelixBlockName"     , hseed_block_name    );
-  tb->GetModuleLabel("ShortHelixBlockName", short_helix_block_name);
+  char                 kseed_block_name[100], tsc_label[100], tsc_description[100] ;
 
   ev     = Block->GetEvent();
 
-  //  TStnHelixBlock*      hb;
-  //  hb     = (TStnHelixBlock*)     ev->GetDataBlock(hseed_module_label    );
-  //  fhb    = (TStnHelixBlock*)     ev->GetDataBlock(short_helix_block_name);
+  tb->GetModuleLabel("TrackTsBlockName",kseed_block_name);
+//-----------------------------------------------------------------------------
+// 'TrackTs' collection stores, for each track, its KalSeed
+//-----------------------------------------------------------------------------
+  tb->GetModuleLabel("TrackTsCollTag"  ,tsc_label);
+  tb->GetDescription("TrackTsCollTag"  ,tsc_description);
 
-  tb->GetModuleLabel("TrackSeedBlockName"     , kseed_block_name);
-  tb->GetModuleLabel("ShortTrackSeedBlockName",short_seed_block_name);
+  art::Handle<mu2e::KalSeedCollection>  tsch;
+  mu2e::KalSeedCollection*              list_of_trackSeeds;
+
+  if (tsc_description[0] == 0) AnEvent->getByLabel(tsc_label,tsch);
+  else                         AnEvent->getByLabel(tsc_label,tsc_description,tsch);
+  list_of_trackSeeds = (mu2e::KalSeedCollection*) tsch.product();
 
   tsb    = (TStnTrackSeedBlock*) ev->GetDataBlock(kseed_block_name);
-  ftsb   = (TStnTrackSeedBlock*) ev->GetDataBlock(short_seed_block_name);
 
-  int    ntrk     = tb  ->NTracks();
+  int    ntrk     = tb->NTracks();
   int    ntrkseed = tsb->NTrackSeeds();
-  
+
+  const mu2e::KalSeed *ts, *tss;
+
   for (int i=0; i<ntrk; i++) {
     trk      = tb->Track(i);
-    ftrkseed = ftsb->TrackSeed(i);
-    fkseed   = ftrkseed->fTrackSeed;
-    fkseed   = fkseed->kalSeed().get();
-    int  trackSeedIndex(-1);
-    for (int j=0; j<ntrkseed; ++j){
-      trkseed = tsb->TrackSeed(j);
-      kseed   = trkseed->fTrackSeed;
-      if (fkseed == kseed) {
-	trackSeedIndex = j;
+    ts       = &list_of_trackSeeds->at(i); // seed corresponding to track # i
+
+    int  loc(-1);
+    for (int j=0; j<ntrkseed; ++j) {
+      tss = tsb->TrackSeed(j)->fTrackSeed;
+      if (ts == tss) {
+	loc = j;
 	break;
       }
     }
     
-    if (trackSeedIndex < 0) {
+    if (loc < 0) {
       printf(">>> ERROR: %s track %i -> no TrackSeed associated\n", krep_module_label, i);
-	  continue;
+      continue;
     }
     
-    trk->SetTrackSeedIndex(trackSeedIndex);
-    
-    //    const mu2e::HelixSeed* khelix, *fkhelix;
-    //    fhelix  = fhb   ->Helix(trackSeedIndex);
-    //    fkhelix = fkseed->helix().get();//fhelix->fHelix;
-
-    //    int  helixIndex(-1);
-    // 2018-01-12 PM: it is the TrackSeed, not track , which knows explicitly about HelixSeed
-    // TStnHelix*        helix;
-    // int    nhelix   = hb  ->NHelices();
-    // for (int k=0; k<nhelix; ++k){
-    //   helix  = hb->Helix(k);
-    //   khelix = helix->fHelix;
-    //   if ( khelix == fkhelix){
-    // 	helixIndex = k;
-    // 	break;
-    //   }
-    // }
-    
-    // if (helixIndex < 0) {
-    //   printf(">>> ERROR: %s track %i -> no HelixSeed associated\n", krep_module_label, i);
-    // 	  continue;
-    // }
-    
-    // trk->SetHelixIndex(helixIndex);
+    trk->SetTrackSeedIndex(loc);
   }
 //-----------------------------------------------------------------------------
 // mark links as initialized

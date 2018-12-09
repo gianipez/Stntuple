@@ -35,10 +35,10 @@ physics : { @table::physics
 	StntupleMaker  : { @table::physics.filters.StntupleMaker
 	    makePid                 : 0
 	    trackBlockName          : [ "TrackBlock"  ] 
-	    trkRecoModuleLabel      : [ "MergePatRec" ]
-	    trkExtrapolModuleLabel  : [ "TrkExtrapol" ]
-	    trkCaloMatchModuleLabel : [ "CaloMatching"]
-	    #    pidModuleLabel          : [      "AvikPID"]
+	    trackCollTag            : [ "MergePatRec" ]
+	    tciCollTag              : [ "TrkExtrapol" ]
+	    tcmCollTag              : [ "CaloMatching"]
+	    #    pidCollTag              : [      "AvikPID"]
 	    fitParticle             : [             11]
 	    fitDirection            : [              0]
 	}

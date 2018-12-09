@@ -172,10 +172,6 @@ physics.producers.FlagStrawHits.minimumTime          : 400.
 physics.producers.CalPatRecFlagStrawHits.minimumTime : 400.
 physics.producers.TrkPatRec.tmin                     : 400.
 physics.producers.CalPatRec.tmin                     : 400.
-
-physics.filters.MuHitDisplay.strawHitPosMakerModuleLabel : CalPatRecMakeStereoHits
-physics.filters.MuHitDisplay.strawHitFlagMakerModuleLabel: CalPatRecFlagBkgHits
-
-physics.filters.StntupleMaker.g4ModuleLabel        : "g4run"
-physics.filters.StntupleMaker.trkRecoModuleLabel   : [ "MergePatRec" ]
+physics.filters.MuHitDisplay.strawHitFlagCollTag     : CalPatRecFlagBkgHits
+physics.filters.StntupleMaker.trackCollTag           : [ "MergePatRec" ]
 

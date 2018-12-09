@@ -46,17 +46,17 @@ physics : {
 	    makePid             : 0
 	    makeSimp            : 1
 	    makeTracks          : 0
-	    makeVirtualHits     : 0
+	    makeVDHits          : 0
 	    makeStepPointMC     : 1
 
-	    makeSimpModuleLabel     : "g4run"
+	    simpCollTag     : "g4run"
 
 # suppress calculation of MC time offsets, not really needed, just an example
 	    TimeOffsets             : {}
 
-	    stepPointMCBlockName    : ["VdetBlock"       ]
-	    stepPointMCModuleLabel  : ["g4run"   ]
-	    stepPointMCProductName  : ["virtualdetector" ]
+	    spmcBlockName    : ["VDetBlock"       ]
+	    spmcCollTag      : ["g4run"   ]
+	    spmcCollDesc     : ["virtualdetector" ]
 	}
 	InitStntuple : { @table::filters.InitStntuple 
 	    histFileName : "nts._USER_._DATASET_.s3_truncated_stn.001002_00010600.stn" 

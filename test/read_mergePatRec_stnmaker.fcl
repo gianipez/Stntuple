@@ -164,10 +164,6 @@ services.scheduler.wantSummary: true
 physics.producers.TrkExtrapol.fitterModuleLabel    : MergePatRec
 physics.producers.CaloMatching.fitterModuleLabel   : MergePatRec
 physics.producers.ParticleID.fitterModuleLabel     : MergePatRec
-
-physics.filters.MuHitDisplay.strawHitPosMakerModuleLabel : CalPatRecMakeStereoHits
-physics.filters.MuHitDisplay.strawHitFlagMakerModuleLabel: CalPatRecFlagBkgHits
-
-physics.filters.StntupleMaker.g4ModuleLabel        : "g4run"
-physics.filters.StntupleMaker.trkRecoModuleLabel   : [ "MergePatRec" ]
+physics.filters.MuHitDisplay.strawHitFlagCollTag   : CalPatRecFlagBkgHits
+physics.filters.StntupleMaker.trackCollTag         : [ "MergePatRec" ]
 
