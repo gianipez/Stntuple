@@ -340,13 +340,14 @@ void StntupleMaker::beginJob() {
 // straw hit data
 //-----------------------------------------------------------------------------
   if (fMakeStrawData) {
-    TStnDataBlock* straw_data = AddDataBlock("StrawDataBlock","TStrawDataBlock",
-					     StntupleInitMu2eStrawDataBlock,
-					     buffer_size,
-					     split_mode,
-					     compression_level);
-    if (straw_data) {
-      straw_data->AddCollName("mu2e::StrawHitCollection",fStrawHitsCollTag.data());
+    TStnDataBlock* db = AddDataBlock("StrawDataBlock","TStrawDataBlock",
+				     StntupleInitMu2eStrawDataBlock,
+				     buffer_size,
+				     split_mode,
+				     compression_level);
+    if (db) {
+      db->AddCollName("mu2e::StrawHitCollection"   ,fStrawHitsCollTag.data());
+      db->AddCollName("mu2e::StrawDigiMCCollection",fStrawDigiCollTag.data());
     }
   }
 //--------------------------------------------------------------------------------

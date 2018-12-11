@@ -1,10 +1,13 @@
 # -*- mode:tcl -*-
 #------------------------------------------------------------------------------
 # generate 105 MeV/c electrons and make STNTUPLE
-# choose p2 and use RootInput as source to ntuple MDC'2018 files
+# p1 : default reconstruction path
+# p2 : read and ntuple (use with RootInput to ntuple MDC'2018 files)
+# p3 : path to debug the TPR and CPR reconstruction paths separately
 #------------------------------------------------------------------------------
 BEGIN_PROLOG
-  bgHitFiles : @nil
+  bgHitFiles   : @nil
+  TRIGGER_PATH : p1
 END_PROLOG
 
 #include "Stntuple/fcl/templates.fcl"
@@ -36,8 +39,18 @@ physics : {
 		 @sequence::Stntuple.reco_De        ,
 		 @sequence::Stntuple.stnmaker_De
 		]
-    
-    trigger_paths : [ p1  ]
+
+    p3       : [ @sequence::Stntuple.gen_g4_time_map ,
+		 @sequence::Stntuple.digis           ,
+		 @sequence::Stntuple.trk_hit_reco    ,
+		 @sequence::Stntuple.cal_reco        ,
+		 @sequence::Stntuple.tpr_reco_dem    ,
+		 @sequence::Stntuple.cpr_reco_dem    ,
+		 @sequence::Stntuple.mpr_reco_dem    ,
+		 @sequence::Stntuple.stnmaker_tcm_dem
+		]
+
+    trigger_paths : [ @local::TRIGGER_PATH ]
     out           : [     ]
     end_paths     : [ out ]
 }
@@ -45,7 +58,7 @@ physics : {
 # uncomment the next 2 lines if you want the DST (.art) file to be written out
 #-----------------------------------------------------------------------------
 # physics.out                               : [ detectorOutput ]
-# outputs.detectorOutput.SelectEvents       : [ p1 ]
+# outputs.detectorOutput.SelectEvents       : [ @local::TRIGGER_PATH ]
 #------------------------------------------------------------------------------
 # output file names 
 #------------------------------------------------------------------------------
