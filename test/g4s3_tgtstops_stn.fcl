@@ -52,12 +52,11 @@ physics : {
 	    simpCollTag         : "tgtStopFilter"
 
 # suppress calculation of MC time offsets, not really needed, just an example
-	    TimeOffsets             : {}
+	    TimeOffsets         : {}
 # contrary to stage1 and stage2, stage3 contains only one StepPointMCCollection
 
-	    spmcBlockName    : ["VDetBlock"       ]
-	    spmcCollTag      : ["tgtStopFilter"   ]
-	    spmcCollDesc     : ["virtualdetector" ]
+	    spmcBlockName       : ["VDetBlock"                     ]
+	    spmcCollTag         : ["tgtStopFilter:virtualdetector" ]
 	}
 	InitStntuple : { @table::filters.InitStntuple 
 	    histFileName : "nts._USER_._DATASET_.s3_tgtstops_stn.001002_00010600.stn" 

@@ -34,7 +34,7 @@ StntupleMakerTemplate : { module_type:StntupleMaker
     makeClusters         : 1
     makeGenp             : 1
     makePid              : 1
-    makeSimp             : 1
+    makeSimp             : 1  # 0: dont write; 1:save all; 2:save primary only
     makeStepPointMC      : 0
     makeStrawData        : 0
     makeTracks           : 1
@@ -57,14 +57,13 @@ StntupleMakerTemplate : { module_type:StntupleMaker
 # 'spmc' stands for 'StepPointMC'
 #------------------------------------------------------------------------------
     strawHitsCollTag     : "makeSH"
-    strawDigiCollTag     : "compressDigiMCs"     # was "makeSD"
-    simpCollTag          : "compressDigiMCs"     # was "g4run" before
-    spmcCollTag          : "compressDigiMCs"     # StepPointMC Coll Tag
-    vdHitsCollTag        : "compressDigiMCs"     # was "g4run" before
-    genpCollTag          : "compressDigiMCs"     # was "generate" 
+    strawDigiCollTag     : "compressDigiMCs"                     # was "makeSD"
+    simpCollTag          : "compressDigiMCs"                     # was "g4run" before
+    vdHitsCollTag        : "compressDigiMCs:virtualdetector"     # was "g4run" before
+    genpCollTag          : "compressDigiMCs"                     # save signal-only: "generate" 
     
-    timeClusterBlockName : ["TimeClusterBlock" ] # to be renamed, *FIXME*
-    timeClusterCollTag   : ["CalTimePeakFinder"] # to be renamed into CalTimeClusterFinder *FIXME* 
+    timeClusterBlockName : ["TimeClusterBlock" ]                 # to be renamed, *FIXME*
+    timeClusterCollTag   : ["CalTimePeakFinder"]                 # to be renamed into CalTimeClusterFinder *FIXME* 
 
     helixBlockName       : []
     helixModuleLabel     : []
@@ -92,7 +91,7 @@ StntupleMakerTemplate : { module_type:StntupleMaker
 # this is the default for Stage1 simulation
 #------------------------------------------------------------------------------
     spmcBlockName        : [ "SpmcBlock"             ]
-    spmcCollName         : [ "muonBeamFilter:mubeam" ]
+    spmcCollTag          : [ "muonBeamFilter:mubeam" ]
 }
 
 #------------------------------------------------------------------------------

@@ -50,9 +50,8 @@ physics : {
 
 	    simpCollTag     : "crvFilter"
 
-	    spmcBlockName    : ["SpmcBlock"     , "VDetBlock"      ]
-	    spmcCollTag      : ["crvFilter"     , "crvFilter"      ]
-	    spmcCollDesc     : [""              , "virtualdetector"]
+	    spmcBlockName   : ["SpmcBlock"     , "VDetBlock"                 ]
+	    spmcCollTag     : ["crvFilter"     , "crvFilter:virtualdetector" ]
 	}
 	InitStntuple : { @table::filters.InitStntuple histFileName : "nts._USER_._DATASET_.g3s3_crv_stn.000001.stn" }
     }

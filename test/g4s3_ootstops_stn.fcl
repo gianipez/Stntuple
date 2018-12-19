@@ -50,9 +50,8 @@ physics : {
 
 	    simpCollTag     : "ootStopFilter"
 
-	    spmcBlockName    : ["SpmcBlock"     , "VDetBlock"    ]
-	    spmcCollTag      : ["ootStopFilter" , "ootStopFilter" ]
-	    spmcCollDesc     : [""              , "virtualdetector"]
+	    spmcBlockName   : ["SpmcBlock"     , "VDetBlock"                     ]
+	    spmcCollTag     : ["ootStopFilter" , "ootStopFilter:virtualdetector" ]
 	}
 	InitStntuple : { @table::filters.InitStntuple histFileName : "nts._USER_._DATASET_.s3_ootstops_stn.000001.stn" }
     }

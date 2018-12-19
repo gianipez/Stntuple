@@ -75,7 +75,7 @@ protected:
   int              fMakeClusters;
   int              fMakeGenp;
   int              fMakePid;
-  int              fMakeSimp;
+  int              fMakeSimp;         // 0:dont store, 1:all; 2:primary_only
   int              fMakeStepPointMC;
   int              fMakeStrawData;
   int              fMakeTracks;
@@ -90,7 +90,6 @@ protected:
 //-----------------------------------------------------------------------------
   string                   fGenpCollTag;
   string                   fSimpCollTag;
-  string                   fSpmcCollTag;
   string                   fStrawHitsCollTag;
   string                   fStrawDigiCollTag;
 
@@ -120,8 +119,7 @@ protected:
   vector<string>           fTrackSHBlockName;
 
   vector<string>           fSpmcBlockName;
-  vector<string>           fSpmcCollName;
-  vector<string>           fSpmcCollDesc;
+  vector<string>           fSpmcCollTag;
 
   string                   fCaloCrystalHitMaker;
   string                   fCaloClusterMaker;
@@ -194,7 +192,6 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
   
   , fGenpCollTag             (PSet.get<string>        ("genpCollTag"         ))
   , fSimpCollTag             (PSet.get<string>        ("simpCollTag"         ))
-  , fSpmcCollTag             (PSet.get<string>        ("spmcCollTag"         ))
   , fStrawHitsCollTag        (PSet.get<string>        ("strawHitsCollTag"    ))
   , fStrawDigiCollTag        (PSet.get<string>        ("strawDigiCollTag"    ))
   , fVDHitsCollTag           (PSet.get<string>        ("vdHitsCollTag"       ))
@@ -217,8 +214,7 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
   , fTrackSHBlockName        (PSet.get<vector<string>>("trackSHBlockName"    ))
   
   , fSpmcBlockName           (PSet.get<vector<string>>("spmcBlockName"       ))
-  , fSpmcCollName            (PSet.get<vector<string>>("spmcCollName"        ))
-  //  , fSpmcCollDesc            (PSet.get<vector<string>>("spmcCollDesc"        ))
+  , fSpmcCollTag             (PSet.get<vector<string>>("spmcCollTag"         ))
 
   , fCaloCrystalHitMaker     (PSet.get<string>        ("caloCrystalHitsMaker"))
   , fCaloClusterMaker        (PSet.get<string>        ("caloClusterMaker"    ))
@@ -465,7 +461,7 @@ void StntupleMaker::beginJob() {
 	track_data->AddCollName("mu2e::CaloClusterCollection"         ,fCaloClusterMaker.data()   );
 	track_data->AddCollName("mu2e::TrackClusterMatchCollection"   ,fTcmCollTag[i].data()      );
 	track_data->AddCollName("mu2e::PIDProductCollection"          ,fPidCollTag[i].data()      );
-	track_data->AddCollName("mu2e::StepPointMCCollection"         ,fSpmcCollTag.data()        );
+	track_data->AddCollName("mu2e::StepPointMCCollection"         ,fVDHitsCollTag.data()      );
 	track_data->AddCollName("DarHandle"                           ,GetName()                  ,"DarHandle"    );
 	track_data->AddCollName("KalDiagHandle"                       ,GetName()                  ,"KalDiagHandle");
 	track_data->AddCollName("TrackTsBlockName"                    ,fTrackTsBlockName[i].data());
@@ -543,10 +539,14 @@ void StntupleMaker::beginJob() {
     //    SetResolveLinksMethod("GenpBlock",StntupleInitMu2eClusterBlockLinks);
 
     if (db) {
-      db->AddCollName("mu2e::SimParticleCollection",""                      );
+      db->AddCollName("mu2e::SimParticleCollection",fSimpCollTag.data()     );
       db->AddCollName("mu2e::StrawHitCollection"   ,fStrawHitsCollTag.data());
-      db->AddCollName("mu2e::StepPointMCCollection",fVDHitsCollTag.data()   ,"virtualdetector");
+      db->AddCollName("mu2e::StrawDigiMCCollection",fStrawDigiCollTag.data());
+      db->AddCollName("mu2e::StepPointMCCollection",fVDHitsCollTag.data()   );
       db->AddCollName("MinSimpEnergyHandle"        ,GetName()               ,"MinSimpEnergyHandle");
+      
+      if (fMakeSimp == 1) db->AddCollName("StorePrimaryOnly",    "0");
+      else                db->AddCollName("StorePrimaryOnly",    "1");
     }
   }
 //-----------------------------------------------------------------------------
@@ -564,8 +564,7 @@ void StntupleMaker::beginJob() {
 				       split_mode,
 				       compression_level);
       if (db) {
-	//	db->AddCollName("mu2e::StepPointMCCollection",fSpmcCollName[i].data(),fSpmcCollDesc[i].data());
-	db->AddCollName("mu2e::StepPointMCCollection",fSpmcCollName[i].data());
+	db->AddCollName("mu2e::StepPointMCCollection",fSpmcCollTag[i].data());
       }
     }
     //      SetResolveLinksMethod(block_name,StntupleInitMu2eTrackBlockLinks);
@@ -581,7 +580,7 @@ void StntupleMaker::beginJob() {
 					split_mode,
 					compression_level);
     if (block) {
-      block->AddCollName("mu2e::StepPointMCCollection",fVDHitsCollTag.data(),"virtualdetector"     );
+      block->AddCollName("mu2e::StepPointMCCollection",fVDHitsCollTag.data());
       block->AddCollName("TimeOffsetMapsHandle"       ,GetName()            ,"TimeOffsetMapsHandle");
     }
   }  

@@ -103,7 +103,8 @@ public:
   Int_t       EventNumber       () { return f_EventNumber;       }
   Int_t       RunNumber         () { return f_RunNumber;         }
 
-  void GetModuleLabel(const char* CollectionClassName, char* ModuleLabela);
+  void GetCollTag    (const char* CollectionClassName, char* CollTag    );
+  void GetModuleLabel(const char* CollectionClassName, char* ModuleLabel);
   void GetDescription(const char* CollectionClassName, char* Description);
   void GetProcessName(const char* CollectionClassName, char* ProcessName);
   void GetValue      (const char* Key                , char* Value      );

@@ -4,22 +4,25 @@
 #include "TLorentzVector.h"
 #include "TDatabasePDG.h"
 #include "TParticlePDG.h"
+#include <vector>
 
 #include "messagefacility/MessageLogger/MessageLogger.h"
 
 #include "art/Framework/Principal/Handle.h"
 #include "art/Framework/Principal/Selector.h"
+#include "canvas/Utilities/InputTag.h"
 
 #include "GeometryService/inc/GeometryService.hh"
 #include "GeometryService/inc/GeomHandle.hh"
 #include "GeometryService/inc/VirtualDetector.hh"
 
+#include "DataProducts/inc/VirtualDetectorId.hh"
+
+#include "MCDataProducts/inc/GenParticle.hh"
 #include "MCDataProducts/inc/SimParticle.hh"
 #include "MCDataProducts/inc/SimParticleCollection.hh"
 #include "MCDataProducts/inc/StepPointMCCollection.hh"
-#include "MCDataProducts/inc/StrawHitMCTruthCollection.hh"
-#include "MCDataProducts/inc/PtrStepPointMCVectorCollection.hh"
-#include "DataProducts/inc/VirtualDetectorId.hh"
+#include "MCDataProducts/inc/StrawDigiMCCollection.hh"
 
 #include "RecoDataProducts/inc/StrawHitCollection.hh"
 
@@ -34,14 +37,18 @@
 #include "messagefacility/MessageLogger/MessageLogger.h"
 
 //-----------------------------------------------------------------------------
+// fill SimParticle's data block
+//-----------------------------------------------------------------------------
 int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode) 
 {
-  // fill simulated particle data block
   const char* oname = {"StntupleInitMu2eSimpBlock"};
 
-  static int    initialized(0);
+  static int    initialized(0), primary_only(0);
   static char   strh_module_label[100], strh_description[100];
+  static char   sdmc_module_label[100], sdmc_description[100];
   static char   g4_module_label  [100], g4_description  [100];
+
+  static char   store_primary_only[10];  // "0" or not
 
   static double _min_energy;
 
@@ -49,7 +56,6 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
 
   const mu2e::SimParticleCollection*       simp_coll(0);
   const mu2e::SimParticle*                 sim(0);
-  art::Handle<mu2e::SimParticleCollection> simp_handle;
   const mu2e::StrawHitCollection*          list_of_straw_hits(0);
 
   double        px, py, pz, energy;
@@ -66,7 +72,7 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
     initialized = 1;
 
     Block->GetModuleLabel("MinSimpEnergyHandle",module_name);
-    Block->GetDescription("MinSimpEnergyHandle",h_name   );
+    Block->GetDescription("MinSimpEnergyHandle",h_name     );
 
     THistModule*  m;
     TNamedHandle* nh;
@@ -82,6 +88,10 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
   Block->GetModuleLabel("mu2e::StepPointMCCollection",g4_module_label);
   Block->GetDescription("mu2e::StepPointMCCollection",g4_description );
 
+  Block->GetModuleLabel("StorePrimaryOnly",store_primary_only);
+  if (store_primary_only[0] == '0') primary_only = 0;
+  else                              primary_only = 1;
+
   art::Handle<mu2e::StrawHitCollection> shHandle;
   if (strh_module_label[0] != 0) {
     if (strh_description[0] == 0) AnEvent->getByLabel(strh_module_label,shHandle);
@@ -92,47 +102,88 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
     }
   }
 
-  const mu2e::PtrStepPointMCVectorCollection* stepPointMCVectorCollection(0);
-  const mu2e::StepPointMC*                    step;
+  Block->GetModuleLabel("mu2e::StrawDigiMCCollection",sdmc_module_label);
+  Block->GetDescription("mu2e::StrawDigiMCCollection",sdmc_description );
 
-  art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandleStraw;
-  AnEvent->getByLabel(strh_module_label,mcptrHandleStraw);
-  if (mcptrHandleStraw.isValid()) {
-    stepPointMCVectorCollection = mcptrHandleStraw.product();
+  char sdmc_tag[100];
+  strcpy(sdmc_tag,sdmc_module_label);
+  if (sdmc_description[0] != 0) {
+    strcat(sdmc_tag,":");
+    strcat(sdmc_tag,sdmc_description);
   }
+    
+  auto mcdH = AnEvent->getValidHandle<mu2e::StrawDigiMCCollection>(sdmc_tag);
+  const mu2e::StrawDigiMCCollection* mcdigis = mcdH.product();
 
   mu2e::GeomHandle<mu2e::VirtualDetector> vdg;
-//-----------------------------------------------------------------------------
-  //  const art::Provenance*                 prov;
-//  art::Selector  selector(art::ProductInstanceNameSelector(""));
-//  AnEvent->getMany(selector, list_of_sp);
-//
-//   for (std::vector<art::Handle<mu2e::SimParticleCollection>> ::const_iterator it = list_of_sp.begin();
-//        it != list_of_sp.end(); it++) {
-//     handle = it.operator -> ();
 
-  art::Selector  selector(art::ProcessNameSelector("")             && 
-			  art::ModuleLabelSelector(g4_module_label)   );
-  AnEvent->get(selector,simp_handle);
+  char simp_coll_tag[100];
+  Block->GetCollTag("mu2e::SimParticleCollection",simp_coll_tag);
+  auto simp_handle = AnEvent->getValidHandle<mu2e::SimParticleCollection>(simp_coll_tag);
+//-----------------------------------------------------------------------------
+// figure out how many straw hits each particle has produced
+//-----------------------------------------------------------------------------
+  std::vector<int> vid, vin;
+  int np_with_hits(0);   // number of particles with straw hits
+
+  if (n_straw_hits > 0) {
+
+    vid.reserve(n_straw_hits);
+    vin.reserve(n_straw_hits);
+
+    for (int i=0; i<n_straw_hits; i++) vin[i] = 0;
+
+    const mu2e::StepPointMC* step;
+
+    for (int i=0; i<n_straw_hits; i++) {
+      const mu2e::StrawDigiMC* mcdigi = &mcdigis->at(i);
+      if (mcdigi->wireEndTime(mu2e::StrawEnd::cal) < mcdigi->wireEndTime(mu2e::StrawEnd::hv)) {
+	step = mcdigi->stepPointMC(mu2e::StrawEnd::cal).get();
+      }
+      else {
+	step = mcdigi->stepPointMC(mu2e::StrawEnd::hv ).get();
+      }
+    
+      art::Ptr<mu2e::SimParticle> const& simptr = step->simParticle(); 
+      art::Ptr<mu2e::SimParticle> mother        = simptr;
+      while(mother->hasParent())  mother        = mother->parent();
+      const mu2e::SimParticle*    sim           = mother.get();
+	  
+      int sim_id = sim->id().asInt();
+
+      int found  = 0;
+      for (int ip=0; ip<np_with_hits; ip++) {
+	if (sim_id == vid[ip]) {
+	  vin[ip] += 1;
+	  found    = 1;
+	  break;
+	}
+      }
+
+      if (found == 0) {
+	vid[np_with_hits] = sim_id;
+	vin[np_with_hits] = 1;
+      }
+    }
+  }
 
   if (simp_handle.isValid()) {
     simp_coll = simp_handle.product();
-    //      prov = handle->provenance();
-      
-    //       printf("moduleLabel = %-20s, producedClassname = %-30s, productInstanceName = %-20s\n",
-    // 	     prov->moduleLabel().data(),
-    // 	     prov->producedClassName().data(),
-    // 	     prov->productInstanceName().data());
 
     for (mu2e::SimParticleCollection::const_iterator ip = simp_coll->begin(); ip != simp_coll->end(); ip++) {
       sim      = &ip->second;
-      //      if (! sim->isPrimary())                               goto NEXT_PARTICLE;
+      const mu2e::GenParticle* genp = sim->genParticle().get();
+
+      if (primary_only && (genp == nullptr))                continue;
       id        = sim->id().asInt();
       parent_id = -1;
       if (sim->parent()) parent_id = sim->parent()->id().asInt();
 
       pdg_code         = (int) sim->pdgId();
-      generator_id     = sim->generatorIndex();   // ID of the MC generator
+
+      if (genp) generator_id = genp->generatorId().id(); // ID of the MC generator
+      else      generator_id = -1;
+
       creation_code    = sim->creationCode();
       termination_code = sim->stoppingCode();
 
@@ -144,7 +195,7 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
       pz     = sim->startMomentum().z();
       energy = sim->startMomentum().e();
 
-      if (energy < _min_energy) continue;
+      if (energy < _min_energy)                             continue;
       simp   = simp_block->NewParticle(id, parent_id, pdg_code, 
 				       creation_code, termination_code,
 				       start_vol_id, end_vol_id,
@@ -161,89 +212,73 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
 //-----------------------------------------------------------------------------
 // particle parameters at virtual detectors
 //-----------------------------------------------------------------------------
-    if (vdg->nDet() > 0) {
-      art::Handle<mu2e::StepPointMCCollection> vdhits;
-      AnEvent->getByLabel(g4_module_label,g4_description,vdhits);
-      if (!vdhits.isValid()) {
-	char warning[100];
-	sprintf(warning,"StepPointMCCollection %s:%s NOT FOUND\n",g4_module_label,g4_description);
-	mf::LogWarning(oname) << warning;
-      }
-      else {
-	int nvdhits = vdhits->size();
-	for (int i=0; i<nvdhits; i++) {
-	  const mu2e::StepPointMC* hit = &(*vdhits)[i];
-	  
-	  mu2e::VirtualDetectorId vdid(hit->volumeId());
-
-	  if (vdid.id() == mu2e::VirtualDetectorId::ST_Out) {
-
-	    const mu2e::SimParticle* sim = hit->simParticle().get();
-
-	    if (sim == NULL) {
-	      printf(">>> ERROR: %s sim == NULL\n",oname);
-	    }
-	    int sim_id = sim->id().asInt();
-	    if (sim_id == id) {
-	      simp->SetMomTargetEnd(hit->momentum().mag());
-	    }
-	  }
-	  else if (vdid.isTrackerFront()) {
-	    art::Ptr<mu2e::SimParticle> const& simptr = hit->simParticle();
-	    const mu2e::SimParticle* sim = simptr.get();
-
-	    if (sim == NULL) {
-	      printf("[%s] ERROR: sim == NULL. CONTINUE.\n",oname);
-	    }
-	    else {
+      if (vdg->nDet() > 0) {
+	art::Handle<mu2e::StepPointMCCollection> vdhits;
+	AnEvent->getByLabel(g4_module_label,g4_description,vdhits);
+	if (!vdhits.isValid()) {
+	  char warning[100];
+	  sprintf(warning,"StepPointMCCollection %s:%s NOT FOUND\n",g4_module_label,g4_description);
+	  mf::LogWarning(oname) << warning;
+	}
+	else {
+	  int nvdhits = vdhits->size();
+	  for (int i=0; i<nvdhits; i++) {
+	    const mu2e::StepPointMC* hit = &(*vdhits)[i];
+	    
+	    mu2e::VirtualDetectorId vdid(hit->volumeId());
+	    
+	    if (vdid.id() == mu2e::VirtualDetectorId::ST_Out) {
+	      
+	      const mu2e::SimParticle* sim = hit->simParticle().get();
+	      
+	      if (sim == NULL) {
+		printf(">>> ERROR: %s sim == NULL\n",oname);
+	      }
 	      int sim_id = sim->id().asInt();
 	      if (sim_id == id) {
-		simp->SetMomTrackerFront(hit->momentum().mag());
+		simp->SetMomTargetEnd(hit->momentum().mag());
 	      }
 	    }
+	    else if (vdid.isTrackerFront()) {
+	      art::Ptr<mu2e::SimParticle> const& simptr = hit->simParticle();
+	      const mu2e::SimParticle* sim = simptr.get();
+	      
+	      if (sim == NULL) {
+		printf("[%s] ERROR: sim == NULL. CONTINUE.\n",oname);
+	      }
+	      else {
+		int sim_id = sim->id().asInt();
+		if (sim_id == id) {
+		  simp->SetMomTrackerFront(hit->momentum().mag());
+		}
+	      }
+	    }
+	    
 	  }
-	  
 	}
       }
-    }
 //------------------------------------------------------------------------------
-// now look at the straw hits
+// count number of straw hits produced by the particle
 //-----------------------------------------------------------------------------
-      nhits = -1;
-      if (stepPointMCVectorCollection && (stepPointMCVectorCollection->size() > 0)) {
-	nhits = 0;
-	for (int i=0; i<n_straw_hits; i++) {
-	  mu2e::PtrStepPointMCVector const& mcptr(stepPointMCVectorCollection->at(i) );
-
-	  step = mcptr[0].get();
-    
-	  art::Ptr<mu2e::SimParticle> const& simptr = step->simParticle(); 
-	  art::Ptr<mu2e::SimParticle> mother = simptr;
-	  while(mother->hasParent())  mother = mother->parent();
-	  const mu2e::SimParticle*    sim    = mother.get();
-
-	  int sim_id = sim->id().asInt();
-
-	  if (sim_id == id) {
-	    nhits += 1;
-	  }
+      nhits = 0;
+      
+      for (int i=0; i<np_with_hits; i++) {
+	if (vid[i] == id) {
+	  nhits = vin[i];
+	  break;
 	}
       }
       simp->SetNStrawHits(nhits);
     }
   }
   else {
-    // printf(" [%s] ERROR: SimParticleCollection %s:virtualdetector NOT FOUND",
-    // 	   oname,g4_module_label);
-    // printf(". BAIL OUT. \n");
+//-----------------------------------------------------------------------------
+// no SIMP collection
+//-----------------------------------------------------------------------------
     mf::LogWarning(oname) << " WARNING in " << oname << ": SimParticleCollection " 
 			  << g4_module_label << " not found, BAIL OUT\n";
     return -1;
   }
-  //  }
-//-----------------------------------------------------------------------------
-// all particles are stored, now - calculate nuber of straw hits
-//-----------------------------------------------------------------------------
 
   return 0;
 }

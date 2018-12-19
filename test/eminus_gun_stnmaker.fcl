@@ -7,53 +7,12 @@
 #------------------------------------------------------------------------------
 BEGIN_PROLOG
   bgHitFiles   : @nil
+  INPUT_MODULE : EmptyEvent
   TRIGGER_PATH : p1
+  PROCESS_NAME : EMinusGunStnmaker
 END_PROLOG
 
-#include "Stntuple/fcl/templates.fcl"
-
-process_name : EMinusGunStnmaker
-
-source       : { module_type : EmptyEvent   }
-# source       : { module_type : RootInput   }
-
-outputs      : { @table::Stntuple.outputs   }
-
-physics : {
-    producers: { @table::Stntuple.producers }
-    filters  : { @table::Stntuple.filters   }
-    analyzers: { @table::Stntuple.analyzers }
-
-    p1       : [ @sequence::Stntuple.gen_g4_time_map,
-		 @sequence::Stntuple.digis          ,
-		 @sequence::Stntuple.trk_hit_reco   ,
-		 @sequence::Stntuple.cal_reco       ,
-		 @sequence::Stntuple.reco_De        ,
-		 @sequence::Stntuple.stnmaker_De
-		]
-
-    p2       : [ # @sequence::Stntuple.gen_g4_time_map,
-		 # @sequence::Stntuple.digis          ,
-		 @sequence::Stntuple.trk_hit_reco   ,
-		 @sequence::Stntuple.cal_reco       ,
-		 @sequence::Stntuple.reco_De        ,
-		 @sequence::Stntuple.stnmaker_De
-		]
-
-    p3       : [ @sequence::Stntuple.gen_g4_time_map ,
-		 @sequence::Stntuple.digis           ,
-		 @sequence::Stntuple.trk_hit_reco    ,
-		 @sequence::Stntuple.cal_reco        ,
-		 @sequence::Stntuple.tpr_reco_dem    ,
-		 @sequence::Stntuple.cpr_reco_dem    ,
-		 @sequence::Stntuple.mpr_reco_dem    ,
-		 @sequence::Stntuple.stnmaker_tcm_dem
-		]
-
-    trigger_paths : [ @local::TRIGGER_PATH ]
-    out           : [     ]
-    end_paths     : [ out ]
-}
+#include "Stntuple/test/stnmaker.fcl"
 #------------------------------------------------------------------------------
 # uncomment the next 2 lines if you want the DST (.art) file to be written out
 #-----------------------------------------------------------------------------
@@ -71,12 +30,6 @@ outputs.detectorOutput.fileName           : "sim._USER_.eminus_gun_stnmaker.xxx.
 #------------------------------------------------------------------------------
 physics.producers.generate                      : { @table::Stntuple.producers.egun }
 physics.producers.g4run.physics.physicsListName : "QGSP_BERT"
-#------------------------------------------------------------------------------
-# debugging
-#------------------------------------------------------------------------------
-# physics.producers.CalPatRecDem.diagLevel : 1
-# physics.producers.CalPatRecDmm.diagLevel : 1
-# physics.producers.AvikPID.debugLevel     : 100
 #------------------------------------------------------------------------------
 # everything below is appended by murat/scripts/submit_mu2e_job
 #------------------------------------------------------------------------------

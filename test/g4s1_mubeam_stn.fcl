@@ -53,9 +53,8 @@ physics : {
 
 	    simpCollTag      : "muonBeamFilter"
 
-	    spmcBlockName    : ["SpmcBlock"     , "VDetBlock"      ]
-	    spmcCollTag      : ["muonBeamFilter", "muonBeamFilter" ]
-	    spmcCollDesc     : ["mubeam"        , "virtualdetector"]
+	    spmcBlockName    : ["SpmcBlock"            , "VDetBlock"                      ]
+	    spmcCollTag      : ["muonBeamFilter:mubeam", "muonBeamFilter:virtualdetector" ]
 	}
 	InitStntuple : { @table::filters.InitStntuple histFileName : "nts.murat.xxx_xxxx.g4s1_mubeam.000001.stn" }
     }

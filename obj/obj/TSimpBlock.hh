@@ -67,7 +67,7 @@ public:
 //-----------------------------------------------------------------------------
 //  I/O and schema evolution
 //-----------------------------------------------------------------------------
-  ClassDef(TSimpBlock,1)		// GENP block: output of MC event generators
+  ClassDef(TSimpBlock,1)		// TSimBlock: simulated particles
 };
 
 #endif

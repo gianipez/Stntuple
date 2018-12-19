@@ -50,9 +50,8 @@ physics : {
 	    simpCollTag     : "g4run"
 	    vdHitsCollTag   : "stepper"
 
-	    spmcBlockName   : ["SpmcBlock"     , "VDetBlock" ]
-	    spmcCollTag     : ["g4run"         , "g4run"     ]
-	    spmcCollDesc    : ["stepper"       , "timeVD"    ]
+	    spmcBlockName   : ["SpmcBlock"     , "VDetBlock"    ]
+	    spmcCollTag     : ["g4run:stepper" , "g4run:timeVD" ]
 	}
 	InitStntuple : { @table::filters.InitStntuple histFileName : "nts.murat.project.g4study2.simp.stn" }
     }

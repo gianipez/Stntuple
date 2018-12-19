@@ -55,7 +55,8 @@ TStnDataBlock::~TStnDataBlock() {
 }
 
 //-----------------------------------------------------------------------------
-// label coding: CollTag@Description;ProcessName
+// label coding: CollTag[:Description];[ProcessName]
+// ';' is always present, even if there is no ProcessName
 // it is possible that on entry CollTag = 'ModuleLabel:Description'
 // in that case description has to be empty
 //-----------------------------------------------------------------------------
@@ -66,32 +67,24 @@ TNamed*  TStnDataBlock::AddCollName(const char* CollName,
   TNamed* n;
 
 //-----------------------------------------------------------------------------
-// make sure we're not reeeeedefining anything
+// make sure we're not redefining anything
 //-----------------------------------------------------------------------------
   n = (TNamed*) fListOfCollNames->FindObject(CollName);
   if (n == 0) {
     TString label, desc, tag(CollTag);
 
     int loc = tag.Index(':');
-    if (loc >= 0) {
-      label = tag(0,loc);
-//-----------------------------------------------------------------------------
-// 'CollTag' already contains description, ignore 'Description'
-//-----------------------------------------------------------------------------
-      desc  = tag(loc+1,tag.Length());
+    if (loc < 0) {
+      if (Description[0] != 0) {
+	tag += ':';
+	tag += Description;
+      }
     }
-    else {
-      label = CollTag;
-      desc  = Description;
-    }
-    TString s = label;
-    s        += '@';
-    s        += desc;
-    s        += ';';
+    tag        += ';';
     if (ProcessName[0] != 0) {
-      s      += ProcessName;
+      tag      += ProcessName;
     }
-    n = new TNamed(CollName,s.Data());
+    n = new TNamed(CollName,tag.Data());
     fListOfCollNames->Add(n);
   }
   
@@ -115,7 +108,7 @@ void TStnDataBlock::SetCollName(const char* Process,
 				const char* Description, 
 				const char* CollType) {
   fCollName = Process;
-  fCollName += "@";
+  fCollName += ":";
   fCollName += Description;
   if (CollType) {
     fCollName += ";";
@@ -136,7 +129,8 @@ void TStnDataBlock::GetModuleLabel(const char* CollName, char* ModuleLabel) {
   if (n != NULL) {
     TString s(n->GetTitle());
 
-    len = s.Index('@');
+    len = s.Index(':');
+    if (len < 0) len = s.Index(';');
     strncpy(ModuleLabel,s.Data(),len);
     ModuleLabel[len] = 0;
   }
@@ -153,11 +147,29 @@ void TStnDataBlock::GetDescription(const char* CollName, char* Description) {
   if (n) {
     TString s(n->GetTitle());
 
-    int first = s.Index('@')+1;
-    len = s.Index(';')-first;
-    strncpy(Description,s.Data()+first,len);
+    int first = s.Index(':')+1;
+    if (first == 0) len = 0;
+    else {
+      len = s.Index(';')-first;
+      strncpy(Description,s.Data()+first,len);
+    }
   }
   Description[len] = 0;
+}
+
+//_____________________________________________________________________________
+void TStnDataBlock::GetCollTag(const char* CollName, char* CollTag) {
+  int len(0);
+  TNamed*  n = (TNamed*) fListOfCollNames->FindObject(CollName);
+
+  if (n) {
+    TString s(n->GetTitle());
+
+    len = s.Index(';');
+    if (len < 0) len = s.Length();
+    strncpy(CollTag,s.Data(),len);
+  }
+  CollTag[len] = 0;
 }
 
 //-----------------------------------------------------------------------------

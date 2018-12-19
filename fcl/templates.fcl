@@ -242,7 +242,24 @@ services.scheduler.wantSummary: true
 # reconstruction and analysis modules
 #------------------------------------------------------------------------------
 Stntuple : { @table::Stntuple             # defined in Stntuple/fcl/prolog.fcl
-    producers : { @table::Stntuple.producers 
+    mc_producers : {
+	@table::EventGenerator.producers  # defined in EventGenerator
+	@table::CommonMC.producers        # FIXME
+	@table::Mu2eG4.producers          # defined in Mu2eG4/fcl
+	@table::CaloDigiMC.producers      # defined in CaloDigiMC
+	@table::CaloDigiMC.producersMC    # defined in CaloDigiMC
+	@table::CaloCluster.producersMC   # defined in CaloCluster
+	@table::TrackerMC.producers       # defined in TrackerMC
+
+	compressDigiMCs : { @table::DigiCompression.Primary  # defined in Filters/fcl/
+	    crvDigiMCTag         : ""
+	    extraStepPointMCTags : [ "g4run:virtualdetector" ]
+	}
+
+	generate : { @table::EventGenerator.producers.egun }    # to avoid diagnostics
+    }
+
+    reco_producers : { @table::Stntuple.producers 
 #------------------------------------------------------------------------------
 # all Stntuple modules are filters, they are defined in Stntuple/fcl/prolog.fcl
 # add modules defined in other packages
@@ -252,29 +269,15 @@ Stntuple : { @table::Stntuple             # defined in Stntuple/fcl/prolog.fcl
 #------------------------------------------------------------------------------
 # TrkPatRec and CalPatRec modules
 #------------------------------------------------------------------------------
-	@table::EventGenerator.producers  # defined in EventGenerator
-	@table::CommonMC.producers        # FIXME
-	@table::Mu2eG4.producers          # defined in Mu2eG4/fcl
-	@table::CaloDigiMC.producers      # defined in CaloDigiMC
-	@table::CaloDigiMC.producersMC    # defined in CaloDigiMC
 	@table::CaloReco.producers        # defined in CaloReco
 	@table::CaloCluster.producers     # defined in CaloCluster
-	@table::CaloCluster.producersMC   # defined in CaloCluster
 #	@table::CaloClusterTrigger.producers # defined in CaloCluster
 	@table::CalPatRec.producers
 	@table::ParticleID.producers
 	@table::TrackCaloMatching.producers
-	@table::TrackerMC.producers       # defined in TrackerMC
 	@table::Tracking.producers        # defined in TrkPatRec
 	@table::TrkHitReco.producers      # defined in TrkHitReco
 	@table::CommonTrk.producers
-
-	compressDigiMCs : { @table::DigiCompression.Primary  # defined in Filters/fcl/
-	    crvDigiMCTag         : ""
-	    extraStepPointMCTags : [ "g4run:virtualdetector" ]
-	}
-
-	generate : { @table::EventGenerator.producers.egun }    # to avoid diagnostics
     }
 
     filters : { @table::Stntuple.filters
@@ -332,6 +335,13 @@ Stntuple : { @table::Stntuple             # defined in Stntuple/fcl/prolog.fcl
 	    outputCommands: [ "keep *_*_*_*"]
 	}
     }
+}
+#------------------------------------------------------------------------------
+# to run MDC2018 mixing and stntupling in the same job,  need to split
+#------------------------------------------------------------------------------
+Stntuple.producers : { 
+    @table::Stntuple.mc_producers
+    @table::Stntuple.reco_producers
 }
 
 #------------------------------------------------------------------------------

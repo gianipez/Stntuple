@@ -48,14 +48,13 @@ physics : {
 	    makeVDHits          : 0
 	    makeStepPointMC     : 1
 
-	    simpCollTag     : "mothersFilter"
+	    simpCollTag         : "mothersFilter"
 
 # suppress calculation of MC time offsets, not really needed, just an example
-	    TimeOffsets             : {}
+	    TimeOffsets         : {}
 
-	    spmcBlockName    : ["SpmcBlock"     , "VDetBlock"      ]
-	    spmcCollTag      : ["muonBeamFilter", "muonBeamFilter" ]
-	    spmcCollDesc     : ["DSVacuum"      , "virtualdetector"]
+	    spmcBlockName       : ["SpmcBlock"              , "VDetBlock"                      ]
+	    spmcCollTag         : ["muonBeamFilter:DSVacuum", "muonBeamFilter:virtualdetector" ]
 	}
 
 	InitStntuple : { @table::filters.InitStntuple 
