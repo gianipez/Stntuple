@@ -287,7 +287,7 @@ namespace mu2e {
     fTrkCalMatch             (pset.get<string>("trkCalMatch")),
     fPidCollTag              (pset.get<string>("pidCollTag")),
 
-    _generatorID             (pset.get<mu2e::GenId>   ("generatorID", mu2e::GenId::conversionGun)),
+    _generatorID             (pset.get<mu2e::GenId>   ("generatorID", mu2e::GenId::CeEndpoint)),
     _trackerStepPoints       (pset.get<string>        ("trackerStepPoints")),
     _minEnergyDep            (pset.get<double>        ("minEnergyDep", 0)),
     _timeWindow              (pset.get<double>        ("timeWindow", 1.e6)),
