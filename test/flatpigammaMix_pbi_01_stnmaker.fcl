@@ -98,6 +98,7 @@ physics.filters.StntupleMakerDe.genpCollTag              : "generate"
 physics.filters.StntupleMakerDe.makeSimp                 : 2       # save gen signal only
 physics.filters.StntupleMakerDe.simpCollTag              : "g4run" #
 physics.filters.StntupleMakerDe.makeStepPointMC          : 1
+physics.filters.StntupleMakerDe.spmcBlockName            : [ "SpmcBlock"               ]
 physics.filters.StntupleMakerDe.spmcCollTag              : [ "compressDigiMCs:tracker" ]
 #------------------------------------------------------------------------------
 # unsuccessful attempt to turn OFF softly the digi filter - comment out
