@@ -33,6 +33,10 @@ protected:
   Int_t          fNParticles;		// total # of particles
   TClonesArray*  fListOfParticles;
 //-----------------------------------------------------------------------------
+// transients - parameters (temp solution
+//-----------------------------------------------------------------------------
+  int            fGenProcessID;          //! don't save
+//-----------------------------------------------------------------------------
 //  functions
 //-----------------------------------------------------------------------------
 public:
@@ -42,23 +46,27 @@ public:
 //-----------------------------------------------------------------------------
 // accessors
 //-----------------------------------------------------------------------------
-  Int_t           NParticles        () { return fNParticles; }
+  int             GenProcessID() { return fGenProcessID; }
+  int             NParticles () { return fNParticles ; }
 
 					// `i'-th particle in the global list
   TGenParticle*   Particle(int i) { 
     return (TGenParticle*) fListOfParticles->UncheckedAt(i); 
   }
+
 //-----------------------------------------------------------------------------
 //  modifiers
 //-----------------------------------------------------------------------------
 					// currently: add LAST particle to the
 					// LAST interaction
 
-  TGenParticle*  NewParticle(Int_t PdgCode, Int_t GeneratorID, 
+  TGenParticle*  NewParticle(Int_t PdgCode, Int_t GenProcessID, 
 			     int   m1, Int_t m2, Int_t d1, Int_t d2, 
 			     float px, Float_t py, Float_t pz, Float_t e,
 			     float vx, Float_t vy, Float_t vz, Float_t t,
 			     float ProperTime);
+
+  void           SetGenProcessID(int ID) { fGenProcessID = ID; }
 //-----------------------------------------------------------------------------
 // overloaded functions of TObject
 //-----------------------------------------------------------------------------

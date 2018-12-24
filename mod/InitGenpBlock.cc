@@ -31,7 +31,7 @@ int StntupleInitMu2eGenpBlock(TStnDataBlock* block, AbsEvent* AnEvent, int mode)
   art::Selector  selector(art::ProductInstanceNameSelector(""));
 
   double px, py, pz, mass, energy;
-  int    pdg_code;
+  int    pdg_code, gen_id;
 
   char   gen_module_label[100], gen_description[100];
 
@@ -72,6 +72,12 @@ int StntupleInitMu2eGenpBlock(TStnDataBlock* block, AbsEvent* AnEvent, int mode)
       for (std::vector<mu2e::GenParticle>::const_iterator ip = coll->begin();
 	   ip != coll->end(); ip++) {
 	gp       = ip.operator -> ();
+	gen_id   = (int) gp->generatorId().id();
+//-----------------------------------------------------------------------------
+// conditionally. store only particles corresponding to the requested process
+//-----------------------------------------------------------------------------
+	if ((genp_block->GenProcessID() > 0) && (gen_id != genp_block->GenProcessID())) continue;
+
 	pdg_code = (int) gp->pdgId();
 	part     = pdg_db->GetParticle(pdg_code);
 
@@ -83,7 +89,7 @@ int StntupleInitMu2eGenpBlock(TStnDataBlock* block, AbsEvent* AnEvent, int mode)
 	energy = sqrt(px*px+py*py+pz*pz+mass*mass);
 
 	genp_block->NewParticle(pdg_code,
-				(int) gp->generatorId().id(),
+				gen_id,
 				-1, -1, -1, -1,
 				px, py, pz, energy,
 				gp->position().x(),

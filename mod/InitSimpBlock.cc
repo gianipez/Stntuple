@@ -43,12 +43,10 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
 {
   const char* oname = {"StntupleInitMu2eSimpBlock"};
 
-  static int    initialized(0), primary_only(0);
+  static int    initialized(0);
   static char   strh_module_label[100], strh_description[100];
   static char   sdmc_module_label[100], sdmc_description[100];
   static char   g4_module_label  [100], g4_description  [100];
-
-  static char   store_primary_only[10];  // "0" or not
 
   static double _min_energy;
 
@@ -87,10 +85,6 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
 
   Block->GetModuleLabel("mu2e::StepPointMCCollection",g4_module_label);
   Block->GetDescription("mu2e::StepPointMCCollection",g4_description );
-
-  Block->GetModuleLabel("StorePrimaryOnly",store_primary_only);
-  if (store_primary_only[0] == '0') primary_only = 0;
-  else                              primary_only = 1;
 
   art::Handle<mu2e::StrawHitCollection> shHandle;
   if (strh_module_label[0] != 0) {
@@ -174,15 +168,16 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
       sim      = &ip->second;
       const mu2e::GenParticle* genp = sim->genParticle().get();
 
-      if (primary_only && (genp == nullptr))                continue;
       id        = sim->id().asInt();
       parent_id = -1;
       if (sim->parent()) parent_id = sim->parent()->id().asInt();
 
       pdg_code         = (int) sim->pdgId();
 
-      if (genp) generator_id = genp->generatorId().id(); // ID of the MC generator
+      if (genp) generator_id = genp->generatorId().id();   // ID of the MC generator
       else      generator_id = -1;
+
+      if ((simp_block->GenProcessID() > 0) && (generator_id != simp_block->GenProcessID())) continue;
 
       creation_code    = sim->creationCode();
       termination_code = sim->stoppingCode();

@@ -30,6 +30,7 @@ void TGenpBlock::Streamer(TBuffer &R__b)
 //_____________________________________________________________________________
 TGenpBlock::TGenpBlock() {
   fNParticles      = 0;
+  fGenProcessID    = -1;
   fListOfParticles = new TClonesArray("TGenParticle",100);
   fListOfParticles->BypassStreamer(kFALSE);
 }

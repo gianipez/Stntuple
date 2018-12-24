@@ -35,6 +35,8 @@
 #include "Stntuple/obj/TStnHelixBlock.hh"
 #include "Stntuple/obj/TStrawDataBlock.hh"
 #include "Stntuple/obj/TCalDataBlock.hh"
+#include "Stntuple/obj/TSimpBlock.hh"
+#include "Stntuple/obj/TGenpBlock.hh"
 #include "Stntuple/obj/TStnHeaderBlock.hh"
 //-----------------------------------------------------------------------------
 // nothing new: link-wise, TModule depends on TAnaDump
@@ -52,6 +54,7 @@
 #include "Mu2eUtilities/inc/SimParticleTimeOffset.hh"
 #include "TrkReco/inc/DoubletAmbigResolver.hh"
 #include "TrkDiag/inc/KalDiag.hh"
+#include "MCDataProducts/inc/GenId.hh"
 
 using namespace std; 
 
@@ -75,7 +78,7 @@ protected:
   int              fMakeClusters;
   int              fMakeGenp;
   int              fMakePid;
-  int              fMakeSimp;         // 0:dont store, 1:all; 2:primary_only
+  int              fMakeSimp;         // 0:dont store, 1:all;
   int              fMakeStepPointMC;
   int              fMakeStrawData;
   int              fMakeTracks;
@@ -123,6 +126,10 @@ protected:
 
   string                   fCaloCrystalHitMaker;
   string                   fCaloClusterMaker;
+//-----------------------------------------------------------------------------
+// cut-type parameters
+//-----------------------------------------------------------------------------
+  GenId                    fGenId       ;  // generated process ID
   
   double                   fMinTActive  ;  // start of the active window
   double                   fMinECrystal ;  // 
@@ -218,6 +225,9 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
 
   , fCaloCrystalHitMaker     (PSet.get<string>        ("caloCrystalHitsMaker"))
   , fCaloClusterMaker        (PSet.get<string>        ("caloClusterMaker"    ))
+
+  , fGenId(GenId::findByName (PSet.get<std::string>   ("genId"              )))
+
   , fMinTActive              (PSet.get<double>        ("minTActive"          ))
   , fMinECrystal             (PSet.get<double>        ("minECrystal"         ))
   , fMinSimpEnergy           (PSet.get<double>        ("minSimpEnergy"       ))
@@ -510,18 +520,20 @@ void StntupleMaker::beginJob() {
 // generator particles 
 //-----------------------------------------------------------------------------
   if (fMakeGenp) {
-    TStnDataBlock* genp_data;
+    TStnDataBlock* db;
 
-    genp_data = AddDataBlock("GenpBlock",
-			     "TGenpBlock",
-			     StntupleInitMu2eGenpBlock,
-			     buffer_size,
-			     split_mode,
-			     compression_level);
-    genp_data->AddCollName("mu2e::GenParticleCollection",fGenpCollTag.data());
+    db = AddDataBlock("GenpBlock",
+		      "TGenpBlock",
+		      StntupleInitMu2eGenpBlock,
+		      buffer_size,
+		      split_mode,
+		      compression_level);
+    db->AddCollName("mu2e::GenParticleCollection",fGenpCollTag.data());
 
-    if (genp_data) {
-      genp_data->AddCollName("mu2e::GenParticleCollection","");
+    if (db) {
+      ((TGenpBlock*) db)->SetGenProcessID(fGenId.id());
+
+      db->AddCollName("mu2e::GenParticleCollection","");
       //    SetResolveLinksMethod("GenpBlock",StntupleInitMu2eClusterBlockLinks);
     }
   }
@@ -539,14 +551,13 @@ void StntupleMaker::beginJob() {
     //    SetResolveLinksMethod("GenpBlock",StntupleInitMu2eClusterBlockLinks);
 
     if (db) {
+      ((TSimpBlock*) db)->SetGenProcessID(fGenId.id());
+
       db->AddCollName("mu2e::SimParticleCollection",fSimpCollTag.data()     );
       db->AddCollName("mu2e::StrawHitCollection"   ,fStrawHitsCollTag.data());
       db->AddCollName("mu2e::StrawDigiMCCollection",fStrawDigiCollTag.data());
       db->AddCollName("mu2e::StepPointMCCollection",fVDHitsCollTag.data()   );
       db->AddCollName("MinSimpEnergyHandle"        ,GetName()               ,"MinSimpEnergyHandle");
-      
-      if (fMakeSimp == 1) db->AddCollName("StorePrimaryOnly",    "0");
-      else                db->AddCollName("StorePrimaryOnly",    "1");
     }
   }
 //-----------------------------------------------------------------------------

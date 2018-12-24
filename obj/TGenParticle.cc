@@ -90,7 +90,7 @@ void TGenParticle::Print(Option_t* Opt) const {
   TString opt = Opt;
   if ((opt == "banner") || (opt == "")) {
 				// print banner
-    printf("   i name                   PDG  isthep  im1  im2  id1  id2      px");
+    printf("   i name                   PDG   GenId  im1  im2  id1  id2      px");
     printf("      py       pz       e        vx       vy        vz       t\n");
   }
 
@@ -103,7 +103,7 @@ void TGenParticle::Print(Option_t* Opt) const {
     if (pdg) printf(" %-19s",pdg->GetName());
     else          printf(" %-19s","*** unknown ***");
     printf("%7i"   ,GetPdgCode());
-    printf("%6i"   ,GetStatusCode());
+    printf("%6i"   ,GetStatusCode()); // in case of Mu2e, this is the GenId
     printf("  ");
     printf("%5i"   ,GetMother(0));
     printf("%5i"   ,GetMother(1));

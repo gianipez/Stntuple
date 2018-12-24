@@ -30,6 +30,7 @@ void TSimpBlock::Streamer(TBuffer &R__b)
 
 //_____________________________________________________________________________
 TSimpBlock::TSimpBlock() {
+  fGenProcessID    = -1;
   fNParticles      = 0;
   fListOfParticles = new TClonesArray("TSimParticle",10);
   fListOfParticles->BypassStreamer(kFALSE);
@@ -72,7 +73,7 @@ TSimParticle* TSimpBlock::FindParticle(int ID) {
 TSimParticle* TSimpBlock::NewParticle(int ID, int ParentID, int PdgCode, 
 				      int CreationCode, int TerminationCode,
 				      int StartVolumeIndex, int EndVolumeIndex,
-				      int GeneratorID) 
+				      int GenProcessID) 
 {
   // add new particle to the block. Block is filled sequentially, so 
   // assume that this is the last particle (not necessarily!) and it is 
@@ -82,7 +83,7 @@ TSimParticle* TSimpBlock::NewParticle(int ID, int ParentID, int PdgCode,
 
   p = new ((*fListOfParticles)[fNParticles]) 
             TSimParticle(ID,ParentID, PdgCode,CreationCode,TerminationCode,
-			 StartVolumeIndex,EndVolumeIndex,GeneratorID);
+			 StartVolumeIndex,EndVolumeIndex,GenProcessID);
 
   fNParticles += 1;
 

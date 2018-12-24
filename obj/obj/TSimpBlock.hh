@@ -32,6 +32,10 @@ protected:
   Int_t          fNParticles;		// total # of particles
   TClonesArray*  fListOfParticles;
 //-----------------------------------------------------------------------------
+// transients - parameters (temp solution
+//-----------------------------------------------------------------------------
+  int            fGenProcessID;         //! don't save, generated process ID
+//-----------------------------------------------------------------------------
 //  functions
 //-----------------------------------------------------------------------------
 public:
@@ -41,7 +45,8 @@ public:
 //-----------------------------------------------------------------------------
 // accessors
 //-----------------------------------------------------------------------------
-  Int_t           NParticles        () { return fNParticles; }
+  int             GenProcessID() { return fGenProcessID; }
+  Int_t           NParticles  () { return fNParticles  ; }
 
 					// `i'-th particle in the global list
   TSimParticle*   Particle(int i) { 
@@ -58,7 +63,9 @@ public:
   TSimParticle*  NewParticle(Int_t ID, Int_t ParentID, Int_t PdgCode, 
 			     int CreationCode, int TerminationCode,
 			     int StartVolumeIndex, int EndVolumeIndex,
-			     int GeneratorID);
+			     int GenProcessID);
+
+  void           SetGenProcessID(int ID) { fGenProcessID = ID; }
 //-----------------------------------------------------------------------------
 // overloaded functions of TObject
 //-----------------------------------------------------------------------------
