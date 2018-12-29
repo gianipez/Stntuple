@@ -54,18 +54,20 @@ TStnCatalog::TStnCatalog(const char* name) :
 
       TUrl u(url);
 
-      if (strcmp(u.GetProtocol(),"txt") == 0) {
+      TString protocol = u.GetProtocol();
+
+      if      (protocol.Index("txt") == 0) {
 	fListOfCatalogServers->Add(new TTxtCatalogServer(url,rsh.Data()));
       }
-      else if (strcmp(u.GetProtocol(),"http") == 0) {
+      else if (protocol.Index("http") == 0) {
 	fListOfCatalogServers->Add(new THttpCatalogServer(url,rsh.Data()));
       }
     }
   }
   gSystem->ClosePipe(f);
 //-----------------------------------------------------------------------------
-// in addition to that see if STNTUPLE_CATALOG variable is defined in the 
-// environment - it may add one more server
+// in addition, see if STNTUPLE_CATALOG variable is defined in the environment - 
+// it may add one more server
 //-----------------------------------------------------------------------------
   env  = gSystem->Getenv("STNTUPLE_CATALOG");
   if (env) {

@@ -30,7 +30,7 @@ Stntuple.RunSummary:  root://fcdfdata122.fnal.gov//export/data2/ewk/run_summary/
 # STNTUPLE catalog servers (FCDFLNX2 is a fallback for FCDFLNX4, same disk,
 #                           ncdf131 is my private catalog server)
 #------------------------------------------------------------------------------
-Stntuple.Catalog   http://mu2e.fnal.gov/public/hep/computing/Stntuple/cafdfc 
+Stntuple.Catalog   https://mu2e.fnal.gov/public/hep/computing/Stntuple/cafdfc 
 
 # Stntuple.Catalog   http://home.fnal.gov/~murat/cafdfc 
 # +Stntuple.Catalog   http://home.fnal.gov/~gianipez/cafdfc 
