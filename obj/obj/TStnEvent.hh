@@ -1,7 +1,7 @@
 #ifndef TStnEvent_hh
 #define TStnEvent_hh
 
-#include "AbsEvent.hh"
+#include "Stntuple/obj/AbsEvent.hh"
 
 class TStnNode;
 class TStnDataBlock;

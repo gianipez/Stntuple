@@ -10,11 +10,9 @@
 
 #include "MCDataProducts/inc/GenParticle.hh"
 #include "MCDataProducts/inc/GenParticleCollection.hh"
+#include "MCDataProducts/inc/EventWeight.hh"
 
 #include "Stntuple/obj/TGenpBlock.hh"
-
-#include "Stntuple/mod/InitStntupleDataBlocks.hh"
-
 //_____________________________________________________________________________
 int StntupleInitMu2eGenpBlock(TStnDataBlock* block, AbsEvent* AnEvent, int mode) 
 {
@@ -41,8 +39,17 @@ int StntupleInitMu2eGenpBlock(TStnDataBlock* block, AbsEvent* AnEvent, int mode)
   genp_block->GetModuleLabel("mu2e::GenParticleCollection",gen_module_label);
   genp_block->GetDescription("mu2e::GenParticleCollection",gen_description );
 //-----------------------------------------------------------------------------
-// initialization from HEPG, loop over HEPG particles and fill the list
-// loop over the existing HEPG banks, add non-initialized interaction
+// MC event weight (by "generate") is not always present
+//-----------------------------------------------------------------------------
+  art::InputTag ewT("generate");
+  art::Handle<mu2e::EventWeight> ewH;
+
+  AnEvent->getByLabel(ewT,ewH);
+
+  if (ewH.isValid()) genp_block->fWeight = ewH->weight();
+  else               genp_block->fWeight = 1.;
+//-----------------------------------------------------------------------------
+// loop over existing GENP collections, there could be many of them
 //-----------------------------------------------------------------------------
   AnEvent->getMany(selector, list_of_gp);
 

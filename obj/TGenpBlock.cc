@@ -7,22 +7,47 @@
 
 ClassImp(TGenpBlock)
 
+//-----------------------------------------------------------------------------
+void TGenpBlock::ReadV1(TBuffer &R__b) {
+  R__b >> fNParticles;
+
+  fListOfParticles->Streamer(R__b);
+  for (int i=0; i<fNParticles; i++) {
+    Particle(i)->SetUniqueID(i);
+  }
+
+  fGenProcessID = -1;                // added in V2
+  fWeight       = 1.;                // added in V2
+}
+
 //______________________________________________________________________________
 void TGenpBlock::Streamer(TBuffer &R__b)
 {
    // Stream an object of class TGenpBlock as compact, as possible
 
   if (R__b.IsReading()) {
-    Version_t R__v = R__b.ReadVersion(); if (R__v) { }
-    R__b >> fNParticles;
-    fListOfParticles->Streamer(R__b);
-    for (int i=0; i<fNParticles; i++) {
-      Particle(i)->SetUniqueID(i);
+    Version_t R__v = R__b.ReadVersion(); 
+    if (R__v == 1) { 
+      ReadV1(R__b);
+    }
+    else {
+//-----------------------------------------------------------------------------
+//  current version - V2
+//-----------------------------------------------------------------------------
+      R__b >> fNParticles;
+      R__b >> fGenProcessID; 		// added in V2
+      R__b >> fWeight;			// added in V2
+      fListOfParticles->Streamer(R__b);
+      for (int i=0; i<fNParticles; i++) {
+	Particle(i)->SetUniqueID(i);
+      }
     }
   } 
   else {
     R__b.WriteVersion(TGenpBlock::IsA());
     R__b << fNParticles;
+    R__b << fGenProcessID;
+    R__b << fWeight;
     fListOfParticles->Streamer(R__b);
   }
 }
@@ -31,6 +56,7 @@ void TGenpBlock::Streamer(TBuffer &R__b)
 TGenpBlock::TGenpBlock() {
   fNParticles      = 0;
   fGenProcessID    = -1;
+  fWeight          = 1.;
   fListOfParticles = new TClonesArray("TGenParticle",100);
   fListOfParticles->BypassStreamer(kFALSE);
 }
@@ -46,6 +72,8 @@ TGenpBlock::~TGenpBlock() {
 //_____________________________________________________________________________
 void TGenpBlock::Clear(const char* opt) {
   fNParticles    = 0;
+  fGenProcessID  = -1;
+  fWeight        = 1.;
 					// don't modify cut values at run time
   fListOfParticles->Clear(opt);
 }

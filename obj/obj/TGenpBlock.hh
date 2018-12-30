@@ -21,21 +21,20 @@
 #include "TGenParticle.hh"
 #include "TBuffer.h"
 
+#include "Stntuple/mod/InitStntupleDataBlocks.hh"
 
-class TStnEvent;
+// class TStnEvent;
 
 class TGenpBlock: public TStnDataBlock {
-  friend Int_t StntupleInitMu2eGenpBlock  (TStnDataBlock*, TStnEvent*, int);
+  friend int StntupleInitMu2eGenpBlock  (TStnDataBlock*, AbsEvent*, int);
 protected:
 //-----------------------------------------------------------------------------
 //  data members
 //-----------------------------------------------------------------------------
   Int_t          fNParticles;		// total # of particles
+  int            fGenProcessID;         // ID of the generated signal process
+  float          fWeight;               // generation weight (!= 1 for RPC)
   TClonesArray*  fListOfParticles;
-//-----------------------------------------------------------------------------
-// transients - parameters (temp solution
-//-----------------------------------------------------------------------------
-  int            fGenProcessID;          //! don't save
 //-----------------------------------------------------------------------------
 //  functions
 //-----------------------------------------------------------------------------
@@ -46,8 +45,9 @@ public:
 //-----------------------------------------------------------------------------
 // accessors
 //-----------------------------------------------------------------------------
+  int             NParticles  () { return fNParticles;   }
   int             GenProcessID() { return fGenProcessID; }
-  int             NParticles () { return fNParticles ; }
+  float           Weight      () { return fWeight;       }
 
 					// `i'-th particle in the global list
   TGenParticle*   Particle(int i) { 
@@ -75,7 +75,9 @@ public:
 //-----------------------------------------------------------------------------
 //  I/O and schema evolution
 //-----------------------------------------------------------------------------
-  ClassDef(TGenpBlock,1)		// GENP block: output of MC event generators
+  void ReadV1(TBuffer& R__b);
+
+  ClassDef(TGenpBlock,2)		// GENP block: output of MC event generators
 };
 
 #endif
