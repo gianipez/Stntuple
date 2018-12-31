@@ -6,10 +6,15 @@
 # the dataset description string
 # 
 #------------------------------------------------------------------------------
-book=$1
-top_dir=/web/sites/mu2e.fnal.gov/htdocs/atwork/computing/Stntuple/cafdfc
-dir=$top_dir/$book
+        book=$1
+     top_dir=/web/sites/mu2e.fnal.gov/htdocs/atwork/computing/Stntuple/cafdfc
+         dir=$top_dir/$book
 HTML_CATALOG=$dir/index.shtml
+
+if [ ".$book" == "." ] ; then
+    echo book undefined! BAIL OUT
+    exit -1
+fi
 
 echo "<!--#set var=\"pagetitle\" value=\"STNTUPLE datasets\" -->"       >| $HTML_CATALOG
 echo "<!--#include virtual=\"/includes/mu2e_top.shtml\" -->"            >> $HTML_CATALOG
@@ -29,8 +34,11 @@ echo "width: 200px;"                                                    >> $HTML
 echo "}"                                                                >> $HTML_CATALOG
 echo "</style>"                                                         >> $HTML_CATALOG
 
+# echo HTML_CATALOG:$HTML_CATALOG
+
 for f in `ls $dir | grep -v AAA_DA | grep -v index.shtml` ; do 
     catalog=$dir/$f/AAA_CATALOG.html
+#    echo catalog:$catalog
     description=`cat $catalog | grep "# DESCRIPTION:" | sed 's/# DESCRIPTION://'`
     offline_ver=`cat $catalog | grep "# OFFLINE_VERSION:" | sed 's/# OFFLINE_VERSION://'`
     if [ ".$offline_ver" == "." ] ; then offline_ver="......" ; fi
