@@ -10,6 +10,22 @@
 #include "TBuffer.h"
 
 class TStrawHitData : public TObject {
+//-----------------------------------------------------------------------------
+// constants imported from DataProducts/inc/StrawId.hh
+//-----------------------------------------------------------------------------
+  constexpr static uint16_t _layermsk = 0x1; // mask for layer field
+  constexpr static uint16_t _strawmsk = 0x7F; // mask for straw field
+  constexpr static uint16_t _preampmsk = 0x7E; // mask for preamp
+  constexpr static uint16_t _panelmsk = 0x380; // mask for panel field
+  constexpr static uint16_t _preampsft = 1; // shift for preamp field
+  constexpr static uint16_t _panelsft = 7; // shift for panel field
+  constexpr static uint16_t _facemsk = 0x80; // mask for face field
+  constexpr static uint16_t _facesft = 7; // shift for face field
+  constexpr static uint16_t _planemsk = 0xFC00; // mask for plane field
+  constexpr static uint16_t _planesft = 10; // shift for plane field
+  constexpr static uint16_t _stationmsk = 0xF800; // mask for station field
+  constexpr static uint16_t _stationsft = 11; // shift for station field
+
 protected:
   int     fIndex;
   int     fPdgCode;
@@ -20,6 +36,7 @@ protected:
   float   fDt;
   float   fEnergy;
   float   fMcMomentum;			// MC particle momentum
+  
 public:
                                         // ****** constructors and destructors
   TStrawHitData();
@@ -27,10 +44,18 @@ public:
 //-----------------------------------------------------------------------------
 // accessors
 //-----------------------------------------------------------------------------
-  int     Index () { return fIndex; }
-  float   Time  () { return fTime; }
-  float   Dt    () { return fDt; }
-  float   Energy() { return fEnergy; }
+  int     Index  () { return fIndex; }
+
+  int     Station() { return  (fIndex & _stationmsk) >> _stationsft; }
+  int     Panel  () { return  (fIndex & _panelmsk  ) >> _panelsft  ; }
+  int     Face   () { return  (fIndex & _facemsk   ) >> _facesft   ; }
+  int     Layer  () { return  (fIndex & _layermsk  )               ; }
+  int     Straw  () { return  (fIndex & _strawmsk  )               ; }
+  int     Preamp () { return  (fIndex & _preampmsk ) >> _preampsft ; }
+
+  float   Time   () { return fTime; }
+  float   Dt     () { return fDt; }
+  float   Energy () { return fEnergy; }
 
   int     PdgCode      () { return fPdgCode;       }
   int     MotherPdgCode() { return fMotherPdgCode; }
