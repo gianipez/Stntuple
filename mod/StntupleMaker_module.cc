@@ -13,7 +13,6 @@
 #include <string>
 #include <cstdio>
 
-#include "Stntuple/obj/AbsEvent.hh"
 #include "Stntuple/obj/TStnEvent.hh"
 
 #include "fhiclcpp/ParameterSet.h"
@@ -55,6 +54,7 @@
 #include "TrkReco/inc/DoubletAmbigResolver.hh"
 #include "TrkDiag/inc/KalDiag.hh"
 #include "MCDataProducts/inc/GenId.hh"
+#include "RecoDataProducts/inc/HelixSeed.hh"
 
 using namespace std; 
 
@@ -70,24 +70,24 @@ class StntupleMaker : public StntupleModule {
 //------------------------------------------------------------------------------
 protected:
 					// process name, default - PROD
-  std::string      fProcessName;
+  std::string              fProcessName;
 //-----------------------------------------------------------------------------
 // switches for individual branches
 //-----------------------------------------------------------------------------
-  int              fMakeCalData;
-  int              fMakeClusters;
-  int              fMakeGenp;
-  int              fMakePid;
-  int              fMakeSimp;         // 0:dont store, 1:all;
-  int              fMakeStepPointMC;
-  int              fMakeStrawData;
-  int              fMakeTracks;
-  int              fMakeTrackStrawHits;
-  int              fMakeTimeClusters;
-  int              fMakeHelices;
-  int              fMakeTrackSeeds;
-  int              fMakeTrigger;
-  int              fMakeVDHits;
+  int                      fMakeCalData;
+  int                      fMakeClusters;
+  int                      fMakeGenp;
+  int                      fMakePid;
+  int                      fMakeSimp;         // 0:dont store, 1:all;
+  int                      fMakeStepPointMC;
+  int                      fMakeStrawData;
+  int                      fMakeTracks;
+  int                      fMakeTrackStrawHits;
+  int                      fMakeTimeClusters;
+  int                      fMakeHelices;
+  int                      fMakeTrackSeeds;
+  int                      fMakeTrigger;
+  int                      fMakeVDHits;
 //-----------------------------------------------------------------------------
 // module parameters
 //-----------------------------------------------------------------------------
@@ -134,6 +134,9 @@ protected:
   double                   fMinTActive  ;  // start of the active window
   double                   fMinECrystal ;  // 
   double                   fMinSimpEnergy; // min energy of a particle stored in SIMP block
+
+  string                   fCutHelixSeedCollTag; // helix collection to cut on
+  int                      fMinNHelices    ; // min number of helices (for cosmics)
 
   TNamed*                  fVersion;
 
@@ -231,6 +234,8 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
   , fMinTActive              (PSet.get<double>        ("minTActive"          ))
   , fMinECrystal             (PSet.get<double>        ("minECrystal"         ))
   , fMinSimpEnergy           (PSet.get<double>        ("minSimpEnergy"       ))
+  , fCutHelixSeedCollTag     (PSet.get<string>        ("cutHelixSeedCollTag" ))
+  , fMinNHelices             (PSet.get<int>           ("minNHelices"         ))
 {
 
   char  ver[20], text[200];
@@ -623,7 +628,15 @@ bool StntupleMaker::filter(AbsEvent& AnEvent) {
 //   logger->Disconnect("Report(Int_t,const char*)",
 // 		     this,"LogError(Int_t,const char*)");
 
-  return 1;
+  bool passed(1);
+
+  if (fMinNHelices > 0) {
+    auto hH = AnEvent.getValidHandle<mu2e::HelixSeedCollection>(fCutHelixSeedCollTag);
+    int  nh = hH->size();
+    passed  = (nh >= fMinNHelices);
+  }
+
+  return passed;
 }
 
 

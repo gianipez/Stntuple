@@ -67,7 +67,7 @@ StntupleMakerTemplate : { module_type:StntupleMaker
     timeClusterCollTag   : ["CalTimePeakFinder"]                 # to be renamed into CalTimeClusterFinder *FIXME* 
 
     helixBlockName       : []
-    helixModuleLabel     : []
+    helixCollTag         : []
 
     trackSeedBlockName   : []
     trackSeedModuleLabel : []
@@ -93,6 +93,12 @@ StntupleMakerTemplate : { module_type:StntupleMaker
 #------------------------------------------------------------------------------
     spmcBlockName        : [ "SpmcBlock"             ]
     spmcCollTag          : [ "muonBeamFilter:mubeam" ]
+#------------------------------------------------------------------------------
+# filtering
+#------------------------------------------------------------------------------
+    minNHelices          : -1
+    cutHelixCollTag      : []
+    
 }
 
 #------------------------------------------------------------------------------
