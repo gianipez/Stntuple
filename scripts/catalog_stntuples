@@ -32,9 +32,9 @@ opts = GetoptLong.new(
   [ "--cleanup"       , "-c",        GetoptLong::REQUIRED_ARGUMENT ],
   [ "--dataset"       , "-d",        GetoptLong::REQUIRED_ARGUMENT ],
   [ "--Directory"     , "-D",        GetoptLong::REQUIRED_ARGUMENT ],
-  [ "--help"          , "-?",        GetoptLong::NO_ARGUMENT       ],
+  [ "--help"          , "-h",        GetoptLong::NO_ARGUMENT       ],
   [ "--install"       , "-i",        GetoptLong::REQUIRED_ARGUMENT ],
-  [ "--host"          , "-h",        GetoptLong::REQUIRED_ARGUMENT ],
+  [ "--host"          , "-H",        GetoptLong::REQUIRED_ARGUMENT ],
   [ "--pattern"       , "-p",        GetoptLong::REQUIRED_ARGUMENT ],
   [ "--mode"          , "-m",        GetoptLong::REQUIRED_ARGUMENT ],
   [ "--nev_fileset"   , "-n",        GetoptLong::REQUIRED_ARGUMENT ],
@@ -47,7 +47,7 @@ $cleanup        = 'yes'
 $user           = ENV["USER"]
 $host           = `hostname -f`.strip
 $directory      = ""
-$pattern        = ""
+$pattern        = nil
 $book           = "stntuple/dev_242"
 $mode           = "1"   # "11" for 
 $nev_fileset    = 200000
@@ -66,7 +66,7 @@ opts.each do |opt, arg|
   elsif (opt == "--cleanup"       ) ; $cleanup        = arg 
   elsif (opt == "--dataset"       ) then # dataset name defines the default filename pattern
      $dataset        = arg 
-    if ($pattern == "") ; then $pattern = arg ; end
+    if ($pattern == nil) ; then $pattern = arg ; end
   elsif (opt == "--Directory"     ) ; $directory      = arg 
   elsif (opt == "--help"          ) ; usage()    
   elsif (opt == "--host"          ) ; $host           = arg 
