@@ -30,7 +30,6 @@ for book in $books ; do
 
     echo "<!-- End of header:  Put your html below this comment. -->"       >> $HTML_CATALOG
     echo "<p>"                                                              >> $HTML_CATALOG
-    echo "<ul>"                                                             >> $HTML_CATALOG
 
     echo "STNTUPLE datasets , book = <b>$book</b> <br> <br>"                >> $HTML_CATALOG
 
@@ -45,7 +44,8 @@ for book in $books ; do
 #------------------------------------------------------------------------------
 # loop over datasets
 #------------------------------------------------------------------------------
-    for f in `ls $dir | grep -v AAA_DA | grep -v index.shtml` ; do 
+    echo "<ul>"                                                             >> $HTML_CATALOG
+    for f in `ls $dir | grep -v AAA_ | grep -v index.shtml` ; do 
 #------------------------------------------------------------------------------
 # find fileset-level catalog of a dataset
 #------------------------------------------------------------------------------
@@ -76,6 +76,12 @@ for book in $books ; do
 # form catalog trailer
 #------------------------------------------------------------------------------
       echo "</ul>"                                                            >> $HTML_CATALOG
+#------------------------------------------------------------------------------
+# if $book/AAA_DESCRIPTION.html exists, append it to the book catalog
+#------------------------------------------------------------------------------
+      if [ -f $dir/AAA_DESCRIPTION.html ] ; then
+	  cat $dir/AAA_DESCRIPTION.html                                       >> $HTML_CATALOG
+      fi
       echo "<body style=\"\" >"                                               >> $HTML_CATALOG
       echo " <a href=https://mu2einternalwiki.fnal.gov/wiki/Stntuple-Datasets>back to the top catalog page</a>"         >> $HTML_CATALOG
       
