@@ -96,9 +96,8 @@ StntupleMakerTemplate : { module_type:StntupleMaker
 #------------------------------------------------------------------------------
 # filtering
 #------------------------------------------------------------------------------
-    minNHelices          : -1
-    cutHelixCollTag      : []
-    
+    minNHelices          : 0
+    cutHelixSeedCollTag  : "undefined"
 }
 
 #------------------------------------------------------------------------------
