@@ -648,7 +648,7 @@ int TStnAna::ProcessEntry(int Entry) {
 }
 
 //_____________________________________________________________________________
-int TStnAna::ProcessEvent(int Run, int Event) {
+int TStnAna::ProcessEvent(int Run, int Event, int Subrun) {
   // process one event with the given run/event numbers. This method is not as 
   // fast as ProcessEntry, because it starts searching from the beginning of 
   // the tree
@@ -683,8 +683,10 @@ int TStnAna::ProcessEvent(int Run, int Event) {
     nb         = fHeaderBlock->GetEntry(tree_entry);
     if ((fHeaderBlock->EventNumber() == Event) && 
 	(fHeaderBlock->RunNumber  () == Run  )   ) {
-      found = 1;
-      break;
+      if ((Subrun < 0) || (Subrun == fHeaderBlock->SectionNumber())) {
+	found = 1;
+	break;
+      }
     }
     fEntry++;
   } while (nb);
