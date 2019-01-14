@@ -55,6 +55,14 @@ physics : {
 		 @sequence::Stntuple.mpr_reco_dem    ,
 		 @sequence::Stntuple.stnmaker_tcm_dem
 		]
+#------------------------------------------------------------------------------
+# read, reconstruct, run event display
+#------------------------------------------------------------------------------
+    p4       : [ @sequence::Stntuple.trk_hit_reco   ,
+		 @sequence::Stntuple.cal_reco       ,
+		 @sequence::Stntuple.reco_De        ,
+		 MuHitDisplayDeMHDar
+		]
 
     trigger_paths : [ @local::TRIGGER_PATH ]
     out           : [     ]
