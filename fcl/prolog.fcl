@@ -23,6 +23,8 @@ StntupleModuleFclDefaults : {
 #------------------------------------------------------------------------------
 # default configuration of StntupleMaker
 #------------------------------------------------------------------------------
+GEN_ID : "unknown"                     # by default, store all
+
 StntupleMakerTemplate : { module_type:StntupleMaker
     @table::StntupleModuleFclDefaults                   # defaults of the base class
     module_name          : StntupleMaker
@@ -61,7 +63,7 @@ StntupleMakerTemplate : { module_type:StntupleMaker
     simpCollTag          : "compressDigiMCs"                     # was "g4run" before
     vdHitsCollTag        : "compressDigiMCs:virtualdetector"     # was "g4run" before
     genpCollTag          : "compressDigiMCs"                     # save signal-only: "generate" 
-    genId                : "unknown"                             # by default, store all
+    genId                : @local::GEN_ID                        # by default, store all
     
     timeClusterBlockName : ["TimeClusterBlock" ]                 # to be renamed, *FIXME*
     timeClusterCollTag   : ["CalTimePeakFinder"]                 # to be renamed into CalTimeClusterFinder *FIXME* 
