@@ -427,17 +427,17 @@ Stntuple : {
 	    makeTrackSeeds             : 1
 	    makeTimeClusters           : 1
 	    makeHelices                : 1
-	    timeClusterBlockName       : [ "TimeClusterBlockTpr" , "TimeClusterBlockCpr"  ]
-	    timeClusterCollTag         : [ "TimeClusterFinder"   , "CalTimePeakFinder"    ]
-	    helixBlockName             : [ "HelixBlock"          , "HelixBlockTpr"        , "HelixBlockCpr"  ]
-	    helixCollTag               : [ "MHFinderDmu"         , "MHFinderTprDmu"       , "MHFinderCprDmu" ]
+	    timeClusterBlockName       : [ "TimeClusterBlockTprDmu" , "TimeClusterBlockCprDmu"  ]
+	    timeClusterCollTag         : [ "TimeClusterFinderMu"    , "CalTimePeakFinderMu"      ]
+	    helixBlockName             : [ "HelixBlockDmu"          , "HelixBlockTprDmu"     , "HelixBlockCprDmu"  ]
+	    helixCollTag               : [ "MHFinderDmu"            , "MHFinderTprDmu"       , "MHFinderCprDmu"    ]
 
-	    trackSeedBlockName         : [ "TrackSeedBlock"      ]
+	    trackSeedBlockName         : [ "TrackSeedBlockDmu"   ]
 	    trackSeedCollTag           : [ "KSFDmuMH"            ]
 
-	    trackBlockName             : [ "TrackBlockPar"       , "TrackBlockDar"        ]
+	    trackBlockName             : [ "TrackBlockParDmu"    , "TrackBlockDarDmu"     ]
 	    trackCollTag               : [ "KFFDmuMHPar"         , "KFFDmuMHDar"          ]
-	    trackTsBlockName           : [ "TrackSeedBlock"      , "TrackSeedBlock"       ]
+	    trackTsBlockName           : [ "TrackSeedBlockDmu"   , "TrackSeedBlockDmu"    ]
 	    trackTsCollTag             : [ "KSFDmuMH"            , "KSFDmuMH"             ]
 
 	    tciCollTag                 : [ "TciDmuMHPar"         , "TciDmuMHDar"          ]
@@ -457,11 +457,13 @@ Stntuple : {
 	    timeClusterBlockName       : [ "TimeClusterBlockDepTpr"     , "TimeClusterBlockDepCpr"     , "TimeClusterBlockDemTpr"     , "TimeClusterBlockDemCpr"     ]
 	    timeClusterCollTag         : [ "TimeClusterFinder"          , "CalTimePeakFinder"          , "TimeClusterFinder"          , "CalTimePeakFinder"          ]
 	    helixBlockName             : [ "HelixBlockDepTpr"           , "HelixBlockDepCpr"           , "HelixBlockDemTpr"           , "HelixBlockDemCpr"           ]
-	    helixCollTag               : [ "HelixFinder:Negative"       , "CalHelixFinderDep"          , "HelixFinder:Positive"       , "CalHelixFinderDem"          ]
+	    helixCollTag               : [ "HelixFinder:Negative"       , "CalHelixFinderDeP"          , "HelixFinder:Positive"       , "CalHelixFinderDeM"          ]
 	    trackSeedBlockName         : [ "TrackSeedBlockDepTpr"       , "TrackSeedBlockDepCpr"       , "TrackSeedBlockDemTpr"       , "TrackSeedBlockDemCpr"       ]
-	    trackSeedModuleLabel       : [ "KSFDeP"                     , "CalSeedFitDep"              , "KSFDeM"                     , "CalSeedFitDem"              ]
+	    trackSeedCollTag           : [ "KSFDeP"                     , "CalSeedFitDep"              , "KSFDeM"                     , "CalSeedFitDem"              ]
 	    trackBlockName             : [ "TrackBlockDepTpr"           , "TrackBlockDepCpr"           , "TrackBlockDemTpr"           , "TrackBlockDemCpr"           ]
 	    trackCollTag               : [ "MergePatRecTprDep"          , "MergePatRecCprDep"          , "MergePatRecTprDem"          , "MergePatRecCprDem"          ]
+	    trackTsBlockName           : [ "TrackSeedBlockDepTpr"       , "TrackSeedBlockDepCpr"       , "TrackSeedBlockDemTpr"       , "TrackSeedBlockDemCpr"       ]
+	    trackTsCollTag             : [ "KSFDeP"                     , "CalSeedFitDep"              , "KSFDeM"                     , "CalSeedFitDem"              ]
 	    tciCollTag                 : [ "TrackCaloIntersectionTprDep", "TrackCaloIntersectionCprDep", "TrackCaloIntersectionTprDem", "TrackCaloIntersectionCprDem"]
 	    tcmCollTag                 : [ "TrackCaloMatchingTprDep"    , "TrackCaloMatchingCprDep"    , "TrackCaloMatchingTprDem"    , "TrackCaloMatchingCprDem"    ]
 	    trackSHBlockName           : [ "TrackHitBlockDepTpr"        , "TrackHitBlockDepCpr"        , "TrackHitBlockDemTpr"        , "TrackHitBlockDemCpr"        ] 
@@ -477,25 +479,20 @@ Stntuple : {
 	    makeTimeClusters       : 1
 	    makeHelices            : 1
 	    makeTrackSeeds         : 1
-	    timeClusterBlockName   : [ "TimeClusterBlockTpr" , "TimeClusterBlockCpr" ]
-	    timeClusterCollTag     : [ "TimeClusterFinder"   , "CalTimePeakFinder"   ]
-
-	    helixBlockName         : [ "HelixBlockDe"        , "HelixBlockTprDe"     , "HelixBlockCprDe" ]
-	    helixCollTag           : [ "MHFinderDe"          , "MHFinderTprDe"       , "MHFinderCprDe"   ]
-
-	    trackSeedBlockName     : [ "TrackSeedBlockDeM"     , "TrackSeedBlockDeP" ]
-	    trackSeedCollTag       : [ "KSFDeMMergeHelix"      , "KSFDePMergeHelix"  ]
-
-	    trackBlockName         : [ "TrackBlockPar"         , "TrackBlockDar"     ]
-	    trackCollTag           : [ "KFFDeMHPar"            , "KFFDeMHDar"        ]
-	    trackTsBlockName       : [ "TrackSeedBlock"        , "TrackSeedBlock"    ]
-	    trackTsCollTag         : [ "KSFDeMH"               , "KSFDeMH"           ]
-	    tciCollTag             : [ "TciDeMHPar"            , "TciDeMHDar"        ]
-	    tcmCollTag             : [ "TcmDeMHPar"            , "TcmDeMHDar"        ]
-
-	    trackSHBlockName       : [ "TrackHitBlockPar"      , "TrackHitBlockDar"  ] 
-	    pidBlockName           : [ ""                      , ""                  ] 
-	    pidCollTag             : [                   ""    ,           ""        ]
+	    makeTracks             : 0
+	    timeClusterBlockName       : [ "TimeClusterBlockDepTpr"     , "TimeClusterBlockDepCpr"     , "TimeClusterBlockDemTpr"     , "TimeClusterBlockDemCpr"     ]
+	    timeClusterCollTag         : [ "TTtimeClusterFinder"        , "TTCalTimePeakFinder"        , "TTtimeClusterFinder"        , "TTCalTimePeakFinder"        ]
+	    helixBlockName             : [ "HelixBlockDepTpr"           , "HelixBlockDepCpr"           , "HelixBlockDemTpr"           , "HelixBlockDemCpr"           ]
+	    helixCollTag               : [ "TThelixFinder:Negative"     , "TTCalHelixFinderDep"        , "TThelixFinder:Positive"     , "TTCalHelixFinderDem"        ]
+	    trackSeedBlockName         : [ "TrackSeedBlockDepTpr"       , "TrackSeedBlockDepCpr"       , "TrackSeedBlockDemTpr"       , "TrackSeedBlockDemCpr"       ]
+	    trackSeedCollTag           : [ "KSFDeP"                     , "TTCalSeedFitDep"            , "KSFDeM"                     , "TTCalSeedFitDem"            ]
+	    trackBlockName             : []
+	    trackCollTag               : []
+	    tciCollTag                 : []
+	    tcmCollTag                 : []
+	    trackSHBlockName           : []
+	    pidBlockName               : []
+	    pidCollTag                 : []
         }
 #------------------------------------------------------------------------------
 # make 4 track blocks: train PID
@@ -581,5 +578,6 @@ Stntuple.stnmaker_trig    : [ InitStntuple, StntupleMakerTrig  ,                
 #------------------------------------------------------------------------------
 Stntuple.stnmaker_De      : [ InitStntuple, StntupleMakerDe  ,                  FillStntuple ]
 Stntuple.stnmaker_Dmu     : [ InitStntuple, StntupleMakerDmu ,                  FillStntuple ]
+Stntuple.stnmaker_De_Dmu  : [ InitStntuple, StntupleMakerDe, StntupleMakerDmu , FillStntuple ]
 
 END_PROLOG
