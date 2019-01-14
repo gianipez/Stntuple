@@ -86,16 +86,15 @@ void TStnValidationModule::BookHelixHistograms   (HelixHist_t*   Hist, const cha
   
     HBook1F(Hist->fNHits         ,"nhits"      ,Form("%s: # of straw hits"              ,Folder), 150,   0,   150,Folder);
     HBook1F(Hist->fClusterTime   ,"clusterTime",Form("%s: cluster time; t_{cluster}[ns]",Folder), 800, 400,  1700,Folder);
-    HBook1F(Hist->fClusterEnergy ,"clusterE"   ,Form("%s: cluster energy; E [MeV]      ",Folder), 400,   0,  200,Folder);
+    HBook1F(Hist->fClusterEnergy ,"clusterE"   ,Form("%s: cluster energy; E [MeV]      ",Folder), 400,   0,   200,Folder);
     HBook1F(Hist->fRadius        ,"radius"     ,Form("%s: curvature radius; r [mm]"     ,Folder), 500,   0,   500,Folder);
-    HBook1F(Hist->fMom           ,"p"          ,Form("%s: momentum; p [MeV/c]"          ,Folder), 300,   50,   200,Folder);
+    HBook1F(Hist->fMom           ,"p"          ,Form("%s: momentum; p [MeV/c]"          ,Folder), 300,   50,  200,Folder);
     HBook1F(Hist->fPt            ,"pT"         ,Form("%s: pT; pT [MeV/c]"               ,Folder), 600,   0,   150,Folder);
-    HBook1F(Hist->fLambda        ,"lambda"     ,Form("%s: lambda; #lambda"              ,Folder), 400, 1000,   5000,Folder);
+    HBook1F(Hist->fLambda        ,"lambda"     ,Form("%s: lambda; #lambda"              ,Folder), 400, 1000, 5000,Folder);
     HBook1F(Hist->fT0            ,"t0"         ,Form("%s: t0; t0[ns]"                   ,Folder), 100,   0,    10,Folder);
     HBook1F(Hist->fT0Err         ,"t0err"      ,Form("%s: t0err; t0err [ns]"            ,Folder), 100,   0,    10,Folder);
-    HBook1F(Hist->fD0            ,"d0"         ,Form("%s: D0; d0 [mm]"                  ,Folder), 1600,   -400,    400,Folder);
-
-  
+    HBook1F(Hist->fD0            ,"d0"         ,Form("%s: D0; d0 [mm]"                  ,Folder), 1600, -400, 400,Folder);
+    HBook1F(Hist->fAlg           ,"alg"        ,Form("%s: Algorithm Code"               ,Folder),   10,  0,    10,Folder);
 }
 
 //-----------------------------------------------------------------------------
@@ -622,22 +621,20 @@ void TStnValidationModule::BookHistograms() {
 // need MC truth branch
 //-----------------------------------------------------------------------------
 void TStnValidationModule::FillEventHistograms(EventHist_t* Hist) {
-  double            cos_th, dio_wt, xv, yv, rv, zv, p;
+  double            cos_th(-2), dio_wt(-1.), xv(-1.e6), yv(-1.e6), rv(-1.e6), zv(-1.e6), p(-1.);
   double            e, m, r;
   TLorentzVector    mom;
 
-  fParticle->Momentum(mom);
-
-  p      = mom.P();
-
-  cos_th = mom.Pz()/p;
-
-  dio_wt = TStntuple::DioWeightAl(p);
-
-  xv = fParticle->Vx()+3904.;
-  yv = fParticle->Vy();
-  rv = sqrt(xv*xv+yv*yv);
-  zv = fParticle->Vz();
+  if (fParticle) {
+    fParticle->Momentum(mom);
+    p      = mom.P();
+    cos_th = mom.Pz()/p;
+    xv     = fParticle->Vx()+3904.;
+    yv     = fParticle->Vy();
+    rv     = sqrt(xv*xv+yv*yv);
+    zv     = fParticle->Vz();
+    dio_wt = TStntuple::DioWeightAl(p);
+  }
 
   Hist->fEleMom->Fill(p);
   Hist->fDioMom->Fill(p,dio_wt);
@@ -1281,10 +1278,10 @@ int TStnValidationModule::BeginJob() {
 //-----------------------------------------------------------------------------
 // register data blocks
 //-----------------------------------------------------------------------------
-  RegisterDataBlock("CprTimeClusterBlock" ,"TStnTimeClusterBlock",&fTimeClusterBlock);
+  RegisterDataBlock("TimeClusterBlockCpr" ,"TStnTimeClusterBlock",&fTimeClusterBlock);
   RegisterDataBlock("CalTrackSeedBlock"   ,"TStnTrackSeedBlock"  ,&fTrackSeedBlock  );
   RegisterDataBlock("HelixBlock"          ,"TStnHelixBlock"      ,&fHelixBlock      );
-  RegisterDataBlock("TrackBlock"          ,"TStnTrackBlock"      ,&fTrackBlock      );
+  RegisterDataBlock("TrackBlockDar"       ,"TStnTrackBlock"      ,&fTrackBlock      );
   RegisterDataBlock("ClusterBlock"        ,"TStnClusterBlock"    ,&fClusterBlock    );
   RegisterDataBlock("CalDataBlock"        ,"TCalDataBlock"       ,&fCalDataBlock    );
   RegisterDataBlock("StrawDataBlock"      ,"TStrawDataBlock"     ,&fStrawDataBlock  );
@@ -1350,12 +1347,12 @@ void TStnValidationModule::FillHistograms() {
 
     TLorentzVector    mom;
     
-    fParticle->Momentum(mom);
-
-    double p, cos_th;
-
-    p      = mom.P();
-    cos_th = mom.Pz()/p;
+    double p(-1.), cos_th(-2.);
+    if (fParticle) {
+      fParticle->Momentum(mom);
+      p      = mom.P();
+      cos_th = mom.Pz()/p;
+    }
 
     if (GetDebugBit(31) && (cos_th > 0.8)) {
       GetHeaderBlock()->Print(Form(" bit:031 cos_th = %10.3f p = %10.3f ntrk = %5i",
@@ -1966,11 +1963,12 @@ int TStnValidationModule::Event(int ientry) {
 					// may want to revisit the definition of fSimp
   fSimp     = fSimpBlock->Particle(0);
 
-  fParticle->Momentum(mom);
-					// this is a kludge, to be removed at the next 
-					// ntupling 
-  //  fEleE     = fParticle->Energy();
-  p         = mom.P();
+  if (fParticle) {
+    fParticle->Momentum(mom);
+    p         = mom.P();
+  }
+  else p = 0.;
+
   fEleE     = sqrt(p*p+0.511*0.511);
 
 
