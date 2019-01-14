@@ -2,10 +2,12 @@
 // 2014-01-26 P.Murat
 ///////////////////////////////////////////////////////////////////////////////
 
+// conditions
+#include "ConditionsService/inc/ConditionsHandle.hh"
+#include "ConditionsService/inc/AcceleratorParams.hh"
+
 #include "Stntuple/mod/InitStntupleDataBlocks.hh"
 #include "Stntuple/obj/TVDetDataBlock.hh"
-
-//#include "RecoDataProducts/inc/StrawHitCollection.hh"
 
 #include "MCDataProducts/inc/SimParticle.hh"
 #include "MCDataProducts/inc/StepPointMC.hh"
@@ -16,7 +18,6 @@
 #include "GlobalConstantsService/inc/ParticleDataTable.hh"
 
 #include "Mu2eUtilities/inc/SimParticleTimeOffset.hh"
-// #include "Stntuple/mod/StntupleGlobals.hh"
 
 #include "Stntuple/mod/THistModule.hh"
 #include "Stntuple/base/TNamedHandle.hh"
@@ -63,6 +64,9 @@ Int_t StntupleInitMu2eVDetDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int
 
   static mu2e::GlobalConstantsHandle<mu2e::ParticleDataTable> pdt;
   mu2e::ParticleDataTable::maybe_ref info;
+
+  mu2e::ConditionsHandle<mu2e::AcceleratorParams> accPar("ignored");
+  double _mbtime = accPar->deBuncherPeriod;
   
   if (step_module_label[0] != 0) {
     if (step_description[0] != 0) 
@@ -107,10 +111,14 @@ Int_t StntupleInitMu2eVDetDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int
     sim = step->simParticle();
     if (!(sim->fromGenerator())) goto NEXT_VHIT;
 
-    hit = data->NewHit();
-
     vdIndex   = step->volumeId();
-    if (_timeOffsets) time = _timeOffsets->timeWithOffsetsApplied(*step);
+    if (_timeOffsets) {
+//-----------------------------------------------------------------------------
+// time - within the microbunch
+//-----------------------------------------------------------------------------
+      double tx = _timeOffsets->timeWithOffsetsApplied(*step);
+      time = fmod(tx,_mbtime);
+    }
     else              time =  step->time();
 
     pdg_id    = sim->pdgId();
@@ -134,6 +142,7 @@ Int_t StntupleInitMu2eVDetDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int
     mc_posY   = step->position().y();
     mc_posZ   = step->position().z()-10200;
 
+    hit = data->NewHit();
     hit->Set(vdIndex, time, mass, energyKin, energy, 
 	     pdg_id, gen_index, 
 	     mc_mom, mc_momX, mc_momY, mc_momZ,
