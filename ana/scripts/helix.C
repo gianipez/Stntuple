@@ -12,7 +12,7 @@ def_name stn_helix_002("stn_helix_ana_old");
 void  stn_helix_ana(int DebugBit = -1) {
   stntuple::m_hel = (TStnHelixAnaModule*) g.x->AddModule("TStnHelixAnaModule",0);  
 
-  if (DebugBit >= 0)stntuple:: m_hel->SetDebugBit(DebugBit,1);
+  if (DebugBit >= 0)stntuple::m_hel->SetDebugBit(DebugBit,1);
 }
 //-----------------------------------------------------------------------------
 void  stn_helix_ana_old(int DebugBit = -1) {
