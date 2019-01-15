@@ -97,7 +97,8 @@ class TStnTrack : public TObject {
     kNFreeFloats   =  3
   };
 
-  enum { kMaxNLayers = 88 }; // 22x2*2
+  //  enum { kMaxNLayers = 88 }; // 22x2*2
+  enum { kMaxNLayers = 144 }; // 18(stations)x2(planes/station)*2(faces/plane)*2(layers/face)
 
 					// added 3 chi*2's
 public:
@@ -256,11 +257,12 @@ public:
   int    HelixIndex     () const { return fHelixIndex; }
   int    TrackSeedIndex () const { return fSeedIndex; }
 
-  float  T0       () const { return fT0;    }
-  float  T0Err    () const { return fT0Err; }
-  float  FitCons  () const { return fFitCons; }
+  float  T0       () const { return fT0       ; }
+  float  T0Err    () const { return fT0Err    ; }
+  float  FitCons  () const { return fFitCons  ; }
   float  FitMomErr() const { return fFitMomErr; }
-  float  TanDip   () const { return fTanDip; }
+  float  TanDip   () const { return fTanDip   ; }
+  float  Charge   () const { return fCharge   ; }
 
   float  D0       () const { return fD0; }
   float  Z0       () const { return fZ0; }
