@@ -159,3 +159,37 @@ double TStntuple::DioWeightTi(double E) {
   return -1;
 }
 
+//-----------------------------------------------------------------------------
+// RMC closure approximation weight, 
+// normalization: integral(weight,0,KMax) = KMax, such that the distribution
+// on N events sampled uniformly from 0 to KMax with the given weight has an 
+// integral of N
+//-----------------------------------------------------------------------------
+double TStntuple::RMC_ClosureAppxWeight(double K, double KMax) {
+  double x, w{20.}, weight{0};
+
+  x = K/KMax;
+  if (x < 1)  weight = w*(1-2*x+2*x*x)*(1-x)*(1-x)*x;
+
+  return weight;
+  
+}
+
+//-----------------------------------------------------------------------------
+// RPC photon weight 
+// normalization: integral(weight,0,eMax) = eMax, such that the distribution
+// on N events sampled uniformly from 0 to eMax with the given weight has an 
+// integral of N
+// unlike the RMC closure approximation spectrum, this is simply a parameterization 
+// of the experimental data (Bistirlich et al), hence only one parameter 
+//-----------------------------------------------------------------------------
+double TStntuple::RPC_PhotonEnergyWeight(double E) {
+
+  double eMax(134.530), alpha(1.29931), gamma(0.928705), tau(9.39676), c0(4.77611e-02),c1(-3.26349e-04);
+  double fint(0.9845620786721507);
+
+  double f(0.);
+
+  if (E < eMax) f = eMax*pow(eMax-E,alpha)*exp(-(eMax-gamma*E)/tau)*(c0+c1*E)/fint;
+  return f;
+}

@@ -50,6 +50,9 @@ public:
   static double DioWeightAl_LL(double P);
 
   static double DioWeightTi   (double P);
+
+  static double RMC_ClosureAppxWeight (double K, double KMax);
+  static double RPC_PhotonEnergyWeight(double E);
 //-----------------------------------------------------------------------------
 // print routines - sometimes it is not possible to do it from a single block
 //-----------------------------------------------------------------------------
