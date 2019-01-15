@@ -28,7 +28,9 @@ public:
     kTanDipBit         = 0x1 <<  5,     // 0x00000020
     kD0Bit             = 0x1 <<  6,     // 0x00000040
     kRMaxBit           = 0x1 <<  7,     // 0x00000080
-    kTrkQualBit        = 0x1 <<  8      // 0x00000100
+    kTrkQualBit        = 0x1 <<  8,     // 0x00000100
+    kChi2DofBit        = 0x1 <<  9,     // 0x00000200
+    kDNaBit            = 0x1 << 10      // 0x00000200
   };
 
   enum { 
@@ -56,6 +58,7 @@ protected:
   Int_t      fUseMask;
   Int_t      fMinNActive;
   Int_t      fMaxNActive;
+  int        fMaxDNa;
   Int_t      fInteger[kNFreeInts];		// for future
 
   Float_t    fMinFitCons;		// 
@@ -73,6 +76,7 @@ protected:
   Float_t    fMaxRMax;
 
   Float_t    fMinTrkQual;               // min track quality
+  float      fMaxChi2Dof;		// max chi2/DOF (as alternative)
 
   Float_t    fFloat[kNFreeFloats];	// spare words, added in V5
 
@@ -97,10 +101,14 @@ public:
   Float_t MinTanDip    () const { return fMinTanDip;    }
   Float_t MaxTanDip    () const { return fMaxTanDip;    }
   Float_t MinTrkQual   () const { return fMinTrkQual;   }
+  int     MaxDNa       () const { return fMaxDNa    ;   }
+  float   MaxChi2Dof   () const { return fMaxChi2Dof;   }
 //-----------------------------------------------------------------------------
 // modifiers
 //-----------------------------------------------------------------------------
   void    SetMinFitCons  (Float_t FitCons) { fMinFitCons    = FitCons; }
+  void    SetMaxChi2Dof  (Float_t Chi2Dof) { fMaxChi2Dof    = Chi2Dof; }
+  void    SetMaxDNa      (int     DNa    ) { fMaxDNa        = DNa    ; }
   void    SetMinT0       (Float_t T0     ) { fMinT0         = T0;      }
   void    SetMinNActive  (Int_t   N      ) { fMinNActive    = N;       }
   void    SetMaxNActive  (Int_t   N      ) { fMaxNActive    = N;       }
@@ -115,6 +123,7 @@ public:
   void    SetMaxTanDip   (Float_t TanDip ) { fMaxTanDip     = TanDip;  }
 
   void    SetMinTrkQual  (Float_t TrkQual) { fMinTrkQual    = TrkQual; }
+  void    SetUseMask     (int     Mask)    { fUseMask       = Mask   ; }
 //-----------------------------------------------------------------------------
 // other methods
 //-----------------------------------------------------------------------------

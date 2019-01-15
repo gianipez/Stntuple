@@ -63,6 +63,9 @@ TStnTrackID::TStnTrackID(const char* Name): TNamed(Name,Name) {
   fMinRMax         = 450;
   fMaxRMax         = 680;
 
+  fMaxChi2Dof      = 1.e6;       // no chi2 cut by default
+  fMaxDNa          = 1000;       // no DNa  cut by default
+
   fMinTrkQual      = -100.;     // if undefined , = 100
 				// initialize spare words to zero
 
@@ -80,13 +83,15 @@ TStnTrackID::~TStnTrackID() {
 //-----------------------------------------------------------------------------
 int TStnTrackID::IDWord(TStnTrack* Track) {
 
-  int              id_word(0), nactive;
-  double           fcons, d0, t0, t0_err, mom_err, tan_dip, rmax, trk_qual;
+  int              id_word(0), nactive, dna;
+  double           fcons, chi2dof, d0, t0, t0_err, mom_err, tan_dip, rmax, trk_qual;
   
-  fcons          = Track->fFitCons;
+  fcons          = Track->FitCons();
+  chi2dof        = Track->Chi2Dof();
   t0             = Track->fT0;
   t0_err         = Track->fT0Err;
   nactive        = Track->NActive();
+  dna            = Track->NHits()-nactive;
   tan_dip        = Track->fTanDip;
   mom_err        = Track->fFitMomErr;
   d0             = Track->fD0;              // signed impact parameter, convention: mu2e-781
@@ -94,13 +99,17 @@ int TStnTrackID::IDWord(TStnTrack* Track) {
   trk_qual       = Track->DaveTrkQual();
 
   if (fcons            <  fMinFitCons  ) id_word |= kFitConsBit ;
-  if (t0               <  fMinT0       ) id_word |= kT0Bit ;
-  if (t0_err           >  fMaxT0Err    ) id_word |= kT0ErrBit ;
+  if (chi2dof          >  fMaxChi2Dof  ) id_word |= kChi2DofBit ;
+  if (t0               <  fMinT0       ) id_word |= kT0Bit      ;
   if (nactive          <  fMinNActive  ) id_word |= kNActiveBit ;
   if (nactive          >= fMaxNActive  ) id_word |= kNActiveBit ;
-  if (mom_err          >  fMaxMomErr   ) id_word |= kMomErrBit ;
-  if (fabs(tan_dip)    <  fMinTanDip   ) id_word |= kTanDipBit ;
-  if (fabs(tan_dip)    >  fMaxTanDip   ) id_word |= kTanDipBit ;
+  if (dna              >= fMaxDNa      ) id_word |= kDNaBit     ;
+
+  if (t0_err           >  fMaxT0Err    ) id_word |= kT0ErrBit   ;
+  if (mom_err          >  fMaxMomErr   ) id_word |= kMomErrBit  ;
+
+  if (fabs(tan_dip)    <  fMinTanDip   ) id_word |= kTanDipBit  ;
+  if (fabs(tan_dip)    >  fMaxTanDip   ) id_word |= kTanDipBit  ;
 
   if (d0               <  fMinD0       ) id_word |= kD0Bit ;
   if (d0               >  fMaxD0       ) id_word |= kD0Bit ;
