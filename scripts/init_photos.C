@@ -4,11 +4,11 @@
 
 #include "Stntuple/scripts/global_vars.h"
 #include "Stntuple/ana/scripts/modules.hh"
-#include "Stntuple/ana/TStnGeneratorModule.hh"
+#include "Stntuple/loop/TStnGeneratorModule.hh"
 
 void init_photos() {
   TG3Generator* phts  = TPhotos::Instance();
-  m_stg = new TStnGeneratorModule();
-  m_stg->AddGenerator(phts);
-  g.x->SetInputModule(m_stg);
+  stntuple::m_stg = new TStnGeneratorModule();
+  stntuple::m_stg->AddGenerator(phts);
+  g.x->SetInputModule(stntuple::m_stg);
 }

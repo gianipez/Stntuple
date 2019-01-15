@@ -49,6 +49,13 @@ def stntuple_gen_rootcint(source, target, env, for_signature):
 #    print "dict:"+dict + "   pcm_file:"+pcm_file;
     lib_dir = os.environ['MU2E_BASE_RELEASE']+"/lib";
     cmd = 'if [ ! -d '+tmp_lib_dir+' ] ; then mkdir -p '+tmp_lib_dir+'; fi ;';
+#------------------------------------------------------------------------------
+# export $HOME is, for an unknown reason, needed to build in a DOCKER container
+# the same is needed to use genreflex - that change goes into SConstruct
+# without that, ROOT doesn't find the home directory.
+# The mechanism of failure is not understood.
+#------------------------------------------------------------------------------
+    cmd = cmd+"export HOME="+os.environ["HOME"]+";";
     cmd = cmd+"rootcint -f "+dict+" -c  -D_CODEGEN_ -DMU2E "+includes+" "+class_include+" "+linkdef+"; ";
     cmd = cmd+'if [ ! -d '+lib_dir+' ] ; then mkdir '+lib_dir+' ; fi ; ';
     cmd = cmd+"mv "+pcm_file+" "+lib_dir+'/.'; 
