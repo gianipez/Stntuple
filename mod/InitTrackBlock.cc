@@ -436,18 +436,18 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
     track->fFitMomErr = sqrt(momerr.covMatrix().similarity(momvec));
 //-----------------------------------------------------------------------------
 // determine, approximately, 'sz0' - flight length corresponding to the 
-// virtual detector at the tracker entrance
+// virtual detector at the tracker front
 //-----------------------------------------------------------------------------
     Hep3Vector tfront = ds->toDetector(vdet->getGlobal(mu2e::VirtualDetectorId::TT_FrontPA));
     double     zfront = tfront.z();
     double     sz0    = s_at_given_z(krep,zfront);
 //-----------------------------------------------------------------------------
-// fP0 - track momentum value at TT_FrontPA
+// fP0 - track momentum value at Z(TT_FrontPA)
 //-----------------------------------------------------------------------------
     CLHEP::Hep3Vector fitmom2 = krep->momentum(sz0);
     track->fP0 = fitmom2.mag();
 //-----------------------------------------------------------------------------
-// helical parameters at Z( TT_FrontPA)
+// helical parameters at Z(TT_FrontPA)
 //-----------------------------------------------------------------------------
     HelixParams helx  = krep->helix(sz0);
     track->fC0        = helx.omega(); // old
@@ -467,7 +467,7 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 					// rename later
     track->fTBack         = tback;
 //-----------------------------------------------------------------------------
-// fP2 : track momentum at Z0, just for fun, should not be used for anything
+// fP2 : track momentum at Z(TT_Back), just for fun, should not be used for anything
 //-----------------------------------------------------------------------------
     track->fP2 = krep->momentum(szb).mag();
 //-----------------------------------------------------------------------------
