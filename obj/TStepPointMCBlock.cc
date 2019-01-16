@@ -26,7 +26,8 @@ void TStepPointMCBlock::Streamer(TBuffer &R__b)
 
 //_____________________________________________________________________________
 TStepPointMCBlock::TStepPointMCBlock() {
-  fNStepPoints     = 0;
+  fGenProcessID     = -1;
+  fNStepPoints      =  0;
   fListOfStepPoints = new TClonesArray("TStepPointMC",10);
   fListOfStepPoints->BypassStreamer(kFALSE);
 }

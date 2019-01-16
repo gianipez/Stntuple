@@ -34,6 +34,10 @@ protected:
   Int_t          fNStepPoints;		// total # of StepPointMC's
   TClonesArray*  fListOfStepPoints;
 //-----------------------------------------------------------------------------
+// transients - parameters (temp solution
+//-----------------------------------------------------------------------------
+  int            fGenProcessID;         //! don't save, generated process ID
+//-----------------------------------------------------------------------------
 //  functions
 //-----------------------------------------------------------------------------
 public:
@@ -43,7 +47,8 @@ public:
 //-----------------------------------------------------------------------------
 // accessors
 //-----------------------------------------------------------------------------
-  Int_t           NStepPoints        () { return fNStepPoints; }
+  int             GenProcessID() { return fGenProcessID; }
+  Int_t           NStepPoints () { return fNStepPoints ; }
 
 					// `i'-th StepPoint in the list
   TStepPointMC*   StepPointMC(int i) { 
@@ -60,6 +65,8 @@ public:
 				float Time, float StepLength,
 				float    X, float      Y, float          Z, 
 				float   Px, float     Py, float         Pz);
+
+  void           SetGenProcessID(int ID) { fGenProcessID = ID; }
 //-----------------------------------------------------------------------------
 // overloaded functions of TObject
 //-----------------------------------------------------------------------------

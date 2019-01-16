@@ -18,10 +18,10 @@
 #include "Stntuple/mod/InitStntupleDataBlocks.hh"
 
 //-----------------------------------------------------------------------------
-int StntupleInitMu2eStepPointMCBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode) 
+int StntupleInitMu2eStepPointMCBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int Mode) 
 {
   // 
-  const char* oname = {"StntupleInitMu2eStepPointMCBlock"};
+  // const char* oname = {"StntupleInitMu2eStepPointMCBlock"};
 
   static char   module_label  [100], description  [100];
 
@@ -71,32 +71,46 @@ int StntupleInitMu2eStepPointMCBlock(TStnDataBlock* Block, AbsEvent* AnEvent, in
       float edep_tot (-1.), edep_nio(-1.), time(-1.), step_length(-1.);
 
       art::Ptr<mu2e::SimParticle> const& simptr = spmc->simParticle();
-      const mu2e::SimParticle* sim  = simptr.get();
+      const mu2e::SimParticle* sim              = simptr.get();
 
-      if (sim == NULL) {
-	printf(">>> ERROR: %s sim == NULL, skip \n",oname);
+      // if (sim == NULL) {
+      // 	printf(">>> ERROR: %s sim == NULL, skip \n",oname);
+      // }
+      // else {
+//-----------------------------------------------------------------------------
+// a semi-kludge: store VD hits of e+ and e- from external photon conversions
+//-----------------------------------------------------------------------------
+      const mu2e::GenParticle* genp;
+
+      if (sim->parent()) { 
+	parent_id       = sim->parent()->id().asInt();
+	parent_pdg_code = sim->parent()->pdgId();
+	genp            = sim->parent()->genParticle().get();
       }
       else {
-	id            = sim->id().asInt();
-	gen_index     = sim->generatorIndex();
-	pdg_code      = sim->pdgId();
-	creation_code = sim->creationCode();
-
-	art::Ptr<mu2e::SimParticle> const& parentptr = sim->parent();
-
-	const mu2e::SimParticle* par = parentptr.get();
-	if (par != NULL) {
-	  parent_pdg_code = (int) par->pdgId();
-	  parent_id       = (int) par->id().asInt();
-	}
-	
-	end_process_code = spmc->endProcessCode();
-
-	edep_tot    = spmc->totalEDep();
-	edep_nio    = spmc->nonIonizingEDep();
-	time        = spmc->time();
-	step_length = spmc->stepLength();
+	genp      = sim->genParticle().get();
       }
+
+      int generator_id(-1);
+      if (genp) generator_id = genp->generatorId().id();   // ID of the MC generator
+//-----------------------------------------------------------------------------
+// if spmc_block->fGenProcessID is set, store only hits of the particles from 
+// the signal process
+//-----------------------------------------------------------------------------
+      if ((spmc_block->GenProcessID() > 0) && (generator_id != spmc_block->GenProcessID())) continue;
+
+      id            = sim->id().asInt();
+      gen_index     = sim->generatorIndex();
+      pdg_code      = sim->pdgId();
+      creation_code = sim->creationCode();
+
+      end_process_code = spmc->endProcessCode();
+
+      edep_tot    = spmc->totalEDep();
+      edep_nio    = spmc->nonIonizingEDep();
+      time        = spmc->time();
+      step_length = spmc->stepLength();
+      // }
 
       spmc_block->NewStepPointMC(volume_id, gen_index, 
 				 id       , pdg_code       ,

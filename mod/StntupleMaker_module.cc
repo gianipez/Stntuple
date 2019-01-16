@@ -36,6 +36,7 @@
 #include "Stntuple/obj/TCalDataBlock.hh"
 #include "Stntuple/obj/TSimpBlock.hh"
 #include "Stntuple/obj/TGenpBlock.hh"
+#include "Stntuple/obj/TStepPointMCBlock.hh"
 #include "Stntuple/obj/TStnHeaderBlock.hh"
 //-----------------------------------------------------------------------------
 // nothing new: link-wise, TModule depends on TAnaDump
@@ -580,6 +581,8 @@ void StntupleMaker::beginJob() {
 				       split_mode,
 				       compression_level);
       if (db) {
+	((TStepPointMCBlock*) db)->SetGenProcessID(fGenId.id());
+
 	db->AddCollName("mu2e::StepPointMCCollection",fSpmcCollTag[i].data());
       }
     }

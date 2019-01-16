@@ -37,7 +37,7 @@ StntupleMakerTemplate : { module_type:StntupleMaker
     makeGenp             : 1
     makePid              : 1
     makeSimp             : 1  # 0: dont write; 1:save all; 2:save primary only
-    makeStepPointMC      : 0
+    makeStepPointMC      : 1
     makeStrawData        : 0
     makeTracks           : 1
     makeTrackStrawHits   : 0
@@ -89,12 +89,12 @@ StntupleMakerTemplate : { module_type:StntupleMaker
 
     minTActive           : 0.     # ns
     minECrystal          : 1.0    # MeV
-    minSimpEnergy        : 1.0    # MeV
+    minSimpEnergy        : 0.0    # MeV , by default, store all
 #------------------------------------------------------------------------------
 # this is the default for Stage1 simulation
 #------------------------------------------------------------------------------
-    spmcBlockName        : [ "SpmcBlock"             ]
-    spmcCollTag          : [ "muonBeamFilter:mubeam" ]
+    spmcBlockName        : [ "SpmcBlockVDet"                  , "SpmcBlock"             ]
+    spmcCollTag          : [ "compressDigiMCs:virtualdetector", "muonBeamFilter:mubeam" ]
 #------------------------------------------------------------------------------
 # filtering
 #------------------------------------------------------------------------------
@@ -404,6 +404,8 @@ Stntuple : {
 	    makeTrackSeeds             : 1
 	    makeTimeClusters           : 1
 	    makeHelices                : 1
+	    makeStepPointMC            : 1
+
 	    timeClusterBlockName       : [ "TimeClusterBlockTpr" , "TimeClusterBlockCpr"  ]
 	    timeClusterCollTag         : [ "TimeClusterFinder"   , "CalTimePeakFinder"    ]
 	    helixBlockName             : [ "HelixBlock"          , "HelixBlockTpr"        , "HelixBlockCpr" ]
@@ -422,6 +424,9 @@ Stntuple : {
 	    trackSHBlockName           : [ "TrackHitBlockPar"    , "TrackHitBlockDar"     ]
 	    pidBlockName               : [ ""                    , "PidBlock"             ]
 	    pidCollTag                 : [       ""              , "AvikPIDNew"           ]
+
+	    spmcBlockName              : [ "SpmcBlockVDet"                   ]
+	    spmcCollTag                : [ "compressDigiMCs:virtualdetector" ]
 	}
 
 	StntupleMakerDmu : { @table::StntupleMakerTemplate 
