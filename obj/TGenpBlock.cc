@@ -72,7 +72,7 @@ TGenpBlock::~TGenpBlock() {
 //_____________________________________________________________________________
 void TGenpBlock::Clear(const char* opt) {
   fNParticles    = 0;
-  fGenProcessID  = -1;
+  //  fGenProcessID  = -1; // fGenProcessID needs to stay
   fWeight        = 1.;
 					// don't modify cut values at run time
   fListOfParticles->Clear(opt);
