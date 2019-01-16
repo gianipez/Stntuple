@@ -742,6 +742,8 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 //-----------------------------------------------------------------------------
     mu2e::GeomHandle<mu2e::VirtualDetector> vdg;
 
+    double t_front(1.e6), t_stout(1.e6);
+
     track->fPFront = -1.;
     track->fPStOut = -1.;
 
@@ -775,8 +777,9 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 	      mf::LogWarning(oname) << warning;
 	    }
 	    int sim_id = sim->id().asInt();
-	    if (sim_id == track->fPartID) {
+	    if ((sim_id == track->fPartID)  && (hit->time() <  t_stout)) {
 	      track->fPStOut = hit->momentum().mag();
+	      t_stout        = hit->time();
 	    }
 	  }
 	  else if (vdid.isTrackerFront()) {
@@ -790,11 +793,11 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 	      printf(">>> ERROR: %s sim == NULL\n",oname);
 	    }
 	    int sim_id = sim->id().asInt();
-	    if (sim_id == track->fPartID) {
+	    if ((sim_id == track->fPartID) && (hit->time() < t_front)) {
 	      track->fPFront = hit->momentum().mag();
+	      t_front        = hit->time();
 	    }
 	  }
-	  
 	}
       }
     }
