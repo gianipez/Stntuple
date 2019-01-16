@@ -12,7 +12,8 @@ rootlibs = env['ROOTLIBS']
 if ( not ("EG" in rootlibs)):
     rootlibs.insert(rootlibs.index("Physics")+1,"EG");
 
-stn_helper = stntuple_helper(env);
+debug=0
+stn_helper = stntuple_helper(env,debug);
 
 stn_helper.handle_dictionaries();
 
