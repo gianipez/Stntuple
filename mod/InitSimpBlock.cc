@@ -166,11 +166,20 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
 
     for (mu2e::SimParticleCollection::const_iterator ip = simp_coll->begin(); ip != simp_coll->end(); ip++) {
       sim      = &ip->second;
-      const mu2e::GenParticle* genp = sim->genParticle().get();
+      const mu2e::GenParticle* genp;
 
       id        = sim->id().asInt();
       parent_id = -1;
-      if (sim->parent()) parent_id = sim->parent()->id().asInt();
+//-----------------------------------------------------------------------------
+// a semi-kludge: store e+ and e- from an external photon conversion
+//-----------------------------------------------------------------------------
+      if (sim->parent()) { 
+	parent_id = sim->parent()->id().asInt();
+	genp      = sim->parent()->genParticle().get();
+      }
+      else {
+	genp      = sim->genParticle().get();
+      }
 
       pdg_code         = (int) sim->pdgId();
 
