@@ -8,6 +8,12 @@
 #include "art/Framework/Principal/Handle.h"
 #include "art/Framework/Principal/Selector.h"
 
+// conditions
+#include "ConditionsService/inc/ConditionsHandle.hh"
+#include "ConditionsService/inc/AcceleratorParams.hh"
+
+#include "Mu2eUtilities/inc/SimParticleTimeOffset.hh"
+
 #include "MCDataProducts/inc/StepPointMCCollection.hh"
 #include "MCDataProducts/inc/StrawHitMCTruthCollection.hh"
 #include "MCDataProducts/inc/PtrStepPointMCVectorCollection.hh"
@@ -16,6 +22,8 @@
 #include "Stntuple/obj/TStepPointMCBlock.hh"
 
 #include "Stntuple/mod/InitStntupleDataBlocks.hh"
+#include "Stntuple/mod/THistModule.hh"
+#include "Stntuple/base/TNamedHandle.hh"
 
 //-----------------------------------------------------------------------------
 int StntupleInitMu2eStepPointMCBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int Mode) 
@@ -23,18 +31,39 @@ int StntupleInitMu2eStepPointMCBlock(TStnDataBlock* Block, AbsEvent* AnEvent, in
   // 
   // const char* oname = {"StntupleInitMu2eStepPointMCBlock"};
 
+  static int    initialized(0);
   static char   module_label  [100], description  [100];
+  char          module_name   [100], time_offsets_name[100];
+  static float _mbtime;
+
+  static mu2e::SimParticleTimeOffset* _timeOffsets(NULL);
 
   const mu2e::StepPointMCCollection*       spmc_coll(0);
-  //  const mu2e::SimParticle*                 sim(0);
   art::Handle<mu2e::StepPointMCCollection> spmc_handle;
 
-  //  TStepPointMC*      step;
+  if (initialized == 0) {
+    initialized = 1;
+
+    Block->GetModuleLabel("mu2e::StepPointMCCollection",module_label);
+    Block->GetDescription("mu2e::StepPointMCCollection",description );
+
+    Block->GetModuleLabel("TimeOffsetMapsHandle",module_name);
+    Block->GetDescription("TimeOffsetMapsHandle",time_offsets_name);
+
+    THistModule*  m  = static_cast<THistModule*>  (THistModule::GetListOfModules()->FindObject(module_name));
+    TNamedHandle* nh = static_cast<TNamedHandle*> (m->GetFolder()->FindObject(time_offsets_name));
+    _timeOffsets     = static_cast<mu2e::SimParticleTimeOffset*> (nh->Object());
+
+    mu2e::ConditionsHandle<mu2e::AcceleratorParams> accPar("ignored");
+    _mbtime = accPar->deBuncherPeriod;
+  }
+
   TStepPointMCBlock* spmc_block = (TStepPointMCBlock*) Block;
   spmc_block->Clear();
-
-  Block->GetModuleLabel("mu2e::StepPointMCCollection",module_label);
-  Block->GetDescription("mu2e::StepPointMCCollection",description );
+//-----------------------------------------------------------------------------
+// load simulation time offsets for this event: timeOffsets may not be defined yet (stages 1, 2, 3)
+//-----------------------------------------------------------------------------
+  if (_timeOffsets) _timeOffsets->updateMap(*AnEvent);
 
   const mu2e::StepPointMC*                    spmc;
 //-----------------------------------------------------------------------------
@@ -72,11 +101,6 @@ int StntupleInitMu2eStepPointMCBlock(TStnDataBlock* Block, AbsEvent* AnEvent, in
 
       art::Ptr<mu2e::SimParticle> const& simptr = spmc->simParticle();
       const mu2e::SimParticle* sim              = simptr.get();
-
-      // if (sim == NULL) {
-      // 	printf(">>> ERROR: %s sim == NULL, skip \n",oname);
-      // }
-      // else {
 //-----------------------------------------------------------------------------
 // a semi-kludge: store VD hits of e+ and e- from external photon conversions
 //-----------------------------------------------------------------------------
@@ -108,9 +132,17 @@ int StntupleInitMu2eStepPointMCBlock(TStnDataBlock* Block, AbsEvent* AnEvent, in
 
       edep_tot    = spmc->totalEDep();
       edep_nio    = spmc->nonIonizingEDep();
-      time        = spmc->time();
+
+      if (_timeOffsets) {
+//-----------------------------------------------------------------------------
+// time - within the microbunch
+//-----------------------------------------------------------------------------
+	double tx = _timeOffsets->timeWithOffsetsApplied(*spmc);
+	time = fmod(tx,_mbtime);
+      }
+      else time =  spmc->time();
+
       step_length = spmc->stepLength();
-      // }
 
       spmc_block->NewStepPointMC(volume_id, gen_index, 
 				 id       , pdg_code       ,

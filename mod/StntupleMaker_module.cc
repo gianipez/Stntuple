@@ -584,6 +584,7 @@ void StntupleMaker::beginJob() {
 	((TStepPointMCBlock*) db)->SetGenProcessID(fGenId.id());
 
 	db->AddCollName("mu2e::StepPointMCCollection",fSpmcCollTag[i].data());
+	db->AddCollName("TimeOffsetMapsHandle"       ,GetName()            ,"TimeOffsetMapsHandle");
       }
     }
     //      SetResolveLinksMethod(block_name,StntupleInitMu2eTrackBlockLinks);
