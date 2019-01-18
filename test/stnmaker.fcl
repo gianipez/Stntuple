@@ -63,6 +63,13 @@ physics : {
 		 @sequence::Stntuple.reco_De        ,
 		 MuHitDisplayDeMHDar
 		]
+#------------------------------------------------------------------------------
+# debugging: read, reconstruct
+#------------------------------------------------------------------------------
+    p5       : [ @sequence::Stntuple.trk_hit_reco   ,
+		 @sequence::Stntuple.cal_reco       ,
+		 @sequence::Stntuple.reco_De        
+		]
 
     trigger_paths : [ @local::TRIGGER_PATH ]
     out           : [     ]
