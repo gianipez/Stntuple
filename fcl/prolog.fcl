@@ -45,7 +45,7 @@ StntupleMakerTemplate : { module_type:StntupleMaker
     makeTrackSeeds       : 0
     makeTimeClusters     : 0
     makeHelices          : 0
-    makeVDHits           : 1
+    makeVDHits           : 0
     
     KalDiag              : { @table::KalDiagDirect    }
     DoubletAmbigResolver : { @table::TrkReco.DoubletAmbigResolver }
