@@ -210,6 +210,8 @@ TAnaDump::TAnaDump(const fhicl::ParameterSet* PSet) {
   else {
     fTimeOffsets = NULL;
   }
+
+  _printUtils = new mu2e::TrkPrintUtils(PSet->get<fhicl::ParameterSet>("printUtils",fhicl::ParameterSet()));
 }
 
 //------------------------------------------------------------------------------
@@ -226,6 +228,7 @@ TAnaDump::~TAnaDump() {
   fListOfObjects->Delete();
   delete fListOfObjects;
   delete fTimeOffsets;
+  delete _printUtils;
 }
 
 //------------------------------------------------------------------------------
@@ -1422,245 +1425,265 @@ void TAnaDump::printTrkCaloHit(const KalRep* Krep, mu2e::TrkCaloHit* CaloHit){
 }
 
 //-----------------------------------------------------------------------------
+// ""       : banner+track parameters (default)
+// "banner" : banner only
+// "data"   : track parameters only
+// "hits"   : hits
+//-----------------------------------------------------------------------------
 void TAnaDump::printKalRep(const KalRep* Krep, const char* Opt, const char* Prefix) {
 
-  TString opt = Opt;
-  
-  if ((opt == "") || (opt == "banner")) {
-    printf("-----------------------------------------------------------------------------------------------");
-    printf("-----------------------------------------------------\n");
-    printf("%s  Address        TrkID     N  NA      P      T0      MomErr   T0Err    pT      costh    Omega",Prefix);
-    printf("      D0      Z0      Phi0   TanDip    Chi2    FCons\n");
-    printf("-----------------------------------------------------------------------------------------------");
-    printf("-----------------------------------------------------\n");
-  }
- 
-  if ((opt == "") || (opt.Index("data") >= 0)) {
-    double chi2   = Krep->chisq();
+  //  TString opt = Opt;
 
-    int    nhits(0);
-
-    const TrkHitVector* hits = &Krep->hitVector();
-    for (auto ih=hits->begin(); ih != hits->end(); ++ih) {
-      nhits++;
-    }
-
-    int    nact   = Krep->nActive();
-    double t0     = Krep->t0().t0();
-    double t0err  = Krep->t0().t0Err();
-//-----------------------------------------------------------------------------
-// in all cases define momentum at lowest Z - ideally, at the tracker entrance
-//-----------------------------------------------------------------------------
-    double s1     = Krep->firstHit()->kalHit()->hit()->fltLen();
-    double s2     = Krep->lastHit ()->kalHit()->hit()->fltLen();
-    double s      = min(s1,s2);
-
-    double d0     = Krep->helix(s).d0();
-    double z0     = Krep->helix(s).z0();
-    double phi0   = Krep->helix(s).phi0();
-    double omega  = Krep->helix(s).omega();
-    double tandip = Krep->helix(s).tanDip();
-
-
-    CLHEP::Hep3Vector fitmom = Krep->momentum(s);
-    CLHEP::Hep3Vector momdir = fitmom.unit();
-    BbrVectorErr      momerr = Krep->momentumErr(s);
-    
-    HepVector momvec(3);
-    for (int i=0; i<3; i++) momvec[i] = momdir[i];
-    
-    double sigp = sqrt(momerr.covMatrix().similarity(momvec));
-  
-    double fit_consistency = Krep->chisqConsistency().consistency();
-    int q         = Krep->charge();
-
-    Hep3Vector trk_mom;
-
-    trk_mom       = Krep->momentum(s);
-    double mom    = trk_mom.mag();
-    double pt     = trk_mom.perp();
-    double costh  = trk_mom.cosTheta();
-
-    char form[100];
-    int nc = strlen(Prefix);
-    for (int i=0; i<nc; i++) form[i]=' ';
-    form[nc] = 0;
-    printf("%s",form);
-
-    printf("  %-16p %3i   %3i %3i %8.3f %8.3f %8.4f %7.4f %7.3f %8.4f",
-	   Krep,
-	   -1,
-	   nhits,
-	   nact,
-	   q*mom,t0,sigp,t0err,pt,costh
-	   );
-
-    printf(" %8.5f %8.3f %8.3f %8.4f %7.4f",
-	   omega,d0,z0,phi0,tandip
-	   );
-    printf(" %8.3f %10.3e\n",
-	   chi2,
-	   fit_consistency);
-  }
-
-  if (opt.Index("hits") >= 0) {
-//-----------------------------------------------------------------------------
-// print detailed information about the track hits
-//-----------------------------------------------------------------------------
-    const TrkHitVector* hits = &Krep->hitVector();
-
-    printf("--------------------------------------------------------------------");
-    printf("---------------------------------------------------------------");
-    printf("------------------------------------------------------\n");
-    //    printf(" ih  SInd U A     len         x        y        z      HitT    HitDt");
-    printf(" ih  SInd    Flag    A     len         x        y        z      HitT    HitDt");
-    printf("  Ch Pl  L  W     T0       Xs      Ys        Zs     resid  sigres");
-    printf("   Rdrift   mcdoca totErr hitErr  t0Err penErr extErr     simId\n");
-    printf("--------------------------------------------------------------------");
-    printf("---------------------------------------------------------------");
-    printf("------------------------------------------------------\n");
-
-    mu2e::TrkStrawHit* hit;
-    CLHEP::Hep3Vector  pos;
-    int i = 0;
-
-    for (auto it=hits->begin(); it!=hits->end(); it++) {
-      // TrkStrawHit inherits from TrkHitOnTrk
-
-      //      hit = (mu2e::TrkStrawHit*) (*it);
-      hit = dynamic_cast<mu2e::TrkStrawHit*> (*it);
-      if (hit == 0){
-	mu2e::TrkCaloHit*caloHit = (mu2e::TrkCaloHit*) (*it);
-	printTrkCaloHit(Krep,caloHit);
-	continue;
-      }
-      const mu2e::ComboHit* sh = &hit->comboHit();
-      mu2e::Straw*       straw = (mu2e::Straw*) &hit->straw();
-      int                  sid = straw->id().asUint16();
-
-      hit->hitPosition(pos);
-
-      double    len  = hit->fltLen();
-      HepPoint  plen = Krep->position(len);
-//-----------------------------------------------------------------------------
-// find MC truth DOCA in a given straw
-// start from finding the right vector of StepPointMC's
-//-----------------------------------------------------------------------------
-      int vol_id;
-      int nstraws = _mcdigis->size();
-
-      const mu2e::StepPointMC* step(0);
-
-      for (int i=0; i<nstraws; i++) {
-
-	const mu2e::StrawDigiMC* mcdigi = &_mcdigis->at(i);
-
-	if (mcdigi->wireEndTime(mu2e::StrawEnd::cal) < mcdigi->wireEndTime(mu2e::StrawEnd::hv)) {
-	  step = mcdigi->stepPointMC(mu2e::StrawEnd::cal).get();
-	}
-	else {
-	  step = mcdigi->stepPointMC(mu2e::StrawEnd::hv ).get();
-	}
-
-	vol_id = step->volumeId();
-	// 	if (vol_id == straw->index().asInt()) {
- 	if (vol_id == sid) {
- 					// step found - use the first one in the straw
- 	  break;
- 	}
-      }
-
-      double                    mcdoca(-99.0);
-      const mu2e::SimParticle*  sim;
-      int                       sim_id(-1);
-
-      if (step) {
-	const Hep3Vector* v1 = &straw->getMidPoint();
-	HepPoint p1(v1->x(),v1->y(),v1->z());
-
-	const Hep3Vector* v2 = &step->position();
-	HepPoint    p2(v2->x(),v2->y(),v2->z());
-
-	TrkLineTraj trstraw(p1,straw->getDirection()  ,0.,0.);
-	TrkLineTraj trstep (p2,step->momentum().unit(),0.,0.);
-
-	TrkPoca poca(trstep, 0., trstraw, 0.);
-    
-	mcdoca = poca.doca();
-
-	sim    = &(*step->simParticle());
-	sim_id = sim->id().asInt();
-      }
-
-      //      printf("%3i %5i %1i %1i %9.3f %8.3f %8.3f %9.3f %8.3f %7.3f",
-      printf("%3i %5i 0x%08x %1i %9.3f %8.3f %8.3f %9.3f %8.3f %7.3f",
-	     ++i,
-	     sid, 
-	      hit->hitFlag(),
-	     //	     hit->isUsable(),
-	     hit->isActive(),
-	     len,
-	     //	     hit->hitRms(),
-	     plen.x(),plen.y(),plen.z(),
-	     sh->time(), -999. /*sh->dt() not available any longer*/
-	     );
-
-      printf(" %2i %2i %2i %2i",
-	     straw->id().getPlane(),
-	     straw->id().getPanel(),
-	     straw->id().getLayer(),
-	     straw->id().getStraw()
-	     );
-
-      printf(" %8.3f",hit->hitT0().t0());
-
-      double res, sigres;
-      hit->resid(res, sigres, true);
-
-      printf("%8.3f %8.3f %9.3f %7.3f %7.3f",
-	     pos.x(),
-	     pos.y(),
-	     pos.z(),
-	     res,
-	     sigres
-	     );
-      
-      if (hit->isActive()) {
-	if      (hit->ambig()       == 0) printf(" * %6.3f",hit->driftRadius());
-	else if (hit->ambig()*mcdoca > 0) printf("   %6.3f",hit->driftRadius()*hit->ambig());
-	else                              printf(" ? %6.3f",hit->driftRadius()*hit->ambig());
-      }
-      else {
-//-----------------------------------------------------------------------------
-// do not analyze correctness of the drift sign determination for hits not 
-// marked as 'active'
-//-----------------------------------------------------------------------------
-	printf("   %6.3f",hit->driftRadius());
-      }
-	  
-
-      printf("  %7.3f",mcdoca);
-
-      double exterr = hit->temperature()*hit->driftVelocity();
-
-      printf(" %6.3f %6.3f %6.3f %6.3f %6.3f %10i",		 
-	     hit->totalErr(),
-	     hit->hitErr(),
-	     hit->t0Err(),
-	     hit->penaltyErr(),
-	     exterr,
-	     sim_id
-	     );
-//-----------------------------------------------------------------------------
-// test: calculated residual in fTmp[0]
-//-----------------------------------------------------------------------------
-//       Test_000(Krep,hit);
-//       printf(" %7.3f",fTmp[0]);
-
-      printf("\n");
-    }
-  }
+  _printUtils->printTrack(fEvent,Krep,Opt,Prefix);
 }
+
+//   if ((opt == "") || (opt == "banner")) {
+//     printf("-----------------------------------------------------------------------------------------------");
+//     printf("-----------------------------------------------------\n");
+//     printf("%s  Address        TrkID     N  NA      P      T0      MomErr   T0Err    pT      costh    Omega",Prefix);
+//     printf("      D0      Z0      Phi0   TanDip    Chi2    FCons\n");
+//     printf("-----------------------------------------------------------------------------------------------");
+//     printf("-----------------------------------------------------\n");
+//   }
+ 
+//   if ((opt == "") || (opt.Index("data") >= 0)) _printUtils->PrintTrack(fEvent,Krep,0,"TAnaDump");
+//     double chi2   = Krep->chisq();
+
+//     int    nhits(0);
+
+//     const TrkHitVector* hits = &Krep->hitVector();
+//     for (auto ih=hits->begin(); ih != hits->end(); ++ih) {
+//       nhits++;
+//     }
+
+//     int    nact   = Krep->nActive();
+//     double t0     = Krep->t0().t0();
+//     double t0err  = Krep->t0().t0Err();
+// //-----------------------------------------------------------------------------
+// // in all cases define momentum at lowest Z - ideally, at the tracker entrance
+// //-----------------------------------------------------------------------------
+//     double s1     = Krep->firstHit()->kalHit()->hit()->fltLen();
+//     double s2     = Krep->lastHit ()->kalHit()->hit()->fltLen();
+//     double s      = min(s1,s2);
+
+//     double d0     = Krep->helix(s).d0();
+//     double z0     = Krep->helix(s).z0();
+//     double phi0   = Krep->helix(s).phi0();
+//     double omega  = Krep->helix(s).omega();
+//     double tandip = Krep->helix(s).tanDip();
+
+
+//     CLHEP::Hep3Vector fitmom = Krep->momentum(s);
+//     CLHEP::Hep3Vector momdir = fitmom.unit();
+//     BbrVectorErr      momerr = Krep->momentumErr(s);
+    
+//     HepVector momvec(3);
+//     for (int i=0; i<3; i++) momvec[i] = momdir[i];
+    
+//     double sigp = sqrt(momerr.covMatrix().similarity(momvec));
+  
+//     double fit_consistency = Krep->chisqConsistency().consistency();
+//     int q         = Krep->charge();
+
+//     Hep3Vector trk_mom;
+
+//     trk_mom       = Krep->momentum(s);
+//     double mom    = trk_mom.mag();
+//     double pt     = trk_mom.perp();
+//     double costh  = trk_mom.cosTheta();
+
+//     char form[100];
+//     int nc = strlen(Prefix);
+//     for (int i=0; i<nc; i++) form[i]=' ';
+//     form[nc] = 0;
+//     printf("%s",form);
+
+//     printf("  %-16p %3i   %3i %3i %8.3f %8.3f %8.4f %7.4f %7.3f %8.4f",
+// 	   Krep,
+// 	   -1,
+// 	   nhits,
+// 	   nact,
+// 	   q*mom,t0,sigp,t0err,pt,costh
+// 	   );
+
+//     printf(" %8.5f %8.3f %8.3f %8.4f %7.4f",
+// 	   omega,d0,z0,phi0,tandip
+// 	   );
+//     printf(" %8.3f %10.3e\n",
+// 	   chi2,
+// 	   fit_consistency);
+//   }
+
+//   if (opt.Index("hits") >= 0) {
+// //-----------------------------------------------------------------------------
+// // print detailed information about the track hits
+// //-----------------------------------------------------------------------------
+//     _printUtils->printTrack(fEvent,Krep,"TAnaDump");
+    
+
+//     const TrkHitVector* hits = &Krep->hitVector();
+// 
+//     printf("--------------------------------------------------------------------");
+//     printf("---------------------------------------------------------------");
+//     printf("------------------------------------------------------\n");
+//     //    printf(" ih  SInd U A     len         x        y        z      HitT    HitDt");
+//     printf(" ih  SInd    Flag    A     len         x        y        z      HitT    HitDt");
+//     printf("  Ch Pl  L  W     T0       Xs      Ys        Zs     resid  sigres");
+//     printf("   Rdrift   mcdoca totErr hitErr  t0Err penErr extErr     simId\n");
+//     printf("--------------------------------------------------------------------");
+//     printf("---------------------------------------------------------------");
+//     printf("------------------------------------------------------\n");
+// 
+//     mu2e::TrkStrawHit* hit;
+//     CLHEP::Hep3Vector  pos;
+//     int i = 0;
+// 
+//     for (auto it=hits->begin(); it!=hits->end(); it++) {
+//       // TrkStrawHit inherits from TrkHitOnTrk
+// 
+//       //      hit = (mu2e::TrkStrawHit*) (*it);
+//       hit = dynamic_cast<mu2e::TrkStrawHit*> (*it);
+//       if (hit == 0){
+// 	mu2e::TrkCaloHit*caloHit = (mu2e::TrkCaloHit*) (*it);
+// 	printTrkCaloHit(Krep,caloHit);
+// 	continue;
+//       }
+//       const mu2e::ComboHit* sh = &hit->comboHit();
+//       mu2e::Straw*       straw = (mu2e::Straw*) &hit->straw();
+//       int                  sid = straw->id().asUint16();
+// 
+//       hit->hitPosition(pos);
+// 
+//       double    len  = hit->fltLen();
+//       HepPoint  plen = Krep->position(len);
+// //-----------------------------------------------------------------------------
+// // find MC truth DOCA in a given straw
+// // start from finding the right vector of StepPointMC's
+// //-----------------------------------------------------------------------------
+//       int vol_id;
+//       int nstraws = _mcdigis->size();
+// 
+//       const mu2e::StepPointMC* step(0);
+// 
+//       for (int i=0; i<nstraws; i++) {
+// 
+// 	const mu2e::StrawDigiMC* mcdigi = &_mcdigis->at(i);
+// 
+// 	if (mcdigi->wireEndTime(mu2e::StrawEnd::cal) < mcdigi->wireEndTime(mu2e::StrawEnd::hv)) {
+// 	  step = mcdigi->stepPointMC(mu2e::StrawEnd::cal).get();
+// 	}
+// 	else {
+// 	  step = mcdigi->stepPointMC(mu2e::StrawEnd::hv ).get();
+// 	}
+// 
+// 	vol_id = step->volumeId();
+// 	// 	if (vol_id == straw->index().asInt()) {
+//  	if (vol_id == sid) {
+//  					// step found - use the first one in the straw
+//  	  break;
+//  	}
+//       }
+// 
+//       double                    mcdoca(-99.0);
+//       const mu2e::SimParticle*  sim;
+//       int                       sim_id(-1);
+// 
+//       if (step) {
+// 	const Hep3Vector* v1 = &straw->getMidPoint();
+// 	HepPoint p1(v1->x(),v1->y(),v1->z());
+// 
+// 	const Hep3Vector* v2 = &step->position();
+// 	HepPoint    p2(v2->x(),v2->y(),v2->z());
+// 
+// 	TrkLineTraj trstraw(p1,straw->getDirection()  ,0.,0.);
+// 	TrkLineTraj trstep (p2,step->momentum().unit(),0.,0.);
+// 
+// 	TrkPoca poca(trstep, 0., trstraw, 0.);
+//     
+// 	mcdoca = poca.doca();
+// 
+// 	sim    = &(*step->simParticle());
+// 	sim_id = sim->id().asInt();
+//       }
+// 
+//       //      printf("%3i %5i %1i %1i %9.3f %8.3f %8.3f %9.3f %8.3f %7.3f",
+//       printf("%3i %5i 0x%08x %1i %9.3f %8.3f %8.3f %9.3f %8.3f %7.3f",
+// 	     ++i,
+// 	     sid, 
+// 	      hit->hitFlag(),
+// 	     hit->isActive(),
+// 	     len,
+// 	     plen.x(),plen.y(),plen.z(),
+// 	     sh->time(), -999. /*sh->dt() not available any longer*/
+// 	     );
+// 
+//       printf(" %2i %2i %2i %2i",
+// 	     straw->id().getPlane(),
+// 	     straw->id().getPanel(),
+// 	     straw->id().getLayer(),
+// 	     straw->id().getStraw()
+// 	     );
+// 
+//       printf(" %8.3f",hit->hitT0().t0());
+// 
+//       double res, sigres;
+//       bool hasres = hit->resid(res, sigres, true);
+// 
+//       if (hasres) {
+// 	printf("%8.3f %8.3f %9.3f %7.3f %7.3f",
+// 	       pos.x(),
+// 	       pos.y(),
+// 	       pos.z(),
+// 	       res,
+// 	       sigres
+// 	       );
+//       }
+//       else {
+// 	printf(" %8.3f %8.3f %9.3f %7s %7s",
+// 	       pos.x(),
+// 	       pos.y(),
+// 	       pos.z(),
+// 	       "   -   ",
+// 	       "   -   "
+// 	       );
+//       }
+//       
+//       if (hit->isActive()) {
+// 	if      (hit->ambig()       == 0) printf(" * %6.3f",hit->driftRadius());
+// 	else if (hit->ambig()*mcdoca > 0) printf("   %6.3f",hit->driftRadius()*hit->ambig());
+// 	else                              printf(" ? %6.3f",hit->driftRadius()*hit->ambig());
+//       }
+//       else {
+// //-----------------------------------------------------------------------------
+// // do not analyze correctness of the drift sign determination for hits not 
+// // marked as 'active'
+// //-----------------------------------------------------------------------------
+// 	printf("   %6.3f",hit->driftRadius());
+//       }
+// 	  
+// 
+//       printf("  %7.3f",mcdoca);
+// 
+//       double exterr = hit->temperature()*hit->driftVelocity();
+// 
+//       printf(" %6.3f %6.3f %6.3f %6.3f %6.3f %10i",		 
+// 	     hit->totalErr(),
+// 	     hit->hitErr(),
+// 	     hit->t0Err(),
+// 	     hit->penaltyErr(),
+// 	     exterr,
+// 	     sim_id
+// 	     );
+// //-----------------------------------------------------------------------------
+// // test: calculated residual in fTmp[0]
+// //-----------------------------------------------------------------------------
+// //       Test_000(Krep,hit);
+// //       printf(" %7.3f",fTmp[0]);
+// 
+//       printf("\n");
+//  }
+//   }
+// }
 
 //-----------------------------------------------------------------------------
 void TAnaDump::printKalRepCollection(const char* ModuleLabel, 
@@ -1712,7 +1735,7 @@ void TAnaDump::printKalRepCollection(const char* ModuleLabel,
       banner_printed = 1;
     }
     printKalRep(trk,"data",module_type.data());
-    if(hitOpt>0) printKalRep(trk,"hits");
+    if (hitOpt > 0) printKalRep(trk,"hits");
   }
  
 }

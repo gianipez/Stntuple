@@ -26,21 +26,21 @@
 #include "RecoDataProducts/inc/StrawHitPositionCollection.hh"
 #include "DataProducts/inc/XYZVec.hh"
 
+#include "TrkReco/inc/TrkPrintUtils.hh"
+
 #else
 
 namespace art {
   class Event;
 }
-
-namespace mu2e {
-  class StrawDigiMCCollection;
-}
-
 #endif
 
-class KalRep;
-
 namespace mu2e {
+
+#ifndef MCDataProducts_StrawDigiMC_hh
+  class StrawDigiMCCollection;
+#endif
+
   class StrawHit;
   class StrawHitMCTruth;
   class CaloCluster;
@@ -53,23 +53,27 @@ namespace mu2e {
   class KalSeed;
   class ComboHit;
   class HelixSeed;
-  //  class HelixHit;
   class TrackClusterMatch;
   class TrkCaloHit;
   class TrkStrawHit;
   class SimParticleTimeOffset;
+  class TrkPrintUtils;
 }
+
+class KalRep;
 
 class TAnaDump : public TObject {
 public:
 
-  const art::Event*                     fEvent;
-  TObjArray*                            fListOfObjects;
-  TString                               fFlagBgrHitsModuleLabel;
-  TString                               fStrawDigiMCCollTag;
-  mu2e::SimParticleTimeOffset*          fTimeOffsets;
+  const art::Event*               fEvent;
+  TObjArray*                      fListOfObjects;
+  TString                         fFlagBgrHitsModuleLabel;
+  TString                         fStrawDigiMCCollTag;
+  mu2e::SimParticleTimeOffset*    fTimeOffsets;
   const mu2e::StrawDigiMCCollection*    _mcdigis;
-  double                                fTmp[100];  // for testing
+  double                          fTmp[100];  // for testing
+
+  mu2e::TrkPrintUtils*            _printUtils;
 
 private:
 

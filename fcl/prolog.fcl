@@ -11,8 +11,14 @@ TimeOffsetMaps : { inputs : [ "compressDigiMCs:protonTimeMap", "compressDigiMCs:
 
 StntupleModuleFclDefaults : {
     interactiveMode : 0
+#------------------------------------------------------------------------------
+# unlike everywhere else, TAnaDump sets mcTruth to 1 by default
+#------------------------------------------------------------------------------
     TAnaDump : {
 	timeOffsetMaps  : @local::TimeOffsetMaps
+	printUtils      : { @table::TrkReco.PrintUtils 
+	    mcTruth     : 1
+	}
     }
     debugBits       : { 
 	# bit0:1  
