@@ -28,35 +28,37 @@ end
 usage if ARGV.length < 1
 
 opts = GetoptLong.new(
-  [ "--book"          , "-b",        GetoptLong::REQUIRED_ARGUMENT ],
-  [ "--cleanup"       , "-c",        GetoptLong::REQUIRED_ARGUMENT ],
-  [ "--dataset"       , "-d",        GetoptLong::REQUIRED_ARGUMENT ],
-  [ "--Directory"     , "-D",        GetoptLong::REQUIRED_ARGUMENT ],
-  [ "--help"          , "-h",        GetoptLong::NO_ARGUMENT       ],
-  [ "--install"       , "-i",        GetoptLong::REQUIRED_ARGUMENT ],
-  [ "--host"          , "-H",        GetoptLong::REQUIRED_ARGUMENT ],
-  [ "--pattern"       , "-p",        GetoptLong::REQUIRED_ARGUMENT ],
-  [ "--mode"          , "-m",        GetoptLong::REQUIRED_ARGUMENT ],
-  [ "--nev_fileset"   , "-n",        GetoptLong::REQUIRED_ARGUMENT ],
-  [ "--user"          , "-u",        GetoptLong::REQUIRED_ARGUMENT ],
-  [ "--verbose"       , "-v",        GetoptLong::NO_ARGUMENT       ]
+  [ "--book"           , "-b",        GetoptLong::REQUIRED_ARGUMENT ],
+  [ "--cleanup"        , "-c",        GetoptLong::REQUIRED_ARGUMENT ],
+  [ "--dataset"        , "-d",        GetoptLong::REQUIRED_ARGUMENT ],
+  [ "--Directory"      , "-D",        GetoptLong::REQUIRED_ARGUMENT ],
+  [ "--help"           , "-h",        GetoptLong::NO_ARGUMENT       ],
+  [ "--install"        , "-i",        GetoptLong::REQUIRED_ARGUMENT ],
+  [ "--host"           , "-H",        GetoptLong::REQUIRED_ARGUMENT ],
+  [ "--pattern"        , "-p",        GetoptLong::REQUIRED_ARGUMENT ],
+  [ "--mode"           , "-m",        GetoptLong::REQUIRED_ARGUMENT ],
+  [ "--nev_fileset"    , "-n",        GetoptLong::REQUIRED_ARGUMENT ],
+  [ "--offline_version", "-o",        GetoptLong::REQUIRED_ARGUMENT ],
+  [ "--user"           , "-u",        GetoptLong::REQUIRED_ARGUMENT ],
+  [ "--verbose"        , "-v",        GetoptLong::NO_ARGUMENT       ]
 )
 
 #----------------------------- defaults
-$cleanup        = 'yes'
-$user           = ENV["USER"]
-$host           = `hostname -f`.strip
-$directory      = ""
-$pattern        = nil
-$book           = "stntuple/dev_242"
-$mode           = "1"   # "11" for 
-$nev_fileset    = 200000
-$dataset        = ""
-$verbose        = 0
-$install_host   = ''
-$pid            = Process.pid.to_s();
-$protocol       = 'rsh'
-$diskpool       = nil;
+$cleanup         = 'yes'
+$user            = ENV["USER"]
+$host            = `hostname -f`.strip
+$directory       = ""
+$pattern         = nil
+$book            = "stntuple/dev_242"
+$mode            = "1"   # "11" for 
+$nev_fileset     = 200000
+$offline_version = "vX_X_X"
+$dataset         = ""
+$verbose         = 0
+$install_host    = ''
+$pid             = Process.pid.to_s();
+$protocol        = 'rsh'
+$diskpool        = nil;
 
 # puts " emoe"
 
@@ -329,12 +331,22 @@ else
   dir  = "/#{$book}/#{$dataset}"
 end
 
-i = 0;
+i      = 0;
+nev_total = 0
 $list_of_filesets.each {|fset| 
   i = i+1;
   fileset_catalog.printf("%06i  %-20s  %-45s %6i %7i %9i %7i %9i\n",i,host,dir,
                         fset.nevents,fset.lorun,fset.loevt,fset.hirun,fset.hievt)
+  nev_total = nev_total+fset.nevents;
 }
+#------------------------------------------------------------------------------
+# form catalog trailer - metadata
+#------------------------------------------------------------------------------
+fileset_catalog.puts comment_line
+fileset_catalog.printf("# :NTOTAL:          %62i\n",nev_total);
+fileset_catalog.printf("# :PROCESS_CODE:    %62s\n","");
+fileset_catalog.printf("# :NGENERATED:      %62s\n","");
+fileset_catalog.printf("# :OFFLINE_VERSION: %62s\n",$offline_version);
 fileset_catalog.puts comment_line
 fileset_catalog.puts'</pre>'
 fileset_catalog.close();
