@@ -196,9 +196,13 @@ int TDFCModule::EndJob() {
 
   char  filename[200];
   char  id[200];
+
+//-----------------------------------------------------------------------------
+// form new filename (Mu2e naming conventions
+//-----------------------------------------------------------------------------
   strncpy(id,fDatasetID.Data(),50);
-  sprintf(filename,"%c%c%06x.%04x%1c%1c%1c%1c",
-	  id[0],id[5],fMinRunNumber,fMinSectionNumber,id[1],id[2],id[3],id[4]);
+
+  sprintf(filename,"%s.%06i_%08i",fDatasetID.Data(),fMinRunNumber,fMinSectionNumber);
   fNewFileName = TString(filename);
 
   //if (PrintLevel() > 0) 

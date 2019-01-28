@@ -48,14 +48,18 @@ $output_dir     = ""
 $output_tcl     = ""
 $book           = "cdfpewk"
 $dataset        = ""
-$verbose        = 0
+$host           = "fcdfdata122.fnal.gov"
 $pattern        = ""
 $format         = "dst"
 $iuser          = `whoami`.strip
+$max_file_size  = 1100000000
 $ouser          = `whoami`.strip
+$output_dir     = "fcdfsgi2"
+$output_tcl_dir = ""
 $ihost          = `hostname -f`.strip
 $ohost          = `hostname -f`.strip
 $local_host     = `hostname -f`.strip
+$verbose        = nil
 
 opts = GetoptLong.new(
   [ "--dataset"       , "-d",        GetoptLong::REQUIRED_ARGUMENT ],
@@ -67,16 +71,6 @@ opts = GetoptLong.new(
   [ "--pattern"       , "-p",        GetoptLong::REQUIRED_ARGUMENT ],
   [ "--verbose"       , "-v",        GetoptLong::NO_ARGUMENT       ]
 )
-#----------------------------- defaults
-$host           = "fcdfdata122.fnal.gov"
-$input_dir      = ""
-$output_dir     = "fcdfsgi2"
-$output_tcl_dir = ""
-$book           = "cdfpewk"
-$dataset        = ""
-$verbose=0
-$pattern=""
-$max_file_size  = 1100000000
 
 opts.each do |opt, arg|
   if    (opt == "--dataset"       ) ; $dataset        = arg
@@ -139,8 +133,13 @@ if    ( $output_dir == "fcdfdata131" )
   $output_dir="murat@fcdfdata131.fnal.gov/export/data4/ewk/murat/datasets/#{$dataset}"
 end
 
+
+#------------------------------------------------------------------------------
 class ConcatenationRequest
   def initialize(format,max_size)
+
+    if ($verbose) then ; puts "format : #{format} max_size=#{max_size}" ; end
+
     @format             = format;
     @pid              = `echo $$`.strip();
     @tmp_fn           = "/tmp/#{$pid}.tmp"
@@ -313,18 +312,25 @@ class ConcatenationRequest
 #------------------------------------------------------------------------------
   def make_request_file()
 
+    if ($verbose) then ; puts "[make_request_file] : $verbose = #{$verbose} START" ; end
+
     write_header();
+
+    if ($verbose) then ; puts "[make_request_file] : after write_header" ; end
+
                                            # loop over the files and do the job
     snew=0
     nfiles = @list_of_files.length
     for i in 0...nfiles
-#      puts @list_of_files[i]
+#      if ($verbose) then ; puts @list_of_files[i]; end
+
       word = @list_of_files[i].strip.split(" ");
 #  puts " word = #{word} #{word.length} #{word[4]}"
       name = word[8]
       size = word[4].to_i
       filename = "#{$input_dir}/#{name}"
-#  puts " --- #{filename}"
+
+#      if ($verbose) then puts " --- #{filename}" ; end
 
       if (size > @max_size) 
 #-----------------------------------------------------------------------

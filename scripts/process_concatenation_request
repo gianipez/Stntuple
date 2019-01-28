@@ -87,7 +87,8 @@ cat $request_file >> $LOGFILE
 
 root.exe  -b -l <<EOF  >> $LOGFILE
 .L Stntuple/ana/scripts/dh.C
-dh::concatenate("$request_file",$JOB_NUMBER)
+gInterpreter->LoadMacro("$request_file");
+dh::concatenate($JOB_NUMBER)
 EOF
 rc=$?
 echo [process_concatenation_request]: job finished with rc=$rc >> $LOGFILE
