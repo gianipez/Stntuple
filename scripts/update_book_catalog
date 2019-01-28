@@ -17,7 +17,7 @@ if [ ".$books" == "." ] ; then
     books=`for d in $dirs ; do echo $d | awk -F/ '{print $(NF-1)}'; done`
 fi
 
-echo books=$books
+echo `date` : updating books=$books
 
 for book in $books ; do
 
@@ -53,10 +53,10 @@ for book in $books ; do
 #    cmd="ls -l $dir | grep -v AAA_ | grep -v index.shtml | cut -c48-55 | sort -k1.7,8" 
 
     versions=`ls -d $dir/* | grep -v AAA_ | grep -v index.shtml | awk -F/ '{print $NF}' | cut -c5-8 | sort -k1.7,8 | uniq`
-    echo versions=$versions
+    #echo versions=$versions
 
     list_of_datasets=`ls -d $dir/* | grep -v AAA_ | grep -v index.shtml | awk -F/ '{print $NF}' | sort -k1.7,8`
-    echo list_of_datasets=$list_of_datasets
+    # echo list_of_datasets=$list_of_datasets
     
     for version in $versions ; do
 

@@ -64,20 +64,21 @@ $diskpool        = nil;
 
 #----------------------------- process the parsed options
 opts.each do |opt, arg|
-  if    (opt == "--book"          ) ; $book           = arg 
-  elsif (opt == "--cleanup"       ) ; $cleanup        = arg 
-  elsif (opt == "--dataset"       ) then # dataset name defines the default filename pattern
+  if    (opt == "--book"           ) ; $book            = arg 
+  elsif (opt == "--cleanup"        ) ; $cleanup         = arg 
+  elsif (opt == "--dataset"        ) then # dataset name defines the default filename pattern
      $dataset        = arg 
     if ($pattern == nil) ; then $pattern = arg ; end
-  elsif (opt == "--Directory"     ) ; $directory      = arg 
-  elsif (opt == "--help"          ) ; usage()    
-  elsif (opt == "--host"          ) ; $host           = arg 
-  elsif (opt == "--install"       ) ; $install_host   = arg 
-  elsif (opt == "--mode"          ) ; $mode           = arg 
-  elsif (opt == "--nev_fileset"   ) ; $nev_fileset    = arg.to_i 
-  elsif (opt == "--pattern"       ) ; $pattern        = arg 
-  elsif (opt == "--user"          ) ; $user           = arg 
-  elsif (opt == "--verbose"       ) ; $verbose        = 1   
+  elsif (opt == "--Directory"      ) ; $directory       = arg 
+  elsif (opt == "--help"           ) ; usage()    
+  elsif (opt == "--host"           ) ; $host            = arg 
+  elsif (opt == "--install"        ) ; $install_host    = arg 
+  elsif (opt == "--mode"           ) ; $mode            = arg 
+  elsif (opt == "--nev_fileset"    ) ; $nev_fileset     = arg.to_i 
+  elsif (opt == "--offline_version") ; $offline_version = arg
+  elsif (opt == "--pattern"        ) ; $pattern         = arg 
+  elsif (opt == "--user"           ) ; $user            = arg 
+  elsif (opt == "--verbose"        ) ; $verbose         = 1   
   end
 
  if ($verbose != 0) ; puts "Option: #{opt}, arg #{arg.inspect}" ; end
