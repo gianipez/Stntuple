@@ -117,12 +117,13 @@ elsif (not $directory) then
 #------------------------------------------------------------------------------
 # Mu2e-specific shortcut: /mu2e/data/users/ENV["USER]/datasets/$dataset
 #------------------------------------------------------------------------------
-  $directory="/mu2e/data/users/"+ENV["USER"]+'/'+$dataset ;
+  $directory="/mu2e/data/users/"+ENV["USER"]+'/datasets/'+$dataset ;
 end
 
 if (not $pattern) then ; $pattern = $dataset ; end
 
 # exit(0);
+
 #------------------------------------------------------------------------------
 class Fileset
   attr_reader :nevents, :lorun, :loevt, :hirun, :hievt 
@@ -338,9 +339,9 @@ fileset_catalog.printf("# fileset     server             directory   ");
 fileset_catalog.printf("       nevents\n");
 fileset_catalog.puts comment_line
 
-if ( $diskpool == nil ) then
-  if ($bluearc != nil) then host = "bluearc://localhost.fnal.gov"
-  else                      host = $host
+if ( not $diskpool) then
+  if ($bluearc) then host = "bluearc://localhost.fnal.gov"
+  else               host = $host
   end
   dir  = $directory
 else
