@@ -202,38 +202,38 @@ int THttpCatalogServer::AddFiles(TChain*     Chain  ,
 //-----------------------------------------------------------------------------
 int THttpCatalogServer::InitListOfBadFiles(TStnDataset* Dataset) {
 
-  char     buf[1000], fn[1000];
-
-  TString  cmd;
-//-----------------------------------------------------------------------------
-// check if already initialized
-//-----------------------------------------------------------------------------
-  if (Dataset->DoneBadFiles() != 0) return 0;
-//-----------------------------------------------------------------------------
-// now get list of files
-//-----------------------------------------------------------------------------
-  cmd = Form("wget %s/%s/%s/bad_files.html -o /dev/null -O /dev/stdout",
-	     GetUrl(),Dataset->GetBook(),Dataset->GetName());
-
-  if (fPrintLevel > 0) {
-    printf(" InitListOfBadFiles: Retrieving data with: %s\n",cmd.Data());
-  }
-    
-  FILE* pipe = gSystem->OpenPipe(cmd.Data(),"r");
-//-----------------------------------------------------------------------------
-// read output form a pipe line by line, skip comment lines
-//-----------------------------------------------------------------------------
-  while (fgets(buf,1000,pipe)) { 
-    if ( buf[0] == '#')                                     goto NEXT_LINE; 
-
-    sscanf(buf,"%s",fn);
-    Dataset->GetListOfBadFiles()->Add(new TObjString(fn));
-
-  NEXT_LINE:;
-  }
-
-  gSystem->ClosePipe(pipe);
-  Dataset->SetDoneBadFiles();
+//   char     buf[1000], fn[1000];
+// 
+//   TString  cmd;
+// //-----------------------------------------------------------------------------
+// // check if already initialized
+// //-----------------------------------------------------------------------------
+//   if (Dataset->DoneBadFiles() != 0) return 0;
+// //-----------------------------------------------------------------------------
+// // now get list of files
+// //-----------------------------------------------------------------------------
+//   cmd = Form("wget %s/%s/%s/bad_files.html -o /dev/null -O /dev/stdout",
+// 	     GetUrl(),Dataset->GetBook(),Dataset->GetName());
+// 
+//   if (fPrintLevel > 0) {
+//     printf(" InitListOfBadFiles: Retrieving data with: %s\n",cmd.Data());
+//   }
+//     
+//   FILE* pipe = gSystem->OpenPipe(cmd.Data(),"r");
+// //-----------------------------------------------------------------------------
+// // read output form a pipe line by line, skip comment lines
+// //-----------------------------------------------------------------------------
+//   while (fgets(buf,1000,pipe)) { 
+//     if ( buf[0] == '#')                                     goto NEXT_LINE; 
+// 
+//     sscanf(buf,"%s",fn);
+//     Dataset->GetListOfBadFiles()->Add(new TObjString(fn));
+// 
+//   NEXT_LINE:;
+//   }
+// 
+//   gSystem->ClosePipe(pipe);
+//   Dataset->SetDoneBadFiles();
 
   return 0;
 }
@@ -452,7 +452,8 @@ int THttpCatalogServer::InitDataset(TStnDataset*     Dataset,
   if (! found) return -1;
 
   // try to read AAA_FILES.html (AAA_FILES.txt plus SAM location)
-  LoadSamDBFromHtml(book, dset);
+  // 2019-01-29 P.Murat: comment out till better times
+  // LoadSamDBFromHtml(book, dset);
 
 //-----------------------------------------------------------------------------
 //  dataset is found , initalize metadata part of the dataset, so far all we 
