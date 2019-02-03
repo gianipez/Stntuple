@@ -8,6 +8,10 @@
 #include "fcl/standardProducers.fcl"
 #include "fcl/standardServices.fcl"
 #------------------------------------------------------------------------------
+# this one is needed - defines TrackQual
+#------------------------------------------------------------------------------
+#include "TrkDiag/fcl/prolog.fcl"
+#------------------------------------------------------------------------------
 # local prolog
 #------------------------------------------------------------------------------
 #include "Stntuple/fcl/prolog.fcl"
@@ -278,6 +282,11 @@ Stntuple : { @table::Stntuple             # defined in Stntuple/fcl/prolog.fcl
 	@table::Tracking.producers        # defined in TrkPatRec
 	@table::TrkHitReco.producers      # defined in TrkHitReco
 	@table::CommonTrk.producers
+
+	TrkQualDeMHPar  : { @table::TrkQual KalSeedCollection: "KFFDeMHPar"  }
+	TrkQualDeMHDar  : { @table::TrkQual KalSeedCollection: "KFFDeMHDar"  }
+	TrkQualDmuMHPar : { @table::TrkQual KalSeedCollection: "KFFDmuMHPar" }
+	TrkQualDmuMHDar : { @table::TrkQual KalSeedCollection: "KFFDmuMHDar" }
     }
 
     filters : { @table::Stntuple.filters
@@ -427,8 +436,10 @@ Stntuple.dmp_reco        : [ @sequence::Tracking.TPRDmuP , @sequence::CalPatRec.
 Stntuple.reco_De       : [ @sequence::CommonTrk.reco_DeMH                  ,
 			   @sequence::TrackCaloMatching.matching_DeMHPar   ,
 			   AvikPIDNewDeMHPar                               ,
+			   TrkQualDeMHPar                                  ,
 			   @sequence::TrackCaloMatching.matching_DeMHDar   ,
-			   AvikPIDNewDeMHDar
+			   AvikPIDNewDeMHDar                               ,
+			   TrkQualDeMHDar
 			  ]
 #------------------------------------------------------------------------------
 # muon reconstruction path
@@ -437,8 +448,10 @@ Stntuple.reco_De       : [ @sequence::CommonTrk.reco_DeMH                  ,
 Stntuple.reco_Dmu      : [ @sequence::CommonTrk.reco_DmuMH                 ,
 			   @sequence::TrackCaloMatching.matching_DmuMHPar  ,
 			   AvikPIDNewDmuMHPar                              ,
+			   TrkQualDmuMHPar                                 ,
 			   @sequence::TrackCaloMatching.matching_DmuMHDar  ,
-			   AvikPIDNewDmuMHDar
+			   AvikPIDNewDmuMHDar                              ,
+			   TrkQualDmuMHDar
 			  ]
 #----------------------------------------------------------------------------------------------------
 # CalPatRec is not used for upstream reconstruction

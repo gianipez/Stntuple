@@ -86,6 +86,7 @@ StntupleMakerTemplate : { module_type:StntupleMaker
     trackTsCollTag       : [                ]
     tciCollTag           : [ "TrkExtrapol"  ]
     tcmCollTag           : [ "CaloMatching" ]
+    trkQualCollTag       : [ "TrackQual"    ]
     pidBlockName         : [ "PidBlock"     ]
     pidCollTag           : [ "ParticleID"   ]    #   [ "AvikPID"      ]
     trackSHBlockName     : [ "TrackHitBlock"] 
@@ -415,7 +416,7 @@ Stntuple : {
 	    timeClusterBlockName       : [ "TimeClusterBlockTpr" , "TimeClusterBlockCpr"  ]
 	    timeClusterCollTag         : [ "TimeClusterFinder"   , "CalTimePeakFinder"    ]
 	    helixBlockName             : [ "HelixBlock"          , "HelixBlockTpr"        , "HelixBlockCpr" ]
-	    helixCollTag               : [ "MHFinderDe"          , "MHFinderTprDe"        , "MHFinderCprDe"   ]
+	    helixCollTag               : [ "MHFinderDe"          , "MHFinderTprDe"        , "MHFinderCprDe" ]
 
 	    trackSeedBlockName         : [ "TrackSeedBlock"      ]
 	    trackSeedCollTag           : [ "KSFDeMH"             ]
@@ -427,6 +428,7 @@ Stntuple : {
 
 	    tciCollTag                 : [ "TciDeMHPar"          , "TciDeMHDar"           ]
 	    tcmCollTag                 : [ "TcmDeMHPar"          , "TcmDeMHDar"           ]
+	    trkQualCollTag             : [ "TrkQualDeMHPar"      , "TrkQualDeMHDar"       ]
 	    trackSHBlockName           : [ "TrackHitBlockPar"    , "TrackHitBlockDar"     ]
 	    pidBlockName               : [ ""                    , "PidBlock"             ]
 	    pidCollTag                 : [       ""              , "AvikPIDNew"           ]
@@ -455,6 +457,8 @@ Stntuple : {
 
 	    tciCollTag                 : [ "TciDmuMHPar"         , "TciDmuMHDar"          ]
 	    tcmCollTag                 : [ "TcmDmuMHPar"         , "TcmDmuMHDar"          ]
+	    trkQualCollTag             : [ "TrkQualDmuMHPar"     , "TrkQualDmuMHDar"      ]
+
 	    trackSHBlockName           : [ "TrackHitBlockPar"    , "TrackHitBlockDar"     ]
 	    pidBlockName               : [ ""                    , "PidBlock"             ]
 	    pidCollTag                 : [       ""              , "AvikPIDNew"           ]

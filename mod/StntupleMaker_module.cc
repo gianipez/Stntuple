@@ -116,6 +116,7 @@ protected:
 
   vector<string>           fTciCollTag;        // collection produced by TrackCaloIntersection module
   vector<string>           fTcmCollTag;        // collection produced by TrackCaloMatching     module
+  vector<string>           fTrkQualCollTag;    // collection produced by TrackQuality          module
 
   vector<string>           fPidBlockName;
   vector<string>           fPidCollTag;
@@ -220,6 +221,7 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
   , fTrackTsCollTag          (PSet.get<vector<string>>("trackTsCollTag"      ))
   , fTciCollTag              (PSet.get<vector<string>>("tciCollTag"          ))
   , fTcmCollTag              (PSet.get<vector<string>>("tcmCollTag"          ))
+  , fTrkQualCollTag          (PSet.get<vector<string>>("trkQualCollTag"      ))
   , fPidBlockName            (PSet.get<vector<string>>("pidBlockName"        ))
   , fPidCollTag              (PSet.get<vector<string>>("pidCollTag"          ))
   , fTrackSHBlockName        (PSet.get<vector<string>>("trackSHBlockName"    ))
@@ -476,6 +478,7 @@ void StntupleMaker::beginJob() {
 	track_data->AddCollName("mu2e::TrkCaloIntersectCollection"    ,fTciCollTag [i].data()     );
 	track_data->AddCollName("mu2e::CaloClusterCollection"         ,fCaloClusterMaker.data()   );
 	track_data->AddCollName("mu2e::TrackClusterMatchCollection"   ,fTcmCollTag[i].data()      );
+	track_data->AddCollName("mu2e::TrkQualCollection"             ,fTrkQualCollTag[i].data()  );
 	track_data->AddCollName("mu2e::PIDProductCollection"          ,fPidCollTag[i].data()      );
 	track_data->AddCollName("mu2e::StepPointMCCollection"         ,fVDHitsCollTag.data()      );
 	track_data->AddCollName("DarHandle"                           ,GetName()                  ,"DarHandle"    );

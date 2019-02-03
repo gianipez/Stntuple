@@ -207,6 +207,9 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
   char   krep_module_label[100], krep_description[100];
   char   trex_module_label[100], trex_description[100];
   char   trcl_module_label[100], trcl_description[100];
+
+  char   trkq_coll_tag[100];
+
   char   cmbh_module_label[100], cmbh_description[100];
   char   sdmc_module_label[100], sdmc_description[100];
   char   stmc_module_label[100], stmc_description[100];
@@ -280,6 +283,8 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
   data->GetModuleLabel("mu2e::StepPointMCCollection",spmc_module_label);
   data->GetDescription("mu2e::StepPointMCCollection",spmc_description );
 
+  data->GetModuleLabel("mu2e::TrkQualCollection",trkq_coll_tag);
+
   art::Handle<mu2e::AlgorithmIDCollection> algsHandle;
   strcpy(algs_module_label, krep_module_label);
   strcpy(algs_description , krep_description);
@@ -296,9 +301,9 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
   }
 
   art::Handle<mu2e::TrkQualCollection> trkQualHandle;
-  if (krep_module_label[0] != 0) {
-    AnEvent->getByLabel(krep_module_label,trkQualHandle);
-    if (trkQualHandle.isValid())    list_of_trkqual = trkQualHandle.product();
+  if (trkq_coll_tag[0] != 0) {
+    AnEvent->getByLabel(trkq_coll_tag,trkQualHandle);
+    if (trkQualHandle.isValid()) list_of_trkqual = trkQualHandle.product();
   }
 
 
@@ -500,7 +505,11 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 
       for (auto it=krep_hits->begin(); it!=krep_hits->end(); it++) {
 	++ntrkhits;
-	hit   = (const mu2e::TrkStrawHit*) (*it);
+	hit   = dynamic_cast<const mu2e::TrkStrawHit*> (*it);
+//-----------------------------------------------------------------------------
+// skip calorimeter hit
+//-----------------------------------------------------------------------------
+	if (! hit) continue;
 	straw = &hit->straw();
 //-----------------------------------------------------------------------------
 // the rest makes sense only for active hits
@@ -597,7 +606,9 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 //-----------------------------------------------------------------------------
     track->fNHits     = ntrkhits | (_kalDiag->_trkinfo._nbend << 16);
     track->fNMatSites = _kalDiag->_trkinfo._nmat | (_kalDiag->_trkinfo._nmatactive << 16);
-    track->fTrkQual   = list_of_trkqual->at(itrk).MVAOutput();//_kalDiag->_trkinfo._trkqual;
+
+    if (list_of_trkqual) track->fTrkQual = list_of_trkqual->at(itrk).MVAOutput();//_kalDiag->_trkinfo._trkqual;
+    else                 track->fTrkQual = -1.e6;
 //-----------------------------------------------------------------------------
 // defined bit-packed fNActive word
 //-----------------------------------------------------------------------------
@@ -654,14 +665,13 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
       dz_min = 1.e10;
       for(auto it=krep_hits->begin(); it!=krep_hits->end(); it++) {
 
-	hit = (const mu2e::TrkStrawHit*) (*it);
-	
+	hit = dynamic_cast<const mu2e::TrkStrawHit*> (*it);
+	if (! hit) continue;
+
 	s_hit = &hit->comboHit();
-	loc = s_hit-s_hit0;
-
-	zw = hit->straw().getMidPoint().z();
-
-	dz = z-zw;
+	loc   = s_hit-s_hit0;
+	zw    = hit->straw().getMidPoint().z();
+	dz    = z-zw;
 
 	if (fabs(dz) < dz_min) {
 	  dz_min      = fabs(dz);
