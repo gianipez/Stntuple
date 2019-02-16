@@ -483,7 +483,8 @@ Stntuple : {
 	    trackTsCollTag             : [ "KSFDeP"                     , "CalSeedFitDep"              , "KSFDeM"                     , "CalSeedFitDem"              ]
 	    tciCollTag                 : [ "TrackCaloIntersectionTprDep", "TrackCaloIntersectionCprDep", "TrackCaloIntersectionTprDem", "TrackCaloIntersectionCprDem"]
 	    tcmCollTag                 : [ "TrackCaloMatchingTprDep"    , "TrackCaloMatchingCprDep"    , "TrackCaloMatchingTprDem"    , "TrackCaloMatchingCprDem"    ]
-	    trackSHBlockName           : [ "TrackHitBlockDepTpr"        , "TrackHitBlockDepCpr"        , "TrackHitBlockDemTpr"        , "TrackHitBlockDemCpr"        ] 
+	    trackSHBlockName           : [ "TrackHitBlockDepTpr"        , "TrackHitBlockDepCpr"        , "TrackHitBlockDemTpr"        , "TrackHitBlockDemCpr"        ]
+	    trkQualCollTag             : [ "TrkQualTprDeP"              , "TrkQualCprDeP"              , "TrkQualTprDeM"              , "TrkQualCprDeM       "       ] 
 	    pidBlockName               : [ ""                           , ""                           , ""                           , ""                           ] 
 	    pidCollTag                 : [                        ""    ,                         ""   ,                        ""    ,                         ""   ]
 	}
@@ -589,7 +590,7 @@ Stntuple.stnmaker_dem_ump : [ InitStntuple, StntupleMakerDem, StntupleMakerUmp, 
 Stntuple.stnmaker_tcm     : [ InitStntuple, StntupleMakerTcm,                   FillStntuple ]
 Stntuple.stnmaker_tcm_dem : [ InitStntuple, StntupleMakerTcmDem,                FillStntuple ]
 Stntuple.stnmaker_tcm_dep : [ InitStntuple, StntupleMakerTcmDep,                FillStntuple ]
-Stntuple.stnmaker_trig    : [ InitStntuple, StntupleMakerTrig  ,                FillStntuple ]
+Stntuple.stnmaker_trig    : [ InitStntuple, StntupleMakerTrig,                  FillStntuple ]
 #------------------------------------------------------------------------------
 # new sequences
 #------------------------------------------------------------------------------
