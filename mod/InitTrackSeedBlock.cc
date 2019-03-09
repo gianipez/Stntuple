@@ -25,8 +25,6 @@
 #include "GeometryService/inc/GeometryService.hh"
 #include "GeometryService/inc/GeomHandle.hh"
 
-#include "TTrackerGeom/inc/TTracker.hh"
-
 #include "RecoDataProducts/inc/KalSeed.hh"
 
 #include "RecoDataProducts/inc/CaloCluster.hh"

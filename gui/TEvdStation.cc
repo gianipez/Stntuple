@@ -34,7 +34,7 @@ TEvdStation::TEvdStation(): TObject() {
 }
 
 //_____________________________________________________________________________
-TEvdStation::TEvdStation(int ID, const mu2e::TTracker* Tracker): TObject() {
+TEvdStation::TEvdStation(int ID, const mu2e::Tracker* Tracker): TObject() {
 
   int         id;
   TEvdPlane*  evd_plane;

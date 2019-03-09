@@ -43,7 +43,7 @@
 
 #include "BTrkData/inc/TrkStrawHit.hh"
 
-#include "TTrackerGeom/inc/TTracker.hh"
+#include "TrackerGeom/inc/Tracker.hh"
 
 #include "Stntuple/gui/TEvdTrack.hh"
 #include "Stntuple/gui/TStnVisManager.hh"
@@ -146,9 +146,9 @@ void TEvdTrack::PaintRZ(Option_t* Option) {
   TPolyLine         pline;
   int               nplanes, /*npanels,*/ nl;
 
-  mu2e::GeomHandle<mu2e::TTracker> handle;
+  mu2e::GeomHandle<mu2e::Tracker> handle;
 
-  const mu2e::TTracker* tracker = handle.get();
+  const mu2e::Tracker* tracker = handle.get();
 
   const mu2e::Straw  *hstraw, *s, *straw[2];		// first straw
   

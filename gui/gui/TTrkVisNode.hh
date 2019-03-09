@@ -9,7 +9,7 @@
 //-----------------------------------------------------------------------------
 #ifndef __CINT__
 #include "RecoDataProducts/inc/KalRepPtrCollection.hh"
-#include "TTrackerGeom/inc/TTracker.hh"
+#include "TrackerGeom/inc/Tracker.hh"
 #include "RecoDataProducts/inc/StrawHitCollection.hh"
 #include "RecoDataProducts/inc/TimeCluster.hh"
 #include "MCDataProducts/inc/StrawDigiMCCollection.hh"
@@ -24,7 +24,7 @@ namespace mu2e {
   class PtrStepPointMCVectorCollection;
   class StrawDigiMCCollection;
   class KalRepPtrCollection;
-  class TTracker;
+  class Tracker;
 };
 #endif
 
@@ -71,7 +71,7 @@ public:
 // constructors and destructor
 //-----------------------------------------------------------------------------
   TTrkVisNode();
-  TTrkVisNode(const char* Name, const mu2e::TTracker* Tracker, TStnTrackBlock* fTrackBlock);
+  TTrkVisNode(const char* Name, const mu2e::Tracker* Tracker, TStnTrackBlock* fTrackBlock);
   virtual ~TTrkVisNode();
 
 //-----------------------------------------------------------------------------

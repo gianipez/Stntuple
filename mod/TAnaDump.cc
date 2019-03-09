@@ -12,7 +12,7 @@
 #include "GeometryService/inc/GeometryService.hh"
 #include "GeometryService/inc/GeomHandle.hh"
 
-#include "TTrackerGeom/inc/TTracker.hh"
+#include "TrackerGeom/inc/Tracker.hh"
 //  #include "CalorimeterGeom/inc/VaneCalorimeter.hh"
 #include "CalorimeterGeom/inc/DiskCalorimeter.hh"
 #include "CalorimeterGeom/inc/Calorimeter.hh"
@@ -2181,8 +2181,8 @@ void TAnaDump::printStrawHit(const mu2e::StrawHit* Hit, const mu2e::StepPointMC*
 
     if (opt == "banner") return;
 
-    mu2e::GeomHandle<mu2e::TTracker> ttH;
-    const mu2e::TTracker* tracker = ttH.get();
+    mu2e::GeomHandle<mu2e::Tracker> ttH;
+    const mu2e::Tracker* tracker = ttH.get();
 
     const mu2e::Straw* straw = &tracker->getStraw(Hit->strawId());
 
@@ -2329,8 +2329,8 @@ void TAnaDump::printHelixHit(const mu2e::HelixHit*    HelHit, const mu2e::ComboH
 
     if (opt == "banner") return;
 
-    mu2e::GeomHandle<mu2e::TTracker> ttHandle;
-    const mu2e::TTracker* tracker = ttHandle.get();
+    mu2e::GeomHandle<mu2e::Tracker> ttHandle;
+    const mu2e::Tracker* tracker = ttHandle.get();
 
     const mu2e::Straw* straw;
 
@@ -2722,8 +2722,8 @@ void TAnaDump::printStepPointMC(const mu2e::StepPointMC* Step, const char* Detec
       printf("--------------------------------------------------------------------------------------------------------------------\n");
     }
 
-    mu2e::GeomHandle<mu2e::TTracker> ttHandle;
-    const mu2e::TTracker* tracker = ttHandle.get();
+    mu2e::GeomHandle<mu2e::Tracker> ttHandle;
+    const mu2e::Tracker* tracker = ttHandle.get();
   
     art::Ptr<mu2e::SimParticle> const& simptr = Step->simParticle();
     const mu2e::SimParticle* sim  = simptr.operator ->();

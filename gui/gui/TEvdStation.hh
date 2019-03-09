@@ -11,10 +11,10 @@
 #include "TArc.h"
 
 #ifndef __CINT__
-#include "TTrackerGeom/inc/TTracker.hh"
+#include "TrackerGeom/inc/Tracker.hh"
 #else
 namespace mu2e {
-  class   TTracker;
+  class   Tracker;
 };
 #endif
 
@@ -36,7 +36,7 @@ public:
 // constructors and destructor
 //-----------------------------------------------------------------------------
   TEvdStation();
-  TEvdStation(int ID, const mu2e::TTracker* Tracker); 
+  TEvdStation(int ID, const mu2e::Tracker* Tracker); 
 
   virtual ~TEvdStation();
 //-----------------------------------------------------------------------------

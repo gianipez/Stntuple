@@ -26,7 +26,7 @@
 #include "GeometryService/inc/DetectorSystem.hh"
 
 #include "TrackerConditions/inc/Types.hh"
-#include "TTrackerGeom/inc/TTracker.hh"
+#include "TrackerGeom/inc/Tracker.hh"
 #include "CalorimeterGeom/inc/Calorimeter.hh"
 #include "CalorimeterGeom/inc/DiskCalorimeter.hh"
 // #include "CalorimeterGeom/inc/VaneCalorimeter.hh"
@@ -80,7 +80,7 @@ namespace {
 //-----------------------------------------------------------------------------
 // Map[iplane][ipanel][il]: index of the layer in Z-ordered sequence
 //-----------------------------------------------------------------------------
-  void InitTrackerZMap(const mu2e::TTracker* Tracker, ZMap_t* Map) {
+  void InitTrackerZMap(const mu2e::Tracker* Tracker, ZMap_t* Map) {
     int      ix, loc;
     double   z0, z1;
 
@@ -116,7 +116,7 @@ namespace {
 // for a given Z find closest Z-layer, returns 'Plane'
 // 'Offset' is a 'face number' within the Plane
 //-----------------------------------------------------------------------------
-  void get_station(const mu2e::TTracker* Tracker, ZMap_t* Map, double Z, int* Plane, int* Offset) {
+  void get_station(const mu2e::Tracker* Tracker, ZMap_t* Map, double Z, int* Plane, int* Offset) {
 
     double dz, dz_min(1.e10);
     int    iface(-1);
@@ -193,7 +193,7 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 
   static  ZMap_t            zmap;
 
-  const mu2e::TTracker*     tracker;
+  const mu2e::Tracker*     tracker;
 
   mu2e::AlgorithmIDCollection*             list_of_algs               (0);
   const mu2e::KalRepPtrCollection*         list_of_kreps              (0);
@@ -224,7 +224,7 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 
   if (Block->Initialized(ev_number,rn_number)) return 0;
 
-  mu2e::GeomHandle<mu2e::TTracker> ttHandle;
+  mu2e::GeomHandle<mu2e::Tracker> ttHandle;
   tracker = ttHandle.get();
 
   data = (TStnTrackBlock*) Block;

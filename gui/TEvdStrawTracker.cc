@@ -39,7 +39,7 @@
 ClassImp(TEvdStrawTracker)
 
 //_____________________________________________________________________________
-TEvdStrawTracker::TEvdStrawTracker(const mu2e::TTracker* Tracker): TObject() {
+TEvdStrawTracker::TEvdStrawTracker(const mu2e::Tracker* Tracker): TObject() {
 
   //  const mu2e::Station* station;
   TEvdStation*         s;

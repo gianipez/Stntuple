@@ -46,7 +46,7 @@ TTrkVisNode::TTrkVisNode() : TVisNode("") {
 }
 
 //_____________________________________________________________________________
-TTrkVisNode::TTrkVisNode(const char* name, const mu2e::TTracker* Tracker, TStnTrackBlock* TrackBlock): 
+TTrkVisNode::TTrkVisNode(const char* name, const mu2e::Tracker* Tracker, TStnTrackBlock* TrackBlock): 
   TVisNode(name) {
   fTracker    = new TEvdStrawTracker(Tracker);
   fTrackBlock = TrackBlock;
@@ -95,8 +95,8 @@ int TTrkVisNode::InitEvent() {
 
   //  const char* oname = "TTrkVisNode::InitEvent";
 
-  mu2e::GeomHandle<mu2e::TTracker> ttHandle;
-  const mu2e::TTracker* tracker = ttHandle.get();
+  mu2e::GeomHandle<mu2e::Tracker> ttHandle;
+  const mu2e::Tracker* tracker = ttHandle.get();
 
   // Tracker calibration object.
   mu2e::ConditionsHandle<mu2e::StrawResponse> srep = mu2e::ConditionsHandle<mu2e::StrawResponse>("ignored");
@@ -299,8 +299,8 @@ void TTrkVisNode::PaintXY(Option_t* Option) {
 
   //  const char* view = TVisManager::Instance()->GetCurrentView();
 
-  mu2e::GeomHandle<mu2e::TTracker> ttHandle;
-  const mu2e::TTracker* tracker = ttHandle.get();
+  mu2e::GeomHandle<mu2e::Tracker> ttHandle;
+  const mu2e::Tracker* tracker = ttHandle.get();
 
   TStnVisManager* vm = TStnVisManager::Instance();
 

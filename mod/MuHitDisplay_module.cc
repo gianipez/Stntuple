@@ -55,7 +55,7 @@
 #include "GeometryService/inc/GeometryService.hh"
 #include "GeometryService/inc/GeomHandle.hh"
 
-#include "TTrackerGeom/inc/TTracker.hh"
+#include "TrackerGeom/inc/Tracker.hh"
 #include "CalorimeterGeom/inc/DiskCalorimeter.hh"
 #include "CalorimeterGeom/inc/Calorimeter.hh"
 #include "Mu2eUtilities/inc/SimParticlesWithHits.hh"
@@ -237,7 +237,7 @@ namespace mu2e {
 
     const TimeCluster*     fTimeCluster;
 
-    const TTracker*        fTracker;    // straw tracker geometry
+    const Tracker*         fTracker;    // straw tracker geometry
 
     TNamedHandle*          fDarHandle;
     TNamedHandle*          fKalDiagHandle;
@@ -396,7 +396,7 @@ namespace mu2e {
 
   //-----------------------------------------------------------------------------
   bool MuHitDisplay::beginRun(art::Run& Run) {
-    mu2e::GeomHandle<mu2e::TTracker> handle;
+    mu2e::GeomHandle<mu2e::Tracker> handle;
     fTracker = handle.get();
     return true;
   }

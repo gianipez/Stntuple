@@ -15,7 +15,7 @@
 #include "RecoDataProducts/inc/StrawHitPositionCollection.hh"
 #include "RecoDataProducts/inc/StrawHitFlagCollection.hh"
 #include "MCDataProducts/inc/PtrStepPointMCVectorCollection.hh"
-#include "TTrackerGeom/inc/TTracker.hh"
+#include "TrackerGeom/inc/Tracker.hh"
 #else
 namespace mu2e {
   class StrawHitCollection;
@@ -36,13 +36,13 @@ protected:
   int        fNStations;
   TObjArray* fListOfStations;
 
-  const mu2e::TTracker*  fTracker;
+  const mu2e::Tracker*  fTracker;
 
 public:
 //-----------------------------------------------------------------------------
 // constructors and destructor
 //-----------------------------------------------------------------------------
-  TEvdStrawTracker(const mu2e::TTracker* Tracker = NULL);
+  TEvdStrawTracker(const mu2e::Tracker* Tracker = NULL);
   //  TEvdStrawTracker(const char* Name); 
 
   virtual ~TEvdStrawTracker();
