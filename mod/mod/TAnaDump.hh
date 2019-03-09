@@ -169,7 +169,7 @@ public:
 				const char* ModuleLabelStrawHit ="makeSH"); 
 
   void printHelixSeed          (const mu2e::HelixSeed*         Helix   , 
-				const char* HelixSeedCollTag           ,
+				//				const char* HelixSeedCollTag           ,
 				const char* StrawHitCollTag            ,  // usually - "makeSH"
 				const char* StrawDigiCollTag = "makeSD",
 				const char* Opt              = ""      );

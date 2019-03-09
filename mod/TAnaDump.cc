@@ -201,7 +201,7 @@ TAnaDump::TAnaDump(const fhicl::ParameterSet* PSet) {
   fEvent                  = nullptr;
   fListOfObjects          = new TObjArray();
   fFlagBgrHitsModuleLabel = "FlagBkgHits";
-  fStrawDigiMCCollTag     = "makeSD";
+  fStrawDigiMCCollTag     = "compressDigiMCs";
 
   if (PSet) {
     fhicl::ParameterSet to_maps = PSet->get<fhicl::ParameterSet>("timeOffsetMaps" );
@@ -363,17 +363,9 @@ void TAnaDump::printCaloCluster(const mu2e::CaloCluster* Cl,
 	  simCreationCode  = parent->creationCode();
 	  // simTime          = data.time();
 	  simPDGM          = parent->pdgId(); 
-	  // = data.mom();
-	  // = parent->startPosition().x();
-	  // = parent->startPosition().y();
-	  // = parent->startPosition().z();
 	}
 	++nSimPart;
       }
-      
-      // iz = -1;
-      // ir = -1;
-      //      }
       
       printf("%6i   %10.3f %8i %8i %5i %5i    %10.3f   %10.3f %10.3f %10.3f %10.3f %8i\n",
 	     id,
@@ -384,7 +376,7 @@ void TAnaDump::printCaloCluster(const mu2e::CaloCluster* Cl,
 	     pos->x(),
 	     pos->y(),
 	     pos->z(),
-	     simMaxEdep,//hit->energyDepTot()
+	     simMaxEdep,
 	     nSimPart
 	     );
     }
@@ -512,21 +504,10 @@ void TAnaDump::printCaloProtoCluster(const mu2e::CaloProtoCluster* Cluster, cons
       const mu2e::CaloCrystalHit* hit = &(*caloClusterHits.at(i));
       int id = hit->id();
       
-      //      pos = cg->crystalOriginInSection(id);
-
       cr  = &cal->crystal(id);
       pos = &cr->localPosition();
-
-   
-      // if (geom->hasElement<mu2e::VaneCalorimeter>()) {
-      // 	mu2e::GeomHandle<mu2e::VaneCalorimeter> cgvane;
-      // 	iz  = cgvane->nCrystalX();
-      // 	ir  = cgvane->nCrystalY();
-      // }
-      // else {
-      iz = -1;
-      ir = -1;
-	//      }
+      iz  = -1;
+      ir  = -1;
       
       printf("%6i     %10.3f %5i %5i %8.3f %10.3f %10.3f %10.3f %10.3f\n",
 	     id,
@@ -758,20 +739,19 @@ void TAnaDump::printTrackSeedCollection(const char* ModuleLabel,
 }
 
 //-----------------------------------------------------------------------------
-void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix  , 
-			      const char* HelixSeedCollTag  , 
-			      const char* StrawHitCollTag   , 
-			      const char* StrawDigiMCCollTag,
-			      const char* Opt                ) {
+void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix          , 
+			      const char*            StrawHitCollTag, 
+			      const char*            StrawDigiMCCollTag,
+			      const char*            Opt                ) {
   TString opt(Opt);
   
   if ((opt == "") || (opt == "banner")) {
-    printf("----------------------------------------------------------------------------------");
-    printf("---------------------------------------------------------------------------------------------------------\n");
-    printf("  HelID       Address    N   nLoops   NClean     P      pT       T0     T0err  ");
-    printf("    D0       FZ0      X0        Y0      Lambda     radius    caloEnergy      chi2XY    chi2ZPhi    flag  \n");
-    printf("----------------------------------------------------------------------------------");
-    printf("---------------------------------------------------------------------------------------------------------\n");
+    printf("------------------------------------------------------------------");
+    printf("--------------------------------------------------------------------------------------\n");
+    printf("  HelID   Address    N nL nCln     P        pT      T0     T0err  ");
+    printf("    D0      FZ0      X0       Y0    Lambda    radius   ECal   chi2XY  chi2ZPhi    flag\n");
+    printf("------------------------------------------------------------------");
+    printf("--------------------------------------------------------------------------------------\n");
   }
  
   if ((opt == "") || (opt.Index("data") >= 0)) {
@@ -814,7 +794,7 @@ void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix  ,
       const mu2e::CaloCluster*cluster = Helix->caloCluster().get();
       double clusterEnergy(-1);
       if (cluster != 0) clusterEnergy = cluster->energyDep();
-      printf("%5i %16p %3i %5i %8i %10.3f %8.3f %7.3f %7.3f",
+      printf("%5i %12p %3i %2i %4i %8.3f %8.3f %7.3f %7.3f",
 	     -1,
 	     Helix,
 	     nhits,
@@ -822,81 +802,10 @@ void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix  ,
 	     nhitsLoopChecked,
 	     mom, pt, t0, t0err );
 
-      // eval the chi2
-      //      auto helix_handle = fEvent->getValidHandle<mu2e::HelixSeedCollection>(HelixSeedCollTag);
-      //      fhicl::ParameterSet const& pset = helix_handle.provenance()->parameterSet();
-//-----------------------------------------------------------------------------
-// helix is made out of ComboHits, so 'nsh' is the number of those
-//-----------------------------------------------------------------------------
-//      const mu2e::HelixHitCollection* hits = &Helix->hits();
-      //      const mu2e::ComboHit*           hit(0);
-      //      XYZVec                          pos(0,0,0), wdir(0,0,0), sdir(0,0,0), helix_center(0,0,0);
-      //      double                          phi(0), helix_phi(0);
+      float chi2xy   = robustHel->chi2dXY();
+      float chi2zphi = robustHel->chi2dZPhi();
 
-      //      int nsh      = hits->size();
-      // helix_center = robustHel->center();
-      // //add the stopping target center as in CalHeliFinderAlg.cc
-      // LsqSums4 sxy;
-      // sxy.addPoint(0., 0., 1./900.);
-
-      // LsqSums4 srphi;
-      // static const XYZVec zdir(0.0,0.0,1.0);
-
-      // for (int j=0; j<nsh; ++j){
-      // 	hit       = &hits->at(j);
-      // 	pos       = hit->pos();
-      // 	wdir      = hit->wdir();
-      // 	sdir      = zdir.Cross(wdir);
-      // 	phi       = hit->helixPhi();
-      // 	helix_phi = fz0 + pos.z()/lambda;
-      // 	double    weightXY   = evalWeight(hit, sdir, helix_center, radius, 1, pset);
-
-      // 	sxy.addPoint(pos.x(), pos.y(), weightXY);
-
-      // 	double    dPhi     = helix_phi - phi- M_PI/2.;
-      // 	while (dPhi > M_PI){
-      // 	  phi    += 2*M_PI;
-      // 	  dPhi   = helix_phi - phi;
-      // 	}
-      // 	while (dPhi < -M_PI){
-      // 	  phi   -= 2*M_PI; 
-      // 	  dPhi  = helix_phi - phi;
-      // 	}
-      // 	double weight    = evalWeight(hit, sdir, helix_center, radius, 0, pset);
-      // 	srphi.addPoint(pos.z(), phi, weight);
-      // }
-      // if (cluster != 0){
-      // 	double     weight_cl_xy = 1./100.;//FIX ME!
-      // 	mu2e::GeomHandle<mu2e::Calorimeter> ch;
-      // 	const mu2e::Calorimeter* _calorimeter = ch.get();      
-      // 	CLHEP::Hep3Vector        gpos = _calorimeter->geomUtil().diskToMu2e(cluster->diskId(),cluster->cog3Vector());
-      // 	CLHEP::Hep3Vector        tpos = _calorimeter->geomUtil().mu2eToTracker(gpos);
-
-      // 	pos       = XYZVec(tpos.x(), tpos.y(), tpos.z());
-      // 	sxy.addPoint(pos.x(), pos.y(), weight_cl_xy);
-      
-      // 	phi       = XYZVec(pos - helix_center).phi();
-      // 	phi       = TVector2::Phi_0_2pi(phi);
-      // 	helix_phi = fz0  + pos.z()/lambda;
-      // 	double     dPhi        = helix_phi - phi;
-      // 	while (dPhi > M_PI){
-      // 	  phi    += 2*M_PI;
-      // 	  dPhi   = helix_phi - phi;
-      // 	}
-      // 	while (dPhi < -M_PI){
-      // 	  phi   -= 2*M_PI; 
-      // 	  dPhi  = helix_phi - phi;
-      // 	}
-
-      // 	double     weight_cl_phiz = 10.;//1./(err_cl*err_cl);
-      // 	srphi.addPoint(pos.z(), phi, weight_cl_phiz);
-      // }
-
-
-      float chi2xy   = robustHel->chi2dXY();    //sxy.chi2DofCircle();
-      float chi2zphi = robustHel->chi2dZPhi();  //srphi.chi2DofLine();
-
-      printf(" %8.3f %8.3f %8.3f %8.3f %10.3f %10.3f %12.3f %12.3f %12.3f %08x\n",
+      printf(" %8.3f %8.3f %8.3f %8.3f %8.3f %8.3f %7.3f %8.3f %8.3f %08x\n",
 	     d0,fz0,x0,y0,lambda,radius,clusterEnergy,chi2xy,chi2zphi, flag);
     }
 
@@ -908,9 +817,9 @@ void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix  ,
 
       const char* ProductName = "";
       const char* ProcessName = "";
-
-      // get ComboHitCollection with single straw hits (makeSH)
-
+//-----------------------------------------------------------------------------
+// get ComboHitCollection with single straw hits (makeSH)
+//-----------------------------------------------------------------------------
       if (ProductName[0] != 0) {
 	art::Selector  selector(art::ProductInstanceNameSelector(ProductName) &&
 				art::ProcessNameSelector(ProcessName)         && 
@@ -1000,11 +909,11 @@ void TAnaDump::printHelixSeedCollection(const char* HelixSeedCollTag,
   for (int i=0; i<nhelices; i++) {
     helix = &list_of_helixSeeds->at(i);
     if (banner_printed == 0) {
-      printHelixSeed(helix,HelixSeedCollTag,StrawHitCollTag,StrawDigiCollTag,"banner");
+      printHelixSeed(helix,StrawHitCollTag,StrawDigiCollTag,"banner");
       banner_printed = 1;
     }
 
-    printHelixSeed(helix,HelixSeedCollTag,StrawHitCollTag,StrawDigiCollTag,popt);
+    printHelixSeed(helix,StrawHitCollTag,StrawDigiCollTag,popt);
   }
 }
 
@@ -1280,8 +1189,6 @@ void TAnaDump::printTimeCluster(const mu2e::TimeCluster* TPeak, const char* Opt,
 	art::Ptr<mu2e::StepPointMC>  spmcp;
 	mu2e::TrkMCTools::stepPoint(spmcp,mcdigi);
 	const mu2e::StepPointMC* step = spmcp.get();
-      // mu2e::PtrStepPointMCVector           const& mcptr(hits_mcptrStraw->at(shids[0]) );
-      // 	const mu2e::StepPointMC*                    step = mcptr[0].get();
 	flags = 0; // *((int*) &TPeak->_shfcol->at(loc));
 
 	printComboHit(hit,step,"data",i,flags);
@@ -1436,254 +1343,6 @@ void TAnaDump::printKalRep(const KalRep* Krep, const char* Opt, const char* Pref
 
   _printUtils->printTrack(fEvent,Krep,Opt,Prefix);
 }
-
-//   if ((opt == "") || (opt == "banner")) {
-//     printf("-----------------------------------------------------------------------------------------------");
-//     printf("-----------------------------------------------------\n");
-//     printf("%s  Address        TrkID     N  NA      P      T0      MomErr   T0Err    pT      costh    Omega",Prefix);
-//     printf("      D0      Z0      Phi0   TanDip    Chi2    FCons\n");
-//     printf("-----------------------------------------------------------------------------------------------");
-//     printf("-----------------------------------------------------\n");
-//   }
- 
-//   if ((opt == "") || (opt.Index("data") >= 0)) _printUtils->PrintTrack(fEvent,Krep,0,"TAnaDump");
-//     double chi2   = Krep->chisq();
-
-//     int    nhits(0);
-
-//     const TrkHitVector* hits = &Krep->hitVector();
-//     for (auto ih=hits->begin(); ih != hits->end(); ++ih) {
-//       nhits++;
-//     }
-
-//     int    nact   = Krep->nActive();
-//     double t0     = Krep->t0().t0();
-//     double t0err  = Krep->t0().t0Err();
-// //-----------------------------------------------------------------------------
-// // in all cases define momentum at lowest Z - ideally, at the tracker entrance
-// //-----------------------------------------------------------------------------
-//     double s1     = Krep->firstHit()->kalHit()->hit()->fltLen();
-//     double s2     = Krep->lastHit ()->kalHit()->hit()->fltLen();
-//     double s      = min(s1,s2);
-
-//     double d0     = Krep->helix(s).d0();
-//     double z0     = Krep->helix(s).z0();
-//     double phi0   = Krep->helix(s).phi0();
-//     double omega  = Krep->helix(s).omega();
-//     double tandip = Krep->helix(s).tanDip();
-
-
-//     CLHEP::Hep3Vector fitmom = Krep->momentum(s);
-//     CLHEP::Hep3Vector momdir = fitmom.unit();
-//     BbrVectorErr      momerr = Krep->momentumErr(s);
-    
-//     HepVector momvec(3);
-//     for (int i=0; i<3; i++) momvec[i] = momdir[i];
-    
-//     double sigp = sqrt(momerr.covMatrix().similarity(momvec));
-  
-//     double fit_consistency = Krep->chisqConsistency().consistency();
-//     int q         = Krep->charge();
-
-//     Hep3Vector trk_mom;
-
-//     trk_mom       = Krep->momentum(s);
-//     double mom    = trk_mom.mag();
-//     double pt     = trk_mom.perp();
-//     double costh  = trk_mom.cosTheta();
-
-//     char form[100];
-//     int nc = strlen(Prefix);
-//     for (int i=0; i<nc; i++) form[i]=' ';
-//     form[nc] = 0;
-//     printf("%s",form);
-
-//     printf("  %-16p %3i   %3i %3i %8.3f %8.3f %8.4f %7.4f %7.3f %8.4f",
-// 	   Krep,
-// 	   -1,
-// 	   nhits,
-// 	   nact,
-// 	   q*mom,t0,sigp,t0err,pt,costh
-// 	   );
-
-//     printf(" %8.5f %8.3f %8.3f %8.4f %7.4f",
-// 	   omega,d0,z0,phi0,tandip
-// 	   );
-//     printf(" %8.3f %10.3e\n",
-// 	   chi2,
-// 	   fit_consistency);
-//   }
-
-//   if (opt.Index("hits") >= 0) {
-// //-----------------------------------------------------------------------------
-// // print detailed information about the track hits
-// //-----------------------------------------------------------------------------
-//     _printUtils->printTrack(fEvent,Krep,"TAnaDump");
-    
-
-//     const TrkHitVector* hits = &Krep->hitVector();
-// 
-//     printf("--------------------------------------------------------------------");
-//     printf("---------------------------------------------------------------");
-//     printf("------------------------------------------------------\n");
-//     //    printf(" ih  SInd U A     len         x        y        z      HitT    HitDt");
-//     printf(" ih  SInd    Flag    A     len         x        y        z      HitT    HitDt");
-//     printf("  Ch Pl  L  W     T0       Xs      Ys        Zs     resid  sigres");
-//     printf("   Rdrift   mcdoca totErr hitErr  t0Err penErr extErr     simId\n");
-//     printf("--------------------------------------------------------------------");
-//     printf("---------------------------------------------------------------");
-//     printf("------------------------------------------------------\n");
-// 
-//     mu2e::TrkStrawHit* hit;
-//     CLHEP::Hep3Vector  pos;
-//     int i = 0;
-// 
-//     for (auto it=hits->begin(); it!=hits->end(); it++) {
-//       // TrkStrawHit inherits from TrkHitOnTrk
-// 
-//       //      hit = (mu2e::TrkStrawHit*) (*it);
-//       hit = dynamic_cast<mu2e::TrkStrawHit*> (*it);
-//       if (hit == 0){
-// 	mu2e::TrkCaloHit*caloHit = (mu2e::TrkCaloHit*) (*it);
-// 	printTrkCaloHit(Krep,caloHit);
-// 	continue;
-//       }
-//       const mu2e::ComboHit* sh = &hit->comboHit();
-//       mu2e::Straw*       straw = (mu2e::Straw*) &hit->straw();
-//       int                  sid = straw->id().asUint16();
-// 
-//       hit->hitPosition(pos);
-// 
-//       double    len  = hit->fltLen();
-//       HepPoint  plen = Krep->position(len);
-// //-----------------------------------------------------------------------------
-// // find MC truth DOCA in a given straw
-// // start from finding the right vector of StepPointMC's
-// //-----------------------------------------------------------------------------
-//       int vol_id;
-//       int nstraws = _mcdigis->size();
-// 
-//       const mu2e::StepPointMC* step(0);
-// 
-//       for (int i=0; i<nstraws; i++) {
-// 
-// 	const mu2e::StrawDigiMC* mcdigi = &_mcdigis->at(i);
-// 
-// 	if (mcdigi->wireEndTime(mu2e::StrawEnd::cal) < mcdigi->wireEndTime(mu2e::StrawEnd::hv)) {
-// 	  step = mcdigi->stepPointMC(mu2e::StrawEnd::cal).get();
-// 	}
-// 	else {
-// 	  step = mcdigi->stepPointMC(mu2e::StrawEnd::hv ).get();
-// 	}
-// 
-// 	vol_id = step->volumeId();
-// 	// 	if (vol_id == straw->index().asInt()) {
-//  	if (vol_id == sid) {
-//  					// step found - use the first one in the straw
-//  	  break;
-//  	}
-//       }
-// 
-//       double                    mcdoca(-99.0);
-//       const mu2e::SimParticle*  sim;
-//       int                       sim_id(-1);
-// 
-//       if (step) {
-// 	const Hep3Vector* v1 = &straw->getMidPoint();
-// 	HepPoint p1(v1->x(),v1->y(),v1->z());
-// 
-// 	const Hep3Vector* v2 = &step->position();
-// 	HepPoint    p2(v2->x(),v2->y(),v2->z());
-// 
-// 	TrkLineTraj trstraw(p1,straw->getDirection()  ,0.,0.);
-// 	TrkLineTraj trstep (p2,step->momentum().unit(),0.,0.);
-// 
-// 	TrkPoca poca(trstep, 0., trstraw, 0.);
-//     
-// 	mcdoca = poca.doca();
-// 
-// 	sim    = &(*step->simParticle());
-// 	sim_id = sim->id().asInt();
-//       }
-// 
-//       //      printf("%3i %5i %1i %1i %9.3f %8.3f %8.3f %9.3f %8.3f %7.3f",
-//       printf("%3i %5i 0x%08x %1i %9.3f %8.3f %8.3f %9.3f %8.3f %7.3f",
-// 	     ++i,
-// 	     sid, 
-// 	      hit->hitFlag(),
-// 	     hit->isActive(),
-// 	     len,
-// 	     plen.x(),plen.y(),plen.z(),
-// 	     sh->time(), -999. /*sh->dt() not available any longer*/
-// 	     );
-// 
-//       printf(" %2i %2i %2i %2i",
-// 	     straw->id().getPlane(),
-// 	     straw->id().getPanel(),
-// 	     straw->id().getLayer(),
-// 	     straw->id().getStraw()
-// 	     );
-// 
-//       printf(" %8.3f",hit->hitT0().t0());
-// 
-//       double res, sigres;
-//       bool hasres = hit->resid(res, sigres, true);
-// 
-//       if (hasres) {
-// 	printf("%8.3f %8.3f %9.3f %7.3f %7.3f",
-// 	       pos.x(),
-// 	       pos.y(),
-// 	       pos.z(),
-// 	       res,
-// 	       sigres
-// 	       );
-//       }
-//       else {
-// 	printf(" %8.3f %8.3f %9.3f %7s %7s",
-// 	       pos.x(),
-// 	       pos.y(),
-// 	       pos.z(),
-// 	       "   -   ",
-// 	       "   -   "
-// 	       );
-//       }
-//       
-//       if (hit->isActive()) {
-// 	if      (hit->ambig()       == 0) printf(" * %6.3f",hit->driftRadius());
-// 	else if (hit->ambig()*mcdoca > 0) printf("   %6.3f",hit->driftRadius()*hit->ambig());
-// 	else                              printf(" ? %6.3f",hit->driftRadius()*hit->ambig());
-//       }
-//       else {
-// //-----------------------------------------------------------------------------
-// // do not analyze correctness of the drift sign determination for hits not 
-// // marked as 'active'
-// //-----------------------------------------------------------------------------
-// 	printf("   %6.3f",hit->driftRadius());
-//       }
-// 	  
-// 
-//       printf("  %7.3f",mcdoca);
-// 
-//       double exterr = hit->temperature()*hit->driftVelocity();
-// 
-//       printf(" %6.3f %6.3f %6.3f %6.3f %6.3f %10i",		 
-// 	     hit->totalErr(),
-// 	     hit->hitErr(),
-// 	     hit->t0Err(),
-// 	     hit->penaltyErr(),
-// 	     exterr,
-// 	     sim_id
-// 	     );
-// //-----------------------------------------------------------------------------
-// // test: calculated residual in fTmp[0]
-// //-----------------------------------------------------------------------------
-// //       Test_000(Krep,hit);
-// //       printf(" %7.3f",fTmp[0]);
-// 
-//       printf("\n");
-//  }
-//   }
-// }
 
 //-----------------------------------------------------------------------------
 void TAnaDump::printKalRepCollection(const char* ModuleLabel, 
@@ -2319,12 +1978,12 @@ void TAnaDump::printHelixHit(const mu2e::HelixHit*    HelHit, const mu2e::ComboH
     opt.ToLower();
 
     if ((opt == "") || (opt.Index("banner") >= 0)) {
-      printf("-----------------------------------------------------------------------------------");
-      printf("---------------------------------------------------------------------------------------------------------------\n");
-      printf("   I   NSH   SHID  Flags      Plane   Panel  Layer Straw     x          y           z          phi      Time          eDep ");
-      printf("           PDG       PDG(M)   Generator         ID       p      pT     pZ\n");
-      printf("-----------------------------------------------------------------------------------");
-      printf("---------------------------------------------------------------------------------------------------------------\n");
+      printf("----------------------------------------------------------------------------------------");
+      printf("------------------------------------------------------------------\n");
+      printf("   I NSH  SHID   Flags  Pl Pn L  S      x         y         z       phi    Time    eDep ");
+      printf("       PDG     PDG(M)  GenID      SimID      p       pT         pZ\n");
+      printf("----------------------------------------------------------------------------------------");
+      printf("------------------------------------------------------------------\n");
     }
 
     if (opt == "banner") return;
@@ -2335,10 +1994,6 @@ void TAnaDump::printHelixHit(const mu2e::HelixHit*    HelHit, const mu2e::ComboH
     const mu2e::Straw* straw;
 
     straw = &tracker->getStraw(Hit->strawId());//ndex());
-
-// 12 - 11 -2013 giani added some MC info of the straws
-    //Hep3Vector mom = Step->momentum();
-    // double pt = sqrt(mom.mag()*mom.mag() - mom.z()*mom.z());
 
     const mu2e::SimParticle * sim (0);
     
@@ -2384,7 +2039,7 @@ void TAnaDump::printHelixHit(const mu2e::HelixHit*    HelHit, const mu2e::ComboH
 
       if (Flags >= 0) printf(" %08x",Flags);
       else            printf("        ");
-      printf("  %5i  %5i   %5i   %5i   %8.3f   %8.3f    %10.3f    %6.3f   %8.3f   %8.3f   %10i   %10i  %10i  %10i %8.3f %8.3f %8.3f\n",
+      printf(" %2i %2i %1i %2i  %8.3f  %8.3f %9.3f %6.3f %8.3f %6.3f %10i %10i %6i %10i %8.3f %8.3f %8.3f\n",
 	     straw->id().getPlane(),
 	     straw->id().getPanel(),
 	     straw->id().getLayer(),

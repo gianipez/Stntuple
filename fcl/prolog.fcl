@@ -7,7 +7,7 @@ BEGIN_PROLOG
 # 
 # they can be redefined 
 #------------------------------------------------------------------------------
-TimeOffsetMaps : { inputs : [ "compressDigiMCs:protonTimeMap", "compressDigiMCs:muonTimeMap" ] }
+TIME_OFFSET_MAPS : { inputs : [ "compressDigiMCs:protonTimeMap", "compressDigiMCs:muonTimeMap" ] }
 
 StntupleModuleFclDefaults : {
     interactiveMode : 0
@@ -15,7 +15,7 @@ StntupleModuleFclDefaults : {
 # unlike everywhere else, TAnaDump sets mcTruth to 1 by default
 #------------------------------------------------------------------------------
     TAnaDump : {
-	timeOffsetMaps  : @local::TimeOffsetMaps
+	timeOffsetMaps  : @local::TIME_OFFSET_MAPS
 	printUtils      : { @table::TrkReco.PrintUtils 
 	    mcTruth     : 1
 	}
