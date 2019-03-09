@@ -34,21 +34,21 @@ TEvdStation::TEvdStation(): TObject() {
 }
 
 //_____________________________________________________________________________
-TEvdStation::TEvdStation(int ID, const mu2e::Station* Station): TObject() {
+TEvdStation::TEvdStation(int ID, const mu2e::TTracker* Tracker): TObject() {
 
   int         id;
   TEvdPlane*  evd_plane;
 
   fID      = ID;
-  fStation = Station;
-  fNPlanes = Station->nPlanes();
+  //  fStation = Station;
+  fNPlanes = 2; // was Station->nPlanes();
 
   fListOfPlanes = new TObjArray(fNPlanes);
 
   for (int i=0; i<fNPlanes; i++) {
-    const mu2e::Plane* plane = &fStation->getPlane(i);
+    id = 2*ID+i;
+    const mu2e::Plane* plane = &Tracker->getPlane(id);
 
-    id        = fNPlanes*Station->id()+i;
     evd_plane = new TEvdPlane(id,plane,this);
 
     fListOfPlanes->Add(evd_plane);

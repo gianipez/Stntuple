@@ -226,8 +226,8 @@ int TTrkVisNode::InitEvent() {
     int ist, ipl, ippl, /*ifc,*/ ipn, il, is;
 
     ipl  = straw->id().getPlane(); // plane number here runs from 0 to 2*NStations-1
+    ist  = straw->id().getStation();
 
-    ist  = ipl / 2 ; // *** should become straw->id().getStation();
     ippl = ipl % 2 ; // plane number within the station
 
     ipn = straw->id().getPanel();

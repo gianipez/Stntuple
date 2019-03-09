@@ -11,10 +11,10 @@
 #include "TArc.h"
 
 #ifndef __CINT__
-#include "TTrackerGeom/inc/Station.hh"
+#include "TTrackerGeom/inc/TTracker.hh"
 #else
 namespace mu2e {
-  class   Station;
+  class   TTracker;
 };
 #endif
 
@@ -29,14 +29,14 @@ protected:
   int                   fNPlanes;
   TObjArray*            fListOfPlanes;
 
-  const mu2e::Station*  fStation;  // backward pointer
+  //  const mu2e::Station*  fStation;  // backward pointer
 
 public:
 //-----------------------------------------------------------------------------
 // constructors and destructor
 //-----------------------------------------------------------------------------
   TEvdStation();
-  TEvdStation(int ID, const mu2e::Station* Station); 
+  TEvdStation(int ID, const mu2e::TTracker* Tracker); 
 
   virtual ~TEvdStation();
 //-----------------------------------------------------------------------------

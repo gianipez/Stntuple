@@ -41,7 +41,7 @@ ClassImp(TEvdStrawTracker)
 //_____________________________________________________________________________
 TEvdStrawTracker::TEvdStrawTracker(const mu2e::TTracker* Tracker): TObject() {
 
-  const mu2e::Station* station;
+  //  const mu2e::Station* station;
   TEvdStation*         s;
 
   fTracker = Tracker;
@@ -54,9 +54,9 @@ TEvdStrawTracker::TEvdStrawTracker(const mu2e::TTracker* Tracker): TObject() {
   fListOfStations = new TObjArray(fNStations);
 
   for (int i=0; i<fNStations; i++) {
-    station = &fTracker->getStation(i);
+    //    station = &fTracker->getStation(i);
 
-    s = new TEvdStation(i,station);
+    s = new TEvdStation(i,Tracker);
     fListOfStations->Add(s);
   }
 }
