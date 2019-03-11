@@ -26,7 +26,6 @@
 #include "GeometryService/inc/GeomHandle.hh"
 
 #include "RecoDataProducts/inc/KalSeed.hh"
-
 #include "RecoDataProducts/inc/CaloCluster.hh"
 #include "RecoDataProducts/inc/StrawHitCollection.hh"
 #include "RecoDataProducts/inc/StrawHit.hh"
@@ -141,11 +140,17 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
 
     int                   loc(-1);
 
+    float    first_hit_z(0), last_hit_z(0);
+    float    lambda = kalSeg.helix().tanDip()/kalSeg.helix().omega();
+
     for (int j=0; j<nsh; ++j){
       int  hitIndex  = int(trkSeed->hits().at(j).index());
       hit            = &list_of_combo_hits->at(hitIndex);
       loc            = hit - hit_0;
       
+      if(j==0) first_hit_z = hit->pos().z();
+      else if(j==nsh-1) last_hit_z = hit->pos().z();
+   
       const mu2e::StepPointMC* step(0);
       if (mcdigis) {
 	const mu2e::StrawDigiMC* sdmc = &mcdigis->at(loc);
@@ -165,7 +170,13 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
 	hits_simp_index.push_back(loc);
 	hits_simp_z.push_back(step->position().z());
      }
-    } 
+    }
+
+//-----------------------------------------------------------------------------
+// calculate the number of loops made
+//-----------------------------------------------------------------------------
+    trackSeed->fNLoops = (last_hit_z - first_hit_z)/(fabs(lambda)*2.*M_PI);
+ 
 //-----------------------------------------------------------------------------
 // find the simparticle that created the majority of the hits
 //-----------------------------------------------------------------------------

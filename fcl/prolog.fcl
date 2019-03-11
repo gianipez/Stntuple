@@ -414,7 +414,7 @@ Stntuple : {
 	    makeStepPointMC            : 1
 
 	    timeClusterBlockName       : [ "TimeClusterBlockTpr" , "TimeClusterBlockCpr"  ]
-	    timeClusterCollTag         : [ "TimeClusterFinder"   , "CalTimePeakFinder"    ]
+	    timeClusterCollTag         : [ "TimeClusterFindere"  , "CalTimePeakFinder"    ]
 	    helixBlockName             : [ "HelixBlock"          , "HelixBlockTpr"        , "HelixBlockCpr" ]
 	    helixCollTag               : [ "MHFinderDe"          , "MHFinderTprDe"        , "MHFinderCprDe" ]
 

@@ -218,7 +218,7 @@ source : {
 #------------------------------------------------------------------------------
 # services section
 #------------------------------------------------------------------------------
-services : {
+services : {@table::Services.SimAndReco
     message               : @local::default_message
     TFileService          : { fileName        : "nts._USER_._DATASET_._DSCONF_.sequencer.root" }
     RandomNumberGenerator : { }

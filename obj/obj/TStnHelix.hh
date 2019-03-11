@@ -40,8 +40,11 @@ class TStnHelix : public TObject {
     kNFreeFloatsV3 = 10,                //     the most and their fraction of hits within the helix, 
    			                //     also added the p and pT of the SimParticles.
 
-    kNFreeInts     =  3,	        // v4: added helicity
-    kNFreeFloats   = 10			//
+    kNFreeIntsV4   =  3,	        // v4: added helicity
+    kNFreeFloatsV4 = 10,                //
+
+    kNFreeInts     =  3,	        // v5: added number of loops
+    kNFreeFloats   =  9			//
   };
 
 public:
@@ -88,6 +91,7 @@ public:
   float			    fClusterX;      
   float			    fClusterY;      
   float			    fClusterZ;      
+  float                     fNLoops;
   float                     fFloat[kNFreeFloats]; // provision for future I/O expansion
 //-----------------------------------------------------------------------------
 // transients
@@ -142,6 +146,8 @@ public:
   float   ClusterY      () { return fClusterY;     }
   float   ClusterZ      () { return fClusterZ;     }
 
+  float   NLoops        () { return fNLoops;       }
+
   TLorentzVector  Mom1     () { return fMom1; }
   TLorentzVector  Origin1  () { return fOrigin1; }
   TLorentzVector  Mom2     () { return fMom2; }
@@ -164,8 +170,9 @@ public:
   void ReadV1(TBuffer& R__b);
   void ReadV2(TBuffer& R__b);
   void ReadV3(TBuffer& R__b);   // 2018-12-05 P.M.
+  void ReadV4(TBuffer& R__b);   // 2019-02-27 G.P.
 
-  ClassDef(TStnHelix,4);
+  ClassDef(TStnHelix,5);
 };
 
 #endif

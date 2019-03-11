@@ -198,9 +198,14 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
     helix->fAlgorithmID = mask;
 
     int      nStrawHits(0);
-
+    float    first_hit_z(0), last_hit_z(0);
+    
     for (int j=0; j<nhits; ++j) {      //this loop is made over the ComboHits
       hit       = &hits->at(j);
+
+      if(j==0) first_hit_z = hit->pos().z();
+      else if(j==nhits-1) last_hit_z = hit->pos().z();
+      
       //get the MC truth info
       if (hit->_flag.hasAnyProperty(mu2e::StrawHitFlag::outlier))         continue;
 
@@ -227,6 +232,11 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
       //increase the counter of the StrawHits
       nStrawHits += hit->nStrawHits();
     } 
+
+//-----------------------------------------------------------------------------
+// calculate the number of loops made
+//-----------------------------------------------------------------------------
+    helix->fNLoops = (last_hit_z - first_hit_z)/(fabs(helix->fLambda)*2.*M_PI);
 
 //-----------------------------------------------------------------------------
 // find the SimParticle that created the majority of the hits

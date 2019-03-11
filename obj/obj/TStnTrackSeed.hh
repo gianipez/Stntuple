@@ -32,8 +32,11 @@ namespace mu2e {
 class TStnTrackSeed : public TObject {
 
   enum {
-    kNFreeInts     = 10,		// V2
-    kNFreeFloats   = 10			// V2
+    kNFreeIntsV2     = 10,		// V2
+    kNFreeFloatsV2   = 10,         	// V2
+
+    kNFreeInts     = 10,		// V3
+    kNFreeFloats   = 9			// V3
   };
 
 public:
@@ -72,7 +75,8 @@ public:
   float			    fClusterEnergy; 
   float			    fClusterX;      
   float			    fClusterY;      
-  float			    fClusterZ;      
+  float			    fClusterZ;    
+  float                     fNLoops;              // added in V3
   float                     fFloat[kNFreeFloats]; // provision for future I/O expansion
 //-----------------------------------------------------------------------------
 // transients
@@ -117,6 +121,8 @@ public:
   float   ClusterY      () { return fClusterY;     }
   float   ClusterZ      () { return fClusterZ;     }
 
+  float   NLoops        () { return fNLoops;       }
+
   TLorentzVector  Mom1     () { return fMom1; }
   TLorentzVector  Origin1  () { return fOrigin1; }
   TLorentzVector  Mom2     () { return fMom2; }
@@ -136,8 +142,9 @@ public:
 // schema evolution
 //-----------------------------------------------------------------------------
   void ReadV1(TBuffer& R__b);
+  void ReadV2(TBuffer& R__b);
 
-  ClassDef(TStnTrackSeed,2);
+  ClassDef(TStnTrackSeed,3);
 };
 
 #endif
