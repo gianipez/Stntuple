@@ -32,18 +32,20 @@ TStnDataBlock::TStnDataBlock():
   // by default initialization is done by the overloaded function
 
   fUserInitialization = 0;
-  fExternalInit       = 0;
-  fResolveLinks       = 0;
+  fExternalInit       = nullptr;
+  fResolveLinks       = nullptr;
   fLinksInitialized   = 0;
   fInitMode           = 0;
-  fNode               = 0;
-  fEvent              = 0;
+  fNode               = nullptr;
+  fEvent              = nullptr;
   fMessageList        = new TObjArray(10);
   fCurrentEntry       = -1;
   fValid              = 0;
   f_EventNumber       = -1;
+  f_SubrunNumber      = -1;
   f_RunNumber         = -1;
   fListOfCollNames    = new TObjArray();
+  fInitBlock          = nullptr;
 }
 
 
@@ -52,6 +54,7 @@ TStnDataBlock::~TStnDataBlock() {
   fMessageList->Delete();
   delete fMessageList;
   delete fListOfCollNames;
+  if (fInitBlock) delete fInitBlock;
 }
 
 //-----------------------------------------------------------------------------

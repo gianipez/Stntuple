@@ -72,10 +72,11 @@ public:
 
 					// ****** setters/modifiers
 
-					// ****** overloaded functions of 
-					// TObject
-  void   Clear(Option_t* opt = "");
-  void   Print(Option_t* opt = "") const;
+//-----------------------------------------------------------------------------
+// overloaded functions of TObject
+//-----------------------------------------------------------------------------
+  virtual void   Clear(Option_t* opt = "");
+  virtual void   Print(Option_t* opt = "") const;
 
 					// ****** schema evolution
   void   ReadV1(TBuffer& R__b);

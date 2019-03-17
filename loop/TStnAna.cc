@@ -371,7 +371,7 @@ int TStnAna::ReloadModule(const char* name, const char* filename) {
 }
 
 //_____________________________________________________________________________
-// is called when teh HeaderBlock is read in and the run number is not equal 
+// is called when the HeaderBlock is read in and the run number is not equal 
 // to the last run number read
 //-----------------------------------------------------------------------------
 int TStnAna::BeginRun() {

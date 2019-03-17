@@ -9,7 +9,8 @@ Import('env')
 #                                      "AND_THIS" is usually "src"
 #------------------------------------------------------------------------------
 # x = subprocess.call('scripts/build_config',shell=True)
-env['CXXFLAGS'].append('-I'+os.environ['MU2E_BASE_RELEASE']+'/include');
+env['CPPPATH'].append('-I'+os.environ['MU2E_SATELLITE_RELEASE']+'/include');
+env['CXXFLAGS'].append('-I'+os.environ['MU2E_SATELLITE_RELEASE']+'/include');
 #------------------------------------------------------------------------------
 # done
 #------------------------------------------------------------------------------

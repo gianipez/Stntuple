@@ -9,6 +9,7 @@
 //-----------------------------------------------------------------------------
 
 #include "Stntuple/obj/AbsEvent.hh"
+#include "Stntuple/obj/TStnInitDataBlock.hh"
 
 #include "TNamed.h"
 #include "TObjString.h"
@@ -26,7 +27,8 @@ protected:
 //  data members
 //-----------------------------------------------------------------------------
   Int_t    f_EventNumber;		// !
-  Int_t    f_RunNumber;			// ! 
+  Int_t    f_RunNumber;			// !
+  Int_t    f_SubrunNumber;		// !
   Int_t    fLinksInitialized;		// !
   Int_t    fUserInitialization;		// ! if != 0, Init methods are called
 					// by StntupleMakerModule
@@ -56,7 +58,7 @@ protected:
   Int_t      fCurrentEntry;		// ! last read entry in the chain
   Int_t      fValid;			// ! 1, if properly initialized
 
-
+  TStnInitDataBlock*  fInitBlock;       // ! coming replacement for fExternalInit
 //-----------------------------------------------------------------------------
 //  functions
 //-----------------------------------------------------------------------------
@@ -73,13 +75,19 @@ public:
 					// ****** init methods
 
   Int_t Init(AbsEvent* event, int mode) {
-    if (fExternalInit) return fExternalInit  (this,event,mode);
-    else               return fOverloadedInit(event,mode);
+    if   (fInitBlock   ) return fInitBlock->InitDataBlock(this,event,mode);
+    else {
+      if (fExternalInit) return fExternalInit  (this,event,mode);
+      else               return fOverloadedInit(event,mode);
+    }
   }
 
   Int_t ResolveLinks(AbsEvent* event, int mode) {
-    if (fResolveLinks) return fResolveLinks (this,event,mode);
-    else               return 0;
+    if   (fInitBlock   ) return fInitBlock->ResolveLinks(this,event,mode);
+    else {
+      if (fResolveLinks) return fResolveLinks (this,event,mode);
+      else               return 0;
+    }
   }
 					// return 1 if block has already been
 					// initialized
@@ -116,6 +124,8 @@ public:
   void  SetNode       (TStnNode* node) { fNode  = node; }
   void  SetEvent      (TStnEvent*  ev) { fEvent = ev; }
   void  SetValid      (Int_t    Valid) { fValid = Valid; }
+
+  void  SetInitBlock  (TStnInitDataBlock* InitBlock) { fInitBlock = InitBlock; }
 
   TNamed*  AddCollName(const char* CollName         , 
 		       const char* CollTag          , 
