@@ -7,7 +7,7 @@
 #include "hist_file.hh"
 
 struct hist_data_t {
-
+  TH1*          fHist;                  // if non-null, fFile is not needed
   hist_file_t*  fFile;                  // it contains a pointer to the dataset
   TString       fLabel  ;		// label to appear on a plot
   TString       fModule;	        // module name
@@ -39,12 +39,46 @@ struct hist_data_t {
   float         fLegendXMax;
   float         fLegendYMax;
   TCanvas*      fCanvas;
-  TH1*          fHist;
   TString       fOutputFn;
 
   hist_data_t(const char* Dataset = "", const char* JobName = "", const char* Module = "", const char* HistName = "") {
+    fHist        = nullptr;
     fFile        = nullptr; // get_hist_file(Dataset,JobName);
     fName        = HistName;
+    fModule      = Module;
+    fNewName     = "";
+    fLabel       = "";
+    fLineColor   = -1;
+    fLineWidth   =  1;
+    fMarkerSize  = -1;
+    fMarkerStyle = -1;
+    fMarkerColor = -1;
+    fFillColor   = -1;
+    fFillStyle   = -1;
+    fXMin        =  0;
+    fXMax        = -1;
+    fYMin        =  0;
+    fYMax        = -1;
+    fStatBoxXMin =  0.65;
+    fStatBoxYMin =  0.65;
+    fStatBoxXMax =  0.90;
+    fStatBoxYMax =  0.90;
+    fRebin       = -1;
+    fYLogScale   =  0;
+    fScale       = -1;
+    fPlotName    = "";
+    fPlotLabel   = "";
+    fXAxisTitle  = "";
+    fLegendXMin  = -1;
+    fLegendYMin  = -1;
+    fLegendXMax  = -1;
+    fLegendYMax  = -1;
+  }
+  
+  hist_data_t(TH1* Hist, const char* JobName = "", const char* Module = "") {
+    fHist        = Hist;
+    fFile        = nullptr; // get_hist_file(Dataset,JobName);
+    fName        = Hist->GetName();
     fModule      = Module;
     fNewName     = "";
     fLabel       = "";
