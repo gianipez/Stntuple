@@ -9,8 +9,13 @@ Import('env')
 #                                      "AND_THIS" is usually "src"
 #------------------------------------------------------------------------------
 # x = subprocess.call('scripts/build_config',shell=True)
-env['CPPPATH'].append('-I'+os.environ['MU2E_SATELLITE_RELEASE']+'/include');
-env['CXXFLAGS'].append('-I'+os.environ['MU2E_SATELLITE_RELEASE']+'/include');
+if (os.environ.get("MU2E_SATELLITE_RELEASE")) :
+    env['CPPPATH' ].append('-I'+os.environ['MU2E_SATELLITE_RELEASE']+'/include');
+    env['CXXFLAGS'].append('-I'+os.environ['MU2E_SATELLITE_RELEASE']+'/include');
+else :
+    env['CPPPATH' ].append('-I'+os.environ['MU2E_BASE_RELEASE']+'/include');
+    env['CXXFLAGS'].append('-I'+os.environ['MU2E_BASE_RELEASE']+'/include');
+    
 #------------------------------------------------------------------------------
 # done
 #------------------------------------------------------------------------------
