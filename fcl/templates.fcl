@@ -218,16 +218,27 @@ source : {
 #------------------------------------------------------------------------------
 # services section
 #------------------------------------------------------------------------------
-services : {@table::Services.SimAndReco
+services : { @table::Services.SimAndReco
     message               : @local::default_message
     TFileService          : { fileName        : "nts._USER_._DATASET_._DSCONF_.sequencer.root" }
     RandomNumberGenerator : { }
 
-    GeometryService        : { inputFile      : "Mu2eG4/geom/geom_common.txt"   }
-    ConditionsService      : { conditionsfile : "Mu2eG4/test/conditions_01.txt"        }
-    GlobalConstantsService : { inputFile      : "Mu2eG4/test/globalConstants_01.txt"   }
-    BTrkHelper             : @local::BTrkHelperDefault
+    GeometryService        : { @table::Services.SimAndReco.GeometryService 
+	inputFile      : "Mu2eG4/geom/geom_common.txt"
+    }
+
+    ConditionsService      : { @table::Services.SimAndReco.ConditionsService
+	conditionsfile : "Mu2eG4/test/conditions_01.txt"        
+    }
+
+    GlobalConstantsService : { @table::Services.SimAndReco.GlobalConstantsService
+	inputFile      : "Mu2eG4/test/globalConstants_01.txt"   
+    }
+
+    BTrkHelper             : { @table::BTrkHelperDefault }
+
     G4Helper               : { }
+
     SeedService            : { @table::automaticSeeds
 	baseSeed         :  0
 	maxUniqueEngines :  20
