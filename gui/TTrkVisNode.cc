@@ -35,6 +35,7 @@
 #include "RecoDataProducts/inc/StrawHitCollection.hh"
 #include "RecoDataProducts/inc/StrawHitPositionCollection.hh"
 
+#include "DataProducts/inc/StrawId.hh"
 #include "DataProducts/inc/XYZVec.hh"
 
 // #include "Stntuple/mod/TAnaDump.hh"
@@ -126,7 +127,7 @@ int TTrkVisNode::InitEvent() {
 
   int            nst, nplanes, npanels/*, isec*/; 
 
-  nst = tracker->nStations();
+  nst = mu2e::StrawId::_nstations; // tracker->nStations();
   for (int ist=0; ist<nst; ist++) {
     station = fTracker->Station(ist);
     nplanes = station->NPlanes();
