@@ -59,6 +59,7 @@ public:
   Int_t  EventNumber  () const { return fEventNumber;   }
   Int_t  RunNumber    () const { return fRunNumber;     }
   Int_t  SectionNumber() const { return fSectionNumber; }
+  Int_t  SubrunNumber () const { return fSectionNumber; }    // Mu2e synonim of the CDF "section number"
   Int_t  McFlag       () const { return fMcFlag;        }
   Int_t  NTracks      () const { return fNTracks;       }
 
