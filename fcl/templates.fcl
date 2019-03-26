@@ -235,7 +235,7 @@ services : { @table::Services.SimAndReco
 	inputFile      : "Mu2eG4/test/globalConstants_01.txt"   
     }
 
-    BTrkHelper             : { @table::BTrkHelperDefault }
+#    BTrkHelper             : { @table::BTrkHelperDefault }
 
     G4Helper               : { }
 

@@ -18,6 +18,8 @@
 #include "art/Framework/Principal/Event.h"
 #include "art/Framework/Principal/Handle.h"
 
+#include "DataProducts/inc/StrawId.hh"
+
 #include "GeometryService/inc/GeometryService.hh"
 #include "GeometryService/inc/GeomHandle.hh"
 
@@ -50,7 +52,7 @@ TEvdStrawTracker::TEvdStrawTracker(const mu2e::Tracker* Tracker): TObject() {
     printf(">>> TEvdStrawTracker::TEvdStrawTracker ERROR: Tracker = NULL\n");
   }
 
-  fNStations      = fTracker->nStations();
+  fNStations      = mu2e::StrawId::_nstations; // fTracker->nStations();
   fListOfStations = new TObjArray(fNStations);
 
   for (int i=0; i<fNStations; i++) {
