@@ -9,9 +9,11 @@ struct stn_dataset_t {
   TString  fID        ;			// dataset ID (short name)
   TString  fName      ;			// full name of the ntupled dataset
   int      fNEvents   ;                 // number of events in all files
-  int      fNGenEvents; 		// number of generated events (if MC, corresponding to the files, for normalization)
+  int      fNGenEvents; 		// N generated events (if MC, corresponding to the files, for normalization)
   float    fEMin      ;			// sometimes, the signal particle energy range is constrained
   float    fEMax      ;
+  int      fMinRun    ;                 // minimal run number
+  int      fMaxRun    ;			// maximal run number
 
   stn_dataset_t() {
     fID          = "";
@@ -20,6 +22,8 @@ struct stn_dataset_t {
     fNGenEvents  = -1;
     fEMin        =  1.;                 // make sure that non-initialized case is easy to see
     fEMax        = -1.;
+    fMinRun      = -1;
+    fMaxRun      = -1;
   }
   
 };
