@@ -25,7 +25,7 @@
 #include "GeometryService/inc/VirtualDetector.hh"
 #include "GeometryService/inc/DetectorSystem.hh"
 
-#include "TrackerConditions/inc/Types.hh"
+//#include "TrackerConditions/inc/Types.hh"
 #include "TrackerGeom/inc/Tracker.hh"
 #include "CalorimeterGeom/inc/Calorimeter.hh"
 #include "CalorimeterGeom/inc/DiskCalorimeter.hh"
@@ -41,7 +41,7 @@
 #include "TrkReco/inc/DoubletAmbigResolver.hh"
 
 #include "RecoDataProducts/inc/TrkCaloIntersectCollection.hh"
-#include "TrackCaloMatching/inc/TrackClusterMatch.hh"
+#include "RecoDataProducts/inc/TrackClusterMatch.hh"
 
 #include "MCDataProducts/inc/GenParticleCollection.hh"
 #include "MCDataProducts/inc/SimParticleCollection.hh"
