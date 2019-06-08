@@ -1,6 +1,6 @@
 # -*- mode:tcl -*-
 #------------------------------------------------------------------------------
-# generate 105 MeV/c electrons and make STNTUPLE
+# read file with digis, run reconstruction, make STNTUPLE
 #------------------------------------------------------------------------------
 #include "fcl/minimalMessageService.fcl"
 #include "fcl/standardProducers.fcl"

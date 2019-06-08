@@ -88,7 +88,7 @@ protected:
   int                      fMakeHelices;
   int                      fMakeTrackSeeds;
   int                      fMakeTrigger;
-  int                      fMakeVDHits;
+  int                      fMakeCrv;
 //-----------------------------------------------------------------------------
 // module parameters
 //-----------------------------------------------------------------------------
@@ -97,7 +97,8 @@ protected:
   string                   fStrawHitsCollTag;
   string                   fStrawDigiCollTag;
 
-  string                   fVDHitsCollTag;         // name of the module produced SimParticleCollection
+  string                   fCrvRecoPulsesCollTag;         //
+  string                   fCrvRecoPulsesCollTag;         //
 
   vector<string>           fTimeClusterBlockName;
   vector<string>           fTimeClusterCollTag;
@@ -200,13 +201,13 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
   , fMakeHelices             (PSet.get<int>           ("makeHelices"         ))
   , fMakeTrackSeeds          (PSet.get<int>           ("makeTrackSeeds"      ))
   , fMakeTrigger             (PSet.get<int>           ("makeTrigger"         ))
-  , fMakeVDHits              (PSet.get<int>           ("makeVDHits"          ))
+  , fMakeCRVHits             (PSet.get<int>           ("makeCDVHits"         ))
   
   , fGenpCollTag             (PSet.get<string>        ("genpCollTag"         ))
   , fSimpCollTag             (PSet.get<string>        ("simpCollTag"         ))
   , fStrawHitsCollTag        (PSet.get<string>        ("strawHitsCollTag"    ))
   , fStrawDigiCollTag        (PSet.get<string>        ("strawDigiCollTag"    ))
-  , fVDHitsCollTag           (PSet.get<string>        ("vdHitsCollTag"       ))
+  , fCRVHitsCollTag          (PSet.get<string>        ("crvHitsCollTag"      ))
   , fTimeClusterBlockName    (PSet.get<vector<string>>("timeClusterBlockName"))
   , fTimeClusterCollTag      (PSet.get<vector<string>>("timeClusterCollTag"  ))
   , fHelixBlockName          (PSet.get<vector<string>>("helixBlockName"      ))
@@ -595,18 +596,18 @@ void StntupleMaker::beginJob() {
 //-----------------------------------------------------------------------------
 // hits on virtual detectors - also StepPointMC's
 //-----------------------------------------------------------------------------
-  if (fMakeVDHits) {
-    TStnDataBlock* block = AddDataBlock("VDetBlock",
-					"TVDetDataBlock",
-					StntupleInitMu2eVDetDataBlock,
-					buffer_size,
-					split_mode,
-					compression_level);
-    if (block) {
-      block->AddCollName("mu2e::StepPointMCCollection",fVDHitsCollTag.data());
-      block->AddCollName("TimeOffsetMapsHandle"       ,GetName()            ,"TimeOffsetMapsHandle");
-    }
-  }  
+  // if (fMakeVDHits) {
+  //   TStnDataBlock* block = AddDataBlock("VDetBlock",
+  // 					"TVDetDataBlock",
+  // 					StntupleInitMu2eVDetDataBlock,
+  // 					buffer_size,
+  // 					split_mode,
+  // 					compression_level);
+  //   if (block) {
+  //     block->AddCollName("mu2e::StepPointMCCollection",fVDHitsCollTag.data());
+  //     block->AddCollName("TimeOffsetMapsHandle"       ,GetName()            ,"TimeOffsetMapsHandle");
+  //   }
+  // }  
 
   THistModule::afterEndJob();
 }
