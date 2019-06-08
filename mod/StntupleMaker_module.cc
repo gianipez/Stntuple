@@ -97,8 +97,11 @@ protected:
   string                   fStrawHitsCollTag;
   string                   fStrawDigiCollTag;
 
-  string                   fCrvRecoPulsesCollTag;         //
-  string                   fCrvRecoPulsesCollTag;         //
+  string                   fCrvRecoPulseCollTag;            //
+  string                   fCrvCoincidenceCollTag;          //
+  string                   fCrvCoincidenceClusterCollTag;   //
+
+  string                   fVDHitsCollTag;                  // hits on virtual detectors (StepPointMCCollection)
 
   vector<string>           fTimeClusterBlockName;
   vector<string>           fTimeClusterCollTag;
@@ -201,13 +204,14 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
   , fMakeHelices             (PSet.get<int>           ("makeHelices"         ))
   , fMakeTrackSeeds          (PSet.get<int>           ("makeTrackSeeds"      ))
   , fMakeTrigger             (PSet.get<int>           ("makeTrigger"         ))
-  , fMakeCRVHits             (PSet.get<int>           ("makeCDVHits"         ))
+  , fMakeCrv                 (PSet.get<int>           ("makeCrv"             ))
   
   , fGenpCollTag             (PSet.get<string>        ("genpCollTag"         ))
   , fSimpCollTag             (PSet.get<string>        ("simpCollTag"         ))
   , fStrawHitsCollTag        (PSet.get<string>        ("strawHitsCollTag"    ))
   , fStrawDigiCollTag        (PSet.get<string>        ("strawDigiCollTag"    ))
-  , fCRVHitsCollTag          (PSet.get<string>        ("crvHitsCollTag"      ))
+  , fCrvRecoPulseCollTag     (PSet.get<string>        ("crvRecoPulseCollTag" ))
+  , fVDHitsCollTag           (PSet.get<string>        ("vdHitsCollTag"       ))
   , fTimeClusterBlockName    (PSet.get<vector<string>>("timeClusterBlockName"))
   , fTimeClusterCollTag      (PSet.get<vector<string>>("timeClusterCollTag"  ))
   , fHelixBlockName          (PSet.get<vector<string>>("helixBlockName"      ))
@@ -593,21 +597,6 @@ void StntupleMaker::beginJob() {
     }
     //      SetResolveLinksMethod(block_name,StntupleInitMu2eTrackBlockLinks);
   }
-//-----------------------------------------------------------------------------
-// hits on virtual detectors - also StepPointMC's
-//-----------------------------------------------------------------------------
-  // if (fMakeVDHits) {
-  //   TStnDataBlock* block = AddDataBlock("VDetBlock",
-  // 					"TVDetDataBlock",
-  // 					StntupleInitMu2eVDetDataBlock,
-  // 					buffer_size,
-  // 					split_mode,
-  // 					compression_level);
-  //   if (block) {
-  //     block->AddCollName("mu2e::StepPointMCCollection",fVDHitsCollTag.data());
-  //     block->AddCollName("TimeOffsetMapsHandle"       ,GetName()            ,"TimeOffsetMapsHandle");
-  //   }
-  // }  
 
   THistModule::afterEndJob();
 }
