@@ -488,8 +488,10 @@ void StntupleMaker::beginJob() {
 	track_data->AddCollName("mu2e::StepPointMCCollection"         ,fVDHitsCollTag.data()      );
 	track_data->AddCollName("DarHandle"                           ,GetName()                  ,"DarHandle"    );
 	track_data->AddCollName("KalDiagHandle"                       ,GetName()                  ,"KalDiagHandle");
-	track_data->AddCollName("TrackTsBlockName"                    ,fTrackTsBlockName[i].data());
-	track_data->AddCollName("TrackTsCollTag"                      ,fTrackTsCollTag  [i].data());
+	if (fTrackTsBlockName.size() > 0) {
+	  track_data->AddCollName("TrackTsBlockName"                    ,fTrackTsBlockName[i].data());
+	  track_data->AddCollName("TrackTsCollTag"                      ,fTrackTsCollTag  [i].data());
+	}
 
 	SetResolveLinksMethod(block_name,StntupleInitMu2eTrackBlockLinks);
       }
