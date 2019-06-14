@@ -45,7 +45,8 @@ StntupleMakerTemplate : { module_type:StntupleMaker
     makeSimp             : 1  # 0: dont write; 1:save all; 2:save primary only
     makeStepPointMC      : 1
     makeStrawData        : 0
-    makeCrv              : 0
+    makeCrvPulses        : 0
+    makeCrvClusters      : 1
     makeTracks           : 1
     makeTrackStrawHits   : 0
     makeTrigger          : 0
@@ -58,7 +59,12 @@ StntupleMakerTemplate : { module_type:StntupleMaker
 
     caloCrystalHitsMaker : "CaloCrystalHitFromHit"
     caloClusterMaker     : "CaloClusterFromProtoCluster"
-    crvRecoPulseCollTag  : "to_be_defined_in_Stntuple/fcl/prolog.fcl"
+#------------------------------------------------------------------------------
+# default tags for CRV reco collections
+#------------------------------------------------------------------------------
+    crvRecoPulseCollTag          : "CrvRecoPulses"
+    crvCoincidenceCollTag        : "CrvCoincidence"
+    crvCoincidenceClusterCollTag : "CrvCoincidenceClusterFinder"
 #------------------------------------------------------------------------------
 # sometimes may need to store multiple track blocks, thus - vectors
 # by default, always run MergePatRec, which, in case only one track reconstruction
@@ -66,7 +72,7 @@ StntupleMakerTemplate : { module_type:StntupleMaker
 # 'spmc' stands for 'StepPointMC'
 #------------------------------------------------------------------------------
     strawHitsCollTag     : "makeSH"
-    strawDigiCollTag     : "compressDigiMCs"                     # was "makeSD"
+    strawDigiMCCollTag   : "compressDigiMCs"                     # was "makeSD"
     simpCollTag          : "compressDigiMCs"                     # was "g4run" before
     vdHitsCollTag        : "compressDigiMCs:virtualdetector"     # was "g4run" before
     genpCollTag          : "compressDigiMCs"                     # save signal-only: "generate" 
@@ -125,7 +131,7 @@ MuHitDisplay: { module_type:MuHitDisplay                 # the class name;
     genpCollTag                  : generate
     spmcCollTag                  : g4run
     strawHitCollTag              : makeSH
-    strawDigiCollTag             : "compressDigiMCs" #  was "makeSD"
+    strawDigiMCCollTag           : "compressDigiMCs" #  was "makeSD"
     strawHitFlagCollTag          : "DeltaFinder:StrawHits"
     comboHitCollTag              : makePH
 

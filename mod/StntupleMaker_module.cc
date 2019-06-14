@@ -45,6 +45,11 @@
 #include "Stntuple/mod/StntupleModule.hh"
 #include "Stntuple/mod/StntupleGlobals.hh"
 
+#include "Stntuple/mod/InitCrvPulseBlock.hh"
+#include "Stntuple/mod/InitCrvClusterBlock.hh"
+#include "Stntuple/mod/InitSimpBlock.hh"
+#include "Stntuple/mod/InitGenpBlock.hh"
+
 #include "Stntuple/mod/InitStntupleDataBlocks.hh"
 #include "Stntuple/mod/StntupleUtilities.hh"
 
@@ -88,14 +93,16 @@ protected:
   int                      fMakeHelices;
   int                      fMakeTrackSeeds;
   int                      fMakeTrigger;
-  int                      fMakeCrv;
+  int                      fMakeCrvPulses;
+  int                      fMakeCrvClusters;
 //-----------------------------------------------------------------------------
 // module parameters
 //-----------------------------------------------------------------------------
   string                   fGenpCollTag;
+
   string                   fSimpCollTag;
   string                   fStrawHitsCollTag;
-  string                   fStrawDigiCollTag;
+  string                   fStrawDigiMCCollTag;
 
   string                   fCrvRecoPulseCollTag;            //
   string                   fCrvCoincidenceCollTag;          //
@@ -133,6 +140,13 @@ protected:
   string                   fCaloCrystalHitMaker;
   string                   fCaloClusterMaker;
 //-----------------------------------------------------------------------------
+// initialization of various data blocks
+//-----------------------------------------------------------------------------
+  StntupleInitCrvPulseBlock*   fInitCrvPulseBlock;
+  StntupleInitCrvClusterBlock* fInitCrvClusterBlock;
+  StntupleInitSimpBlock*       fInitSimpBlock;
+  StntupleInitGenpBlock*       fInitGenpBlock;
+//-----------------------------------------------------------------------------
 // cut-type parameters
 //-----------------------------------------------------------------------------
   GenId                    fGenId       ;  // generated process ID
@@ -149,7 +163,7 @@ protected:
   TNamedHandle*            fDarHandle;
   TNamedHandle*            fKalDiagHandle;
   TNamedHandle*            fTimeOffsetMapsHandle;
-  TNamedHandle*            fMinSimpEnergyHandle;
+  //  TNamedHandle*            fMinSimpEnergyHandle;
 
   DoubletAmbigResolver*    fDar;
   KalDiag*                 fKalDiag;
@@ -204,13 +218,18 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
   , fMakeHelices             (PSet.get<int>           ("makeHelices"         ))
   , fMakeTrackSeeds          (PSet.get<int>           ("makeTrackSeeds"      ))
   , fMakeTrigger             (PSet.get<int>           ("makeTrigger"         ))
-  , fMakeCrv                 (PSet.get<int>           ("makeCrv"             ))
+  , fMakeCrvPulses           (PSet.get<int>           ("makeCrvPulses"       ))
+  , fMakeCrvClusters         (PSet.get<int>           ("makeCrvClusters"     ))
   
   , fGenpCollTag             (PSet.get<string>        ("genpCollTag"         ))
   , fSimpCollTag             (PSet.get<string>        ("simpCollTag"         ))
   , fStrawHitsCollTag        (PSet.get<string>        ("strawHitsCollTag"    ))
-  , fStrawDigiCollTag        (PSet.get<string>        ("strawDigiCollTag"    ))
-  , fCrvRecoPulseCollTag     (PSet.get<string>        ("crvRecoPulseCollTag" ))
+  , fStrawDigiMCCollTag      (PSet.get<string>        ("strawDigiMCCollTag"  ))
+
+  , fCrvRecoPulseCollTag         (PSet.get<string>    ("crvRecoPulseCollTag"         ))
+  , fCrvCoincidenceCollTag       (PSet.get<string>    ("crvCoincidenceCollTag"       ))
+  , fCrvCoincidenceClusterCollTag(PSet.get<string>    ("crvCoincidenceClusterCollTag"))
+
   , fVDHitsCollTag           (PSet.get<string>        ("vdHitsCollTag"       ))
   , fTimeClusterBlockName    (PSet.get<vector<string>>("timeClusterBlockName"))
   , fTimeClusterCollTag      (PSet.get<vector<string>>("timeClusterCollTag"  ))
@@ -251,6 +270,11 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
 
   fVersion      = new TNamed(ver,text);
   TModule::fFolder->Add(fVersion);
+
+  fInitCrvPulseBlock   = nullptr;
+  fInitCrvClusterBlock = nullptr;
+  fInitSimpBlock       = nullptr;
+  fInitGenpBlock       = nullptr;
 //-----------------------------------------------------------------------------
 // fTimeOffsets is owned by the TAnaDump singleton
 //-----------------------------------------------------------------------------
@@ -261,12 +285,10 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
   fDarHandle            = new TNamedHandle("DarHandle",fDar);
   fKalDiag              = new KalDiag     (PSet.get<fhicl::ParameterSet>("KalDiag",fhicl::ParameterSet()));
   fKalDiagHandle        = new TNamedHandle("KalDiagHandle"      ,fKalDiag);
-  fMinSimpEnergyHandle  = new TNamedHandle("MinSimpEnergyHandle",&fMinSimpEnergy);
 
   fFolder->Add(fDarHandle);
   fFolder->Add(fKalDiagHandle);
   fFolder->Add(fTimeOffsetMapsHandle);
-  fFolder->Add(fMinSimpEnergyHandle);
 }
 
 
@@ -275,6 +297,10 @@ StntupleMaker::~StntupleMaker() {
   delete fDar;
   delete fDarHandle;
   delete fVersion;
+
+  if (fInitCrvPulseBlock  ) delete fInitCrvPulseBlock;
+  if (fInitCrvClusterBlock) delete fInitCrvClusterBlock;
+  if (fInitSimpBlock      ) delete fInitSimpBlock;
 }
 
 
@@ -356,6 +382,56 @@ void StntupleMaker::beginJob() {
     }
   }
 //-----------------------------------------------------------------------------
+// CRV
+//-----------------------------------------------------------------------------
+  if (fMakeCrvPulses) {
+
+    fInitCrvPulseBlock = new StntupleInitCrvPulseBlock();
+    fInitCrvPulseBlock->SetCrvRecoPulseCollTag(fCrvRecoPulseCollTag);
+    fInitCrvPulseBlock->SetCrvCoincidenceCollTag(fCrvCoincidenceCollTag);
+    fInitCrvPulseBlock->SetCrvCoincidenceClusterCollTag(fCrvCoincidenceClusterCollTag);
+
+    AddDataBlock("CrvPulseBlock","TCrvPulseBlock",
+		 fInitCrvPulseBlock,
+		 buffer_size,
+		 split_mode,
+		 compression_level);
+  }
+
+  if (fMakeCrvClusters) {
+
+    fInitCrvClusterBlock = new StntupleInitCrvClusterBlock();
+    fInitCrvClusterBlock->SetCrvRecoPulseCollTag(fCrvRecoPulseCollTag);
+    fInitCrvClusterBlock->SetCrvCoincidenceClusterCollTag(fCrvCoincidenceClusterCollTag);
+
+    AddDataBlock("CrvClusterBlock","TCrvClusterBlock",
+		 fInitCrvClusterBlock,
+		 buffer_size,
+		 split_mode,
+		 compression_level);
+  }
+//--------------------------------------------------------------------------------
+// helix data
+//--------------------------------------------------------------------------------
+  if (fMakeTimeClusters) {
+    int nblocks = fTimeClusterBlockName.size();
+
+    for (int i=0; i<nblocks; i++) {
+      const char* block_name = fTimeClusterBlockName[i].data();
+      TStnDataBlock* db   = AddDataBlock(block_name, 
+					 "TStnTimeClusterBlock",
+					 StntupleInitMu2eTimeClusterBlock,
+					 buffer_size,
+					 split_mode,
+					 compression_level);
+      if (db) {
+	db->AddCollName("mu2e::HelixSeedCollection"  ,fHelixCollTag[i].data()      );
+ 	db->AddCollName("mu2e::TimeClusterCollection",fTimeClusterCollTag[i].data());
+	//      SetResolveLinksMethod(block_name,StntupleInitMu2eTimeClusterBlockLinks);
+      }
+    }
+  }
+//-----------------------------------------------------------------------------
 // straw hit data
 //-----------------------------------------------------------------------------
   if (fMakeStrawData) {
@@ -366,7 +442,7 @@ void StntupleMaker::beginJob() {
 				     compression_level);
     if (db) {
       db->AddCollName("mu2e::StrawHitCollection"   ,fStrawHitsCollTag.data());
-      db->AddCollName("mu2e::StrawDigiMCCollection",fStrawDigiCollTag.data());
+      db->AddCollName("mu2e::StrawDigiMCCollection",fStrawDigiMCCollTag.data());
     }
   }
 //--------------------------------------------------------------------------------
@@ -390,7 +466,6 @@ void StntupleMaker::beginJob() {
       }
     }
   }
-
 //--------------------------------------------------------------------------------
 // helix data
 //--------------------------------------------------------------------------------
@@ -408,7 +483,7 @@ void StntupleMaker::beginJob() {
       if (db) {
 	db->AddCollName("mu2e::HelixSeedCollection"  ,fHelixCollTag[i].data()      );
  	db->AddCollName("mu2e::TimeClusterCollection",fTimeClusterCollTag[i].data());
-	db->AddCollName("mu2e::StrawDigiMCCollection",fStrawDigiCollTag.data() );
+	db->AddCollName("mu2e::StrawDigiMCCollection",fStrawDigiMCCollTag.data()   );
 	//      SetResolveLinksMethod(block_name,StntupleInitMu2eHelixBlockLinks);
      }
     }
@@ -431,7 +506,7 @@ void StntupleMaker::beginJob() {
 	db->AddCollName("mu2e::HelixSeedCollection"  ,fHelixCollTag[i].data()    );
 	db->AddCollName("mu2e::KalSeedCollection"    ,fTrackSeedCollTag[i].data());
 	db->AddCollName("HelixBlockName"             ,fHelixBlockName[i].data()  );
-	db->AddCollName("mu2e::StrawDigiMCCollection",fStrawDigiCollTag.data()   );
+	db->AddCollName("mu2e::StrawDigiMCCollection",fStrawDigiMCCollTag.data() );
 	db->AddCollName("mu2e::ComboHitCollection"   ,fStrawHitsCollTag.data()   );
 	SetResolveLinksMethod(block_name,StntupleInitMu2eTrackSeedBlockLinks);	
       }
@@ -479,7 +554,7 @@ void StntupleMaker::beginJob() {
       if (track_data) {
 	track_data->AddCollName("mu2e::KalRepCollection"              ,fTrackCollTag[i].data()    );
 	track_data->AddCollName("mu2e::ComboHitCollection"            ,fStrawHitsCollTag.data()   );
-	track_data->AddCollName("mu2e::StrawDigiMCCollection"         ,fStrawDigiCollTag.data()   );
+	track_data->AddCollName("mu2e::StrawDigiMCCollection"         ,fStrawDigiMCCollTag.data() );
 	track_data->AddCollName("mu2e::TrkCaloIntersectCollection"    ,fTciCollTag [i].data()     );
 	track_data->AddCollName("mu2e::CaloClusterCollection"         ,fCaloClusterMaker.data()   );
 	track_data->AddCollName("mu2e::TrackClusterMatchCollection"   ,fTcmCollTag[i].data()      );
@@ -536,45 +611,25 @@ void StntupleMaker::beginJob() {
 // generator particles 
 //-----------------------------------------------------------------------------
   if (fMakeGenp) {
-    TStnDataBlock* db;
+    fInitGenpBlock = new StntupleInitGenpBlock();
+    fInitGenpBlock->SetGenpCollTag(fGenpCollTag);
+    fInitGenpBlock->SetGenProcessID (fGenId.id());
 
-    db = AddDataBlock("GenpBlock",
-		      "TGenpBlock",
-		      StntupleInitMu2eGenpBlock,
-		      buffer_size,
-		      split_mode,
-		      compression_level);
-    db->AddCollName("mu2e::GenParticleCollection",fGenpCollTag.data());
-
-    if (db) {
-      ((TGenpBlock*) db)->SetGenProcessID(fGenId.id());
-
-      db->AddCollName("mu2e::GenParticleCollection","");
-      //    SetResolveLinksMethod("GenpBlock",StntupleInitMu2eClusterBlockLinks);
-    }
+    AddDataBlock("GenpBlock","TGenpBlock",fInitGenpBlock,buffer_size,split_mode,compression_level);
   }
 //-----------------------------------------------------------------------------
 // simulated particles 
 //-----------------------------------------------------------------------------
   if (fMakeSimp) {
-    TStnDataBlock* db = AddDataBlock("SimpBlock",
-				     "TSimpBlock",
-				     StntupleInitMu2eSimpBlock,
-				     buffer_size,
-				     split_mode,
-				     compression_level);
+    fInitSimpBlock = new StntupleInitSimpBlock();
+    fInitSimpBlock->SetSimpCollTag(fSimpCollTag);
+    fInitSimpBlock->SetStrawHitsCollTag(fStrawHitsCollTag);
+    fInitSimpBlock->SetStrawDigiMCCollTag(fStrawDigiMCCollTag);
+    fInitSimpBlock->SetVDHitsCollTag(fVDHitsCollTag);
+    fInitSimpBlock->SetMinSimpEnergy(fMinSimpEnergy);
+    fInitSimpBlock->SetGenProcessID (fGenId.id());
 
-    //    SetResolveLinksMethod("GenpBlock",StntupleInitMu2eClusterBlockLinks);
-
-    if (db) {
-      ((TSimpBlock*) db)->SetGenProcessID(fGenId.id());
-
-      db->AddCollName("mu2e::SimParticleCollection",fSimpCollTag.data()     );
-      db->AddCollName("mu2e::StrawHitCollection"   ,fStrawHitsCollTag.data());
-      db->AddCollName("mu2e::StrawDigiMCCollection",fStrawDigiCollTag.data());
-      db->AddCollName("mu2e::StepPointMCCollection",fVDHitsCollTag.data()   );
-      db->AddCollName("MinSimpEnergyHandle"        ,GetName()               ,"MinSimpEnergyHandle");
-    }
+    AddDataBlock("SimpBlock","TSimpBlock",fInitSimpBlock,buffer_size,split_mode,compression_level);
   }
 //-----------------------------------------------------------------------------
 // StepPointMC collections - could be several

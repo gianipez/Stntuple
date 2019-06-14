@@ -34,27 +34,28 @@
 #include "Stntuple/mod/THistModule.hh"
 #include "Stntuple/base/TNamedHandle.hh"
 
+#include "Stntuple/mod/InitSimpBlock.hh"
+
 #include "messagefacility/MessageLogger/MessageLogger.h"
 
 //-----------------------------------------------------------------------------
 // fill SimParticle's data block
 //-----------------------------------------------------------------------------
-int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode) 
+int StntupleInitSimpBlock::InitDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode) 
 {
   const char* oname = {"StntupleInitMu2eSimpBlock"};
 
-  static int    initialized(0);
-  static char   strh_module_label[100], strh_description[100];
-  static char   sdmc_module_label[100], sdmc_description[100];
-  static char   g4_module_label  [100], g4_description  [100];
+  //  static int    initialized(0);
+  //  static char   g4_module_label  [100], g4_description  [100];
 
-  static double _min_energy;
+  // static double _min_energy;
 
   std::vector<art::Handle<mu2e::SimParticleCollection>> list_of_sp;
 
   const mu2e::SimParticleCollection*       simp_coll(0);
   const mu2e::SimParticle*                 sim(0);
   const mu2e::StrawHitCollection*          list_of_straw_hits(0);
+  const mu2e::StrawDigiMCCollection*       mcdigis(nullptr);
 
   double        px, py, pz, energy;
   int           id, parent_id, generator_id, n_straw_hits(0), nhits;
@@ -64,56 +65,35 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
   TSimpBlock* simp_block = (TSimpBlock*) Block;
   simp_block->Clear();
 
-  char   module_name[100], h_name[100];
+  //  char   module_name[100], h_name[100];
 
-  if (initialized == 0) {
-    initialized = 1;
-
-    Block->GetModuleLabel("MinSimpEnergyHandle",module_name);
-    Block->GetDescription("MinSimpEnergyHandle",h_name     );
-
-    THistModule*  m;
-    TNamedHandle* nh;
-
-    m    = static_cast<THistModule*>  (THistModule::GetListOfModules()->FindObject(module_name));
-    nh   = static_cast<TNamedHandle*> (m->GetFolder()->FindObject(h_name));
-    _min_energy = *(static_cast<double*> (nh->Object()));
-  }
-
-  Block->GetModuleLabel("mu2e::StrawHitCollection",strh_module_label);
-  Block->GetDescription("mu2e::StrawHitCollection",strh_description );
-
-  Block->GetModuleLabel("mu2e::StepPointMCCollection",g4_module_label);
-  Block->GetDescription("mu2e::StepPointMCCollection",g4_description );
+  // Block->GetModuleLabel("mu2e::StepPointMCCollection",g4_module_label);
+  // Block->GetDescription("mu2e::StepPointMCCollection",g4_description );
 
   art::Handle<mu2e::StrawHitCollection> shHandle;
-  if (strh_module_label[0] != 0) {
-    if (strh_description[0] == 0) AnEvent->getByLabel(strh_module_label,shHandle);
-    else                          AnEvent->getByLabel(strh_module_label,strh_description,shHandle);
-    if (shHandle.isValid()) {
+  if (! fStrawHitsCollTag.empty()) {
+    bool ok = AnEvent->getByLabel(fStrawHitsCollTag,shHandle);
+    if (ok) {
       list_of_straw_hits = shHandle.product();
       n_straw_hits      = list_of_straw_hits->size();
     }
   }
 
-  Block->GetModuleLabel("mu2e::StrawDigiMCCollection",sdmc_module_label);
-  Block->GetDescription("mu2e::StrawDigiMCCollection",sdmc_description );
+  art::Handle<mu2e::StrawDigiMCCollection> mcdH;
 
-  char sdmc_tag[100];
-  strcpy(sdmc_tag,sdmc_module_label);
-  if (sdmc_description[0] != 0) {
-    strcat(sdmc_tag,":");
-    strcat(sdmc_tag,sdmc_description);
+  if (! fStrawDigiMCCollTag.empty()) {
+    bool ok = AnEvent->getByLabel(fStrawDigiMCCollTag,mcdH);
+    if (ok) {
+       mcdigis = mcdH.product();
+    }
   }
-    
-  auto mcdH = AnEvent->getValidHandle<mu2e::StrawDigiMCCollection>(sdmc_tag);
-  const mu2e::StrawDigiMCCollection* mcdigis = mcdH.product();
 
   mu2e::GeomHandle<mu2e::VirtualDetector> vdg;
 
-  char simp_coll_tag[100];
-  Block->GetCollTag("mu2e::SimParticleCollection",simp_coll_tag);
-  auto simp_handle = AnEvent->getValidHandle<mu2e::SimParticleCollection>(simp_coll_tag);
+  art::Handle<mu2e::SimParticleCollection> simp_handle;
+  if (! fSimpCollTag.empty()) {
+    AnEvent->getByLabel(fSimpCollTag,simp_handle);
+  }
 //-----------------------------------------------------------------------------
 // figure out how many straw hits each particle has produced
 //-----------------------------------------------------------------------------
@@ -186,7 +166,7 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
       if (genp) generator_id = genp->generatorId().id();   // ID of the MC generator
       else      generator_id = -1;
 
-      if ((simp_block->GenProcessID() > 0) && (generator_id != simp_block->GenProcessID())) continue;
+      if ((fGenProcessID > 0) && (generator_id != fGenProcessID)) continue;
 
       creation_code    = sim->creationCode();
       termination_code = sim->stoppingCode();
@@ -199,7 +179,7 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
       pz     = sim->startMomentum().z();
       energy = sim->startMomentum().e();
 
-      if (energy < _min_energy)                             continue;
+      if (energy < fMinSimpEnergy)                          continue;
       simp   = simp_block->NewParticle(id, parent_id, pdg_code, 
 				       creation_code, termination_code,
 				       start_vol_id, end_vol_id,
@@ -218,10 +198,10 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
 //-----------------------------------------------------------------------------
       if (vdg->nDet() > 0) {
 	art::Handle<mu2e::StepPointMCCollection> vdhits;
-	AnEvent->getByLabel(g4_module_label,g4_description,vdhits);
+	AnEvent->getByLabel(fVDHitsCollTag,vdhits);
 	if (!vdhits.isValid()) {
 	  char warning[100];
-	  sprintf(warning,"StepPointMCCollection %s:%s NOT FOUND\n",g4_module_label,g4_description);
+	  sprintf(warning,"StepPointMCCollection %s NOT FOUND\n",fVDHitsCollTag.encode().data());
 	  mf::LogWarning(oname) << warning;
 	}
 	else {
@@ -280,7 +260,7 @@ int StntupleInitMu2eSimpBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode)
 // no SIMP collection
 //-----------------------------------------------------------------------------
     mf::LogWarning(oname) << " WARNING in " << oname << ": SimParticleCollection " 
-			  << g4_module_label << " not found, BAIL OUT\n";
+			  << fSimpCollTag.encode() << " not found, BAIL OUT\n";
     return -1;
   }
 

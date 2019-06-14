@@ -6,13 +6,15 @@
 
 class TCrvRecoPulse: public TObject {
 public:
-  int       fNpe;
-  int       fNPePulseHeight;
-  int       fBarIndex;
+  int       fIndex;                   // index in the list of _all_ pulses
+  int       fNPe;
+  int       fNPeHeight;
+  int       fNDigis;
+  int       fBar;
   int       fSipm;
 
   float     fTime;
-  float     fPulseHeight;
+  float     fHeight;
   float     fWidth;
   float     fChi2;
   float     fLeTime;
@@ -23,11 +25,20 @@ public:
 					// ****** constructors and destructor
   TCrvRecoPulse();
   virtual ~TCrvRecoPulse();
-					// ****** accessors
+//-----------------------------------------------------------------------------
+// accessors
+//-----------------------------------------------------------------------------
+  int   Index    () { return fIndex; }
+  int   NPe      () { return fNPe   ; }
+  int   NPeHeight() { return fNPeHeight ; }
+  int   Bar      () { return fBar; }
+  int   Sipm     () { return fSipm; }
 
 //-----------------------------------------------------------------------------
 // modifiers
 //-----------------------------------------------------------------------------
+  void Set(int I, int NPes, int NPesHeight, int NInd, int Bar, int Sipm, 
+	   float Time, float Height, float Width, float Chi2, float LeTime);
 //-----------------------------------------------------------------------------
 // overloaded methods of TObject
 //-----------------------------------------------------------------------------
@@ -39,5 +50,3 @@ public:
 
 
 #endif
-
-

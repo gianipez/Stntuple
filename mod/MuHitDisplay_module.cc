@@ -139,12 +139,12 @@ namespace mu2e {
     string        _processName;
     string        _genpCollTag;
     string        _spmcCollTag;
-    string        _caloClusterModuleLabel;
-    string        _crvRecoPulsesModuleLabel;
+    string        _caloClusterCollTag;
+    string        _crvRecoPulseCollTag;
 
-    string        _makeStrawHitModuleLabel;
-    string        _makeComboHitModuleLabel;
-    string        _makeStrawDigiModuleLabel;
+    string        _strawHitCollTag;
+    string        _comboHitCollTag;
+    string        _strawDigiMCCollTag;
     string        _strawHitFlagCollTag;
 
     string        fTrackCollTag;
@@ -272,12 +272,12 @@ namespace mu2e {
     _processName             (pset.get<string>("processName", "")),
     _genpCollTag             (pset.get<string>("genpCollTag")),
     _spmcCollTag             (pset.get<string>("spmcCollTag")),
-    _caloClusterModuleLabel  (pset.get<string>("caloClusterCollTag"  )),
-    _crvRecoPulsesModuleLabel(pset.get<string>("crvRecoPulsesCollTag")),
+    _caloClusterCollTag  (pset.get<string>("caloClusterCollTag"  )),
+    _crvRecoPulseCollTag(pset.get<string>("crvRecoPulsesCollTag")),
 				
-    _makeStrawHitModuleLabel (pset.get<string>("strawHitCollTag")),
-    _makeComboHitModuleLabel (pset.get<string>("comboHitCollTag")),
-    _makeStrawDigiModuleLabel(pset.get<string>("strawDigiCollTag")),
+    _strawHitCollTag (pset.get<string>("strawHitCollTag")),
+    _comboHitCollTag (pset.get<string>("comboHitCollTag")),
+    _strawDigiMCCollTag(pset.get<string>("strawDigiMCCollTag")),
     _strawHitFlagCollTag     (pset.get<string>("strawHitFlagCollTag")),
 
     fTrackCollTag            (pset.get<string>("trackCollTag")),
@@ -376,13 +376,13 @@ namespace mu2e {
 //-----------------------------------------------------------------------------
 // define collection names to be used for initialization
 //-----------------------------------------------------------------------------
-    fClusterBlock->AddCollName("mu2e::CaloClusterCollection"      , _caloClusterModuleLabel.data()  ,"");
+    fClusterBlock->AddCollName("mu2e::CaloClusterCollection"      , _caloClusterCollTag.data()  ,"");
 
     fTrackBlock->AddCollName  ("mu2e::KalRepCollection"           , fTrackCollTag.data()      ,"");
-    fTrackBlock->AddCollName  ("mu2e::ComboHitCollection"         , _makeStrawHitModuleLabel.data() ,"");
-    fTrackBlock->AddCollName  ("mu2e::StrawDigiMCCollection"      , _makeStrawDigiModuleLabel.data(),"");
+    fTrackBlock->AddCollName  ("mu2e::ComboHitCollection"         , _strawHitCollTag.data() ,"");
+    fTrackBlock->AddCollName  ("mu2e::StrawDigiMCCollection"      , _strawDigiMCCollTag.data(),"");
     fTrackBlock->AddCollName  ("mu2e::TrkCaloIntersectCollection" , fTrkExtrapol.data()             ,"");
-    fTrackBlock->AddCollName  ("mu2e::CaloClusterCollection"      , _caloClusterModuleLabel.data()  ,"");
+    fTrackBlock->AddCollName  ("mu2e::CaloClusterCollection"      , _caloClusterCollTag.data()  ,"");
     fTrackBlock->AddCollName  ("mu2e::TrackClusterMatchCollection", fTrkCalMatch.data()             ,"");
     fTrackBlock->AddCollName  ("mu2e::PIDProductCollection"       , fPidCollTag.data()              ,"");
     fTrackBlock->AddCollName  ("mu2e::StepPointMCCollection"      , _spmcCollTag.data()             ,"");
@@ -391,7 +391,7 @@ namespace mu2e {
 
     TModule::fDump->AddObject("MuHitDisplay::TrackBlock"  , fTrackBlock);
     TModule::fDump->AddObject("MuHitDisplay::ClusterBlock", fClusterBlock);
-    TModule::fDump->SetStrawDigiMCCollTag(_makeStrawDigiModuleLabel.data());
+    TModule::fDump->SetStrawDigiMCCollTag(_strawDigiMCCollTag.data());
   }
 
   //-----------------------------------------------------------------------------
@@ -505,11 +505,11 @@ namespace mu2e {
 //  CRV pulse information
 //-----------------------------------------------------------------------------
     art::Handle<CrvRecoPulseCollection> pulsesHandle;
-    Evt->getByLabel(_crvRecoPulsesModuleLabel, pulsesHandle);
+    Evt->getByLabel(_crvRecoPulseCollTag, pulsesHandle);
     
     if (pulsesHandle.isValid()) {
       foundCRV = true;
-      printf(">>> [%s] MSG: CrvRecoPulsesCollection by %s, found. CONTINUE\n", oname, _crvRecoPulsesModuleLabel.data());
+      printf(">>> [%s] MSG: CrvRecoPulsesCollection by %s, found. CONTINUE\n", oname, _crvRecoPulseCollTag.data());
       const mu2e::CrvRecoPulseCollection* fCrvPulseColl = (CrvRecoPulseCollection*) pulsesHandle.product();
       
       // Clear the map pointers in preperation to (re)fill them with new information
@@ -561,7 +561,7 @@ namespace mu2e {
     }
     else {
       printf(">>> [%s] WARNING: CrvRecoPulsesCollection by %s is missing. CONTINUE.\n",
-	     oname, _crvRecoPulsesModuleLabel.data());
+	     oname, _crvRecoPulseCollTag.data());
     }
     
     if (_showCRVOnly) { //If only displaying the CRV, skip everything else
@@ -582,23 +582,6 @@ namespace mu2e {
 	       oname, _genpCollTag.data());
       }
 
-      // art::Handle<PtrStepPointMCVectorCollection> mcptrHandle;
-      // Evt->getByLabel(_makeStrawDigiModuleLabel, "", mcptrHandle);
-
-
-      // if (mcptrHandle.isValid()) {
-      // 	_hits_mcptr = mcptrHandle.product();
-      // 	if (_hits_mcptr->size() <= 0) {
-      // 	  printf(">>> [%s] WARNING: PtrStepPointMCVectorCollection by %s has zero length. CONTINUE\n",
-      // 		 oname, _makeStrawDigiModuleLabel.data());
-      // 	}
-      // }
-      // else {
-      // 	printf(">>> [%s] ERROR: PtrStepPointMCVectorCollection by %s is missing. BAIL OUT\n",
-      // 	       oname, _makeStrawDigiModuleLabel.data());
-      // 	return -1;
-      //      }
-
       art::Handle<StepPointMCCollection> stepsHandle;
       art::Selector getTrackerSteps(art::ProductInstanceNameSelector(_trackerStepPoints) &&
 				    art::ProcessNameSelector(_processName) &&
@@ -613,37 +596,37 @@ namespace mu2e {
 //-----------------------------------------------------------------------------
       art::Handle<ComboHitCollection> chH;
 
-      Evt->getByLabel(_makeComboHitModuleLabel, chH);
+      Evt->getByLabel(_comboHitCollTag, chH);
       if (chH.isValid()) fComboHitColl = chH.product();
       else {
 	printf(">>> [%s] ERROR: ComboHitCollection by %s is missing. BAIL OUT\n",
-	       oname, _makeComboHitModuleLabel.data());
+	       oname, _comboHitCollTag.data());
 	return -1;
       }
 
-      Evt->getByLabel(_makeStrawHitModuleLabel, chH);
+      Evt->getByLabel(_strawHitCollTag, chH);
       if (chH.isValid()) fShComboHitColl = chH.product();
       else {
 	printf(">>> [%s] ERROR: ComboHitCollection by %s is missing. BAIL OUT\n",
-	       oname, _makeStrawHitModuleLabel.data());
+	       oname, _strawHitCollTag.data());
 	return -1;
       }
 
       art::Handle<StrawDigiMCCollection> handle;
       art::Selector sel_straw_digi_mc(art::ProductInstanceNameSelector("") &&
 				      art::ProcessNameSelector(_processName) &&
-				      art::ModuleLabelSelector(_makeStrawDigiModuleLabel));
+				      art::ModuleLabelSelector(_strawDigiMCCollTag));
       Evt->get(sel_straw_digi_mc, handle);
       if (handle.isValid()) {
 	_strawDigiMCColl = handle.product();
 	if (_strawDigiMCColl->size() <= 0) {
 	  printf(">>> [%s] WARNING:StrawDigiMCCollection by %s has zero length. CONTINUE\n",
-		 oname, _makeStrawDigiModuleLabel.data());
+		 oname, _strawDigiMCCollTag.data());
 	}
       }
       else {
 	printf(">>> [%s] ERROR: mu2e::StrawDigiMCCollection by %s is missing. BAIL OUT\n",
-	       oname, _makeStrawDigiModuleLabel.data());
+	       oname, _strawDigiMCCollTag.data());
 	return -1;
       }
 
@@ -670,7 +653,7 @@ namespace mu2e {
 // calorimeter cluster data
 //-----------------------------------------------------------------------------
       art::Handle<CaloClusterCollection> calo_cluster_handle;
-      Evt->getByLabel(_caloClusterModuleLabel, "", calo_cluster_handle);
+      Evt->getByLabel(_caloClusterCollTag, "", calo_cluster_handle);
 
       if (calo_cluster_handle.isValid()) {
 	fListOfClusters = calo_cluster_handle.product();
@@ -678,7 +661,7 @@ namespace mu2e {
       else {
 	fListOfClusters = NULL;
 	printf(">>> [%s] ERROR: CaloClusterCollection by %s is missing. BAIL OUT\n",
-	       oname, _caloClusterModuleLabel.data());
+	       oname, _caloClusterCollTag.data());
       }
 //-----------------------------------------------------------------------------
 // timepeaks 

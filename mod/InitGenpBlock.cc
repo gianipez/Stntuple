@@ -4,20 +4,32 @@
 #include "TLorentzVector.h"
 #include "TDatabasePDG.h"
 #include "TParticlePDG.h"
+#include <vector>
+
+#include "messagefacility/MessageLogger/MessageLogger.h"
 
 #include "art/Framework/Principal/Handle.h"
 #include "art/Framework/Principal/Selector.h"
+#include "canvas/Utilities/InputTag.h"
 
 #include "MCDataProducts/inc/GenParticle.hh"
 #include "MCDataProducts/inc/GenParticleCollection.hh"
 #include "MCDataProducts/inc/EventWeight.hh"
 
 #include "Stntuple/obj/TGenpBlock.hh"
-//_____________________________________________________________________________
-int StntupleInitMu2eGenpBlock(TStnDataBlock* block, AbsEvent* AnEvent, int mode) 
+#include "Stntuple/mod/InitGenpBlock.hh"
+
+#include "Stntuple/mod/THistModule.hh"
+
+
+#include "messagefacility/MessageLogger/MessageLogger.h"
+
+//-----------------------------------------------------------------------------
+// fill GenParticle's data block
+//-----------------------------------------------------------------------------
+int StntupleInitGenpBlock::InitDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int mode) 
 {
-  // fill generator particle data block (GENP - GENerator Particles - 
-  // is the name from Run I)
+  //  const char* oname = {"StntupleInitGenpBlock"};
 
   std::vector<art::Handle<mu2e::GenParticleCollection>> list_of_gp;
 
@@ -31,13 +43,8 @@ int StntupleInitMu2eGenpBlock(TStnDataBlock* block, AbsEvent* AnEvent, int mode)
   double px, py, pz, mass, energy;
   int    pdg_code, gen_id;
 
-  char   gen_module_label[100], gen_description[100];
-
-  TGenpBlock* genp_block = (TGenpBlock*) block;
+  TGenpBlock* genp_block = (TGenpBlock*) Block;
   genp_block->Clear();
-
-  genp_block->GetModuleLabel("mu2e::GenParticleCollection",gen_module_label);
-  genp_block->GetDescription("mu2e::GenParticleCollection",gen_description );
 //-----------------------------------------------------------------------------
 // MC event weight (by "generate") is not always present
 //-----------------------------------------------------------------------------
@@ -48,10 +55,12 @@ int StntupleInitMu2eGenpBlock(TStnDataBlock* block, AbsEvent* AnEvent, int mode)
 
   if (ewH.isValid()) genp_block->fWeight = ewH->weight();
   else               genp_block->fWeight = 1.;
+
+  genp_block->SetGenProcessID(fGenProcessID);
 //-----------------------------------------------------------------------------
 // loop over existing GENP collections, there could be many of them
 //-----------------------------------------------------------------------------
-  AnEvent->getMany(selector, list_of_gp);
+  AnEvent->getMany(selector,list_of_gp);
 
   TDatabasePDG* pdg_db = TDatabasePDG::Instance();
   TParticlePDG* part;
@@ -69,11 +78,11 @@ int StntupleInitMu2eGenpBlock(TStnDataBlock* block, AbsEvent* AnEvent, int mode)
 // 	     prov->producedClassName().data(),
 // 	     prov->productInstanceName().data());
 
-      if (gen_module_label[0] != 0) {
+      if (fGenpCollTag.label().data()[0] != 0) {
 //-----------------------------------------------------------------------------
 // module label is defined, assume there is only one generator module to save
 //-----------------------------------------------------------------------------
-	if (strcmp(gen_module_label,prov->moduleLabel().data()) != 0) continue;
+	if (strcmp(fGenpCollTag.label().data(),prov->moduleLabel().data()) != 0) continue;
       }
 
       for (std::vector<mu2e::GenParticle>::const_iterator ip = coll->begin();
@@ -83,7 +92,7 @@ int StntupleInitMu2eGenpBlock(TStnDataBlock* block, AbsEvent* AnEvent, int mode)
 //-----------------------------------------------------------------------------
 // conditionally. store only particles corresponding to the requested process
 //-----------------------------------------------------------------------------
-	if ((genp_block->GenProcessID() > 0) && (gen_id != genp_block->GenProcessID())) continue;
+	if ((fGenProcessID > 0) && (gen_id != fGenProcessID)) continue;
 
 	pdg_code = (int) gp->pdgId();
 	part     = pdg_db->GetParticle(pdg_code);
@@ -107,8 +116,8 @@ int StntupleInitMu2eGenpBlock(TStnDataBlock* block, AbsEvent* AnEvent, int mode)
       }
     }
     else {
-      printf(">>> ERROR in StntupleInitMu2eGenpBlock: failed to locate collection");
-      printf(". BAIL OUT. \n");
+      printf(">>> ERROR in StntupleInitMu2eGenpBlock: failed to locate collection %s. BAIL OUT.\n",
+	     fGenpCollTag.encode().data());
       return -1;
     }
   }

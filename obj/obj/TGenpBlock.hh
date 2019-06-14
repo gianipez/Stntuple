@@ -26,7 +26,7 @@
 // class TStnEvent;
 
 class TGenpBlock: public TStnDataBlock {
-  friend int StntupleInitMu2eGenpBlock  (TStnDataBlock*, AbsEvent*, int);
+  friend class StntupleInitGenpBlock;
 protected:
 //-----------------------------------------------------------------------------
 //  data members

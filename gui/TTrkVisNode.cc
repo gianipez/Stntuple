@@ -271,11 +271,12 @@ int TTrkVisNode::InitEvent() {
     krep = (*fKalRepPtrColl)->at(i).get();
     trk  = new TEvdTrack(i,krep);
 //-----------------------------------------------------------------------------
-// add hits
+// add hits, skip calorimeter clusters (TrkCaloHit's)
 //-----------------------------------------------------------------------------
     const TrkHitVector* hits = &krep->hitVector();
     for (auto it=hits->begin(); it!=hits->end(); it++) {
-      track_hit = (const mu2e::TrkStrawHit*) (*it);
+      track_hit = dynamic_cast<mu2e::TrkStrawHit*> (*it);
+      if (track_hit == nullptr) continue;
       TEvdTrkStrawHit* h = new TEvdTrkStrawHit(track_hit);
       trk->AddHit(h);
     }

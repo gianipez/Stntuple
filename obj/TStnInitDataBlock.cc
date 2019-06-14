@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
-//
+// 2019-06-10 P.Murat: base class for STNTUPLE data block initialization
 ///////////////////////////////////////////////////////////////////////////////
-#include "obj/TStnInitDataBlock.hh"
+#include "Stntuple/obj/TStnInitDataBlock.hh"
 
 //_____________________________________________________________________________
 TStnInitDataBlock::TStnInitDataBlock() {

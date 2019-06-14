@@ -13,8 +13,8 @@ Int_t StntupleInitMu2eClusterBlock       (TStnDataBlock* blk, AbsEvent* evt, int
 Int_t StntupleInitMu2eHeaderBlock        (TStnDataBlock* blk, AbsEvent* evt, int mode);
 Int_t StntupleInitMu2eTrackBlock         (TStnDataBlock* blk, AbsEvent* evt, int mode);
 Int_t StntupleInitMu2ePidBlock           (TStnDataBlock* blk, AbsEvent* evt, int mode);
-Int_t StntupleInitMu2eGenpBlock          (TStnDataBlock* blk, AbsEvent* evt, int mode);
-Int_t StntupleInitMu2eSimpBlock          (TStnDataBlock* blk, AbsEvent* evt, int mode);
+// Int_t StntupleInitMu2eGenpBlock          (TStnDataBlock* blk, AbsEvent* evt, int mode);
+// Int_t StntupleInitMu2eSimpBlock          (TStnDataBlock* blk, AbsEvent* evt, int mode);
 Int_t StntupleInitMu2eStepPointMCBlock   (TStnDataBlock* blk, AbsEvent* evt, int mode);
 Int_t StntupleInitMu2eVDetDataBlock      (TStnDataBlock* blk, AbsEvent* evt, int mode);
 Int_t StntupleInitMu2eTimeClusterBlock   (TStnDataBlock* blk, AbsEvent* evt, int mode);

@@ -24,7 +24,8 @@
 class TStnEvent;
 
 class TSimpBlock: public TStnDataBlock {
-  friend Int_t StntupleInitMu2eGenpBlock  (TStnDataBlock*, TStnEvent*, int);
+  //  friend Int_t StntupleInitMu2eGenpBlock  (TStnDataBlock*, TStnEvent*, int);
+  friend class StntupleInitSimpBlock;
 protected:
 //-----------------------------------------------------------------------------
 //  data members
@@ -45,7 +46,6 @@ public:
 //-----------------------------------------------------------------------------
 // accessors
 //-----------------------------------------------------------------------------
-  int             GenProcessID() { return fGenProcessID; }
   Int_t           NParticles  () { return fNParticles  ; }
 
 					// `i'-th particle in the global list
@@ -64,8 +64,6 @@ public:
 			     int CreationCode, int TerminationCode,
 			     int StartVolumeIndex, int EndVolumeIndex,
 			     int GenProcessID);
-
-  void           SetGenProcessID(int ID) { fGenProcessID = ID; }
 //-----------------------------------------------------------------------------
 // overloaded functions of TObject
 //-----------------------------------------------------------------------------

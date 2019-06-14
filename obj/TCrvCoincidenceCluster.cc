@@ -1,18 +1,18 @@
 ///////////////////////////////////////////////////////////////////////////////
-//  2014-01-26 P.Murat TCrvRecoPulse
+//  2019-06-10 P.Murat TCrvCoincidenceCluster
 ///////////////////////////////////////////////////////////////////////////////
 #include "TString.h"
 #include "TBuffer.h"
 
-#include "Stntuple/obj/TCrvRecoPulse.hh"
+#include "Stntuple/obj/TCrvCoincidenceCluster.hh"
 
-ClassImp(TCrvRecoPulse)
+ClassImp(TCrvCoincidenceCluster)
 
 //_____________________________________________________________________________
-void TCrvRecoPulse::Streamer(TBuffer &R__b) {
+void TCrvCoincidenceCluster::Streamer(TBuffer &R__b) {
 
-  int nwi = ((int*) &fTime) - &fIndex;
-  int nwf = &fLeTime - &fTime +1;
+  int nwi = ((int*) &fStartTime) - &fIndex;
+  int nwf = ((float*) &fPosition) - &fStartTime;
   
   if (R__b.IsReading()) {
     //    Version_t R__v = R__b.ReadVersion();
@@ -20,59 +20,44 @@ void TCrvRecoPulse::Streamer(TBuffer &R__b) {
 //-----------------------------------------------------------------------------
 // curent version: V1
 //-----------------------------------------------------------------------------
-    R__b.ReadFastArray(&fIndex,nwi);
-    R__b.ReadFastArray(&fTime ,nwf);
+    R__b.ReadFastArray(&fIndex    ,nwi);
+    R__b.ReadFastArray(&fStartTime,nwf);
   }
   else {
-    R__b.WriteVersion(TCrvRecoPulse::IsA());
-    R__b.WriteFastArray(&fIndex,nwi);
-    R__b.WriteFastArray(&fTime ,nwf);
+    R__b.WriteVersion(TCrvCoincidenceCluster::IsA());
+    R__b.WriteFastArray(&fIndex    ,nwi);
+    R__b.WriteFastArray(&fStartTime,nwf);
   } 
 }
 
 //_____________________________________________________________________________
-TCrvRecoPulse::TCrvRecoPulse(): TObject() {
+TCrvCoincidenceCluster::TCrvCoincidenceCluster(): TObject() {
   Clear();
 }
 
 //_____________________________________________________________________________
-TCrvRecoPulse::~TCrvRecoPulse() {
+TCrvCoincidenceCluster::~TCrvCoincidenceCluster() {
 }
 
 //_____________________________________________________________________________
-void TCrvRecoPulse::Set(int I, int NPe, int NPeHeight, int NDigis, int Bar, int Sipm, 
-			float Time, float Height, float Width, float Chi2, float LeTime)
+void TCrvCoincidenceCluster::Set(int Index, int SectorType, int NPulses, int NPe,
+				 float X, float Y, float Z, float T1, float T2)
 {
-  fIndex    = I;
-  fNPe       = NPe;
-  fNPeHeight = NPeHeight;
-  fNDigis    = NDigis;
-  fBar       = Bar;
-  fSipm      = Sipm;
-  fTime      = Time;
-  fHeight    = Height;
-  fWidth     = Width;
-  fChi2      = Chi2;
-  fLeTime    = LeTime;
+  fIndex      = Index;
+  fSectorType = SectorType;
+  fNPulses    = NPulses;
+  fNPe        = NPe;
+  fPosition.SetXYZ(X,Y,Z);
+  fStartTime  = T1;
+  fEndTime    = T2;
 }
 
 //_____________________________________________________________________________
-void TCrvRecoPulse::Clear(Option_t* opt) {
-  fIndex          = -1;
-  fNPe            = -1;
-  fNPeHeight      = -1;
-  fNDigis         = -1;
-  fBar            = -1;
-  fSipm           = -1;
-  fTime           = -1;
-  fHeight         = -1;
-  fWidth          = -1;
-  fChi2           = -1;
-  fLeTime         = -1;
+void TCrvCoincidenceCluster::Clear(Option_t* opt) {
 }
 
 //_____________________________________________________________________________
-void TCrvRecoPulse::Print(Option_t* Option) const {
+void TCrvCoincidenceCluster::Print(Option_t* Option) const {
   // print Straw hit properties
   //  printf("Superlayer: %d, Wire: %d, Cell: %d,\n",fSuperLayer,fWire,fCell);
   

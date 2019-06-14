@@ -753,9 +753,9 @@ void TAnaDump::printCrvRecoPulse(const mu2e::CrvRecoPulse* Pulse,
   TString opt = Opt;
 
   if ((opt == "") || (opt.Index("banner") >= 0)) {
-    printf("---------------------------------------------------------------------------------------------\n");
-    printf("Pulse Addr         NPE   HPE    Time    Height    Width     Chi2    LeTime   Bar   Sipm  NInd\n");
-    printf("---------------------------------------------------------------------------------------------\n");
+    printf("-------------------------------------------------------------------------------------------------------\n");
+    printf("Pulse Addr         NPE   HPE    Time    Height    Width     Chi2    LeTime   Bar   Sipm  NInd   Indices\n");
+    printf("-------------------------------------------------------------------------------------------------------\n");
   }
  
   if ((opt == "") || (opt.Index("data") >= 0)) {
@@ -772,7 +772,7 @@ void TAnaDump::printCrvRecoPulse(const mu2e::CrvRecoPulse* Pulse,
     int bar         = Pulse->GetScintillatorBarIndex().asInt();
     int sipm_number = Pulse->GetSiPMNumber();
 
-    printf("%-16p %5i %5i %8.3f %8.3f %8.3f %10.3f %8.3f %5i %5i %5i\n",
+    printf("%-16p %5i %5i %8.3f %8.3f %8.3f %10.3f %8.3f %5i %5i %5i",
      	   Pulse,
 	   npes,
 	   npes_height,
@@ -784,6 +784,12 @@ void TAnaDump::printCrvRecoPulse(const mu2e::CrvRecoPulse* Pulse,
 	   bar,
 	   sipm_number,
 	   nind);
+
+    for (int i=0; i<nind; i++) {
+      int ind =  Pulse->GetWaveformIndices().at(i);
+      printf("%5i",ind);
+    }
+    printf("\n");
   }
   
   if (opt.Index("hits") >= 0) {

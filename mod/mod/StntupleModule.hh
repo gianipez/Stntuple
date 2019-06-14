@@ -11,6 +11,8 @@
 
 #include "Stntuple/mod/THistModule.hh"
 
+class TStnInitDataBlock;
+
 class TFolder;
 class TStnEvent;
 class TStnErrorLogger;
@@ -47,6 +49,13 @@ public:
 				      Int_t       buffer_size,
 				      Int_t       split_level,
 				      Int_t       compression);
+
+  static TStnDataBlock*  AddDataBlock(const char*        branch_name, 
+				      const char*        class_name,
+				      TStnInitDataBlock* InitBlock,
+				      Int_t              buffer_size,
+				      Int_t              split_level,
+				      Int_t              compression);
 
   static Int_t SetResolveLinksMethod(const char* BlockName, 
 				     Int_t      (*f)(TStnDataBlock*,AbsEvent*,Int_t));

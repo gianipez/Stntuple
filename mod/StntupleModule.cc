@@ -129,6 +129,58 @@ StntupleModule::AddDataBlock(const char* branch_name,
 }
 
 
+//-----------------------------------------------------------------------------
+// adds new branch to fTree and registers a data block corresponding to it
+// use TStnInitDataBlock class for initialization
+//-----------------------------------------------------------------------------
+TStnDataBlock* StntupleModule::AddDataBlock(const char*        branch_name,
+					     const char*        class_name,
+					     TStnInitDataBlock* InitBlock,
+					     Int_t              buffer_size,
+					     Int_t              split,
+					     Int_t              compression) 
+{
+
+  TBranch*       branch;
+  TStnDataBlock* block;
+
+  int            rc;
+
+  TStnNode*      node;
+  node = 0;
+  rc  = fgEvent->AddDataBlock(branch_name,class_name,node);
+
+  if (rc == 0) {
+				// everything is OK
+
+    branch = fgTree->Branch(branch_name,class_name,
+			   node->GetDataBlockAddress(),
+			   buffer_size,
+			   split);
+    branch->SetCompressionLevel(compression);
+    block = node->GetDataBlock();
+    block->SetNode(node);
+    block->SetInitBlock(InitBlock);
+  }
+  else if (rc > 0) {
+				// already existing branch
+
+    printf(" :AddDataBlock: ");
+    printf(" an attempt to redefine the existing block made for");
+    printf(" branch %s and class %s\n",branch_name,class_name);
+    block = node->GetDataBlock();
+  }
+  else {
+				// can't create branch
+
+    printf(" AddDataBlock : can\'t add block for");
+    printf(" branch %s and class %s\n",branch_name,class_name);
+    block = NULL;
+  }
+  return block;
+}
+
+
 //_____________________________________________________________________________
 Int_t 
 StntupleModule::SetResolveLinksMethod(const char* BlockName,

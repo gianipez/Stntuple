@@ -47,7 +47,7 @@
 
 #include "Stntuple/gui/TEvdTrack.hh"
 #include "Stntuple/gui/TStnVisManager.hh"
-//#include "Stntuple/mod/TAnaDump.hh"
+#include "Stntuple/gui/TEvdTrkStrawHit.hh"
 #include "Stntuple/base/TObjHandle.hh"
 
 #include "CLHEP/Vector/ThreeVector.h"
@@ -157,11 +157,11 @@ void TEvdTrack::PaintRZ(Option_t* Option) {
 // first display track hits - active and not 
 //-----------------------------------------------------------------------------
   const mu2e::TrkStrawHit  *hit;
-  const TrkHitVector*       hits = &fKrep->hitVector();
+  //   const TrkHitVector*       hits = &fKrep->hitVector();
 
-  for(auto it=hits->begin(); it !=hits->end(); it++) {
-
-    hit    = (const mu2e::TrkStrawHit*) (*it);
+  int nhits = NHits();
+  for (int i=0; i<nhits; i++) {
+    hit = Hit(i)->TrkStrawHit();
     rdrift = hit->driftRadius();
 
     hstraw = &hit->straw();

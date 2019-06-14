@@ -92,8 +92,8 @@ public:
 					// return 1 if block has already been
 					// initialized
 
-  Int_t Initialized(int event, int run) {
-    return ((event == f_EventNumber) && (run == f_RunNumber));
+  Int_t Initialized(int event, int run, int Subrun = -1) {
+    return ((event == f_EventNumber) && (run == f_RunNumber) && (Subrun == f_SubrunNumber));
   }
 
 //-----------------------------------------------------------------------------
