@@ -24,7 +24,7 @@ Rint.History:            $(PWD)/.root_hist
 #------------------------------------------------------------------------------
 # STNTUPLE good run list (TStnRunSummaries extracted from DB, all the runs)
 #------------------------------------------------------------------------------
-Stntuple.RunSummary:  root://fcdfdata122.fnal.gov//export/data2/ewk/run_summary/rs-138425-186598.2005-04-27.root
+# Stntuple.RunSummary:  root://fcdfdata122.fnal.gov//export/data2/ewk/run_summary/rs-138425-186598.2005-04-27.root
 # Stntuple.RunSummary   /home/murat/run_summary/rs-138425-186598.2005-04-27.root
 #------------------------------------------------------------------------------
 # STNTUPLE catalog servers (FCDFLNX2 is a fallback for FCDFLNX4, same disk,
@@ -52,8 +52,6 @@ Stntuple.OracleServer          cdfofprd
 #------------------------------------------------------------------------------
 # TGeant.Database         $(MU2E_BASE_RELEASE)/Stntuple/db
 #------------------------------------------------------------------------------
-# stnana packages, add your own packages as needed
-#------------------------------------------------------------------------------
 # Mu2E: 1. figures and histograms for TPlotNote
 #------------------------------------------------------------------------------
 mu2e.Figures                   /grid/fermiapp/mu2e/users/murat/figures/mu2e
@@ -66,8 +64,9 @@ mu2e.TrkQual.Dsid              e11s5731
 mu2e.PidVersion                v5_7_9
 mu2e.GdmlGeometry              /projects/murat/figures/mu2e/gdml/mu2e_geometry_v6_0_0.gdml
 #------------------------------------------------------------------------------
-# stnana packages
+# stnana configuration: add your analysis packages as needed
 #------------------------------------------------------------------------------
+Stnana.TestReleaseDir          $(PWD)
 Stnana.Package                 Stntuple
 # +Stnana.Package               murat
 # +Stnana.Package               zzx
