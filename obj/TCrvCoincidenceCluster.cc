@@ -22,11 +22,13 @@ void TCrvCoincidenceCluster::Streamer(TBuffer &R__b) {
 //-----------------------------------------------------------------------------
     R__b.ReadFastArray(&fIndex    ,nwi);
     R__b.ReadFastArray(&fStartTime,nwf);
+    fPosition.Streamer(R__b);
   }
   else {
     R__b.WriteVersion(TCrvCoincidenceCluster::IsA());
     R__b.WriteFastArray(&fIndex    ,nwi);
     R__b.WriteFastArray(&fStartTime,nwf);
+    fPosition.Streamer(R__b);
   } 
 }
 

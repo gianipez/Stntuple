@@ -43,7 +43,10 @@ void stnana (TString     Book   ,
 //-----------------------------------------------------------------------------
   char        macro[200], load_script[200], line[200], cmd[200];
   const char* pkg;
-  const char* test_release_dir = gSystem->Getenv("MU2E_SATELLITE_RELEASE");
+
+  TString test_release_dir = gEnv->GetValue("Stnana.TestReleaseDir",gSystem->Getenv("PWD"));
+
+  printf("test_release_dir: %s\n",test_release_dir.Data());
 
   const char* script[] = { // loaded explicitly
     "init_geometry.C"       , "PWD",
@@ -58,14 +61,17 @@ void stnana (TString     Book   ,
   TInterpreter* cint = gROOT->GetInterpreter();
   
   for (int i=0; script[i] != 0; i+=2) {
-    sprintf(macro,"%s/Stntuple/scripts/%s",test_release_dir,script[i]);
-    if (! cint->IsLoaded(macro)) {
-      const char* env_var = script[i+1];
-      if (gSystem->Getenv(env_var)) {
+    const char* dir = gSystem->Getenv(script[i+1]);
+    if (dir) {
+      sprintf(macro,"%s/Stntuple/scripts/%s",dir,script[i]);
+      if (! cint->IsLoaded(macro)) {
 	printf("STNANA: locating %s\n",macro);
 	cint->LoadMacro(macro,&rc);
 	if (rc != 0) printf("stnana ERROR : failed to load %s\n",macro);
       }
+    }
+    else {
+      printf("STNANA WARNING: environment variable %s is not defined\n",script[i+1]);
     }
   }
 
@@ -80,7 +86,7 @@ void stnana (TString     Book   ,
   for (int i=0; i<list_of_packages->GetEntries(); i++) {
     pkg = ((TObjString*) list_of_packages->At(i))->String().Data();
 
-    sprintf(macro,"%s/%s/ana/scripts/load_stnana_scripts_%s.C",test_release_dir,pkg,pkg);
+    sprintf(macro,"%s/%s/ana/scripts/load_stnana_scripts_%s.C",test_release_dir.Data(),pkg,pkg);
 
     //    printf("[stnana.C] loading: %s\n",macro);
 

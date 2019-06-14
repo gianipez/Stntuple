@@ -40,7 +40,7 @@ int StntupleInitCrvPulseBlock::InitDataBlock(TStnDataBlock* Block, AbsEvent* Eve
     }
   }
   
-  block->fNPulses = ncrp;
+  //  block->fNPulses = ncrp;
 
   const mu2e::CrvRecoPulse* p0(nullptr);
   if (ncrp > 0) p0 = &crpc->at(0);
@@ -48,7 +48,7 @@ int StntupleInitCrvPulseBlock::InitDataBlock(TStnDataBlock* Block, AbsEvent* Eve
   for (int i=0; i<ncrp; i++) {
     const mu2e::CrvRecoPulse* ralph = &crpc->at(i);
 
-    TCrvRecoPulse* pulse = block->NewPulse();
+    TCrvRecoPulse* pulse = block->NewPulse(); // increments block->fNPulses
 
     int   npes        = ralph->GetPEs();
     int   npes_height = ralph->GetPEsPulseHeight();
@@ -79,12 +79,12 @@ int StntupleInitCrvPulseBlock::InitDataBlock(TStnDataBlock* Block, AbsEvent* Eve
     }
   }
   
-  block->fNCoincidences = ncc;
+  //  block->fNCoincidences = ncc;
 
   for (int icc=0; icc<ncc; icc++) {
     const mu2e::CrvCoincidence* ralph_cc = &ccc->at(icc);
 
-    TCrvCoincidence* cc = block->NewCoincidence();
+    TCrvCoincidence* cc = block->NewCoincidence();  // increments block->fNCoincidences
 
     const std::vector<art::Ptr<mu2e::CrvRecoPulse>>* list_of_pulses = &ralph_cc->GetCrvRecoPulses();
 

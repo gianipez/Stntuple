@@ -31,8 +31,15 @@ public:
   int   Index    () { return fIndex; }
   int   NPe      () { return fNPe   ; }
   int   NPeHeight() { return fNPeHeight ; }
+  int   NDigis   () { return fNDigis; }
   int   Bar      () { return fBar; }
   int   Sipm     () { return fSipm; }
+
+  float Time  ()   { return fTime; }
+  float Height()   { return fHeight; }
+  float Width ()   { return fWidth; }
+  float Chi2  ()   { return fChi2; }
+  float LeTime()   { return fLeTime; }
 
 //-----------------------------------------------------------------------------
 // modifiers

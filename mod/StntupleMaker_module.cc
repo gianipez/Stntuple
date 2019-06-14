@@ -410,27 +410,6 @@ void StntupleMaker::beginJob() {
 		 split_mode,
 		 compression_level);
   }
-//--------------------------------------------------------------------------------
-// helix data
-//--------------------------------------------------------------------------------
-  if (fMakeTimeClusters) {
-    int nblocks = fTimeClusterBlockName.size();
-
-    for (int i=0; i<nblocks; i++) {
-      const char* block_name = fTimeClusterBlockName[i].data();
-      TStnDataBlock* db   = AddDataBlock(block_name, 
-					 "TStnTimeClusterBlock",
-					 StntupleInitMu2eTimeClusterBlock,
-					 buffer_size,
-					 split_mode,
-					 compression_level);
-      if (db) {
-	db->AddCollName("mu2e::HelixSeedCollection"  ,fHelixCollTag[i].data()      );
- 	db->AddCollName("mu2e::TimeClusterCollection",fTimeClusterCollTag[i].data());
-	//      SetResolveLinksMethod(block_name,StntupleInitMu2eTimeClusterBlockLinks);
-      }
-    }
-  }
 //-----------------------------------------------------------------------------
 // straw hit data
 //-----------------------------------------------------------------------------
@@ -446,7 +425,7 @@ void StntupleMaker::beginJob() {
     }
   }
 //--------------------------------------------------------------------------------
-// helix data
+// time clusters
 //--------------------------------------------------------------------------------
   if (fMakeTimeClusters) {
     int nblocks = fTimeClusterBlockName.size();
@@ -573,7 +552,7 @@ void StntupleMaker::beginJob() {
     }
   }
 //-----------------------------------------------------------------------------
-// clusters 
+// calorimeter clusters 
 //-----------------------------------------------------------------------------
   if (fMakeClusters) {
     TStnDataBlock* db = AddDataBlock("ClusterBlock",

@@ -57,7 +57,7 @@ int StntupleInitCrvClusterBlock::InitDataBlock(TStnDataBlock* Block, AbsEvent* E
     }
   }
 
-  block->fNClusters = nccc;
+  //  block->fNClusters = nccc;
 
   for (int iccc=0; iccc<nccc; iccc++) {
     const mu2e::CrvCoincidenceCluster* ralph_ccc = &cccc->at(iccc);

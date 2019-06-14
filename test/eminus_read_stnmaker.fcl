@@ -9,8 +9,9 @@
 #include "Stntuple/fcl/prolog.fcl"
 
 BEGIN_PROLOG
-  pdgCode    : @local::Particle.eminus
-  bgHitFiles : @nil
+  pdgCode                   : @local::Particle.eminus
+  bgHitFiles                : @nil
+  GEN_ID     @protect_ignore: cosmicDYB
 END_PROLOG
 
 #include "Stntuple/fcl/templates.fcl"
@@ -30,6 +31,10 @@ physics : {
     }
     
     filters  : { @table::filters 
+	StntupleMakerDe: { @table::filters.StntupleMakerDe
+	    makeCrvPulses : 1
+	    genId         : @local::GEN_ID
+	}
 	InitStntuple : { @table::filters.InitStntuple histFileName : "nts.user.eminus_read_stnmaker.xxx.000001.stn" }
     }
 
@@ -39,9 +44,9 @@ physics : {
 	  # @sequence::Stntuple.digis          ,
 	  @sequence::Stntuple.trk_hit_reco   ,
 	  @sequence::Stntuple.cal_reco       ,
-	  @sequence::Stntuple.dem_reco       ,
+	  @sequence::Stntuple.reco_De        ,
 	  @sequence::Stntuple.crv_reco       ,
-	  @sequence::Stntuple.stnmaker_dem
+	  @sequence::Stntuple.stnmaker_De 
 	 ]
 
     trigger_paths : [p1   ] 
