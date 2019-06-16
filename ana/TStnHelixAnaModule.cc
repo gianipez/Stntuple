@@ -39,10 +39,14 @@ TStnHelixAnaModule::TStnHelixAnaModule(const char* name, const char* title):
 //-----------------------------------------------------------------------------
   fPdgCode     = 11;
   fProcessCode = 2;			// conversionGun, 28:StoppedParticleReactionGun
+//-----------------------------------------------------------------------------
+// default names of the helix block branches correspond to settings of StntupleMakerDe 
+// configuration in Stntuple/fcl/prolog.fcl
+//-----------------------------------------------------------------------------
 
-  fHelixBlockName[0] = "HelixBlockTprDe";
-  fHelixBlockName[1] = "HelixBlockCprDe";
-  fHelixBlockName[2] = "HelixBlockDe";
+  fHelixBlockName[0] = "HelixBlockTpr";
+  fHelixBlockName[1] = "HelixBlockCpr";
+  fHelixBlockName[2] = "HelixBlock";
 }
 
 //-----------------------------------------------------------------------------

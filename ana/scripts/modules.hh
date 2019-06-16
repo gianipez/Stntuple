@@ -10,6 +10,8 @@ class TStnGeneratorModule;
 class TStnHelixAnaModule;
 class TStnLumiMonModule;
 class TStnPhotosAnaModule;
+class TStnTrackAnaModule;
+class TStnTrackSeedAnaModule;
 class TStnValidationModule;
 
 namespace stntuple {
@@ -22,6 +24,8 @@ namespace stntuple {
   TStnHelixAnaModule*         m_hel   = NULL;
   TStnGeneratorModule*        m_stg   = NULL;
   TStnPhotosAnaModule*        m_pho   = NULL;
+  TStnTrackAnaModule*         m_trk   = NULL;
+  TStnTrackSeedAnaModule*     m_trs   = NULL;
   TStnValidationModule*       m_val   = NULL;
 };
 

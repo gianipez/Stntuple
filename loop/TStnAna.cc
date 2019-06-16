@@ -879,52 +879,52 @@ int TStnAna::BeginJob()
 int TStnAna::EndJob() {
   // actions at end of job
 
-  static int nlines = 0;
+  //  int nlines = 0;
 //-----------------------------------------------------------------------------
 // fill luminosity histograms 
 //----------------------------------------------------------------------------- 
-  TIter it(fListOfRuns);
+  // TIter it(fListOfRuns);
 
-  float ltev  = 0;
-  float ltape = 0;
-  float loffl = 0;
+  // float ltev  = 0;
+  // float ltape = 0;
+  // float loffl = 0;
 
-  while (TStnRunSummary* rs = (TStnRunSummary*) it.Next()) {
+  // while (TStnRunSummary* rs = (TStnRunSummary*) it.Next()) {
 
-    if (fPrintLevel == 11) {
-      if (nlines == 0) {
-	printf("--------------------------------------------------");
-	printf("----------------------\n");
-	printf("      run   rc status                   ");
-	printf(" L(TeV)     L(live)   L(offline)\n");
-	printf("---------------------------------------------------");
-	printf("---------------------\n");
-      }
-      printf(" %8i  %3i %-20s  %10.3f  %10.3f   %10.3f\n",
-	     rs->RunNumber(),
-	     1,
-	     "GOOD",
-	     rs->LumiTev(),
-	     rs->LumiTape(),
-	     rs->OfflineLumiRS());
-      nlines++;
-      if (nlines == 50) nlines = 0;
-    }
-    ltev  += rs->LumiTev();
-    ltape += rs->LumiTape();
-    loffl += rs->OfflineLumiRS();
+  //   if (fPrintLevel == 11) {
+  //     if (nlines == 0) {
+  // 	printf("--------------------------------------------------");
+  // 	printf("----------------------\n");
+  // 	printf("      run   rc status                   ");
+  // 	printf(" L(TeV)     L(live)   L(offline)\n");
+  // 	printf("---------------------------------------------------");
+  // 	printf("---------------------\n");
+  //     }
+  //     printf(" %8i  %3i %-20s  %10.3f  %10.3f   %10.3f\n",
+  // 	     rs->RunNumber(),
+  // 	     1,
+  // 	     "GOOD",
+  // 	     rs->LumiTev(),
+  // 	     rs->LumiTape(),
+  // 	     rs->OfflineLumiRS());
+  //     nlines++;
+  //     if (nlines == 50) nlines = 0;
+  //   }
+  //   ltev  += rs->LumiTev();
+  //   ltape += rs->LumiTape();
+  //   loffl += rs->OfflineLumiRS();
     
-    fIntLumiTev->Fill (rs->RunNumber(),ltev);
-    fIntLumiLive->Fill(rs->RunNumber(),ltape);
-    fIntLumiOffl->Fill(rs->RunNumber(),loffl);
-  }
+  //   fIntLumiTev->Fill (rs->RunNumber(),ltev);
+  //   fIntLumiLive->Fill(rs->RunNumber(),ltape);
+  //   fIntLumiOffl->Fill(rs->RunNumber(),loffl);
+  // }
 
-  if (fPrintLevel >= 0) {
-    printf("----- end job: ---- %s\n", GetName());
-    printf(" L(TeV) : %10.3f\n",ltev);
-    printf(" L(live): %10.3f\n",ltape);
-    printf(" L(offl): %10.3f\n",loffl);
-  }
+  // if (fPrintLevel >= 0) {
+  //   printf("----- end job: ---- %s\n", GetName());
+  //   printf(" L(TeV) : %10.3f\n",ltev);
+  //   printf(" L(live): %10.3f\n",ltape);
+  //   printf(" L(offl): %10.3f\n",loffl);
+  // }
 //-----------------------------------------------------------------------------
 // other actions
 //----------------------------------------------------------------------------- 

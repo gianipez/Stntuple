@@ -187,7 +187,7 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
   static mu2e::DoubletAmbigResolver* _dar;
   static mu2e::KalDiag*              _kalDiag;
   
-  int                       ntrk, ev_number, rn_number;
+  int                       ntrk(0), ev_number, rn_number;
   TStnTrack*                track;
   TStnTrackBlock            *data(0);   
 
@@ -297,7 +297,10 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
   art::Handle<mu2e::KalRepPtrCollection> krepsHandle;
   if (krep_module_label[0] != 0) {
     AnEvent->getByLabel(krep_module_label,krepsHandle);
-    if (krepsHandle.isValid())    list_of_kreps = krepsHandle.product();
+    if (krepsHandle.isValid())    { 
+      list_of_kreps = krepsHandle.product();
+      ntrk          = list_of_kreps->size();
+    }
   }
 
   art::Handle<mu2e::TrkQualCollection> trkQualHandle;
@@ -358,8 +361,7 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
     bc = (const mu2e::Calorimeter*) h.get();
   }
 
-  ntrk = list_of_kreps->size();
-  
+
   // int xxx(0);
 
   for (int itrk=0; itrk<ntrk; itrk++) {

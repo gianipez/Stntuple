@@ -1,9 +1,12 @@
 # -*- mode:tcl -*-
 #------------------------------------------------------------------------------
 # STNTUPLE maker user FCL template - see read_reco.fcl
-# p1 : default reconstruction path
-# p2 : read and ntuple (use with RootInput to ntuple MDC'2018 files)
-# p3 : path to debug the TPR and CPR reconstruction paths separately
+# p1 : generate, simulate, reconstruct, stntuple
+# p2 : read, reconstruct, stntuple
+# p3 : old reco path: TPR and CPR reconstruction paths fully separated
+# p4 : read, filter, reconstruct, display
+# p5 : read, filter, reconstruct
+# p6 : read, filter, display
 #------------------------------------------------------------------------------
 BEGIN_PROLOG
   bgHitFiles   : @nil
@@ -77,6 +80,12 @@ physics : {
 		 @sequence::Stntuple.reco_De        ,
 		 @sequence::Stntuple.crv_reco       
 		]
+
+#------------------------------------------------------------------------------
+# read, filter, display
+#------------------------------------------------------------------------------
+    p6       : [ EventFilter,
+		MuHitDisplayDeMHDar]
 
     trigger_paths : [ @local::TRIGGER_PATH ]
     out           : [     ]

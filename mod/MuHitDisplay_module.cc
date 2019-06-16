@@ -922,8 +922,8 @@ namespace mu2e {
     double plotLimits(850.);
     fCanvas->DrawFrame(-plotLimits, -plotLimits, plotLimits, plotLimits);
 
-    t.SetText(-800., 900., Form("[%s] RUN: %10i EVENT: %10i NTRACKS: %4i NCLUSTERS: %4i",
-				oname, Evt.run(), Evt.event(), fNTracks[0], fNClusters));
+    t.SetText(-800., 900., Form("RUN: %10i SR:%10i EVENT: %10i NTRACKS: %2i NCLUSTERS: %4i",
+				Evt.run(),Evt.subRun(),Evt.event(),fNTracks[0],fNClusters));
     t.SetTextSize(0.02);
     t.Draw();
 //-----------------------------------------------------------------------------

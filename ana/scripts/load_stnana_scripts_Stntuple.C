@@ -21,6 +21,8 @@ int load_stnana_scripts_Stntuple() {
     "helix.C"     , "PWD",
     "lumi.C"      , "PWD",
     "photos.C"    , "STNTUPLE_MC_GEN",
+    "trk.C"       , "PWD",
+    "trs.C"       , "PWD",                  // sample track seed analysis module
     "validation.C", "PWD",
     0 
   };

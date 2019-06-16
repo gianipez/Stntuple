@@ -244,15 +244,15 @@ public:
   
   void printTrkCaloHit(const KalRep* Krep, mu2e::TrkCaloHit* CaloHit);
 
-  void printTrackSeed          (const mu2e::KalSeed* TrkSeed, 
-				const char* Opt = ""    ,
-				const char* ModuleLabelStrawHit="makeSH");
+  void printTrackSeed          (const mu2e::KalSeed* TrkSeed                      , 
+				const char* Opt                = ""               ,
+				const char* StrawHitCollTag    = "makeSH"         ,
+				const char* StrawDigiMCCollTag = "compressDigiMCs");
 
-  void printTrackSeedCollection(const char* ModuleLabel             , 
-				const char* ProductName         = "", 
-				const char* ProcessName         = "",
-				int         hitOpt              = 0,
-				const char* ModuleLabelStrawHit ="makeSH"); 
+  void printTrackSeedCollection(const char* CollTag                               ,
+				int         hitOpt             = 0                ,
+				const char* StrawHitCollTag    = "makeSH"         ,
+				const char* StrawDigiMCCollTag = "compressDigiMCs");
 
   void printKalRep(const KalRep* Krep, const char* Opt = "", const char* Prefix = "");
 
