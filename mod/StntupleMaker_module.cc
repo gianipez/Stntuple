@@ -449,7 +449,8 @@ void StntupleMaker::beginJob() {
 // helix data
 //--------------------------------------------------------------------------------
   if (fMakeHelices) {
-    int nb = fHelixBlockName.size();
+    int nb         = fHelixBlockName.size();
+    int nts_blocks = fTrackSeedBlockName.size();
 
     for (int i=0; i<nb; i++) {
       const char*    block_name = fHelixBlockName[i].data();
@@ -460,10 +461,24 @@ void StntupleMaker::beginJob() {
 					       split_mode,
 					       compression_level);
       if (db) {
-	db->AddCollName("mu2e::HelixSeedCollection"  ,fHelixCollTag[i].data()      );
- 	db->AddCollName("mu2e::TimeClusterCollection",fTimeClusterCollTag[i].data());
+	db->AddCollName("mu2e::HelixSeedCollection"  , fHelixCollTag[i].data()      );
 	db->AddCollName("mu2e::StrawDigiMCCollection",fStrawDigiMCCollTag.data()   );
-	//      SetResolveLinksMethod(block_name,StntupleInitMu2eHelixBlockLinks);
+//-----------------------------------------------------------------------------
+// for links
+//-----------------------------------------------------------------------------
+ 	db->AddCollName("TimeClusterBlockName"       , fTimeClusterBlockName[i].data());
+	if (i < nts_blocks) {
+//-----------------------------------------------------------------------------
+// track seed block matches the helix block
+//-----------------------------------------------------------------------------
+	  db->AddCollName("TrackSeedBlockName"         , fTrackSeedBlockName[i].data()  );
+	}
+	else {
+//-----------------------------------------------------------------------------
+// track seed block undefined, mark as such
+//-----------------------------------------------------------------------------
+	  db->AddCollName("TrackSeedBlockName"         , "undefined");
+	}
      }
     }
   }

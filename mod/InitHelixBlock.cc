@@ -389,32 +389,35 @@ Int_t StntupleInitMu2eHelixBlockLinks(TStnDataBlock* Block, AbsEvent* AnEvent, i
 
   if (Block->LinksInitialized()) return 0;
 
-  TStnEvent*           ev;
-  TStnHelixBlock*      hb;
-  TStnHelix*           helix;
-  TStnTrackSeedBlock*  tsb;
-  TStnTrackSeed*       trkseed;
-  TStnTimeClusterBlock*   tpb;
-  TStnTimeCluster*        tp;
+  TStnEvent*               ev;
+  TStnHelixBlock*          hb;
+  TStnHelix*               helix;
+  TStnTrackSeedBlock*      tsb;
+  TStnTrackSeed*           trkseed;
+  TStnTimeClusterBlock*    tcb;
+  TStnTimeCluster*         tp;
 
   const mu2e::HelixSeed*   khelix, *fkhelix;
   const mu2e::KalSeed*     kseed;
   const mu2e::TimeCluster* ktimepeak, *fktimepeak;
 
-  char                     short_helix_block_name[100], timepeak_block_name[100];
+  char                     ts_block_name[100], tc_block_name[100];
 
   ev     = Block->GetEvent();
   hb     = (TStnHelixBlock*) Block;
-  
-  hb->GetModuleLabel("mu2e::KalSeedCollection"    , short_helix_block_name);
-  hb->GetModuleLabel("mu2e::TimeClusterCollection", timepeak_block_name   );
+  int  nhelix = hb->NHelices();
+//-----------------------------------------------------------------------------
+// this is a hack, to be fixed soon
+//-----------------------------------------------------------------------------
+  hb->GetModuleLabel("TrackSeedBlockName"  ,ts_block_name);
+  hb->GetModuleLabel("TimeClusterBlockName",tc_block_name);
 
-  tsb    = (TStnTrackSeedBlock*) ev->GetDataBlock(short_helix_block_name);
-  tpb    = (TStnTimeClusterBlock* ) ev->GetDataBlock(timepeak_block_name   );
+  int ntrkseed(0),ntpeak(0);
+  tsb    = (TStnTrackSeedBlock*  ) ev->GetDataBlock(ts_block_name);
+  tcb    = (TStnTimeClusterBlock*) ev->GetDataBlock(tc_block_name);
 
-  int    nhelix   = hb ->NHelices();
-  int    ntrkseed = tsb->NTrackSeeds();
-  int    ntpeak   = tpb->NTimeClusters();
+  if (tsb) ntrkseed = tsb->NTrackSeeds();
+  if (tcb) ntpeak   = tcb->NTimeClusters();
 
   for (int i=0; i<nhelix; ++i){
     helix  = hb   ->Helix(i);
@@ -439,7 +442,7 @@ Int_t StntupleInitMu2eHelixBlockLinks(TStnDataBlock* Block, AbsEvent* AnEvent, i
     ktimepeak = khelix->timeCluster().get();
     int      timepeakIndex(-1);
     for (int j=0; j<ntpeak;++j){
-      tp         = tpb->TimeCluster(j);
+      tp         = tcb->TimeCluster(j);
       fktimepeak = tp->fTimeCluster;
       if (fktimepeak == ktimepeak){
 	timepeakIndex = j;

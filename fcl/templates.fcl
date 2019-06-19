@@ -285,7 +285,8 @@ Stntuple : { @table::Stntuple             # defined in Stntuple/fcl/prolog.fcl
 	TrkQualDmuMHPar : { @table::TrkQual KalSeedCollection: "KFFDmuMHPar" }
 	TrkQualDmuMHDar : { @table::TrkQual KalSeedCollection: "KFFDmuMHDar" }
 
-	@table::CrvRecoMCPackage.producers # define in CRVResponse
+	@table::CrvDAQPackage.producers    # defined in CRVResponse
+	@table::CrvRecoMCPackage.producers # defined in CRVResponse
 	CrvCoincidenceClusterMatchMC: { @table::CrvCoincidenceClusterMatchMC timeOffsets: @local::TIME_OFFSET_MAPS } 
     }
 
@@ -361,7 +362,7 @@ Stntuple.gen_g4_time_map     : [ @sequence::Stntuple.gen_g4, @sequence::CommonMC
 Stntuple.mix                 : [ dioMixer, protonMixer, neutronMixer, photonMixer, ootMixer, flashMixer ]
 Stntuple.mix_time_map        : [ @sequence::Stntuple.mix, @sequence::CommonMC.DigiSim ]
 Stntuple.gen_g4_mix_time_map : [ @sequence::Stntuple.gen_g4, @sequence::Stntuple.mix, @sequence::CommonMC.DigiSim ]
-Stntuple.digis               : [ @sequence::CaloDigiMC.DigiSim, @sequence::TrackerMC.DigiSim,  compressDigiMCs ]
+Stntuple.digis               : [ @sequence::CaloDigiMC.DigiSim, @sequence::TrackerMC.DigiSim, @sequence::CrvDAQPackage.CrvDAQSequence, compressDigiMCs ]
 #------------------------------------------------------------------------------
 # proton reconstruction
 #------------------------------------------------------------------------------
