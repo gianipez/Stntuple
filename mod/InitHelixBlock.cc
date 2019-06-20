@@ -12,6 +12,7 @@
 
 
 #include "Stntuple/obj/TStnDataBlock.hh"
+#include "Stntuple/obj/TStnNode.hh"
 #include "Stntuple/obj/TStnEvent.hh"
 
 #include "Stntuple/obj/TStnTimeCluster.hh"
@@ -66,13 +67,17 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
   char                 helix_module_label[100], helix_description[100]; 
   char                 makeSD_module_label[100];
 
+  int ev_number = Evt->event();
+  int rn_number = Evt->run();
+  int sr_number = Evt->subRun();
+
+  if (Block->Initialized(ev_number,rn_number,sr_number)) return 0;
+
   TStnHelixBlock*      cb = (TStnHelixBlock*) Block;
   TStnHelix*           helix(0);
 
-
   cb->Clear();
   cb->GetModuleLabel("mu2e::StrawDigiMCCollection",makeSD_module_label);
-
 //-----------------------------------------------------------------------------
 // algorithm ID's are determined by the same modules as the helices themselves
 //-----------------------------------------------------------------------------
@@ -370,6 +375,12 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
     helix->fChi2XYNDof   = robustHel->chi2dXY();
     helix->fChi2PhiZNDof = robustHel->chi2dZPhi();
   }
+//-----------------------------------------------------------------------------
+// on return set event and run numbers to mark block as initialized
+//-----------------------------------------------------------------------------
+  cb->f_RunNumber    = rn_number;
+  cb->f_EventNumber  = ev_number;
+  cb->f_SubrunNumber = sr_number;
 
   return 0;
 }
@@ -378,12 +389,13 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
 Int_t StntupleInitMu2eHelixBlockLinks(TStnDataBlock* Block, AbsEvent* AnEvent, int Mode) 
 {
 
-  Int_t  ev_number, rn_number;
+  Int_t  evt, run, srn;
 
-  ev_number = AnEvent->event();
-  rn_number = AnEvent->run();
+  evt = AnEvent->event();
+  run = AnEvent->run();
+  srn = AnEvent->subRun();
 
-  if (! Block->Initialized(ev_number,rn_number)) return -1;
+  if (! Block->Initialized(evt,run,srn)) return -1;
 
 					// do not do initialize links 2nd time
 
@@ -405,25 +417,26 @@ Int_t StntupleInitMu2eHelixBlockLinks(TStnDataBlock* Block, AbsEvent* AnEvent, i
 
   ev     = Block->GetEvent();
   hb     = (TStnHelixBlock*) Block;
-  int  nhelix = hb->NHelices();
+  int nhelices = hb->NHelices();
 //-----------------------------------------------------------------------------
 // this is a hack, to be fixed soon
 //-----------------------------------------------------------------------------
   hb->GetModuleLabel("TrackSeedBlockName"  ,ts_block_name);
   hb->GetModuleLabel("TimeClusterBlockName",tc_block_name);
 
-  int ntrkseed(0),ntpeak(0);
+  int ntseeds(0), ntpeaks(0);
+
   tsb    = (TStnTrackSeedBlock*  ) ev->GetDataBlock(ts_block_name);
   tcb    = (TStnTimeClusterBlock*) ev->GetDataBlock(tc_block_name);
 
-  if (tsb) ntrkseed = tsb->NTrackSeeds();
-  if (tcb) ntpeak   = tcb->NTimeClusters();
+  if (tsb) ntseeds  = tsb->NTrackSeeds();
+  if (tcb) ntpeaks = tcb->NTimeClusters();
 
-  for (int i=0; i<nhelix; ++i){
+  for (int i=0; i<nhelices; ++i){
     helix  = hb   ->Helix(i);
     khelix = helix->fHelix;
     int      trackseedIndex(-1);
-    for (int j=0; j<ntrkseed; ++j){
+    for (int j=0; j<ntseeds; ++j){
       trkseed = tsb->TrackSeed(j);
       kseed   = trkseed->fTrackSeed;
       fkhelix = kseed->helix().get();
@@ -432,16 +445,19 @@ Int_t StntupleInitMu2eHelixBlockLinks(TStnDataBlock* Block, AbsEvent* AnEvent, i
 	break;
       }
     }
-    
-    if (trackseedIndex < 0) {
-      printf(">>> ERROR: CalHelixFinder helix %i -> no TrackSeed associated\n", i);//FIXME!
-      continue;
-    }
+//-----------------------------------------------------------------------------
+// don't print diagnostics if the block name is empty
+// non-merged helices and not chozen helices do not have associated seeds
+//-----------------------------------------------------------------------------
+    // if ((trackseedIndex < 0) && (ts_block_name[0] != 0)) {
+    //   printf(">>> ERROR: block %s HelixFinder helix %i -> no TrackSeed associated\n", hb->GetNode()->GetName(),i);
+    //   continue;
+    // }
     helix->SetTrackSeedIndex(trackseedIndex);
 
     ktimepeak = khelix->timeCluster().get();
     int      timepeakIndex(-1);
-    for (int j=0; j<ntpeak;++j){
+    for (int j=0; j<ntpeaks;++j){
       tp         = tcb->TimeCluster(j);
       fktimepeak = tp->fTimeCluster;
       if (fktimepeak == ktimepeak){
@@ -449,11 +465,14 @@ Int_t StntupleInitMu2eHelixBlockLinks(TStnDataBlock* Block, AbsEvent* AnEvent, i
 	break;
       }
     }
-
-    if (timepeakIndex < 0) {
-      printf(">>> ERROR: CalHelixFinder helix %i -> no TimeCluster associated\n", i);//FIXME!
-      continue;
-    }
+//-----------------------------------------------------------------------------
+// don't print diagnostics if the time cluster block name is empty
+// for TimeClusterBlockTpr clusters are not defined
+//-----------------------------------------------------------------------------
+    // if ((timepeakIndex < 0) && (tc_block_name[0] != 0)) {
+    //   printf(">>> ERROR: block %s  %s CalHelixFinder helix %i -> no TimeCluster associated\n", hb->GetNode()->GetName(), tc_block_name, i);//FIXME!
+    //   continue;
+    // }
 
     helix->SetTimeClusterIndex(timepeakIndex);
   }

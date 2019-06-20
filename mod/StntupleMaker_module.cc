@@ -464,7 +464,8 @@ void StntupleMaker::beginJob() {
 	db->AddCollName("mu2e::HelixSeedCollection"  , fHelixCollTag[i].data()      );
 	db->AddCollName("mu2e::StrawDigiMCCollection",fStrawDigiMCCollTag.data()   );
 //-----------------------------------------------------------------------------
-// for links
+// for links: time cluster block not defined/saved for merged helix collection - 
+// shall we save it?
 //-----------------------------------------------------------------------------
  	db->AddCollName("TimeClusterBlockName"       , fTimeClusterBlockName[i].data());
 	if (i < nts_blocks) {
@@ -479,7 +480,11 @@ void StntupleMaker::beginJob() {
 //-----------------------------------------------------------------------------
 	  db->AddCollName("TrackSeedBlockName"         , "undefined");
 	}
-     }
+      }
+//-----------------------------------------------------------------------------
+// helix blocks have links to be set
+//-----------------------------------------------------------------------------
+      SetResolveLinksMethod(block_name,StntupleInitMu2eHelixBlockLinks);
     }
   }
 //--------------------------------------------------------------------------------

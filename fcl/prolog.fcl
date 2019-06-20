@@ -421,7 +421,7 @@ Stntuple : {
 	    makeHelices                : 1
 	    makeStepPointMC            : 1
 
-	    timeClusterBlockName       : [ "TimeClusterBlock"    , "TimeClusterBlockTpr", "TimeClusterBlockCpr" ]
+	    timeClusterBlockName       : [ ""                    , "TimeClusterBlockTpr", "TimeClusterBlockCpr" ]
 	    timeClusterCollTag         : [ ""                    , "TimeClusterFindere" , "CalTimePeakFinder"   ]
 	    helixBlockName             : [ "HelixBlock"          , "HelixBlockTpr"      , "HelixBlockCpr"       ]
 	    helixCollTag               : [ "MHFinderDe"          , "MHFinderTprDe"      , "MHFinderCprDe"       ]
@@ -439,7 +439,7 @@ Stntuple : {
 	    trkQualCollTag             : [ "TrkQualDeMHPar"      , "TrkQualDeMHDar"       ]
 	    trackSHBlockName           : [ "TrackHitBlockPar"    , "TrackHitBlockDar"     ]
 	    pidBlockName               : [ ""                    , "PidBlock"             ]
-	    pidCollTag                 : [       ""              , "AvikPIDNew"           ]
+	    pidCollTag                 : [ ""                    , "AvikPIDNew"           ]
 
 	    spmcBlockName              : [ "SpmcBlockVDet"                   ]
 	    spmcCollTag                : [ "compressDigiMCs:virtualdetector" ]
@@ -450,10 +450,10 @@ Stntuple : {
 	    makeTrackSeeds             : 1
 	    makeTimeClusters           : 1
 	    makeHelices                : 1
-	    timeClusterBlockName       : [ "TimeClusterBlockTprDmu" , "TimeClusterBlockCprDmu"  ]
-	    timeClusterCollTag         : [ ""                       , "TimeClusterFinderMu"  , "CalTimePeakFinderMu" ]
-	    helixBlockName             : [ "HelixBlock"             , "HelixBlockTpr"        , "HelixBlockCpr"       ]
-	    helixCollTag               : [ "MHFinderDmu"            , "MHFinderTprDmu"       , "MHFinderCprDmu"      ]
+	    timeClusterBlockName       : [ ""                     , "TimeClusterBlockTpr" , "TimeClusterBlockCpr"  ]
+	    timeClusterCollTag         : [ ""                     , "TimeClusterFinderMu" , "CalTimePeakFinderMu" ]
+	    helixBlockName             : [ "HelixBlock"           , "HelixBlockTpr"       , "HelixBlockCpr"       ]
+	    helixCollTag               : [ "MHFinderDmu"          , "MHFinderTprDmu"      , "MHFinderCprDmu"      ]
 
 	    trackSeedBlockName         : [ "TrackSeedBlock"      ]
 	    trackSeedCollTag           : [ "KSFDmuMH"            ]
