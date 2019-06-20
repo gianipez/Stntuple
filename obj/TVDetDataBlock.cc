@@ -40,6 +40,11 @@ TVDetDataBlock::~TVDetDataBlock() {
 void TVDetDataBlock::Clear(Option_t* opt) {
   fListOfHits->Clear();
   fNHits=0;
+
+  f_EventNumber       = -1;
+  f_RunNumber         = -1;
+  f_SubrunNumber      = -1;
+  fLinksInitialized   =  0;
 }
 
 //______________________________________________________________________________

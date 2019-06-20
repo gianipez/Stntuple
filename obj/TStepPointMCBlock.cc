@@ -45,6 +45,11 @@ void TStepPointMCBlock::Clear(const char* opt) {
   fNStepPoints    = 0;
 					// don't modify cut values at run time
   fListOfStepPoints->Clear(opt);
+
+  f_EventNumber       = -1;
+  f_RunNumber         = -1;
+  f_SubrunNumber      = -1;
+  fLinksInitialized   =  0;
 }
 
 //_____________________________________________________________________________

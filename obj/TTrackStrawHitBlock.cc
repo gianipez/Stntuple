@@ -57,6 +57,11 @@ void TTrackStrawHitBlock::Clear(Option_t* opt) {
   fNTrackHits->Clear();
   fFirst->Clear();
   fListOfHits->Clear();
+
+  f_EventNumber       = -1;
+  f_RunNumber         = -1;
+  f_SubrunNumber      = -1;
+  fLinksInitialized   =  0;
 }
 
 //______________________________________________________________________________

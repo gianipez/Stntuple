@@ -43,6 +43,11 @@ TStnTimeClusterBlock::~TStnTimeClusterBlock() {
 void TStnTimeClusterBlock::Clear(Option_t* opt) {
   fNTimeClusters = 0;
   fListOfTimeClusters->Clear(opt);
+
+  f_EventNumber       = -1;
+  f_RunNumber         = -1;
+  f_SubrunNumber      = -1;
+  fLinksInitialized   =  0;
 }
 
 //------------------------------------------------------------------------------

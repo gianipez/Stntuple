@@ -49,6 +49,11 @@ void TSimpBlock::Clear(const char* opt) {
   fNParticles    = 0;
 					// don't modify cut values at run time
   fListOfParticles->Clear(opt);
+
+  f_EventNumber       = -1;
+  f_RunNumber         = -1;
+  f_SubrunNumber      = -1;
+  fLinksInitialized   =  0;
 }
 
 

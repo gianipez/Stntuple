@@ -44,6 +44,11 @@ TStnClusterBlock::~TStnClusterBlock() {
 void TStnClusterBlock::Clear(Option_t* opt) {
   fNClusters = 0;
   fListOfClusters->Clear(opt);
+
+  f_EventNumber       = -1;
+  f_RunNumber         = -1;
+  f_SubrunNumber      = -1;
+  fLinksInitialized   =  0;
 }
 
 //------------------------------------------------------------------------------

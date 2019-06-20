@@ -125,7 +125,10 @@ TStnHeaderBlock::~TStnHeaderBlock() {
 
 //_____________________________________________________________________________
 void TStnHeaderBlock::Clear(Option_t* opt) {
-  fLinksInitialized = 0;
+  f_EventNumber       = -1;
+  f_RunNumber         = -1;
+  f_SubrunNumber      = -1;
+  fLinksInitialized   =  0;
 }
 
 

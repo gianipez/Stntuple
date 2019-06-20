@@ -76,6 +76,11 @@ void TGenpBlock::Clear(const char* opt) {
   fWeight        = 1.;
 					// don't modify cut values at run time
   fListOfParticles->Clear(opt);
+
+  f_EventNumber       = -1;
+  f_RunNumber         = -1;
+  f_SubrunNumber      = -1;
+  fLinksInitialized   =  0;
 }
 
 //_____________________________________________________________________________

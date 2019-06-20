@@ -42,6 +42,11 @@ TStnPidBlock::~TStnPidBlock() {
 void TStnPidBlock::Clear(Option_t* opt) {
   fNTracks = 0;
   fListOfTrackPid->Clear(opt);
+
+  f_EventNumber       = -1;
+  f_RunNumber         = -1;
+  f_SubrunNumber      = -1;
+  fLinksInitialized   =  0;
 }
 
 //------------------------------------------------------------------------------

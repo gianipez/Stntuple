@@ -43,6 +43,11 @@ TStnHelixBlock::~TStnHelixBlock() {
 void TStnHelixBlock::Clear(Option_t* opt) {
   fNHelices = 0;
   fListOfHelices->Clear(opt);
+
+  f_EventNumber       = -1;
+  f_RunNumber         = -1;
+  f_SubrunNumber      = -1;
+  fLinksInitialized   =  0;
 }
 
 //------------------------------------------------------------------------------
