@@ -14,8 +14,8 @@
   gInterpreter->AddIncludePath(Form("%s/include",gSystem->Getenv("ROOTSYS")));
 
 
-  gInterpreter->AddIncludePath(Form("%s/tex/cdfnotes",
-				    gSystem->Getenv("HOME")));
+  // gInterpreter->AddIncludePath(Form("%s/tex/cdfnotes",
+  // 				    gSystem->Getenv("HOME")));
 
   //  gSystem->SetMakeSharedLib("cd $BuildDir ; g++ -c -g $Opt -pipe -m32 -Wall -W -Woverloaded-virtual -fPIC -pthread $IncludePath $SourceFiles ;  g++ -g $ObjectFiles -shared -Wl,-soname,$LibName.so -m32 $LinkedLibs -o $SharedLib");
 //-----------------------------------------------------------------------------
@@ -61,16 +61,17 @@
 //-----------------------------------------------------------------------------
 // Mu2e Offline libraries
 //-----------------------------------------------------------------------------
-//     //     gSystem->Load("$MU2E_BASE_RELEASE/lib/libmu2e_Mu2eInterfaces.so");
-//     //     gSystem->Load("$MU2E_BASE_RELEASE/lib/libmu2e_CalorimeterGeom.so");
+//     //     gSystem->Load("lib/libmu2e_Mu2eInterfaces.so");
+//     //     gSystem->Load("lib/libmu2e_CalorimeterGeom.so");
 // 
-      gSystem->Load("$MU2E_BASE_RELEASE/lib/libStntuple_base.so");
-      gSystem->Load("$MU2E_BASE_RELEASE/lib/libStntuple_obj.so");
-      gSystem->Load("$MU2E_BASE_RELEASE/lib/libStntuple_loop.so");
-      gSystem->Load("$MU2E_BASE_RELEASE/lib/libStntuple_alg.so");
-      gSystem->Load("$MU2E_BASE_RELEASE/lib/libStntuple_ana.so");
-      gSystem->Load("$MU2E_BASE_RELEASE/lib/libStntuple_val.so");
-      
+      gSystem->Load("lib/libStntuple_base.so");
+      gSystem->Load("lib/libStntuple_obj.so");
+      gSystem->Load("lib/libStntuple_loop.so");
+      gSystem->Load("lib/libStntuple_alg.so");
+      gSystem->Load("lib/libStntuple_ana.so");
+      gSystem->Load("lib/libStntuple_val.so");
+
+//insert_user_libs_here    
 					// print overflows/underflows in the stat box
       gStyle->SetOptStat(11111111);
 					// print fit results in the stat box

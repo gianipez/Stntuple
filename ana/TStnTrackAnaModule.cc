@@ -836,9 +836,9 @@ int TStnTrackAnaModule::Event(int ientry) {
       tp->fPath      = vr->fPath;
     }
 
-    if ((tp->fEp > 0) && (track->fEp > 0) && (fabs(tp->fEp-track->fEp) > 1.e-6)) {
-      GetHeaderBlock()->Print(Form(" TStnTrackAnaModule ERROR: tp->fEp = %10.5f  track->fEp = %10.5f",tp->fEp,track->fEp));
-    }
+    //    if ((tp->fEp > 0) && (track->fEp > 0) && (fabs(tp->fEp-track->fEp) > 1.e-6)) {
+    //      GetHeaderBlock()->Print(Form(" TStnTrackAnaModule ERROR: tp->fEp = %10.5f  track->fEp = %10.5f",tp->fEp,track->fEp));
+    //    }
 //-----------------------------------------------------------------------------
 // PID likelihoods
 //-----------------------------------------------------------------------------

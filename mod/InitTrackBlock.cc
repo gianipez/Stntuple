@@ -145,8 +145,25 @@ namespace {
 
     double  ds(10.), s0, s1, s2, z0, z1, z2, dzds, sz, sz1, z01;
 
-    s1     = Krep->firstHit()->kalHit()->hit()->fltLen();
-    s2     = Krep->lastHit ()->kalHit()->hit()->fltLen();
+    // s1     = Krep->firstHit()->kalHit()->hit()->fltLen();
+    // s2     = Krep->lastHit ()->kalHit()->hit()->fltLen();
+
+    const TrkHitVector* hots = &Krep->hitVector();
+    int nh = hots->size();
+
+    const TrkHit *first(nullptr), *last(nullptr);
+
+    for (int ih=0; ih<nh; ++ih) {
+      const TrkHit* hit = hots->at(ih);
+      if (hit  != nullptr) {
+	if (first == nullptr) first = hit;
+	last = hit;
+      }
+    }
+
+    s1 = first->fltLen();
+    s2 = last ->fltLen();
+
     z1     = Krep->position(s1).z();
     z2     = Krep->position(s2).z();
 
@@ -404,10 +421,38 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 // in all cases define momentum at lowest Z - ideally, at the tracker entrance
 // 'entlen' - trajectory length, corresponding to the first point in Z (?) 
 //-----------------------------------------------------------------------------
-    double  h1_fltlen, hn_fltlen, entlen;
+    double  h1_fltlen(1.e6), hn_fltlen(1.e6), entlen;
+    const TrkHit *first(nullptr), *last(nullptr);
 
-    h1_fltlen      = krep->firstHit()->kalHit()->hit()->fltLen();
-    hn_fltlen      = krep->lastHit ()->kalHit()->hit()->fltLen();
+    const TrkHitVector* hots = &krep->hitVector();
+    int nh = hots->size();
+
+    // const TrkHit* first = krep->firstHit()->kalHit()->hit();
+    // const TrkHit* last  = krep->lastHit ()->kalHit()->hit();
+
+    for (int ih=0; ih<nh; ++ih) {
+      const TrkHit* hit =  hots->at(ih);
+      if (hit   != nullptr) {
+	if (first == nullptr) first = hit;
+	last = hit;
+      }
+    }
+
+    // if (dynamic_cast<const mu2e::TrkStrawHit*> (first) == nullptr) { 
+    //   printf("ERROR in StntupleInitTrackBlock for Event: %8i : first hit is not a mu2e::TrkStrawHit, test fltLen*\n",ev_number);
+    //   double len = first->fltLen();
+    //   printf("first->fltLen() = %10.3f\n",len);
+    // }
+
+    // if (dynamic_cast<const mu2e::TrkStrawHit*> (last ) == nullptr) { 
+    //   printf("ERROR in StntupleInitTrackBlock for Event: %8i : last  hit is not a mu2e::TrkStrawHit, test fltLen*\n",ev_number);
+    //   double len = last->fltLen();
+    //   printf("last->fltLen() = %10.3f\n",len);
+    // }
+
+    if (first) h1_fltlen = first->fltLen();
+    if (last ) hn_fltlen = last->fltLen();
+
     entlen         = std::min(h1_fltlen,hn_fltlen);
 
     CLHEP::Hep3Vector fitmom = krep->momentum(entlen);

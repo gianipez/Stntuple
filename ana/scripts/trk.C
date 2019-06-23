@@ -4,7 +4,7 @@
 #include "Stntuple/scripts/global_vars.h"
 #include "Stntuple/ana/scripts/modules.hh"
 
-def_name trk_001("stn_trk_ana");
+def_name stn_trk_001("stn_trk_ana");
 
 void stn_trk_ana(int PdgCode = 11, int GeneratorCode = 2) {
 //-----------------------------------------------------------------------------
