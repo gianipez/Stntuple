@@ -40,13 +40,13 @@ EOF
 #------------------------------------------------------------------------------
 echo "#include \"TInterpreter.h\""                >| $pkg/ana/scripts/load_stnana_scripts_$pkg.C
 echo "#include \"${pkg}/ana/scripts/modules.hh\"" >> $pkg/ana/scripts/load_stnana_scripts_$pkg.C
+echo "int load_stnana_scripts_${pkg}() {"         >> $pkg/ana/scripts/load_stnana_scripts_$pkg.C
 cat << "EOF"                                      >> $pkg/ana/scripts/load_stnana_scripts_$pkg.C
 //-----------------------------------------------------------------------------
 // the first parameter is the script, the second - env.var telling whether 
 // the script has to be loaded. If the corresponding env. variable is not defined,
 // the script is not loaded. PWD is always defined
 //-----------------------------------------------------------------------------
-int load_stnana_scripts_MyAna() {
   char        macro[200];
 
   const char* script[] = { 
