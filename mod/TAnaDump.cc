@@ -765,7 +765,7 @@ void TAnaDump::printCrvRecoPulse(const mu2e::CrvRecoPulse* Pulse,
     int nind        = Pulse->GetWaveformIndices().size();
     float time      = Pulse->GetPulseTime();
     float height    = Pulse->GetPulseHeight();
-    float width     = Pulse->GetPulseWidth();
+    float width     = Pulse->GetPulseBeta(); // was GetPulseWidth();
     float chi2      = Pulse->GetPulseFitChi2();
     float le_time   = Pulse->GetLEtime();
 

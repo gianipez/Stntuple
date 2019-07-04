@@ -112,7 +112,7 @@ int StntupleInitCrvClusterBlock::InitDataBlock(TStnDataBlock* Block, AbsEvent* E
 
 	float time           = ralph->GetPulseTime();
 	float height         = ralph->GetPulseHeight();
-	float width          = ralph->GetPulseWidth();
+	float width          = ralph->GetPulseBeta(); // was GetPulseWidth();
 	float chi2           = ralph->GetPulseFitChi2();
 	float le_time        = ralph->GetLEtime();
 
