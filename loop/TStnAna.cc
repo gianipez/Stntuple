@@ -210,9 +210,9 @@ TStnAna::~TStnAna()
 
   // Get rid of the profile histograms
   //printf(" TStnAna: profiles.\n"); fflush(stdout); fflush(stderr);
-  delete fIntLumiTev;
-  delete fIntLumiLive;
-  delete fIntLumiOffl;
+  // delete fIntLumiTev;
+  // delete fIntLumiLive;
+  // delete fIntLumiOffl;
 }
 
 
@@ -770,7 +770,6 @@ int TStnAna::BeginJob()
 {
   // initialization actions to be done after construction
 
-  char  name[200], title[200];
   int rc;
 
   rc = fInputModule->BeginJob();
@@ -806,14 +805,14 @@ int TStnAna::BeginJob()
     TIter itt(fEvent->GetListOfInputNodes());
     TStnNode*   node;
     TObjString* name;
-    const char* branch_name;
+
     TObjArray*  drop_list = fOutputModule->GetDropList();
     TObjArray*  keep_list = fOutputModule->GetKeepList();
-    int ndropped = drop_list->GetEntriesFast();
-    int nkept    = keep_list->GetEntriesFast();
+    int         ndropped  = drop_list->GetEntriesFast();
+    int         nkept     = keep_list->GetEntriesFast();
 
     while ((node = (TStnNode*) itt.Next())) {
-      branch_name = node->GetName();
+      const char* branch_name = node->GetName();
 
       // If the keep list has an element we drop everything and only
       // check the keep list
@@ -852,21 +851,22 @@ int TStnAna::BeginJob()
 //-----------------------------------------------------------------------------
 //  book luminosity histograms
 //-----------------------------------------------------------------------------
-  sprintf(name, "int_lumi_tev");
-  sprintf(title,"Integrated delivered luminosity");
-  fIntLumiTev = new TProfile(name,title,1000,110000,210000,0,1e10);
+  // char  name[200], title[200];
+  // sprintf(name, "int_lumi_tev");
+  // sprintf(title,"Integrated delivered luminosity");
+  // fIntLumiTev = new TProfile(name,title,1000,110000,210000,0,1e10);
 
-  sprintf(name, "int_lumi_tape");
-  sprintf(title,"Integrated recorded luminosity");
-  fIntLumiLive = new TProfile(name,title,1000,110000,210000,0,1e10);
+  // sprintf(name, "int_lumi_tape");
+  // sprintf(title,"Integrated recorded luminosity");
+  // fIntLumiLive = new TProfile(name,title,1000,110000,210000,0,1e10);
 
-  sprintf(name, "int_lumi_offl");
-  sprintf(title,"Integrated offline luminosity");
-  fIntLumiOffl = new TProfile(name,title,1000,110000,210000,0,1e10);
+  // sprintf(name, "int_lumi_offl");
+  // sprintf(title,"Integrated offline luminosity");
+  // fIntLumiOffl = new TProfile(name,title,1000,110000,210000,0,1e10);
 
-  fFolder->Add(fIntLumiTev);
-  fFolder->Add(fIntLumiLive);
-  fFolder->Add(fIntLumiOffl);
+  // fFolder->Add(fIntLumiTev);
+  // fFolder->Add(fIntLumiLive);
+  // fFolder->Add(fIntLumiOffl);
 				// visualization hook
   SetTitleNode();
 
