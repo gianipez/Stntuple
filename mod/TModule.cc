@@ -22,6 +22,7 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 TModule::TModule(fhicl::ParameterSet const& PSet, const char* Name):
+  art::EDFilter(PSet),
   TNamed(Name,Name)
 {
 

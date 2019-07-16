@@ -33,13 +33,16 @@ def stntuple_gen_rootcint(source, target, env, for_signature):
     
     includes =   "-Iinclude -I"+os.environ['MU2E_BASE_RELEASE'];
     includes = includes + " -I"+os.environ['ART_INC'     ];
+    includes = includes + " -I"+os.environ['ART_ROOT_IO_INC'];
     includes = includes + " -I"+os.environ['BTRK_INC'    ];
     includes = includes + " -I"+os.environ['CETLIB_INC'  ];
     includes = includes + " -I"+os.environ['CETLIB_EXCEPT_INC'];
     includes = includes + " -I"+os.environ['CANVAS_INC'  ];
     includes = includes + " -I"+os.environ['FHICLCPP_INC'];
+    includes = includes + " -I"+os.environ.get('HEP_CONCURRENCY_INC');
     includes = includes + " -I"+os.environ['CLHEP_INC'   ];
     includes = includes + " -I"+os.environ['BOOST_INC'   ];
+    includes = includes + " -I"+os.environ.get('TBB_INC');
 
     dict     = str(target[0]);
     tmp_lib_dir = os.path.dirname(dict);

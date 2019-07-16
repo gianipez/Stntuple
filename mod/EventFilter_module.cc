@@ -43,7 +43,7 @@ namespace mu2e {
   };
 
   EventFilter::EventFilter(fhicl::ParameterSet const& pset)
-    : art::EDFilter(),
+    : art::EDFilter(pset),
       _eventList(pset.get<vector<int>>("eventList")),
       _printFreq(pset.get<int>        ("printFreq"))
   {

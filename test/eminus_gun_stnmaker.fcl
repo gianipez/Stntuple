@@ -31,5 +31,12 @@ outputs.detectorOutput.fileName           : "sim._USER_.eminus_gun_stnmaker.xxx.
 physics.producers.generate                      : { @table::Stntuple.producers.egun }
 physics.producers.g4run.physics.physicsListName : "QGSP_BERT"
 #------------------------------------------------------------------------------
+# currently = choose MVA's of the right sign
+#------------------------------------------------------------------------------
+physics.producers.TrkQualDeMHPar.TrkQualMVA  : { @table::TrkQualNeg.TrkQualMVA }
+physics.producers.TrkQualDeMHDar.TrkQualMVA  : { @table::TrkQualNeg.TrkQualMVA }
+physics.producers.TrkQualDmuMHPar.TrkQualMVA : { @table::TrkQualNeg.TrkQualMVA }
+physics.producers.TrkQualDmuMHDar.TrkQualMVA : { @table::TrkQualNeg.TrkQualMVA }
+#------------------------------------------------------------------------------
 # everything below is appended by murat/scripts/submit_mu2e_job
 #------------------------------------------------------------------------------
