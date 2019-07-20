@@ -342,44 +342,10 @@ void TStnTrackAnaModule::FillEventHistograms(EventHist_t* Hist) {
   // Hist->fNStrawHits[1]->Fill(fNStrawHits);
 
   double emax   = -1;
-  //  double t0_cls = -1;
   double dt     = 9999.;
-
-  // TStnCluster* cluster(0);
-  // if (fNClusters > 0) cluster = fClusterBlock->Cluster(0);
-
-  // TStnTrack* track(0);
-  // if (fNTracks > 0) track = fTrackBlock->Track(0);
-
-  // if (cluster) {
-  //   emax   = cluster->Energy();
-  //   t0_cls = cluster->Time();
-  // }
-
-  // double t0_trk = -1;
-  // if (track) {
-  //   t0_trk = track->fT0;
-  // }
-
-  // if (track && cluster) {
-  //   dt = t0_cls-t0_trk;
-  // }
 
   Hist->fDtClT->Fill(dt);
   Hist->fEMax->Fill(emax);
-
-  //   TStrawHitData*  sh;
-  //   int n_good_hits = 0;
-  // for (int i=0; i<fNStrawHits; i++ ) {
-  //   sh = fStrawDataBlock->Hit(i);
-  //   dt = t0_cls-sh->Time() + 15;
-  //   Hist->fDtClS->Fill(dt);
-  //   Hist->fSHTime->Fill(sh->Time());
-
-  //   if (fabs(dt+15.)< 50) n_good_hits += 1;
-  // }
-
-  // Hist->fNGoodSH->Fill(n_good_hits);
 
   Hist->fNHyp->Fill(fNHyp);
   Hist->fBestHyp[0]->Fill(fBestHyp[0]);
@@ -454,7 +420,6 @@ void TStnTrackAnaModule::FillTrackHistograms(TrackHist_t* Hist, TStnTrack* Track
   Hist->fPFront->Fill(Track->fPFront);
   Hist->fPStOut->Fill(Track->fPStOut);
 					// dp: Tracker-only resolution
-
   Hist->fDpFront ->Fill(tp->fDpF);
   Hist->fDpFront0->Fill(tp->fDp0);
   Hist->fDpFront2->Fill(tp->fDp2);
@@ -468,8 +433,7 @@ void TStnTrackAnaModule::FillTrackHistograms(TrackHist_t* Hist, TStnTrack* Track
   Hist->fNActive->Fill(Track->NActive());
   Hist->fT0->Fill(Track->fT0);
   Hist->fT0Err->Fill(Track->fT0Err);
-  //  printf("TStnTrackAnaModule::FillTrackHistograms: track charge is not defined yet\n");
-  Hist->fQ->Fill(-1);
+  Hist->fQ->Fill(Track->Charge());
   Hist->fFitCons[0]->Fill(Track->fFitCons);
   Hist->fFitCons[1]->Fill(Track->fFitCons);
 
@@ -505,7 +469,6 @@ void TStnTrackAnaModule::FillTrackHistograms(TrackHist_t* Hist, TStnTrack* Track
     Hist->fRTrk->Fill  (999.);
     Hist->fZTrk->Fill  (-1. );
   }
-
 //-----------------------------------------------------------------------------
 // there is an inconsistency in the SIMP block filling - in Mu2e offline 
 // the particle momentumis is kept in MeV/c, while the PDG mass  -in GeV/c^2..
