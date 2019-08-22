@@ -130,7 +130,7 @@ MuHitDisplay: { module_type:MuHitDisplay                 # the class name;
     showTracks                   : true
     
     genpCollTag                  : generate
-    spmcCollTag                  : g4run
+    spmcCollTag                  : "compressDigiMCs" # was g4run
     strawHitCollTag              : makeSH
     strawDigiMCCollTag           : "compressDigiMCs" #  was "makeSD"
     strawHitFlagCollTag          : "DeltaFinder:StrawHits"
