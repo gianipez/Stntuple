@@ -245,7 +245,7 @@ Stntuple : {
 	    makePid                 : 0
 	    trackBlockName          : [ "TrackBlockDpp"            ]
 	    trackSHBlockName        : [ "TrackHitBlockDpp"         ]
-	    trackCollTag            : [ "MergePatRecDpp"           ]
+	    trackCollTag            : [ "KFFDpP"                   ]
 	    tciCollTag              : [ "TrackCaloIntersectionDpp" ]
 	    tcmCollTag              : [ "TrackCaloMatchingDpp"     ]
 	    pidBlockName            : [ "PidBlockDpp"              ]

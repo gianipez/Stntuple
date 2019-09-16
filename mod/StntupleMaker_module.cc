@@ -528,6 +528,7 @@ void StntupleMaker::beginJob() {
       if (block) {
 	block->AddCollName("mu2e::KalRepCollection"              ,fTrackCollTag[i].data ());
 	block->AddCollName("mu2e::StrawHitCollection"            ,fStrawHitsCollTag.data());
+	block->AddCollName("mu2e::StrawDigiMCCollection"         ,fStrawDigiMCCollTag.data());
 	//      SetResolveLinksMethod(block_name,StntupleInitMu2eTrackBlockLinks);
       }
     }

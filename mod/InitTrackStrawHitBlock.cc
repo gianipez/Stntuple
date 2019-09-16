@@ -13,7 +13,7 @@
 #include "MCDataProducts/inc/SimParticle.hh"
 #include "MCDataProducts/inc/StepPointMC.hh"
 #include "MCDataProducts/inc/StepPointMCCollection.hh"
-#include "MCDataProducts/inc/PtrStepPointMCVectorCollection.hh"
+#include "MCDataProducts/inc/StrawDigiMCCollection.hh"
 
 //-----------------------------------------------------------------------------
 Int_t StntupleInitMu2eTrackStrawHitBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int Mode) 
@@ -26,7 +26,7 @@ Int_t StntupleInitMu2eTrackStrawHitBlock(TStnDataBlock* Block, AbsEvent* AnEvent
   mu2e::KalRepPtrCollection*               list_of_kreps(0);
 
   static char   strh_module_label[100], strh_description[100];
-  static char   stmc_module_label[100], stmc_description[100];
+  static char   sdmc_module_label[100], sdmc_description[100];
   static char   krep_module_label[100], krep_description[100];
 
   ev_number = AnEvent->event();
@@ -45,14 +45,12 @@ Int_t StntupleInitMu2eTrackStrawHitBlock(TStnDataBlock* Block, AbsEvent* AnEvent
   data->GetModuleLabel("mu2e::KalRepCollection"  ,krep_module_label);
   data->GetDescription("mu2e::KalRepCollection"  ,krep_description );
 
-  data->GetModuleLabel("mu2e::PtrStepPointMCVectorCollection",stmc_module_label);
-  data->GetDescription("mu2e::PtrStepPointMCVectorCollection",stmc_description );
+  data->GetModuleLabel("mu2e::StrawDigiMCCollection",sdmc_module_label);
+  data->GetDescription("mu2e::StrawDigiMCCollection",sdmc_description );
 
   art::Handle<mu2e::ComboHitCollection>       strh_handle;
   const mu2e::ComboHitCollection*             list_of_hits(0);
 
-  art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptr_handle;
-  const mu2e::PtrStepPointMCVectorCollection* list_of_steps(0);
 
   art::Handle<mu2e::KalRepPtrCollection> krepsHandle;
   if (krep_module_label[0] != 0) {
@@ -61,14 +59,17 @@ Int_t StntupleInitMu2eTrackStrawHitBlock(TStnDataBlock* Block, AbsEvent* AnEvent
     if (krepsHandle.isValid())    list_of_kreps = (mu2e::KalRepPtrCollection*) krepsHandle.product();
   }
 
+  art::Handle<mu2e::StrawDigiMCCollection> sdmccH;
+  const mu2e::StrawDigiMCCollection* sdmcc(nullptr);
+
   if (strh_module_label[0] != 0) {
     if (strh_description[0] == 0) AnEvent->getByLabel(strh_module_label,strh_handle);
     else                          AnEvent->getByLabel(strh_module_label,strh_description,strh_handle);
 
     if (strh_handle.isValid()) list_of_hits = strh_handle.product();
 
-    AnEvent->getByLabel(stmc_module_label,stmc_description,mcptr_handle);
-    if (mcptr_handle.isValid()) list_of_steps = mcptr_handle.product();
+    AnEvent->getByLabel(sdmc_module_label,sdmc_description,sdmccH);
+    if (sdmccH.isValid()) sdmcc = sdmccH.product();
   }
 
   if (list_of_hits == NULL) {
@@ -121,8 +122,13 @@ Int_t StntupleInitMu2eTrackStrawHitBlock(TStnDataBlock* Block, AbsEvent* AnEvent
       
 	hit  = data->NewHit();
 
-	mu2e::PtrStepPointMCVector const& mcptr (list_of_steps->at(loc));
-	step = mcptr[0].get();
+	const mu2e::StrawDigiMC* sdmc = &sdmcc->at(loc);
+	if (sdmc->wireEndTime(mu2e::StrawEnd::cal) < sdmc->wireEndTime(mu2e::StrawEnd::hv)) {
+	  step = sdmc->stepPointMC(mu2e::StrawEnd::cal).get();
+	}
+	else {
+	  step = sdmc->stepPointMC(mu2e::StrawEnd::hv ).get();
+	}
 
 	if (step) {
 	  art::Ptr<mu2e::SimParticle> const& simptr = step->simParticle(); 
