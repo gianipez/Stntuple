@@ -216,7 +216,7 @@ int TTxtCatalogServer::InitChain(TChain*     Chain,
 
     char*    file = strtok(list_of_files,", ");
     do {
-      sprintf(remote_file,"root://%s/%s/%s",remote_server,remote_dir,file);
+      sprintf(remote_file,"root://%s//%s/%s",remote_server,remote_dir,file);
       Chain->AddFile(remote_file,TChain::kBigNumber);
     } while ((file = strtok(0,", ")));
 
