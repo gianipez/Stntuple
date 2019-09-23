@@ -812,7 +812,8 @@ int THttpCatalogServer::InitDataset(TStnDataset*     Dataset,
 	    int len = strlen(hostname);
 	    hostname[len-1] = 0;
 
-	    sprintf(full_name,"root://%s//%s/%s",hostname,path.Data(),fn);
+	    //	    sprintf(full_name,"root://%s//%s/%s",hostname,path.Data(),fn);
+	    sprintf(full_name,"/%s/%s",path.Data(),fn);
 	  }
 	  else {
 //-----------------------------------------------------------------------------
