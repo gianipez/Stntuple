@@ -42,6 +42,7 @@ physics : {
 # disable everything, require stage2 StepPointMC collection ("DSVacuum")
 #------------------------------------------------------------------------------
 	    makeClusters    : 0  # default: 1
+	    makeCrvClusters : 0  # default: 1
 	    makePid         : 0  # default: 1
 	    makeStepPointMC : 1  # default: 0
 	    makeTracks      : 0  # default: 1
@@ -49,8 +50,9 @@ physics : {
 
 	    simpCollTag     : "muonBeamFilter"
 
-	    spmcBlockName   : ["SpmcBlock"              , "VDetBlock"      ]
+	    spmcBlockName   : ["SpmcBlock"              , "VDetBlock"                      ]
 	    spmcCollTag     : ["muonBeamFilter:DSVacuum", "muonBeamFilter:virtualdetector" ]
+	    statusG4Tag     : [ "g4run"                 , "g4run"                          ]
 	}
 	InitStntuple : { @table::filters.InitStntuple histFileName : "nts.USER.PROJECT.g4s2_mubeam.000001.stn" }
     }

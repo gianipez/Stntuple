@@ -42,18 +42,20 @@ physics : {
 #------------------------------------------------------------------------------
 # disable everything, enable StepPointMC
 #------------------------------------------------------------------------------
-	    makeClusters        : 0
-	    makePid             : 0
-	    makeTracks          : 0
-	    makeStepPointMC     : 1
+	    makeClusters    : 0
+	    makeCrvClusters : 0  # default: 1
+	    makePid         : 0
+	    makeTracks      : 0
+	    makeStepPointMC : 1
 
-	    simpCollTag         : "mothersFilter"
+	    simpCollTag     : "mothersFilter"
 
 # suppress calculation of MC time offsets, not really needed, just an example
-	    TimeOffsets         : {}
+	    TimeOffsets     : {}
 
-	    spmcBlockName       : ["SpmcBlock"              , "VDetBlock"                      ]
-	    spmcCollTag         : ["muonBeamFilter:DSVacuum", "muonBeamFilter:virtualdetector" ]
+	    spmcBlockName   : ["SpmcBlock"              , "VDetBlock"                      ]
+	    spmcCollTag     : ["muonBeamFilter:DSVacuum", "muonBeamFilter:virtualdetector" ]
+	    statusG4Tag     : [ "g4run"                 , "g4run"                          ]
 	}
 
 	InitStntuple : { @table::filters.InitStntuple 

@@ -16,7 +16,7 @@
 #------------------------------------------------------------------------------
 #include "Stntuple/fcl/prolog.fcl"
 
-BEGIN_PROLOG
+### BEGIN_PROLOG
 #------------------------------------------------------------------------------
 # declarations of sequences do not require the sequence elements to be defined
 #------------------------------------------------------------------------------
@@ -184,7 +184,7 @@ BEGIN_PROLOG
 #                                          @sequence::TrackCaloMatching.matching,
 # 					   ParticleID, 
 # 					   MuHitDisplay]
-END_PROLOG
+### END_PROLOG
 #------------------------------------------------------------------------------
 # input module definition
 #------------------------------------------------------------------------------
@@ -287,7 +287,7 @@ Stntuple : { @table::Stntuple             # defined in Stntuple/fcl/prolog.fcl
 
 	@table::CrvDAQPackage.producers    # defined in CRVResponse
 	@table::CrvRecoMCPackage.producers # defined in CRVResponse
-	CrvCoincidenceClusterMatchMC: { @table::CrvCoincidenceClusterMatchMC timeOffsets: @local::TIME_OFFSET_MAPS } 
+	CrvCoincidenceClusterMatchMC: { @table::CrvCoincidenceClusterMatchMC timeOffsets: { inputs: @local::CommonMC.TimeMaps } } 
     }
 
     filters : { @table::Stntuple.filters

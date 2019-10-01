@@ -110,6 +110,7 @@ StntupleMakerTemplate : { module_type:StntupleMaker
 #------------------------------------------------------------------------------
     spmcBlockName        : [ "SpmcBlockVDet"                  , "SpmcBlock"             ]
     spmcCollTag          : [ "compressDigiMCs:virtualdetector", "muonBeamFilter:mubeam" ]
+    statusG4Tag          : [ "g4run"                          , "g4run"                 ]
 #------------------------------------------------------------------------------
 # filtering
 #------------------------------------------------------------------------------
@@ -131,6 +132,7 @@ MuHitDisplay: { module_type:MuHitDisplay                 # the class name;
     
     genpCollTag                  : generate
     spmcCollTag                  : "compressDigiMCs" # was g4run
+    statuG4Tag                   : "g4run"           # 
     strawHitCollTag              : makeSH
     strawDigiMCCollTag           : "compressDigiMCs" #  was "makeSD"
     strawHitFlagCollTag          : "DeltaFinder:StrawHits"
@@ -443,6 +445,7 @@ Stntuple : {
 
 	    spmcBlockName              : [ "SpmcBlockVDet"                   ]
 	    spmcCollTag                : [ "compressDigiMCs:virtualdetector" ]
+	    statusG4Tag                : [ "g4run"                           ]
 	}
 
 	StntupleMakerDmu : { @table::StntupleMakerTemplate 

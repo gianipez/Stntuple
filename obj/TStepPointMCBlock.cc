@@ -7,19 +7,58 @@
 
 ClassImp(TStepPointMCBlock)
 
+
+//-----------------------------------------------------------------------------
+void TStepPointMCBlock::ReadV1(TBuffer& R__b) {
+  struct TStepPointMCBlockV1_t {
+    Int_t          fNStepPoints;		// total # of StepPointMC's
+    TClonesArray*  fListOfStepPoints;
+  };
+
+  R__b    >> fNStepPoints;
+  fListOfStepPoints->Streamer(R__b);
+					// added in V2
+  fG4Status         = -1;
+  fNG4Tracks        = -1;
+  fNOverflowSimP    = -1;
+  fNKilledStepLim   = -1;
+  fNKilledFieldProp = -1;
+  fG4CpuTime        = -1;
+  fG4RealTime       = -1;
+      
+}
+
 //______________________________________________________________________________
-void TStepPointMCBlock::Streamer(TBuffer &R__b) 
-{
+void TStepPointMCBlock::Streamer(TBuffer &R__b) {
    // Stream an object of class TStepPointMCBlock as compact, as possible
 
   if (R__b.IsReading()) {
-    Version_t R__v = R__b.ReadVersion(); if (R__v) { }
-    R__b >> fNStepPoints;
-    fListOfStepPoints->Streamer(R__b);
+    Version_t R__v = R__b.ReadVersion(); 
+    if (R__v == 1) { 
+      ReadV1(R__b);
+    }
+    else {
+      R__b >> fNStepPoints;
+      R__b >> fG4Status;		// added in V2
+      R__b >> fNG4Tracks;		// added in V2
+      R__b >> fNOverflowSimP;		// added in V2
+      R__b >> fNKilledStepLim;		// added in V2
+      R__b >> fNKilledFieldProp;	// added in V2
+      R__b >> fG4CpuTime;		// added in V2
+      R__b >> fG4RealTime;		// added in V2
+      fListOfStepPoints->Streamer(R__b);
+    }
   } 
   else {
     R__b.WriteVersion(TStepPointMCBlock::IsA());
     R__b << fNStepPoints;
+    R__b << fG4Status;			// added in V2
+    R__b << fNG4Tracks;			// added in V2
+    R__b << fNOverflowSimP;		// added in V2
+    R__b << fNKilledStepLim;		// added in V2
+    R__b << fNKilledFieldProp;		// added in V2
+    R__b << fG4CpuTime;			// added in V2
+    R__b << fG4RealTime;		// added in V2
     fListOfStepPoints->Streamer(R__b);
   }
 }
@@ -28,6 +67,14 @@ void TStepPointMCBlock::Streamer(TBuffer &R__b)
 TStepPointMCBlock::TStepPointMCBlock() {
   fGenProcessID     = -1;
   fNStepPoints      =  0;
+  fG4Status         = -1;		
+  fNG4Tracks        = -1;		
+  fNOverflowSimP    = -1;
+  fNKilledStepLim   = -1;
+  fNKilledFieldProp = -1;  
+  fG4CpuTime        = -1;
+  fG4RealTime       = -1;
+  
   fListOfStepPoints = new TClonesArray("TStepPointMC",10);
   fListOfStepPoints->BypassStreamer(kFALSE);
 }
@@ -42,7 +89,14 @@ TStepPointMCBlock::~TStepPointMCBlock() {
 
 //_____________________________________________________________________________
 void TStepPointMCBlock::Clear(const char* opt) {
-  fNStepPoints    = 0;
+  fNStepPoints      = 0;
+  fG4Status         = -1;
+  fNG4Tracks        = -1;
+  fNOverflowSimP    = -1;
+  fNKilledStepLim   = -1;
+  fNKilledFieldProp = -1;
+  fG4CpuTime        = -1;
+  fG4RealTime       = -1;
 					// don't modify cut values at run time
   fListOfStepPoints->Clear(opt);
 

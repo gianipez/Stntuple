@@ -2,15 +2,16 @@
 #define STNTUPLE_TStnInitDataBlock
 //-----------------------------------------------------------------------------
 //  base class for initialization of STNTUPLE data block
-//  Author:    Pasha Murat (Mu2e/FNAL)
+//  Author:    P.Murat (Mu2e/FNAL)
 //  Date:      Feb 10 2019
 //-----------------------------------------------------------------------------
 #include "Stntuple/obj/AbsEvent.hh"
+#include "TObject.h"
 
 // class TStnEvent;
 class TStnDataBlock;
 
-class TStnInitDataBlock {
+class TStnInitDataBlock: public TObject {
 public:
 //-----------------------------------------------------------------------------
 //  constructors and destructor

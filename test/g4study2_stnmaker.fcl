@@ -41,6 +41,7 @@ physics : {
 # disable everything, enable SimParticles
 #------------------------------------------------------------------------------
 	    makeClusters    : 0
+	    makeCrvClusters : 0  # default: 1
 	    makePid         : 0
 	    makeSimp        : 1
 	    makeTracks      : 0
@@ -50,6 +51,7 @@ physics : {
 
 	    spmcBlockName   : ["SpmcBlock"     , "VDetBlock"    ]
 	    spmcCollTag     : ["g4run:stepper" , "g4run:timeVD" ]
+	    statusG4Tag     : ["g4run"         , "g4run"        ]
 	}
 	InitStntuple : { @table::filters.InitStntuple histFileName : "nts.murat.project.g4study2.simp.stn" }
     }

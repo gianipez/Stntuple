@@ -26,15 +26,22 @@
 class TStnEvent;
 
 class TStepPointMCBlock: public TStnDataBlock {
-  friend Int_t StntupleInitMu2eStepPointMCBlock  (TStnDataBlock*, TStnEvent*, int);
+  friend class StntupleInitStepPointMCBlock;
 protected:
 //-----------------------------------------------------------------------------
 //  data members
 //-----------------------------------------------------------------------------
   Int_t          fNStepPoints;		// total # of StepPointMC's
+  int            fG4Status;		// added in V2 (from MCDataProducts/inc/G4Status.hh)
+  int            fNG4Tracks;		// added in V2
+  int            fNOverflowSimP;	// added in V2
+  int            fNKilledStepLim;	// added in V2
+  int            fNKilledFieldProp;	// added in V2
+  float          fG4CpuTime;		// added in V2
+  float          fG4RealTime;		// added in V2
   TClonesArray*  fListOfStepPoints;
 //-----------------------------------------------------------------------------
-// transients - parameters (temp solution
+// transients - parameters (temp solution)
 //-----------------------------------------------------------------------------
   int            fGenProcessID;         //! don't save, generated process ID
 //-----------------------------------------------------------------------------
@@ -47,8 +54,15 @@ public:
 //-----------------------------------------------------------------------------
 // accessors
 //-----------------------------------------------------------------------------
-  int             GenProcessID() { return fGenProcessID; }
-  Int_t           NStepPoints () { return fNStepPoints ; }
+  int             GenProcessID    () { return fGenProcessID    ; }
+  int             NStepPoints     () { return fNStepPoints     ; }
+  int             G4Status        () { return fG4Status        ; }
+  int             NG4Tracks       () { return fNG4Tracks       ; }
+  int             NOverflowSimP   () { return fNOverflowSimP   ; }
+  int             NKilledStepLim  () { return fNKilledStepLim  ; }
+  int             NKilledFieldProp() { return fNKilledFieldProp; }
+  float           G4CpuTime       () { return fG4CpuTime       ; }
+  float           G4RealTime      () { return fG4RealTime      ; }
 
 					// `i'-th StepPoint in the list
   TStepPointMC*   StepPointMC(int i) { 
@@ -75,7 +89,9 @@ public:
 //-----------------------------------------------------------------------------
 //  I/O and schema evolution
 //-----------------------------------------------------------------------------
-  ClassDef(TStepPointMCBlock,1)		// TStepPointMC block: Mu2e G4 output
+  void   ReadV1(TBuffer& R__b);
+
+  ClassDef(TStepPointMCBlock,2)	 // TStepPointMC block: Mu2e G4 output
 };
 
 #endif

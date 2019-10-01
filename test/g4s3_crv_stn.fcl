@@ -42,6 +42,7 @@ physics : {
 # disable everything, require stage2 StepPointMC collection ("DSVacuum")
 #------------------------------------------------------------------------------
 	    makeClusters    : 0
+	    makeCrvClusters : 0  # default: 1
 	    makePid         : 0
 	    makeSimp        : 1
 	    makeTracks      : 0
@@ -52,6 +53,7 @@ physics : {
 
 	    spmcBlockName   : ["SpmcBlock"     , "VDetBlock"                 ]
 	    spmcCollTag     : ["crvFilter"     , "crvFilter:virtualdetector" ]
+	    statusG4Tag     : [ "g4run"        , "g4run"                     ]
 	}
 	InitStntuple : { @table::filters.InitStntuple histFileName : "nts._USER_._DATASET_.g3s3_crv_stn.000001.stn" }
     }

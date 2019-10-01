@@ -24,7 +24,7 @@ public:
   void   SetGenProcessID   (int          ID  ) { fGenProcessID = ID                ; }
 
   virtual int InitDataBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode);
-  //  virtual int ResolveLinks (TStnDataBlock* Block, AbsEvent* Evt, int Mode);
+  // virtual int ResolveLinks (TStnDataBlock* Block, AbsEvent* Evt, int Mode);
 
 };
 

@@ -28,6 +28,10 @@
 #include "TFolder.h"
 #include "TSystem.h"
 
+// conditions
+#include "ConditionsService/inc/ConditionsHandle.hh"
+#include "ConditionsService/inc/AcceleratorParams.hh"
+
 #include "Stntuple/obj/TStnNode.hh"
 #include "Stntuple/obj/TStnErrorLogger.hh"
 #include "Stntuple/obj/TStnTrackBlock.hh"
@@ -49,6 +53,7 @@
 #include "Stntuple/mod/InitCrvClusterBlock.hh"
 #include "Stntuple/mod/InitSimpBlock.hh"
 #include "Stntuple/mod/InitGenpBlock.hh"
+#include "Stntuple/mod/InitStepPointMCBlock.hh"
 
 #include "Stntuple/mod/InitStntupleDataBlocks.hh"
 #include "Stntuple/mod/StntupleUtilities.hh"
@@ -136,6 +141,7 @@ protected:
 
   vector<string>           fSpmcBlockName;
   vector<string>           fSpmcCollTag;
+  vector<string>           fStatusG4Tag;
 
   string                   fCaloCrystalHitMaker;
   string                   fCaloClusterMaker;
@@ -146,6 +152,7 @@ protected:
   StntupleInitCrvClusterBlock* fInitCrvClusterBlock;
   StntupleInitSimpBlock*       fInitSimpBlock;
   StntupleInitGenpBlock*       fInitGenpBlock;
+  TObjArray*                   fInitStepPointMCBlock;
 //-----------------------------------------------------------------------------
 // cut-type parameters
 //-----------------------------------------------------------------------------
@@ -252,6 +259,7 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
   
   , fSpmcBlockName           (PSet.get<vector<string>>("spmcBlockName"       ))
   , fSpmcCollTag             (PSet.get<vector<string>>("spmcCollTag"         ))
+  , fStatusG4Tag             (PSet.get<vector<string>>("statusG4Tag"         ))
 
   , fCaloCrystalHitMaker     (PSet.get<string>        ("caloCrystalHitsMaker"))
   , fCaloClusterMaker        (PSet.get<string>        ("caloClusterMaker"    ))
@@ -271,10 +279,12 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
   fVersion      = new TNamed(ver,text);
   TModule::fFolder->Add(fVersion);
 
-  fInitCrvPulseBlock   = nullptr;
-  fInitCrvClusterBlock = nullptr;
-  fInitSimpBlock       = nullptr;
-  fInitGenpBlock       = nullptr;
+  fInitCrvPulseBlock    = nullptr;
+  fInitCrvClusterBlock  = nullptr;
+  fInitSimpBlock        = nullptr;
+  fInitGenpBlock        = nullptr;
+  fInitStepPointMCBlock = new TObjArray();
+  fInitStepPointMCBlock->SetOwner(kTRUE);
 //-----------------------------------------------------------------------------
 // fTimeOffsets is owned by the TAnaDump singleton
 //-----------------------------------------------------------------------------
@@ -301,6 +311,8 @@ StntupleMaker::~StntupleMaker() {
   if (fInitCrvPulseBlock  ) delete fInitCrvPulseBlock;
   if (fInitCrvClusterBlock) delete fInitCrvClusterBlock;
   if (fInitSimpBlock      ) delete fInitSimpBlock;
+
+  delete fInitStepPointMCBlock;
 }
 
 
@@ -319,6 +331,21 @@ bool StntupleMaker::beginRun(art::Run& aRun) {
     const char* c = gSystem->Getenv("STNMAKER_PROD_TCL");
     if (c) TModule::fFolder->Add(new TNamed("STNMAKER_PROD_TCL",c));
     else   TModule::fFolder->Add(new TNamed("STNMAKER_PROD_TCL","unknown"));
+  }
+
+//-----------------------------------------------------------------------------
+// StepPointMC collections - set mbtime - have to do that at beginRun()
+//-----------------------------------------------------------------------------
+  if (fMakeStepPointMC) {
+    int nblocks = fSpmcBlockName.size();
+
+    mu2e::ConditionsHandle<mu2e::AcceleratorParams> accPar("ignored");
+    float mbtime = accPar->deBuncherPeriod;
+
+    for (int i=0; i<nblocks; i++) {
+      StntupleInitStepPointMCBlock* init_block = static_cast<StntupleInitStepPointMCBlock*> (fInitStepPointMCBlock->At(i));
+      init_block->SetMbTime(mbtime);
+    }
   }
 
   THistModule::afterBeginRun(aRun);
@@ -639,17 +666,22 @@ void StntupleMaker::beginJob() {
 
     for (int i=0; i<nblocks; i++) {
       const char* block_name = fSpmcBlockName[i].data();
+
+      StntupleInitStepPointMCBlock* init_block = new StntupleInitStepPointMCBlock();
+      fInitStepPointMCBlock->Add(init_block);
+
+      init_block->SetSpmcCollTag(fSpmcCollTag[i]);
+      init_block->SetStatusG4Tag(fStatusG4Tag[i]);
+      init_block->SetTimeOffsets(fTimeOffsets);
+
       TStnDataBlock* db = AddDataBlock(block_name,
 				       "TStepPointMCBlock",
-				       StntupleInitMu2eStepPointMCBlock,
+				       init_block,
 				       buffer_size,
 				       split_mode,
 				       compression_level);
       if (db) {
 	((TStepPointMCBlock*) db)->SetGenProcessID(fGenId.id());
-
-	db->AddCollName("mu2e::StepPointMCCollection",fSpmcCollTag[i].data());
-	db->AddCollName("TimeOffsetMapsHandle"       ,GetName()            ,"TimeOffsetMapsHandle");
       }
     }
     //      SetResolveLinksMethod(block_name,StntupleInitMu2eTrackBlockLinks);

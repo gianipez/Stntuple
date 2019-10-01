@@ -45,6 +45,7 @@ physics : {
 # VDET block is just yet another step point MC block
 #------------------------------------------------------------------------------
 	    makeClusters     : 0
+	    makeCrvClusters  : 0  # default: 1
 	    makePid          : 0
 	    makeSimp         : 1
 	    makeTracks       : 0
@@ -54,6 +55,7 @@ physics : {
 
 	    spmcBlockName    : ["SpmcBlock"            , "VDetBlock"                      ]
 	    spmcCollTag      : ["muonBeamFilter:mubeam", "muonBeamFilter:virtualdetector" ]
+	    statusG4Tag      : [ "g4run"               , "g4run"                          ]
 	}
 	InitStntuple : { @table::filters.InitStntuple histFileName : "nts.murat.xxx_xxxx.g4s1_mubeam.000001.stn" }
     }

@@ -27,4 +27,5 @@ physics.filters.StntupleMakerDe.makeSimp                 : 2          # save gen
 physics.filters.StntupleMakerDe.makeStepPointMC          : 0
 physics.filters.StntupleMakerDe.spmcBlockName            : [ "SpmcBlock"               ]
 physics.filters.StntupleMakerDe.spmcCollTag              : [ "compressDigiMCs:tracker" ]
+physics.filters.StntupleMakerDe.statusG4Tag              : [ "g4run"                   ]
 #------------------------------------------------------------------------------
