@@ -1,6 +1,9 @@
 # -*- mode:tcl -*-
 #------------------------------------------------------------------------------
-# configuration for ntupling outputof the Stage2 simulation
+# generate 105 MeV/c electrons
+# make STNTUPLE in one go, without creating an intermediate file
+# for 105 MeV/c electron : E = 105.00124           MeV
+# for 105 MeV/c muon     : E = 148.9584269653785   MeV
 #------------------------------------------------------------------------------
 BEGIN_PROLOG
 
@@ -11,12 +14,11 @@ END_PROLOG
 
 #include "Stntuple/fcl/templates.fcl"
 
-process_name : G4S3CrvStn
+process_name : G4PbarVD91Stn
 
-source       : { module_type : RootInput    
-    fileNames : [ 
-		 "/pnfs/mu2e/phy-sim/sim/mu2e/cd3-beam-g4s2-mubeam/0728a/031/509/sim.mu2e.cd3-beam-g4s2-mubeam.0728a.001002_00000000.art"
-		]
+source       : { module_type : RootInput 
+# use one of the concatenated Stage1 files 
+    fileNames : ["/pnfs/mu2e/tape/phy-sim/sim/mu2e/cd3-beam-cs1-mubeam/0506a/art/00/01/sim.mu2e.cd3-beam-cs1-mubeam.0506a.001002_00488421.art"]
 }
 
 outputs      : { @table::Stntuple.outputs   }
@@ -26,54 +28,49 @@ analyzers    : { @table::Stntuple.analyzers }
 paths        : { @table::Stntuple.paths     }
 
 physics : {
-    producers: { @table::producers 
-	generate                 : { @table::producers.egun }
-# for CE, not old background mixing - default: 'compressPVDetector'
-	CaloShowerStepFromStepPt : { @table::producers.CaloShowerStepFromStepPt  physVolInfoInput: "g4run" }
-    }
+    producers: { @table::producers }
     
     filters  : { @table::filters 
 	StntupleMaker: { @table::filters.StntupleMaker
 #------------------------------------------------------------------------------
-# disable everything, require stage2 StepPointMC collection ("DSVacuum")
+# disable everything, enable StepPointMC
+# VDET block is just yet another step point MC block
 #------------------------------------------------------------------------------
-	    makeClusters    : 0
-	    makeCrvClusters : 0  # default: 1
-	    makePid         : 0
-	    makeSimp        : 1
-	    makeTracks      : 0
-	    makeVirtualHits : 1
-	    makeStepPointMC : 1
+	    makeClusters     : 0
+	    makeCrvClusters  : 0  # default: 1
+	    makePid          : 0
+	    makeSimp         : 1
+	    makeTracks       : 0
+	    makeStepPointMC  : 1
 
-	    simpCollTag     : "crvFilter"
+	    vdHitsCollTag    : "g4filter:virtualdetector"     # was "g4run" before
+	    simpCollTag      : "g4filter"
 
-	    spmcBlockName   : ["SpmcBlock"     , "VDetBlock"                 ]
-	    spmcCollTag     : ["crvFilter"     , "crvFilter:virtualdetector" ]
-	    statusG4Tag     : [ "g4run"        , "g4run"                     ]
+	    spmcBlockName    : ["SpmcBlock"                        , "VDetBlock"                      ]
+	    spmcCollTag      : ["g4filter:VirtualDetectorPSPbarIn" , "g4filter:virtualdetector"       ]
+	    statusG4Tag      : [ "g4run"                           , "g4run"                          ]
 	}
-	InitStntuple : { @table::filters.InitStntuple histFileName : "nts._USER_._DATASET_.g3s3_crv_stn.000001.stn" }
+	InitStntuple : { @table::filters.InitStntuple histFileName : "nts.murat.xxx_xxxx.g4_pbar_vd91.000001.stn" }
     }
 
-    analyzers: { @table::analyzers }
+    analyzers : { @table::analyzers }
 
     @table::paths
 
-    p1            : [ @sequence::stnmaker_seq  ]
-    gcl           : [ genCountLogger ]
-
+    p1            : [ @sequence::stnmaker_seq ]
     trigger_paths : [ p1 ]
-    #    out : [GenEventCountReader, detectorOutput]  # detectorOutput is defined in Stntuple/fcl/templates.fcl
+    #    out : [ detectorOutput ]  # detectorOutput is defined in Stntuple/fcl/templates.fcl
     out           : [  ]
     end_paths     : [ gcl, out ]
 }
 
-services.TFileService.fileName            : "nts._USER_._DATASET_.g4s3_crv_stn.000001.root"
+services.TFileService.fileName            : "nts.murat.xxx_xxxx.g4_pbar_vd91.hist.000001.root"
 #------------------------------------------------------------------------------
 # uncomment the next 2 lines if you want the DST file to be written out
 #-----------------------------------------------------------------------------
 # physics.out                               : [ detectorOutput ]
 # outputs.detectorOutput.SelectEvents       : [ path_gen_digi_reco_stn_dem_dmm ]
-outputs.detectorOutput.fileName           : "sim._USER_._DATASET_.g4s3_crv_stn.000001.art"
+outputs.detectorOutput.fileName           : "sim.murat.xxx_xxxx.g4_pbar_vd91.000001.art"
 #------------------------------------------------------------------------------
 # debugging
 #------------------------------------------------------------------------------

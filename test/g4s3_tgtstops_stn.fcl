@@ -2,15 +2,11 @@
 #------------------------------------------------------------------------------
 # make STNTUPLE from the output of the stage 3 simulation - stopped muons (tgtStopFilter)
 #------------------------------------------------------------------------------
-#include "fcl/minimalMessageService.fcl"
-#include "fcl/standardProducers.fcl"
-#include "fcl/standardServices.fcl"
-
-#include "Stntuple/fcl/prolog.fcl"
-
 BEGIN_PROLOG
-  pdgCode    : @local::Particle.eminus
-  bgHitFiles : @nil
+
+  TIME_MAPS        @protect_ignore: [ ]
+  TIME_OFFSET_MAPS @protect_ignore: { inputs : @local::TIME_MAPS }
+
 END_PROLOG
 
 #include "Stntuple/fcl/templates.fcl"
