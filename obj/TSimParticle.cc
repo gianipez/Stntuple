@@ -191,13 +191,13 @@ void TSimParticle::Print(Option_t* Opt) const {
 				// print banner
     printf("------------------------------------------------------");
     printf("-------------------------------------------------------------------------------");
-    printf("------------------------------------------------------------------------------\n");
+    printf("------------------------------------------------------------------------------------\n");
     printf("   i name                   PDG     ID GenID  ParentID");
-    printf("    p0x       p0y       p0z       p0       v0x        v0y      v0z         t0   ");
-    printf("    p1x       p1y        p1z      p1       v1x        v1y       v1z        t1\n");
+    printf("    p0x       p0y       p0z       p0    vol0     v0x        v0y      v0z         t0   ");
+    printf("    p1x       p1y        p1z      p1    vol1     v1x        v1y       v1z        t1\n");
     printf("------------------------------------------------------");
     printf("-------------------------------------------------------------------------------");
-    printf("-------------------------------------------------------------------------------\n");
+    printf("-------------------------------------------------------------------------------------\n");
   }
 
   TDatabasePDG* db = TDatabasePDG::Instance();
@@ -218,6 +218,7 @@ void TSimParticle::Print(Option_t* Opt) const {
     printf("%10.3f",fStartMom.Py());
     printf("%10.3f",fStartMom.Pz());
     printf("%10.3f",fStartMom.P());
+    printf("%6i"   ,fStartVolumeIndex);
     printf("%10.3f",fStartPos.X());
     printf("%10.3f",fStartPos.Y());
     printf("%10.3f",fStartPos.Z());
@@ -226,6 +227,7 @@ void TSimParticle::Print(Option_t* Opt) const {
     printf("%10.3f",fEndMom.Py());
     printf("%10.3f",fEndMom.Pz());
     printf("%10.3f",fEndMom.P());
+    printf("%6i"   ,fEndVolumeIndex);
     printf("%10.3f",fEndPos.X());
     printf("%10.3f",fEndPos.Y());
     printf("%10.3f",fEndPos.Z());
