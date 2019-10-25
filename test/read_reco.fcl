@@ -29,3 +29,9 @@ physics.filters.StntupleMakerDe.spmcBlockName            : [ "SpmcBlock"        
 physics.filters.StntupleMakerDe.spmcCollTag              : [ "compressDigiMCs:tracker" ]
 physics.filters.StntupleMakerDe.statusG4Tag              : [ "g4run"                   ]
 #------------------------------------------------------------------------------
+# currently = choose MVA's of the right sign
+#------------------------------------------------------------------------------
+physics.producers.TrkQualDeMHPar.TrkQualMVA  : { @table::TrkQualNeg.TrkQualMVA }
+physics.producers.TrkQualDeMHDar.TrkQualMVA  : { @table::TrkQualNeg.TrkQualMVA }
+physics.producers.TrkQualDmuMHPar.TrkQualMVA : { @table::TrkQualNeg.TrkQualMVA }
+physics.producers.TrkQualDmuMHDar.TrkQualMVA : { @table::TrkQualNeg.TrkQualMVA }

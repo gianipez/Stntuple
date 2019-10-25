@@ -37,6 +37,7 @@
 #include "RecoDataProducts/inc/KalSeed.hh"
 #include "RecoDataProducts/inc/HelixSeed.hh"
 #include "RecoDataProducts/inc/ComboHit.hh"
+#include "RecoDataProducts/inc/TrkStrawHitSeed.hh"
 #include "RecoDataProducts/inc/TimeCluster.hh"
 
 #include "RecoDataProducts/inc/CaloDigi.hh"
@@ -974,9 +975,13 @@ void TAnaDump::printTrackSeed(const mu2e::KalSeed* TrkSeed           ,
     int      loc(-1);
     int banner_printed(0);
     for (int i=0; i<nsh; ++i){
-      int  hitIndex  = int(TrkSeed->hits().at(i).index());
+      const mu2e::TrkStrawHitSeed* hit_seed = &TrkSeed->hits().at(i);
+      int  hitIndex  = int(hit_seed->index());
       hit            = &shcol->at(hitIndex);
       loc            = hit - hit_0;
+
+      int straw_hit_flag = hit_seed->flag().hasAllProperties(mu2e::StrawHitFlagDetail::active);
+
       if (sdmcc) {
 	const mu2e::StrawDigiMC* sdmc = &sdmcc->at(loc);
 	if (sdmc->wireEndTime(mu2e::StrawEnd::cal) < sdmc->wireEndTime(mu2e::StrawEnd::hv)) {
@@ -988,11 +993,11 @@ void TAnaDump::printTrackSeed(const mu2e::KalSeed* TrkSeed           ,
       }
 
       if (banner_printed == 0){
-	printComboHit(hit, step, "banner", -1, 0);
+	printComboHit(hit, step, "banner", -1, straw_hit_flag);
 	banner_printed = 1;
       } 
       else {
-	printComboHit(hit, step, "data"  , -1, 0);
+	printComboHit(hit, step, "data"  , -1, straw_hit_flag);
       }
     }
   }
@@ -1989,8 +1994,8 @@ void TAnaDump::printComboHit(const mu2e::ComboHit* Hit, const mu2e::StepPointMC*
     if ((opt == "") || (opt.Index("banner") >= 0)) {
       printf("--------------------------------------------------------------------------------------------");
       printf("------------------------------------------------------------------------------------------------\n");
-      printf("    I nsh   SID    Flags  Pln:Pnl:Lay:Str      X        Y        Z        Time         eDep ");
-      printf("   End  DrTime    TRes   WDist     WRes         PDG       PDG(M)   Generator         ID       p  \n");
+      printf("    I nsh SID    Flags Pln:Pnl:Lay:Str      X        Y        Z        Time         eDep ");
+      printf("   End  DrTime    TRes   WDist     WRes         PDG       PDG(M)   Generator          ID       p  \n");
       printf("--------------------------------------------------------------------------------------------");
       printf("------------------------------------------------------------------------------------------------\n");
     }
