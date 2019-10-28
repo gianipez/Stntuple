@@ -6,11 +6,15 @@
 
 #include "hist_file.hh"
 
-struct hist_data_t {
+class hist_data_t {
+public:
   TH1*          fHist;                  // if non-null, fFile is not needed
   hist_file_t*  fFile;                  // it contains a pointer to the dataset
   TString       fLabel  ;		// label to appear on a plot
   TString       fModule;	        // module name
+  TString       fCanvasName;
+  int           fCanvasSizeX;
+  int           fCanvasSizeY;
   TString       fName;	                // histogram name, as saved in a file
   TString       fNewName;	        // redefines histogram name at plotting time
   int           fLineColor;             // these are utility fields to be used as needed
@@ -41,11 +45,15 @@ struct hist_data_t {
   TCanvas*      fCanvas;
   TString       fOutputFn;
 
-  hist_data_t(const char* Dataset = "", const char* JobName = "", const char* Module = "", const char* HistName = "") {
+  hist_data_t(const char* DsID = "", const char* JobName = "", const char* Module = "", const char* HistName = "") {
     fHist        = nullptr;
-    fFile        = nullptr; // get_hist_file(Dataset,JobName);
+    if (DsID && (DsID[0] != 0)) fFile = get_hist_file(DsID,JobName);
+    else                        fFile = nullptr;
     fName        = HistName;
     fModule      = Module;
+    fCanvasName  = "";
+    fCanvasSizeX = -1.;
+    fCanvasSizeY = -1.;
     fNewName     = "";
     fLabel       = "";
     fLineColor   = -1;
@@ -77,9 +85,12 @@ struct hist_data_t {
   
   hist_data_t(TH1* Hist, const char* JobName = "", const char* Module = "") {
     fHist        = Hist;
-    fFile        = nullptr; // get_hist_file(Dataset,JobName);
+    fFile        = nullptr; // don't need it, fHist is already defined
     fName        = Hist->GetName();
     fModule      = Module;
+    fCanvasName  = "";
+    fCanvasSizeX = 1200.;
+    fCanvasSizeY =  800.;
     fNewName     = "";
     fLabel       = "";
     fLineColor   = -1;
@@ -108,6 +119,8 @@ struct hist_data_t {
     fLegendXMax  = -1;
     fLegendYMax  = -1;
   }
+
+  hist_file_t*  get_hist_file(const char* DsID, const char* JobName);
   
 };
 
