@@ -12,15 +12,19 @@ rootlibs = env['ROOTLIBS']
 if ( not ("EG" in rootlibs)):
     rootlibs.insert(rootlibs.index("Physics")+1,"EG");
 
-debug=False
-stn_helper = stntuple_helper(env,debug);
+debug  = False
+env.Append(FORTRANFLAGS = ['-Iinclude']);
+helper = stntuple_helper(env,debug);
 
-stn_helper.handle_dictionaries();
+helper.handle_dictionaries();
 
-list_of_cc_files = Glob('*.cc', strings=True);
-skip_list        = []
-libs             = ['Stntuple_base', rootlibs];
+list_of_fortran_files = Glob('*.f',strings=True);
+list_of_cc_files      = Glob('*.cc', strings=True);
+skip_list             = []
+libs                  = ['Stntuple_base', rootlibs];
 
-stn_helper.build_libs(list_of_cc_files,skip_list,libs);
+helper.compile_fortran(list_of_fortran_files,skip_list);
+
+helper.build_libs(list_of_cc_files,skip_list,libs);
 
 # print "tmpdir:"+env['TMP_LIB_DIR']
