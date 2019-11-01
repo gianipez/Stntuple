@@ -34,6 +34,7 @@ protected:
   Int_t          fNParticles;		// total # of particles
   int            fGenProcessID;         // ID of the generated signal process
   float          fWeight;               // generation weight (!= 1 for RPC)
+  float          fGenEnergy;            // generation energy if not in the event
   TClonesArray*  fListOfParticles;
 //-----------------------------------------------------------------------------
 //  functions
@@ -48,6 +49,7 @@ public:
   int             NParticles  () { return fNParticles;   }
   int             GenProcessID() { return fGenProcessID; }
   float           Weight      () { return fWeight;       }
+  float           GenEnergy   () { return fGenEnergy;    }
 
 					// `i'-th particle in the global list
   TGenParticle*   Particle(int i) { 
@@ -76,8 +78,9 @@ public:
 //  I/O and schema evolution
 //-----------------------------------------------------------------------------
   void ReadV1(TBuffer& R__b);
+  void ReadV2(TBuffer& R__b);
 
-  ClassDef(TGenpBlock,2)		// GENP block: output of MC event generators
+  ClassDef(TGenpBlock,3)		// GENP block: output of MC event generators
 };
 
 #endif

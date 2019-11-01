@@ -103,6 +103,10 @@ public:
   Float_t MinTrkQual   () const { return fMinTrkQual;   }
   int     MaxDNa       () const { return fMaxDNa    ;   }
   float   MaxChi2Dof   () const { return fMaxChi2Dof;   }
+  Int_t   MinD0        () const { return fMinD0;   }
+  Int_t   MaxD0        () const { return fMaxD0;   }
+  Int_t   MinRMax      () const { return fMinRMax;   }
+  Int_t   MaxRMax      () const { return fMaxRMax;   }
 //-----------------------------------------------------------------------------
 // modifiers
 //-----------------------------------------------------------------------------

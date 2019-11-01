@@ -18,6 +18,18 @@ void TGenpBlock::ReadV1(TBuffer &R__b) {
 
   fGenProcessID = -1;                // added in V2
   fWeight       = 1.;                // added in V2
+  fGenEnergy    = -1.;               // added in V3
+}
+
+void TGenpBlock::ReadV2(TBuffer &R__b) {
+  R__b >> fNParticles;
+  R__b >> fGenProcessID; 		// added in V2
+  R__b >> fWeight;			// added in V2
+  fListOfParticles->Streamer(R__b);
+  for (int i=0; i<fNParticles; i++) {
+    Particle(i)->SetUniqueID(i);
+  }
+  fGenEnergy    = -1.;               // added in V3
 }
 
 //______________________________________________________________________________
@@ -30,13 +42,17 @@ void TGenpBlock::Streamer(TBuffer &R__b)
     if (R__v == 1) { 
       ReadV1(R__b);
     }
+    else if (R__v == 2) { 
+      ReadV2(R__b);
+    }
     else {
 //-----------------------------------------------------------------------------
-//  current version - V2
+//  current version - V3
 //-----------------------------------------------------------------------------
       R__b >> fNParticles;
       R__b >> fGenProcessID; 		// added in V2
       R__b >> fWeight;			// added in V2
+      R__b >> fGenEnergy;		// added in V3
       fListOfParticles->Streamer(R__b);
       for (int i=0; i<fNParticles; i++) {
 	Particle(i)->SetUniqueID(i);
@@ -48,6 +64,7 @@ void TGenpBlock::Streamer(TBuffer &R__b)
     R__b << fNParticles;
     R__b << fGenProcessID;
     R__b << fWeight;
+    R__b << fGenEnergy;		
     fListOfParticles->Streamer(R__b);
   }
 }
@@ -57,6 +74,8 @@ TGenpBlock::TGenpBlock() {
   fNParticles      = 0;
   fGenProcessID    = -1;
   fWeight          = 1.;
+  fGenEnergy       = -1.;
+
   fListOfParticles = new TClonesArray("TGenParticle",100);
   fListOfParticles->BypassStreamer(kFALSE);
 }
@@ -73,7 +92,8 @@ TGenpBlock::~TGenpBlock() {
 void TGenpBlock::Clear(const char* opt) {
   fNParticles    = 0;
   //  fGenProcessID  = -1; // fGenProcessID needs to stay
-  fWeight        = 1.;
+  fWeight        =  1.;
+  fGenEnergy     = -1.;
 					// don't modify cut values at run time
   fListOfParticles->Clear(opt);
 

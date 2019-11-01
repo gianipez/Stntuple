@@ -56,6 +56,18 @@ int StntupleInitGenpBlock::InitDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent
   if (ewH.isValid()) genp_block->fWeight = ewH->weight();
   else               genp_block->fWeight = 1.;
 
+//-----------------------------------------------------------------------------
+// MC event energy (by "generate") is not always present
+//-----------------------------------------------------------------------------
+  art::InputTag geeT("generate:photon");
+  art::Handle<mu2e::GenParticle> geeH;
+
+  AnEvent->getByLabel(geeT,geeH);
+
+  if (geeH.isValid()) genp_block->fGenEnergy = geeH->momentum().e();
+  else                genp_block->fGenEnergy = -1.;
+
+
   genp_block->SetGenProcessID(fGenProcessID);
 //-----------------------------------------------------------------------------
 // loop over existing GENP collections, there could be many of them
