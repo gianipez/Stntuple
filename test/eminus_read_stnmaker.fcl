@@ -9,8 +9,8 @@
 #include "Stntuple/fcl/prolog.fcl"
 
 BEGIN_PROLOG
-  pdgCode                   : @local::Particle.eminus
-  bgHitFiles                : @nil
+  pdgCode    @protect_ignore: @local::Particle.eminus
+  bgHitFiles @protect_ignore: @nil
   GEN_ID     @protect_ignore: cosmicDYB
 END_PROLOG
 
