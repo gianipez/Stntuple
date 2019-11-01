@@ -11,7 +11,6 @@ END_PROLOG
 process_name : EPlusGunStnmaker
 
 source       : { module_type : EmptyEvent   }
-
 outputs      : { @table::Stntuple.outputs   }
 
 physics : {

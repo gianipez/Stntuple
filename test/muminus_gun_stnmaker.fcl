@@ -6,13 +6,16 @@
 # p3 : path to debug the TPR and CPR reconstruction paths separately
 #------------------------------------------------------------------------------
 BEGIN_PROLOG
-  bgHitFiles   : @nil
-  INPUT_MODULE : EmptyEvent
-  TRIGGER_PATH : p1
-  PROCESS_NAME : MuMinusGunStnmaker
+  INPUT_MODULE @protect_ignore: EmptyEvent
+  TRIGGER_PATH @protect_ignore: p1
+  PROCESS_NAME @protect_ignore: MuMinusGunStnmaker
 END_PROLOG
 
 #include "Stntuple/test/stnmaker.fcl"
+#------------------------------------------------------------------------------
+# generate muons
+#------------------------------------------------------------------------------
+physics.producers.generate                   : { @table::Stntuple.producers.mgun }
 #------------------------------------------------------------------------------
 # uncomment the next 2 lines if you want the DST (.art) file to be written out
 #-----------------------------------------------------------------------------
@@ -28,10 +31,9 @@ outputs.detectorOutput.fileName           : "sim._USER_.muminus_gun_stnmaker.xxx
 # uncomment to avoid waisting time on the initialization of detailed neutron 
 # cross sections - that shouldn't affect the electron simulation 
 #------------------------------------------------------------------------------
-physics.producers.generate                      : { @table::Stntuple.producers.mgun }
 physics.producers.g4run.physics.physicsListName : "QGSP_BERT"
 #------------------------------------------------------------------------------
-# currently = choose MVA's of the right sign
+# currently = choose MVA's of the right sign - that should ultimately go away
 #------------------------------------------------------------------------------
 physics.producers.TrkQualDeMHPar.TrkQualMVA  : { @table::TrkQualNeg.TrkQualMVA }
 physics.producers.TrkQualDeMHDar.TrkQualMVA  : { @table::TrkQualNeg.TrkQualMVA }

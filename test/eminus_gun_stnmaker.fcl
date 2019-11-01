@@ -6,10 +6,10 @@
 # p3 : path to debug the TPR and CPR reconstruction paths separately
 #------------------------------------------------------------------------------
 BEGIN_PROLOG
-  bgHitFiles   : @nil
-  INPUT_MODULE : EmptyEvent
-  TRIGGER_PATH : p1
-  PROCESS_NAME : EMinusGunStnmaker
+  bgHitFiles   @protect_ignore: @nil
+  INPUT_MODULE @protect_ignore: EmptyEvent
+  TRIGGER_PATH @protect_ignore: p1
+  PROCESS_NAME @protect_ignore: EMinusGunStnmaker
 END_PROLOG
 
 #include "Stntuple/test/stnmaker.fcl"

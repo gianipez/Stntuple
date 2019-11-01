@@ -86,6 +86,16 @@ physics : {
 #------------------------------------------------------------------------------
     p6       : [ EventFilter,
 		MuHitDisplayDeMHDar]
+#------------------------------------------------------------------------------
+# MC generation, G4, reconstruction and Event Display
+#------------------------------------------------------------------------------
+    p7       : [ @sequence::Stntuple.gen_g4_time_map,
+		 @sequence::Stntuple.digis          ,
+		 @sequence::Stntuple.trk_hit_reco   ,
+		 @sequence::Stntuple.cal_reco       ,
+		 @sequence::Stntuple.reco_De        ,
+		 @sequence::Stntuple.crv_reco       ,
+		 MuHitDisplayDeMHDar                ]
 
     trigger_paths : [ @local::TRIGGER_PATH ]
     out           : [     ]
