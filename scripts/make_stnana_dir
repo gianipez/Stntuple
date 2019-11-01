@@ -13,10 +13,10 @@ mkdir -p $pkg/scripts
 #------------------------------------------------------------------------------
 cp Stntuple/ana/SConscript $pkg/ana
 
-cat Stntuple/scripts/build_config | sed "s/Stntuple/$pkg/g" >| $pkg/scripts/build_config
+cat Stntuple/scripts/build_config  | grep -v site_scons | sed "s/Stntuple/$pkg/g" >| $pkg/scripts/build_config
 
-cat Stntuple/ana/TStnTrackAnaModule.cc | sed "s#Stntuple/ana/TStnTrackAna#$pkg/ana/TMyTrackAna#g" | \
-                                         sed 's/StnTrackAna/MyTrackAna/g' >| $pkg/ana/TMyTrackAnaModule.cc
+cat Stntuple/ana/TStnTrackAnaModule.cc     | sed "s#Stntuple/ana/TStnTrackAna#$pkg/ana/TMyTrackAna#g" | \
+                                             sed 's/StnTrackAna/MyTrackAna/g' >| $pkg/ana/TMyTrackAnaModule.cc
 
 cat Stntuple/ana/ana/TStnTrackAnaModule.hh | sed 's/StnTrackAna/MyTrackAna/g' >| $pkg/ana/ana/TMyTrackAnaModule.hh
 
