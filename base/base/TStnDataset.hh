@@ -26,6 +26,8 @@ protected:
   Int_t       fMcFlag;
   TString     fFilesetFormat;
   Int_t       fDoneBadFiles;
+  Int_t       fNGenEvents;      // for MC, number of generated events
+  Int_t       fMCProcessCode;   // MC: process code
 //-----------------------------------------------------------------------------
 //  functions
 //-----------------------------------------------------------------------------
@@ -67,6 +69,8 @@ public:
   const char* GetBook         () { return fBook.Data() ; }
   Int_t       GetMcFlag       () { return fMcFlag;       }
   const char* GetFilesetFormat() { return fFilesetFormat.Data(); }
+  int         GetMCProcessCode() { return fMCProcessCode; }
+  int         GetNGenEvents   () { return fNGenEvents;    }
 
 				// this is list of TCdf2Files structures
 
@@ -81,9 +85,12 @@ public:
 //-----------------------------------------------------------------------------
 // setters
 //-----------------------------------------------------------------------------
-  void  SetPrintLevel(Int_t Level) { fPrintLevel = Level; }
-  void  SetCataloged (Int_t Flag ) { fCataloged  = Flag ; }
-  void  SetMcFlag    (Int_t Flag ) { fMcFlag     = Flag ; }
+  void  SetPrintLevel   (Int_t Level) { fPrintLevel    = Level; }
+  void  SetCataloged    (Int_t Flag ) { fCataloged     = Flag ; }
+  void  SetMcFlag       (Int_t Flag ) { fMcFlag        = Flag ; }
+  void  SetNGenEvents   (int   N    ) { fNGenEvents    = N    ; }
+  void  SetMCProcessCode(int   Code ) { fMCProcessCode = Code ; }
+
   void  SetDoneBadFiles  (Int_t Flag = 1) { fDoneBadFiles = Flag;   }
 //-----------------------------------------------------------------------------
 // add file to non-cataloged dataset, file name - fully specified

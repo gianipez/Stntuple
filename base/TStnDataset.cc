@@ -29,6 +29,8 @@ TStnDataset::TStnDataset(const char* Name): TNamed(Name,Name) {
   fMcFlag         = -1;
   fFilesetFormat  = "";
   fDoneBadFiles   = 0;
+  fNGenEvents     = -1;
+  fMCProcessCode  = -1;
 }
 
 //_____________________________________________________________________________

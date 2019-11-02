@@ -352,6 +352,8 @@ int THttpCatalogServer::InitListOfFilesets(TStnDataset* Dataset,
 
 //-----------------------------------------------------------------------------
 // assuming key uniquely identifies the line
+// the assumed line format  '# :key: value' (the key is surrounded by two ':' characters),
+// such that the key is the second word, 
 //-----------------------------------------------------------------------------
 int THttpCatalogServer::GetDatasetKey(const char* Book, 
 				      const char* Dataset,
@@ -361,7 +363,7 @@ int THttpCatalogServer::GetDatasetKey(const char* Book,
 
   cmd = Form("wget %s/%s/%s/AAA_CATALOG.html -o /dev/null -O /dev/stdout",
 	     GetUrl(),Book,Dataset);
-  cmd += Form(" | grep %s | awk '{print $2}'",Key);
+  cmd += Form(" | grep :%s: | awk -v key=:%s: '{if ($2 == key) print $3}'",Key,Key);
 
   if (fPrintLevel > 0)
     printf(" DEBUG DB KEY: Retrieving data with command: %s\n",cmd.Data());
@@ -446,8 +448,9 @@ int THttpCatalogServer::InitDataset(TStnDataset*     Dataset,
     return 0;
   }
 
-
-  // verify AAA_CATALOG.html
+//-----------------------------------------------------------------------------
+// this is a cataloged dataset, verify AAA_CATALOG.html
+//-----------------------------------------------------------------------------
   int found = FindDataset(book,dset);
   if (! found) return -1;
 
@@ -473,6 +476,27 @@ int THttpCatalogServer::InitDataset(TStnDataset*     Dataset,
   if (strlen(buf) > 0) {
     sscanf(buf,"%i",&mc_flag);
     Dataset->SetMcFlag(mc_flag);
+  }
+//-----------------------------------------------------------------------------
+// retrieve MC process code 'PROCESS_CODE' and the number of generated events
+// returned value - integer
+//-----------------------------------------------------------------------------
+  buf[0] = 0;
+  GetDatasetKey(book,dset,"PROCESS_CODE",buf);
+
+  if (strlen(buf) > 0) {
+    int code;
+    sscanf(buf,"%i",&code);
+    Dataset->SetMCProcessCode(code);
+  }
+
+  buf[0] = 0;
+  GetDatasetKey(book,dset,"NGENERATED",buf);
+
+  if (strlen(buf) > 0) {
+    long int n;
+    sscanf(buf,"%li",&n);
+    Dataset->SetNGenEvents(n);
   }
 //-----------------------------------------------------------------------------
 // retrieve list of bad files - hopefully short - do it only once - so far can
