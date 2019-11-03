@@ -7,6 +7,8 @@
 #include <iostream>
 #include <math.h>
 #include "TLorentzVector.h"
+#include "TTree.h"
+#include "TH1.h"
 
 #include "Stntuple/alg/TStntuple.hh"
 
@@ -31,8 +33,41 @@ ClassImp(TStntuple)
 TStntuple*        TStntuple::fgInstance       = 0;
 
 Int_t             TStntuple::fgRunNumber = 0;
-//_____________________________________________________________________________
+
+//-----------------------------------------------------------------------------
 TStntuple::TStntuple() {
+
+//-----------------------------------------------------------------------------
+// initialize the LO DIO spectrum
+//-----------------------------------------------------------------------------
+  TTree tree("t1","t1");
+
+  tree.ReadFile("ConditionsService/data/czarnecki_Al.tbl","e/f:w/f");
+  int n = tree.GetEntries();
+
+  double emin = 0.05;
+  double emax = 110.05;
+  int    nb   = 1100;
+  double bin  = 0.1; 
+  
+  TH1D hist("h_dio","LO DIO spectrum",nb,emin,emax);
+
+  float e, w;
+
+  tree.SetBranchAddress("e",&e);
+  tree.SetBranchAddress("w",&w);
+
+  for (int i=0; i<n; i++) {
+    tree.GetEntry(i);
+
+    int ibin = (e-emin)/bin+1;
+    // skip 0th bin written out (underflows)
+    if (ibin > 0) hist.SetBinContent(ibin,w);
+
+    //    printf(" %5i %10.3f %12.5e\n",ibin,e,w);
+  }
+
+  fDioSpectrum = new smooth(&hist);
 }
 
 //_____________________________________________________________________________
@@ -77,6 +112,19 @@ Int_t TStntuple::Init(Int_t RunNumber) {
   fgRunNumber = RunNumber;
 
   return rc;
+}
+
+//-----------------------------------------------------------------------------
+// parameterization of the DIO spectrum on Al
+// from Czarnecki et al, Phys.Rev.D84:013006,2011 (http://www.arxiv.org/abs/1106.4756)
+// the weights are normalized to the unit integral,
+// full histogram from ConditionsServiceso the histogram used has to 
+// be divided by the number of events and, then, scaled to the expected number 
+// of protons on target
+//-----------------------------------------------------------------------------
+double TStntuple::DioWeightAlFull(double E) {
+  double w = fDioSpectrum->GetFunc()->Eval(E);
+  return w;
 }
 
 //-----------------------------------------------------------------------------

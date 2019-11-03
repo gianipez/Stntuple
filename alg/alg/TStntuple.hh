@@ -5,6 +5,7 @@
 #include "TClonesArray.h"
 #include "TVector2.h"
 #include "TVector3.h"
+#include "Stntuple/alg/smooth.hh"
 
 class TStnTrack;
 class TStnCluster;
@@ -14,8 +15,10 @@ class TStntuple: public TObject {
 protected:
   static TStntuple*  fgInstance;
 
-  static Int_t             fgRunNumber;
-  static Float_t           fgEventVertex;
+  static Int_t       fgRunNumber;
+  static Float_t     fgEventVertex;
+
+  smooth*            fDioSpectrum;
 
   class  Cleaner {
   public:
@@ -36,8 +39,16 @@ public:
 
   static Int_t     Init(Int_t RunNumber);
 //-----------------------------------------------------------------------------
-// parameterization of the DIO spectrum on Al from 
+// full DIO spectrum on Al from 
 // Czarnecki et al, Phys.Rev.D84:013006,2011 (http://www.arxiv.org/abs/1106.4756)
+// interpolation of a histogram tabulated in ConditionsService/data/czarnecki_Al.tbl
+// more details in mu2e-3281
+//-----------------------------------------------------------------------------
+  double DioWeightAlFull(double P);
+//-----------------------------------------------------------------------------
+// polynomial parameterization of the DIO spectrum on Al from 
+// Czarnecki et al, Phys.Rev.D84:013006,2011 (http://www.arxiv.org/abs/1106.4756)
+// good from Emax down to about 85 MeV
 //-----------------------------------------------------------------------------
   static double DioWeightAl   (double P);
 
