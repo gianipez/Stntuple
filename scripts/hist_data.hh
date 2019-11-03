@@ -34,7 +34,7 @@ public:
   float         fStatBoxYMax;
   int           fRebin;
   int           fYLogScale;
-  long int      fScale;			// 1:normalize to NGenEvents, 2:normalize to integral
+  float         fScale;			// 1:normalize to NGenEvents, 2:normalize to integral
   TString       fPlotName;
   TString       fPlotLabel;
   TString       fXAxisTitle;

@@ -7,6 +7,7 @@
 struct stn_dataset_t {
 
   TString  fID        ;			// dataset ID (short name)
+  TString  fBook      ;                 // dataset book (not ready to use yet)
   TString  fName      ;			// full name of the ntupled dataset
   long int fNEvents   ;                 // number of events in all files
   long int fNGenEvents; 		// N generated events (if MC, corresponding to the files, for normalization)
@@ -17,6 +18,7 @@ struct stn_dataset_t {
 
   stn_dataset_t() {
     fID          = "";
+    fBook        = "";
     fName        = "";
     fNEvents     = -1;
     fNGenEvents  = -1;
