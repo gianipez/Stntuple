@@ -37,23 +37,23 @@ StntupleMakerTemplate : { module_type:StntupleMaker
     module_name          : StntupleMaker
     processName          : undefined
 #------------------------------------------------------------------------------
-# define which branches to fill by default
+# define branches to be filled by default, in alphabetical order
 #------------------------------------------------------------------------------    
     makeCalData          : 0
     makeClusters         : 1
+    makeCrvPulses        : 0
+    makeCrvClusters      : 1
     makeGenp             : 1
+    makeHelices          : 0
     makePid              : 1
     makeSimp             : 1  # 0: dont write; 1:save all; 2:save primary only
     makeStepPointMC      : 1
     makeStrawData        : 0
-    makeCrvPulses        : 0
-    makeCrvClusters      : 1
     makeTracks           : 1
     makeTrackStrawHits   : 0
-    makeTrigger          : 0
     makeTrackSeeds       : 0
     makeTimeClusters     : 0
-    makeHelices          : 0
+    makeTrigger          : 0
     
     KalDiag              : { @table::KalDiagDirect    }
     DoubletAmbigResolver : { @table::TrkReco.DoubletAmbigResolver }

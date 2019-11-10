@@ -26,13 +26,14 @@
 #include "art/Framework/Principal/Event.h"
 #include "art/Framework/Principal/Handle.h"
 
-#include <Stntuple/obj/TStnDBManager.hh>
+#include "Stntuple/obj/TStnDBManager.hh"
 
-#include <Stntuple/obj/TStnDataBlock.hh>
-#include <Stntuple/obj/TStnNode.hh>
-#include <Stntuple/obj/TStnEvent.hh>
-#include <Stntuple/obj/TStnErrorLogger.hh>
-#include <Stntuple/alg/TStntuple.hh>
+#include "Stntuple/obj/TStnTriggerTable.hh"
+#include "Stntuple/obj/TStnDataBlock.hh"
+#include "Stntuple/obj/TStnNode.hh"
+#include "Stntuple/obj/TStnEvent.hh"
+#include "Stntuple/obj/TStnErrorLogger.hh"
+#include "Stntuple/alg/TStntuple.hh"
 
 #include "Stntuple/mod/InitStntuple_module.hh"
 #include "Stntuple/mod/InitStntupleDataBlocks.hh"
@@ -94,6 +95,46 @@ void InitStntuple::beginJob() {
 //  return AppResult::OK;
 }
 
+
+//------------------------------------------------------------------------------
+int InitStntuple::InitTriggerTable() {
+  // string        trigger_name;
+  // string        trigger_table_name;
+  // unsigned long bit;
+  // unsigned long level;
+  // unsigned long trigger_tag;
+  // unsigned long trigger_table_tag;
+  // int           trigger_id;
+
+				// delete all the previous definitions 
+
+  TStnDBManager* dbm = TStnDBManager::Instance();
+  TStnTriggerTable* trigger_table;
+
+  trigger_table = (TStnTriggerTable*) dbm->GetTable("TriggerTable");
+
+  trigger_table->Delete();
+
+  //  if (gblEnv->monteFlag() == false || (gblEnv->monteFlag() == true && gblEnv->runNumber() > 100000)) {
+//-----------------------------------------------------------------------------
+// data run, so far all trigger tags (versions) are set to 1, 
+// trigger bit assignement is arbitrary
+//-----------------------------------------------------------------------------
+  trigger_table->AddTrigger(new TStnTrigger( 0, 0,"cprSeedDeM_trigger"         ,1));
+  trigger_table->AddTrigger(new TStnTrigger( 1, 1,"tprSeedDeM_trigger"         ,1));
+  trigger_table->AddTrigger(new TStnTrigger( 2, 2,"cprLowPSeedDeM_trigger"     ,1));
+  trigger_table->AddTrigger(new TStnTrigger( 3, 3,"tprLowPSeedDeM_trigger"     ,1));
+  trigger_table->AddTrigger(new TStnTrigger( 4, 4,"cprCosmicSeedDeM_trigger"   ,1));
+  trigger_table->AddTrigger(new TStnTrigger( 5, 5,"tprCosmicSeedDeM_trigger"   ,1));
+  trigger_table->AddTrigger(new TStnTrigger( 6, 6,"tprHelixCalibIPADeM_trigger",1));
+  trigger_table->AddTrigger(new TStnTrigger( 7, 7,"tprHelixIPADeM_trigger"     ,1));
+  trigger_table->AddTrigger(new TStnTrigger( 8, 8,"caloCalibCosmic_trigger"    ,1));
+  trigger_table->AddTrigger(new TStnTrigger( 9, 9,"caloMVACE_trigger"          ,1));
+  trigger_table->AddTrigger(new TStnTrigger(10,10,"unbiased_trigger"           ,1));
+  trigger_table->AddTrigger(new TStnTrigger(11,11,"caloPhoton_trigger"         ,1));
+			      //  }
+  return 0;
+}
 
 //------------------------------------------------------------------------------
 Int_t InitStntuple::ProcessNewRun(art::Run* ARun) {

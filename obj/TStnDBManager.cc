@@ -7,7 +7,7 @@
 // #include "Stntuple/data/TStnBeamPos.hh"
 // #include "Stntuple/data/TStnBeamPosBlock.hh"
 #include "Stntuple/obj/TStnRunSummary.hh"
-// #include "Stntuple/obj/TStnTriggerTable.hh"
+#include "Stntuple/obj/TStnTriggerTable.hh"
 #include "Stntuple/obj/TStnDBManager.hh"
 // #include "Stntuple/obj/TStnDeadList.hh"
 
@@ -25,7 +25,7 @@ TStnDBManager::TStnDBManager()
 
   // Add some standard run dependent objects
   fListOfDbObjects->Add(new TStnRunSummary());
-  // fListOfDbObjects->Add(new TStnTriggerTable());
+  fListOfDbObjects->Add(new TStnTriggerTable());
   // fListOfDbObjects->Add(new TStnDeadList());
 
   // Beamline in the new scheme (time dependent)

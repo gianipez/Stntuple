@@ -51,9 +51,10 @@
 
 #include "Stntuple/mod/InitCrvPulseBlock.hh"
 #include "Stntuple/mod/InitCrvClusterBlock.hh"
-#include "Stntuple/mod/InitSimpBlock.hh"
 #include "Stntuple/mod/InitGenpBlock.hh"
+#include "Stntuple/mod/InitSimpBlock.hh"
 #include "Stntuple/mod/InitStepPointMCBlock.hh"
+#include "Stntuple/mod/InitTriggerBlock.hh"
 
 #include "Stntuple/mod/InitStntupleDataBlocks.hh"
 #include "Stntuple/mod/StntupleUtilities.hh"
@@ -152,6 +153,7 @@ protected:
   StntupleInitCrvClusterBlock* fInitCrvClusterBlock;
   StntupleInitSimpBlock*       fInitSimpBlock;
   StntupleInitGenpBlock*       fInitGenpBlock;
+  StntupleInitTriggerBlock*    fInitTriggerBlock;
   TObjArray*                   fInitStepPointMCBlock;
 //-----------------------------------------------------------------------------
 // cut-type parameters
@@ -409,6 +411,21 @@ void StntupleMaker::beginJob() {
     }
   }
 //-----------------------------------------------------------------------------
+// calorimeter clusters 
+//-----------------------------------------------------------------------------
+  if (fMakeClusters) {
+    TStnDataBlock* db = AddDataBlock("ClusterBlock",
+				     "TStnClusterBlock",
+				     StntupleInitMu2eClusterBlock,
+				     buffer_size,
+				     split_mode,
+				     compression_level);
+    if (db) {
+      db->AddCollName("mu2e::CaloClusterCollection",fCaloClusterMaker.data());
+      SetResolveLinksMethod("ClusterBlock",StntupleInitMu2eClusterBlockLinks);
+    }
+  }
+//-----------------------------------------------------------------------------
 // CRV
 //-----------------------------------------------------------------------------
   if (fMakeCrvPulses) {
@@ -438,39 +455,14 @@ void StntupleMaker::beginJob() {
 		 compression_level);
   }
 //-----------------------------------------------------------------------------
-// straw hit data
+// generator particles 
 //-----------------------------------------------------------------------------
-  if (fMakeStrawData) {
-    TStnDataBlock* db = AddDataBlock("StrawDataBlock","TStrawDataBlock",
-				     StntupleInitMu2eStrawDataBlock,
-				     buffer_size,
-				     split_mode,
-				     compression_level);
-    if (db) {
-      db->AddCollName("mu2e::StrawHitCollection"   ,fStrawHitsCollTag.data());
-      db->AddCollName("mu2e::StrawDigiMCCollection",fStrawDigiMCCollTag.data());
-    }
-  }
-//--------------------------------------------------------------------------------
-// time clusters
-//--------------------------------------------------------------------------------
-  if (fMakeTimeClusters) {
-    int nblocks = fTimeClusterBlockName.size();
+  if (fMakeGenp) {
+    fInitGenpBlock = new StntupleInitGenpBlock();
+    fInitGenpBlock->SetGenpCollTag(fGenpCollTag);
+    fInitGenpBlock->SetGenProcessID (fGenId.id());
 
-    for (int i=0; i<nblocks; i++) {
-      const char* block_name = fTimeClusterBlockName[i].data();
-      TStnDataBlock* db   = AddDataBlock(block_name, 
-					 "TStnTimeClusterBlock",
-					 StntupleInitMu2eTimeClusterBlock,
-					 buffer_size,
-					 split_mode,
-					 compression_level);
-      if (db) {
-	db->AddCollName("mu2e::HelixSeedCollection"  ,fHelixCollTag[i].data()      );
- 	db->AddCollName("mu2e::TimeClusterCollection",fTimeClusterCollTag[i].data());
-	//      SetResolveLinksMethod(block_name,StntupleInitMu2eTimeClusterBlockLinks);
-      }
-    }
+    AddDataBlock("GenpBlock","TGenpBlock",fInitGenpBlock,buffer_size,split_mode,compression_level);
   }
 //--------------------------------------------------------------------------------
 // helix data
@@ -512,6 +504,102 @@ void StntupleMaker::beginJob() {
 // helix blocks have links to be set
 //-----------------------------------------------------------------------------
       SetResolveLinksMethod(block_name,StntupleInitMu2eHelixBlockLinks);
+    }
+  }
+//-----------------------------------------------------------------------------
+// PID - one PID block per track block
+//-----------------------------------------------------------------------------
+  if (fMakePid) {
+    int nblocks = fTrackBlockName.size();
+
+    for (int i=0; i<nblocks; i++) {
+      const char* block_name  = fPidBlockName[i].data();
+      TStnDataBlock* db = AddDataBlock(block_name,
+				       "TStnPidBlock",
+				       StntupleInitMu2ePidBlock,
+				       buffer_size,
+				       split_mode,
+				       compression_level);
+      if (db) {
+	db->AddCollName("mu2e::AvikPIDNewProductCollection",fPidCollTag[i].data());
+	SetResolveLinksMethod(block_name,StntupleInitMu2ePidBlockLinks);
+      }
+    }
+  }
+//-----------------------------------------------------------------------------
+// simulated particles 
+//-----------------------------------------------------------------------------
+  if (fMakeSimp) {
+    fInitSimpBlock = new StntupleInitSimpBlock();
+    fInitSimpBlock->SetSimpCollTag(fSimpCollTag);
+    fInitSimpBlock->SetStrawHitsCollTag(fStrawHitsCollTag);
+    fInitSimpBlock->SetStrawDigiMCCollTag(fStrawDigiMCCollTag);
+    fInitSimpBlock->SetVDHitsCollTag(fVDHitsCollTag);
+    fInitSimpBlock->SetMinSimpEnergy(fMinSimpEnergy);
+    fInitSimpBlock->SetGenProcessID (fGenId.id());
+
+    AddDataBlock("SimpBlock","TSimpBlock",fInitSimpBlock,buffer_size,split_mode,compression_level);
+  }
+//-----------------------------------------------------------------------------
+// StepPointMC collections - could be several
+//-----------------------------------------------------------------------------
+  if (fMakeStepPointMC) {
+    int nblocks = fSpmcBlockName.size();
+
+    for (int i=0; i<nblocks; i++) {
+      const char* block_name = fSpmcBlockName[i].data();
+
+      StntupleInitStepPointMCBlock* init_block = new StntupleInitStepPointMCBlock();
+      fInitStepPointMCBlock->Add(init_block);
+
+      init_block->SetSpmcCollTag(fSpmcCollTag[i]);
+      init_block->SetStatusG4Tag(fStatusG4Tag[i]);
+      init_block->SetTimeOffsets(fTimeOffsets);
+
+      TStnDataBlock* db = AddDataBlock(block_name,
+				       "TStepPointMCBlock",
+				       init_block,
+				       buffer_size,
+				       split_mode,
+				       compression_level);
+      if (db) {
+	((TStepPointMCBlock*) db)->SetGenProcessID(fGenId.id());
+      }
+    }
+  }
+//-----------------------------------------------------------------------------
+// straw hit data
+//-----------------------------------------------------------------------------
+  if (fMakeStrawData) {
+    TStnDataBlock* db = AddDataBlock("StrawDataBlock","TStrawDataBlock",
+				     StntupleInitMu2eStrawDataBlock,
+				     buffer_size,
+				     split_mode,
+				     compression_level);
+    if (db) {
+      db->AddCollName("mu2e::StrawHitCollection"   ,fStrawHitsCollTag.data());
+      db->AddCollName("mu2e::StrawDigiMCCollection",fStrawDigiMCCollTag.data());
+    }
+  }
+//--------------------------------------------------------------------------------
+// time clusters
+//--------------------------------------------------------------------------------
+  if (fMakeTimeClusters) {
+    int nblocks = fTimeClusterBlockName.size();
+
+    for (int i=0; i<nblocks; i++) {
+      const char* block_name = fTimeClusterBlockName[i].data();
+      TStnDataBlock* db   = AddDataBlock(block_name, 
+					 "TStnTimeClusterBlock",
+					 StntupleInitMu2eTimeClusterBlock,
+					 buffer_size,
+					 split_mode,
+					 compression_level);
+      if (db) {
+	db->AddCollName("mu2e::HelixSeedCollection"  ,fHelixCollTag[i].data()      );
+ 	db->AddCollName("mu2e::TimeClusterCollection",fTimeClusterCollTag[i].data());
+	//      SetResolveLinksMethod(block_name,StntupleInitMu2eTimeClusterBlockLinks);
+      }
     }
   }
 //--------------------------------------------------------------------------------
@@ -600,91 +688,16 @@ void StntupleMaker::beginJob() {
     }
   }
 //-----------------------------------------------------------------------------
-// calorimeter clusters 
+// CRV
 //-----------------------------------------------------------------------------
-  if (fMakeClusters) {
-    TStnDataBlock* db = AddDataBlock("ClusterBlock",
-				     "TStnClusterBlock",
-				     StntupleInitMu2eClusterBlock,
-				     buffer_size,
-				     split_mode,
-				     compression_level);
-    if (db) {
-      db->AddCollName("mu2e::CaloClusterCollection",fCaloClusterMaker.data());
-      SetResolveLinksMethod("ClusterBlock",StntupleInitMu2eClusterBlockLinks);
-    }
-  }
-//-----------------------------------------------------------------------------
-// PID - one PID block per track block
-//-----------------------------------------------------------------------------
-  if (fMakePid) {
-    int nblocks = fTrackBlockName.size();
+  if (fMakeTrigger) {
+    fInitTriggerBlock = new StntupleInitTriggerBlock();
 
-    for (int i=0; i<nblocks; i++) {
-      const char* block_name  = fPidBlockName[i].data();
-      TStnDataBlock* db = AddDataBlock(block_name,
-				       "TStnPidBlock",
-				       StntupleInitMu2ePidBlock,
-				       buffer_size,
-				       split_mode,
-				       compression_level);
-      if (db) {
-	db->AddCollName("mu2e::AvikPIDNewProductCollection",fPidCollTag[i].data());
-	SetResolveLinksMethod(block_name,StntupleInitMu2ePidBlockLinks);
-      }
-    }
-  }
-//-----------------------------------------------------------------------------
-// generator particles 
-//-----------------------------------------------------------------------------
-  if (fMakeGenp) {
-    fInitGenpBlock = new StntupleInitGenpBlock();
-    fInitGenpBlock->SetGenpCollTag(fGenpCollTag);
-    fInitGenpBlock->SetGenProcessID (fGenId.id());
-
-    AddDataBlock("GenpBlock","TGenpBlock",fInitGenpBlock,buffer_size,split_mode,compression_level);
-  }
-//-----------------------------------------------------------------------------
-// simulated particles 
-//-----------------------------------------------------------------------------
-  if (fMakeSimp) {
-    fInitSimpBlock = new StntupleInitSimpBlock();
-    fInitSimpBlock->SetSimpCollTag(fSimpCollTag);
-    fInitSimpBlock->SetStrawHitsCollTag(fStrawHitsCollTag);
-    fInitSimpBlock->SetStrawDigiMCCollTag(fStrawDigiMCCollTag);
-    fInitSimpBlock->SetVDHitsCollTag(fVDHitsCollTag);
-    fInitSimpBlock->SetMinSimpEnergy(fMinSimpEnergy);
-    fInitSimpBlock->SetGenProcessID (fGenId.id());
-
-    AddDataBlock("SimpBlock","TSimpBlock",fInitSimpBlock,buffer_size,split_mode,compression_level);
-  }
-//-----------------------------------------------------------------------------
-// StepPointMC collections - could be several
-//-----------------------------------------------------------------------------
-  if (fMakeStepPointMC) {
-    int nblocks = fSpmcBlockName.size();
-
-    for (int i=0; i<nblocks; i++) {
-      const char* block_name = fSpmcBlockName[i].data();
-
-      StntupleInitStepPointMCBlock* init_block = new StntupleInitStepPointMCBlock();
-      fInitStepPointMCBlock->Add(init_block);
-
-      init_block->SetSpmcCollTag(fSpmcCollTag[i]);
-      init_block->SetStatusG4Tag(fStatusG4Tag[i]);
-      init_block->SetTimeOffsets(fTimeOffsets);
-
-      TStnDataBlock* db = AddDataBlock(block_name,
-				       "TStepPointMCBlock",
-				       init_block,
-				       buffer_size,
-				       split_mode,
-				       compression_level);
-      if (db) {
-	((TStepPointMCBlock*) db)->SetGenProcessID(fGenId.id());
-      }
-    }
-    //      SetResolveLinksMethod(block_name,StntupleInitMu2eTrackBlockLinks);
+    AddDataBlock("TriggerBlock","TStnTriggerBlock",
+		 fInitTriggerBlock,
+		 buffer_size,
+		 split_mode,
+		 compression_level);
   }
 
   THistModule::afterEndJob();

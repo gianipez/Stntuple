@@ -53,9 +53,9 @@ public:
   virtual void endJob  ();
 					// ****** functions of the module
 
-  Int_t     ProcessNewRun      (art::Run* ARun);
-  // Int_t     InitTriggerTable   ();
-  // Int_t     InitRunSummary     ();
+  int          ProcessNewRun      (art::Run* ARun);
+  int          InitTriggerTable   ();
+  // int       InitRunSummary     ();
 					// ****** setters
   //  ClassDef(InitStntuple,0)
 };
