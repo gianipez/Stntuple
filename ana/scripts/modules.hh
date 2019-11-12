@@ -12,6 +12,7 @@ class TStnLumiMonModule;
 class TStnPhotosAnaModule;
 class TStnTrackAnaModule;
 class TStnTrackSeedAnaModule;
+class TStnTriggerAnaModule;
 class TStnValidationModule;
 
 namespace stntuple {
@@ -26,6 +27,7 @@ namespace stntuple {
   TStnPhotosAnaModule*        m_pho   = NULL;
   TStnTrackAnaModule*         m_trk   = NULL;
   TStnTrackSeedAnaModule*     m_trs   = NULL;
+  TStnTriggerAnaModule*       m_trig  = NULL;
   TStnValidationModule*       m_val   = NULL;
 };
 

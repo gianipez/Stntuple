@@ -47,6 +47,14 @@ int StntupleInitTriggerBlock::InitDataBlock(TStnDataBlock* Block, AbsEvent* Even
 
   block->fNPaths = trn.getTrigPaths().size();
 
+//-----------------------------------------------------------------------------
+// number of paths is variable, but paths have predefined bit numbers assigned
+// assume bit ID <= 32
+//-----------------------------------------------------------------------------
+  int nbits = 32;
+
+  block->fPaths.Init(nbits);
+
   for (int i=0; i<block->fNPaths; i++) {
     const std::string& name = trn.getTrigPath(i);
 
@@ -54,6 +62,8 @@ int StntupleInitTriggerBlock::InitDataBlock(TStnDataBlock* Block, AbsEvent* Even
 //-----------------------------------------------------------------------------
 // the event has passed the logic of the trigger path named 'name'
 //-----------------------------------------------------------------------------
+      char oname[] = "StntupleInitTriggerBlock::InitDataBlock";
+
       ttbl->GetListOfTriggers(name.data(),&list);
       int nt = list.GetEntriesFast();
       if (nt == 1) {
@@ -61,8 +71,10 @@ int StntupleInitTriggerBlock::InitDataBlock(TStnDataBlock* Block, AbsEvent* Even
 	int bit = tr->Bit();
 	block->fPaths.SetBit(bit);
       }
+      else if (nt == 0) {
+	printf("%s ERROR: path %s is not in the trigger table for this run. The bit is NOT SET\n",oname,name.data());
+      }
       else {
-	char oname[] = "StntupleInitTriggerBlock::InitDataBlock";
 	printf("%s ERROR: path %s defined more than once. The bit is NOT SET\n",oname,name.data());
       }
     }

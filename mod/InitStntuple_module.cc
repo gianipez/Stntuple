@@ -120,18 +120,20 @@ int InitStntuple::InitTriggerTable() {
 // data run, so far all trigger tags (versions) are set to 1, 
 // trigger bit assignement is arbitrary
 //-----------------------------------------------------------------------------
-  trigger_table->AddTrigger(new TStnTrigger( 0, 0,"cprSeedDeM_trigger"         ,1));
-  trigger_table->AddTrigger(new TStnTrigger( 1, 1,"tprSeedDeM_trigger"         ,1));
-  trigger_table->AddTrigger(new TStnTrigger( 2, 2,"cprLowPSeedDeM_trigger"     ,1));
-  trigger_table->AddTrigger(new TStnTrigger( 3, 3,"tprLowPSeedDeM_trigger"     ,1));
-  trigger_table->AddTrigger(new TStnTrigger( 4, 4,"cprCosmicSeedDeM_trigger"   ,1));
-  trigger_table->AddTrigger(new TStnTrigger( 5, 5,"tprCosmicSeedDeM_trigger"   ,1));
-  trigger_table->AddTrigger(new TStnTrigger( 6, 6,"tprHelixCalibIPADeM_trigger",1));
-  trigger_table->AddTrigger(new TStnTrigger( 7, 7,"tprHelixIPADeM_trigger"     ,1));
-  trigger_table->AddTrigger(new TStnTrigger( 8, 8,"caloCalibCosmic_trigger"    ,1));
-  trigger_table->AddTrigger(new TStnTrigger( 9, 9,"caloMVACE_trigger"          ,1));
-  trigger_table->AddTrigger(new TStnTrigger(10,10,"unbiased_trigger"           ,1));
-  trigger_table->AddTrigger(new TStnTrigger(11,11,"caloPhoton_trigger"         ,1));
+  trigger_table->AddTrigger(new TStnTrigger( 0, 0,"RecoPath"                   ,1));
+  trigger_table->AddTrigger(new TStnTrigger( 1, 1,"cprSeedDeM_trigger"         ,1));
+  trigger_table->AddTrigger(new TStnTrigger( 2, 2,"tprSeedDeM_trigger"         ,1));
+  trigger_table->AddTrigger(new TStnTrigger( 3, 3,"cprLowPSeedDeM_trigger"     ,1));
+  trigger_table->AddTrigger(new TStnTrigger( 4, 4,"tprLowPSeedDeM_trigger"     ,1));
+  trigger_table->AddTrigger(new TStnTrigger( 5, 5,"cprCosmicSeedDeM_trigger"   ,1));
+  trigger_table->AddTrigger(new TStnTrigger( 6, 6,"tprCosmicSeedDeM_trigger"   ,1));
+  trigger_table->AddTrigger(new TStnTrigger( 7, 7,"tprHelixCalibIPADeM_trigger",1));
+  trigger_table->AddTrigger(new TStnTrigger( 8, 8,"tprHelixIPADeM_trigger"     ,1));
+  trigger_table->AddTrigger(new TStnTrigger( 9, 9,"caloCalibCosmic_trigger"    ,1));
+  trigger_table->AddTrigger(new TStnTrigger(10,10,"caloMVACE_trigger"          ,1));
+  trigger_table->AddTrigger(new TStnTrigger(11,11,"unbiased_trigger"           ,1));
+  trigger_table->AddTrigger(new TStnTrigger(12,12,"caloPhoton_trigger"         ,1));
+  trigger_table->AddTrigger(new TStnTrigger(31,31,"TriggerPath"                ,1)); // guess, obsolete
 			      //  }
   return 0;
 }
@@ -140,7 +142,7 @@ int InitStntuple::InitTriggerTable() {
 Int_t InitStntuple::ProcessNewRun(art::Run* ARun) {
 
   // InitRunSummary     ();
-  // InitTriggerTable   ();
+  InitTriggerTable   ();
   // InitDeadList       ();
 
   TStntuple::Init(ARun->run());

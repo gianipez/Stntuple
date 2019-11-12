@@ -15,15 +15,16 @@ int load_stnana_scripts_Stntuple() {
   char        macro[200];
 
   const char* script[] = { 
-    "catalog.C"   , "PWD",
-    "crv.C"       , "PWD",
-    "debug.C"     , "PWD",
-    "helix.C"     , "PWD",
-    "lumi.C"      , "PWD",
-    "photos.C"    , "STNTUPLE_MC_GEN",
-    "trk.C"       , "PWD",
-    "trs.C"       , "PWD",                  // sample track seed analysis module
-    "validation.C", "PWD",
+    "catalog.C"    , "PWD",
+    "crv.C"        , "PWD",
+    "debug.C"      , "PWD",
+    "helix.C"      , "PWD",
+    "lumi.C"       , "PWD",
+    "photos.C"     , "STNTUPLE_MC_GEN",
+    "trk.C"        , "PWD",
+    "trs.C"        , "PWD",                  // sample track seed analysis module
+    "stn_trigger.C", "PWD",
+    "validation.C" , "PWD",
     0 
   };
 
