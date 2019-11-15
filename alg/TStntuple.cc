@@ -68,6 +68,8 @@ TStntuple::TStntuple() {
   }
 
   fDioSpectrum = new smooth(&hist);
+
+  PBar_Striganov_SetP2Max(2.0);
 }
 
 //_____________________________________________________________________________

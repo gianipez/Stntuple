@@ -20,10 +20,9 @@
 
 #include "Stntuple/base/TStnArrayI.hh"
 
-#include "murat/ana/HistBase_t.h"
-#include "murat/ana/TrackPar_t.hh"
-
-#include "murat/ana/AnaDefs.hh"
+#include "Stntuple/ana/HistBase_t.h"
+#include "Stntuple/ana/TrackPar_t.hh"
+#include "Stntuple/ana/AnaDefs.hh"
 
 class TStnTriggerAnaModule: public TStnModule {
 public:

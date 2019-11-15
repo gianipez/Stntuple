@@ -65,12 +65,12 @@ public:
   static double RPC_PhotonEnergyWeight(double E);
 
 //-----------------------------------------------------------------------------
-// parameterization of inlusive antiproton production cross-section by S.Striganov
+// parameterization of inclusive antiproton production cross-section by S.Striganov (mu2e-1776)
 // PBeam - proton beam momentum
 // PLab, ThLab - momentum and production angle of the outgoing antiproton
 //-----------------------------------------------------------------------------
   static double PBar_Striganov_Ed3SigdP3 (double PBeam, double PLab, double ThLab);
-  static double PBar_Striganov_d2N       (double PBeam, double PLab, double ThLab);
+  static double PBar_Striganov_d2N       (double PBeam, double PLab, double ThLab); // d^2Sigma/dP/dcosth (lab)
   static void   PBar_Striganov_SetP2Max  (double P2Max);
 //-----------------------------------------------------------------------------
 // print routines - sometimes it is not possible to do it from a single block

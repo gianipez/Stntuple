@@ -54,8 +54,8 @@ c     Pbar yield for Mu2e: pBeam = 8.89 GeV/c, tantalum target
 
       e          = sqrt(p*p+mp*mp)
       conv       = 2.*pi*(p*p/e)
-      val        = pa2pbarx(p,tet,pbeam)
-      pbar_yield = val;
+      val        = pa2pbarx(p,tet,pbeam)*conv;
+      pbar_d2n   = val;
 
       return
       end
