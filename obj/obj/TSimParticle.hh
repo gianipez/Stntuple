@@ -60,6 +60,9 @@ public:
   int    ParentID    () const { return fParentID;     }
   int    CreationCode() const { return fCreationCode; }
 
+  int    StartVolumeIndex () const { return fStartVolumeIndex; }
+  int    EndVolumeIndex   () const { return fEndVolumeIndex  ; }
+
   const TLorentzVector* StartPos() const { return &fStartPos; }
   const TLorentzVector* StartMom() const { return &fStartMom; }
   const TLorentzVector* EndPos  () const { return &fEndPos;   }
