@@ -29,25 +29,25 @@ public:
 //-----------------------------------------------------------------------------
 //  histograms
 //-----------------------------------------------------------------------------
-  struct TimeClusterHist_t : public HistBase_t {
+  struct TimeClusterHist_t : public stntuple::HistBase_t {
     TH1F* fTime;
     TH1F* fNHits;
     TH1F* fEnergy;
     TH1F* fR;
   };
 
-  struct HelixHist_t : public HistBase_t {
+  struct HelixHist_t : public stntuple::HistBase_t {
     TH1F* fNHits;
   };
 
-  struct TrackSeedHist_t : public HistBase_t {
+  struct TrackSeedHist_t : public stntuple::HistBase_t {
     TH1F* fP;
     TH1F* fNHits;
     TH1F* fChi2Dof;
     TH1F* fD0;
   };
 
-  struct TrackHist_t : public HistBase_t {
+  struct TrackHist_t : public stntuple::HistBase_t {
     TH1F* fP;
     TH1F* fNActive;
     TH1F* fChi2Dof;
@@ -58,11 +58,11 @@ public:
     TH1F* fAlgMask;
   };
 
-  struct TriggerHist_t : public HistBase_t {
+  struct TriggerHist_t : public stntuple::HistBase_t {
     TH1F* fBits;
   };
 
-  struct EventHist_t : public HistBase_t {
+  struct EventHist_t : public stntuple::HistBase_t {
     TH1F* fRunNumber;
     TH1F* fEventNumber;
     TH1F* fNTimeClusters;
@@ -115,7 +115,7 @@ public:
   int                      fNTrackSeeds[10];
   int                      fNGoodSeeds;
   int                      fNGoodTracks;
-  TrackPar_t               fTrackPar   [10];
+  stntuple::TrackPar_t     fTrackPar   [10];
 
   double                   fMinTrigMom;
   TGenParticle*            fParticle;
@@ -149,20 +149,20 @@ public:
 //-----------------------------------------------------------------------------
 // other methods
 //-----------------------------------------------------------------------------
-  void    BookTimeClusterHistograms(HistBase_t* Hist, const char* Folder);
-  void    BookHelixHistograms      (HistBase_t* Hist, const char* Folder);
-  void    BookTrackSeedHistograms  (HistBase_t* Hist, const char* Folder);
-  void    BookTrackHistograms      (HistBase_t* Hist, const char* Folder);
-  void    BookTriggerHistograms    (HistBase_t* Hist, const char* Folder);
-  void    BookEventHistograms      (HistBase_t* Hist, const char* Folder);
+  void    BookTimeClusterHistograms(stntuple::HistBase_t* Hist, const char* Folder);
+  void    BookHelixHistograms      (stntuple::HistBase_t* Hist, const char* Folder);
+  void    BookTrackSeedHistograms  (stntuple::HistBase_t* Hist, const char* Folder);
+  void    BookTrackHistograms      (stntuple::HistBase_t* Hist, const char* Folder);
+  void    BookTriggerHistograms    (stntuple::HistBase_t* Hist, const char* Folder);
+  void    BookEventHistograms      (stntuple::HistBase_t* Hist, const char* Folder);
   void    BookHistograms();
 
-  void    FillTimeClusterHistograms(HistBase_t* Hist, TStnTimeCluster*  TPeak);
-  void    FillHelixHistograms      (HistBase_t* Hist, TStnHelix*     Helix);
-  void    FillTrackSeedHistograms  (HistBase_t* Hist, TStnTrackSeed* Seed , double Weight = 1);
-  void    FillTrackHistograms      (HistBase_t* Hist, TStnTrack*     Trk);
-  void    FillTriggerHistograms    (HistBase_t* Hist);
-  void    FillEventHistograms      (HistBase_t* Hist, double Weight = 1);
+  void    FillTimeClusterHistograms(stntuple::HistBase_t* Hist, TStnTimeCluster*  TPeak);
+  void    FillHelixHistograms      (stntuple::HistBase_t* Hist, TStnHelix*     Helix);
+  void    FillTrackSeedHistograms  (stntuple::HistBase_t* Hist, TStnTrackSeed* Seed , double Weight = 1);
+  void    FillTrackHistograms      (stntuple::HistBase_t* Hist, TStnTrack*     Trk);
+  void    FillTriggerHistograms    (stntuple::HistBase_t* Hist);
+  void    FillEventHistograms      (stntuple::HistBase_t* Hist, double Weight = 1);
 
   void    FillHistograms();
 

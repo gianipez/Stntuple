@@ -13,6 +13,8 @@
 // 4  : events with NProtonStrawHits >= 20
 // 5  : UNUSED
 ///////////////////////////////////////////////////////////////////////////////
+#include "Stntuple/ana/TStnTriggerAnaModule.hh"
+
 #include "TF1.h"
 #include "TCanvas.h"
 #include "TPad.h"
@@ -24,6 +26,9 @@
 #include "Stntuple/alg/TStntuple.hh"
 #include "Stntuple/obj/TStrawHitData.hh"
 #include "Stntuple/val/stntuple_val_functions.hh"
+
+using stntuple::HistBase_t;
+using stntuple::TrackPar_t;
 //------------------------------------------------------------------------------
 // Mu2e offline includes
 //-----------------------------------------------------------------------------
@@ -104,7 +109,7 @@ void TStnTriggerAnaModule::BookTriggerHistograms(HistBase_t* Hist, const char* F
 }
 
 //-----------------------------------------------------------------------------
-void TStnTriggerAnaModule::BookEventHistograms(HistBase_t* Hist, const char* Folder) {
+void TStnTriggerAnaModule::BookEventHistograms(stntuple::HistBase_t* Hist, const char* Folder) {
   //  char name [200];
   //  char title[200];
   EventHist_t* hist = (EventHist_t*) Hist;
