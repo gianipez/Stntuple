@@ -48,6 +48,7 @@ c     close atomic weight. Atomic weight dependece is about A^(1/3).
       
 c     Pbar yield for Mu2e: pBeam = 8.89 GeV/c, tantalum target
 
+      real*4     mp
       parameter (pi       = 3.141592)
       parameter (mp       = 0.938272)
       parameter (xs_total = 1.539e6 )
@@ -79,7 +80,7 @@ c     Tantalum inelstic cross section = 1.539e6 mubarn
       PARAMETER (PI=3.141592)
       PARAMETER (PM=0.938272)
 
-c      print *, "privet"
+      print *, "privet"
 
       ss=sin(tet)
 c      plab=8.89
