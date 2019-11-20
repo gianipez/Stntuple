@@ -13,6 +13,7 @@ if ( not ("EG" in rootlibs)):
     rootlibs.insert(rootlibs.index("Physics")+1,"EG");
 
 debug  = False
+# env.Append(FORTRANFLAGS = ['-Iinclude','-g']);
 env.Append(FORTRANFLAGS = ['-Iinclude']);
 helper = stntuple_helper(env,debug);
 
@@ -21,7 +22,7 @@ helper.handle_dictionaries();
 list_of_fortran_files = Glob('*.f',strings=True);
 list_of_cc_files      = Glob('*.cc', strings=True);
 skip_list             = []
-libs                  = ['Stntuple_base', rootlibs];
+libs                  = ['Stntuple_base', rootlibs, 'gfortran'];
 
 helper.compile_fortran(list_of_fortran_files,skip_list);
 
