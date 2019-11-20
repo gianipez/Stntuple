@@ -3,6 +3,7 @@
 
 #include "TrackParBase_t.hh"
 
+namespace stntuple {
 class TrackPar_t : public TrackParBase_t {
 public:
   int     fNHPl;
@@ -60,4 +61,5 @@ public:
   double  fTMean;			// mean time over the track hits
 
 };
+}
 #endif

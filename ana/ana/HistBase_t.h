@@ -5,7 +5,11 @@
 #ifndef __stntuple_ana_HistBase_t__
 #define __stntuple_ana_HistBase_t__
 
-struct HistBase_t {
-  int     fHistBaseID;			// name to avoid confusions
-};
+namespace stntuple {
+
+  struct HistBase_t {
+    int     fHistBaseID;			// name to avoid confusions
+  };
+
+}
 #endif
