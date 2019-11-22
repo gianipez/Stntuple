@@ -808,8 +808,8 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
       art::Handle<mu2e::StepPointMCCollection> vdhits;
       AnEvent->getByLabel(spmc_module_label,spmc_description,vdhits);
       if (!vdhits.isValid()) {
-	char warning[100];
-	sprintf(warning,"WARNING: StepPointMCCollection %s:virtualdetector not found\n",spmc_module_label);
+	char warning[500];
+	snprintf(warning,500,"WARNING: StepPointMCCollection %s:virtualdetector not found\n",spmc_module_label);
 	mf::LogWarning(oname) << warning;
       }
       else {
