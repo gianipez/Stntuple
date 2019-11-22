@@ -669,7 +669,8 @@ void TStnRunSummary::Print(Option_t* Opt) const {
   if (strstr(Opt,"data") || (Opt[0] == 0)) {
     n = strlen(tail);
     if (n > 22) n = 22;
-    strncpy(buffer,tail,n);
+    //    strncpy(buffer,tail,n);
+    snprintf(buffer,200,"%s",tail);
     buffer[n] = 0;
     tail = tail+n;
 
@@ -707,7 +708,8 @@ void TStnRunSummary::Print(Option_t* Opt) const {
     while (*tail) {
       n = strlen(tail);
       if (n > 22) n = 22;
-      strncpy(buffer,tail,n);
+      //strncpy(buffer,tail,n);
+      snprintf(buffer,200,"%s",tail);
       buffer[n] = 0;
       tail = tail+n;
       printf("                %-22s\n",buffer);
