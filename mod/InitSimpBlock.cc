@@ -135,8 +135,9 @@ int StntupleInitSimpBlock::InitDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent
       }
 
       if (found == 0) {
-	vid[np_with_hits] = sim_id;
-	vin[np_with_hits] = 1;
+	vid[np_with_hits] =  sim_id;
+	vin[np_with_hits] =  1;
+	np_with_hits      =+ 1;
       }
     }
   }
