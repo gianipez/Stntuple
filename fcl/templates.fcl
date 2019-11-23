@@ -22,64 +22,42 @@
 #------------------------------------------------------------------------------
   generatorSeq  : [ generate, g4run, detectorFilter, @sequence::CommonMC.DigiSim ]
 
-#  gen_mix_seq   : [ generate, g4run, detectorFilter,
-#		    @sequence::EventMixing.CD3Mixers, @sequence::CommonMC.DigiSim ]   # FIXME
-
-#  mix_seq       : [ @sequence::EventMixing.CD3Mixers, @sequence::CommonMC.DigiSim ]  # FIXME
-
-  hitMakerSeq   : [ @sequence::CaloDigiMC.DigiSim, @sequence::CaloReco.Reco, @sequence::TrackerMC.DigiSim, makeSH, makePH, FlagBkgHits]
-
-  digiMakerSeq  : [ @sequence::CaloDigiMC.DigiSim, @sequence::CaloReco.Reco, @sequence::TrackerMC.DigiSim, makeSH, makePH, FlagBkgHits]
- 
 # MC generator and hit makers
 
-  gen_hits_seq  : [ @sequence::generatorSeq, @sequence::hitMakerSeq ]
 
-  trkPatRecSeq     : [ @sequence::Tracking.TPRDeM, MergePatRec ]  # an attempt to ensure that the track collection has a fixed name
-
-  calPatRecSeq     : [ DeltaFinder, CalPatRec   , MergePatRec    ]
-
-  allPatRecSeq     : [ @sequence::Tracking.TPRDeM, 
-		       @sequence::CalPatRec.reco, 
-		       MergePatRec ]
-
-  allPatRecNewSeq  : [ @sequence::Tracking.TPRDeM, 
-		       @sequence::CalPatRec.reco,
-		       MergePatRec, MergeHelixFinder ]
-  
   allHelixSearchSeq  : [ TimeClusterFinder, HelixFinder, 
 			 CalTimePeakFinder, CalHelixFinder, 
 			 MergeHelixFinder ]
 
-  trkPatRecDemSeq  : [ @sequence::Tracking.TPRDeM , MergePatRecDem ]
-  trkPatRecDmmSeq  : [ @sequence::Tracking.TPRDmuM, MergePatRecDmm ]
+#  trkPatRecDemSeq  : [ @sequence::Tracking.TPRDeM , MergePatRecDem ]
+#  trkPatRecDmmSeq  : [ @sequence::Tracking.TPRDmuM, MergePatRecDmm ]
 
-  calPatRecDemSeq  : [ @sequence::CalPatRec.dem_reco, MergePatRecDem ]
+#   calPatRecDemSeq  : [ @sequence::CalPatRec.dem_reco, MergePatRecDem ]
 
 # event for the downstream particles, avikPID requires running both electron and muon track reconstruction 
 # hit making - just once, but two modules
 
-  allPatRecDemSeq     : [ TimeClusterFinder, HelixFinder,  KSFDeM, KFFDeM, 
-			  DeltaFinder, CalPatRecDem, 
-			  MergePatRecDem ]
+#  allPatRecDemSeq     : [ TimeClusterFinder, HelixFinder,  KSFDeM, KFFDeM, 
+#			  DeltaFinder, CalPatRecDem, 
+#			  MergePatRecDem ]
 
-  allPatRecDmmSeq     : [ TimeClusterFinder, HelixFinder,  KSFDmM, KFFDmM,
-			  DeltaFinder, CalPatRecDmm, 
-			  MergePatRecDmm ]
+#  allPatRecDmmSeq     : [ TimeClusterFinder, HelixFinder,  KSFDmM, KFFDmM,
+#			  DeltaFinder, CalPatRecDmm, 
+#			  MergePatRecDmm ]
 #------------------------------------------------------------------------------
 # downstream electron and muon reconstructon together
 #------------------------------------------------------------------------------
-  trkPatRecDemDmmSeq  : [ TimeClusterFinder, HelixFinder, KSFDeM, KFFDeM, KSFDmuM, KFFDmuM, 
-			  MergePatRecDem, MergePatRecDmm ]
+#  trkPatRecDemDmmSeq  : [ TimeClusterFinder, HelixFinder, KSFDeM, KFFDeM, KSFDmuM, KFFDmuM, 
+#			  MergePatRecDem, MergePatRecDmm ]
 
-  calPatRecDemDmmSeq  : [ DeltaDinder, 
-			  CalPatRecDem, CalPatRecDmm, 
-			  MergePatRecDem, MergePatRecDmm ]
+#  calPatRecDemDmmSeq  : [ DeltaDinder, 
+#			  CalPatRecDem, CalPatRecDmm, 
+#			  MergePatRecDem, MergePatRecDmm ]
 
-  allPatRecDemDmmSeq  : [ TimeClusterFinder, HelixFinder, 
-			  KSFDeM, KFFDeM, KSFDmuM, KFFDmuM, 
-			  @sequence::CalPatRec.dem_reco, MergePatRecDem, 
-			  @sequence::CalPatRec.dmm_reco, MergePatRecDmm ]
+#  allPatRecDemDmmSeq  : [ TimeClusterFinder, HelixFinder, 
+#			  KSFDeM, KFFDeM, KSFDmuM, KFFDmuM, 
+#			  @sequence::CalPatRec.dem_reco, MergePatRecDem, 
+#			  @sequence::CalPatRec.dmm_reco, MergePatRecDmm ]
 #------------------------------------------------------------------------------
 # particle identification
 # AvikPID on input takes MergePatRecDem and MergePatRecDmm
@@ -100,60 +78,60 @@
 #------------------------------------------------------------------------------
 # *** path sequences
 #------------------------------------------------------------------------------
-  hits_calo_apr_stnmaker_seq : [ @sequence::CommonMC.DigiSim, @sequence::hitMakerSeq, 
-				 @sequence::CaloCluster.Reco, 
-                                 @sequence::allPatRecSeq,
-                                 @sequence::TrackCaloMatching.matching,
-#				 AvikPID, 
-				 @sequence::stnmaker_seq ]
-
-  hits_calo_tprdem_stnmaker_seq : [ @sequence::CommonMC.DigiSim, @sequence::hitMakerSeq, 
-				    @sequence::CaloCluster.Reco,
-				    @sequence::trkPatRecDemSeq,
-                                    @sequence::TrackCaloMatching.matching_dem,
-				    #				      AvikPID, 
-				    @sequence::stnmaker_dem_seq ]
+#   hits_calo_apr_stnmaker_seq : [ @sequence::CommonMC.DigiSim, @sequence::hitMakerSeq, 
+# 				 @sequence::CaloCluster.Reco, 
+#                                  @sequence::allPatRecSeq,
+#                                  @sequence::TrackCaloMatching.matching,
+# #				 AvikPID, 
+# 				 @sequence::stnmaker_seq ]
+# 
+#  hits_calo_tprdem_stnmaker_seq : [ @sequence::CommonMC.DigiSim, @sequence::hitMakerSeq, 
+#				    @sequence::CaloCluster.Reco,
+#				    @sequence::trkPatRecDemSeq,
+ #                                   @sequence::TrackCaloMatching.matching_dem,
+#				    #				      AvikPID, 
+#				    @sequence::stnmaker_dem_seq ]
 #------------------------------------------------------------------------------
 # run full reconstruction on the data coming from the input file
 #------------------------------------------------------------------------------
-  path_calo_apr_vpid_stnm :       [ @sequence::CaloCluster.Reco  , @sequence::allPatRecSeq,
-                                    @sequence::TrackCaloMatching.matching,
-				    ParticleID, 
-				    @sequence::stnmaker_seq ]
+#  path_calo_apr_vpid_stnm :       [ @sequence::CaloCluster.Reco  , @sequence::allPatRecSeq,
+#                                   @sequence::TrackCaloMatching.matching,
+#				    ParticleID, 
+#				    @sequence::stnmaker_seq ]
 #------------------------------------------------------------------------------
 # generate signal, run full reconstruction
 #------------------------------------------------------------------------------
-  path_gen_hits_calo_apr_vpid_stnm : [ @sequence::generatorSeq, @sequence::hitMakerSeq ,
-				       @sequence::CaloCluster.Reco , @sequence::allPatRecSeq,
-                                       @sequence::TrackCaloMatching.matching,
-				       ParticleID, 
-				       @sequence::stnmaker_seq ]
+#   path_gen_hits_calo_apr_vpid_stnm : [ @sequence::generatorSeq, @sequence::hitMakerSeq ,
+# 				       @sequence::CaloCluster.Reco , @sequence::allPatRecSeq,
+#                                        @sequence::TrackCaloMatching.matching,
+# 				       ParticleID, 
+# 				       @sequence::stnmaker_seq ]
 #------------------------------------------------------------------------------
 # do track-to-calo matching for each branch separately
 #------------------------------------------------------------------------------
-  path_gen_hits_calo_apr_vpid_stnm3 : [ @sequence::generatorSeq    , @sequence::hitMakerSeq ,
-					@sequence::CaloCluster.Reco, 
-					@sequence::allPatRecSeq, 
-					MergePatRecTpr,
-					MergePatRecCpr,
-					@sequence::TrackCaloMatching.matching,
-					@sequence::TrackCaloMatching.matching_tpr,
-					@sequence::TrackCaloMatching.matching_cpr,
-					ParticleID, 
-					@sequence::stnmaker3_seq ]
-#------------------------------------------------------------------------------
-# read signal files and run full reconstruction
-#------------------------------------------------------------------------------
-  path_hits_calo_apr_vpid_stnm     : [ @sequence::CommonMC.DigiSim  , @sequence::hitMakerSeq ,
-				       @sequence::CaloCluster.Reco  , @sequence::allPatRecSeq,
-                                       @sequence::TrackCaloMatching.matching,
-				       ParticleID, 
-				       @sequence::stnmaker_seq ]
-
-  path_calo_apr_vpid_stnm          : [ @sequence::CaloCluster.Reco  , @sequence::allPatRecSeq,
-				       @sequence::TrackCaloMatching.matching,
-				       ParticleID, 
-				       @sequence::stnmaker_seq ]
+#   path_gen_hits_calo_apr_vpid_stnm3 : [ @sequence::generatorSeq    , @sequence::hitMakerSeq ,
+# 					@sequence::CaloCluster.Reco, 
+# 					@sequence::allPatRecSeq, 
+# 					MergePatRecTpr,
+# 					MergePatRecCpr,
+# 					@sequence::TrackCaloMatching.matching,
+# 					@sequence::TrackCaloMatching.matching_tpr,
+# 					@sequence::TrackCaloMatching.matching_cpr,
+# 					ParticleID, 
+# 					@sequence::stnmaker3_seq ]
+# #------------------------------------------------------------------------------
+# # read signal files and run full reconstruction
+# #------------------------------------------------------------------------------
+#   path_hits_calo_apr_vpid_stnm     : [ @sequence::CommonMC.DigiSim  , @sequence::hitMakerSeq ,
+# 				       @sequence::CaloCluster.Reco  , @sequence::allPatRecSeq,
+#                                        @sequence::TrackCaloMatching.matching,
+# 				       ParticleID, 
+# 				       @sequence::stnmaker_seq ]
+# 
+#  path_calo_apr_vpid_stnm          : [ @sequence::CaloCluster.Reco  , @sequence::allPatRecSeq,
+#				       @sequence::TrackCaloMatching.matching,
+#				       ParticleID, 
+#				       @sequence::stnmaker_seq ]
 #------------------------------------------------------------------------------
 # read both signal and background files, mix, run full reconstruction
 #------------------------------------------------------------------------------
@@ -373,9 +351,9 @@ Stntuple.trk_hit_reco        : [ makeSH, makePH, FlagBkgHits]
 Stntuple.cal_reco            : [ CaloRecoDigiFromDigi ,CaloCrystalHitFromHit, 
 				 CaloProtoClusterFromCrystalHit, CaloClusterFromProtoCluster ]
 
-Stntuple.cpr_reco            : [ @sequence::CalPatRec.reco, 
-				 MergePatRecCpr,
-				 @sequence::TrackCaloMatching.matching_cpr ]
+# Stntuple.cpr_reco            : [ @sequence::CalPatRec.reco, 
+#				 MergePatRecCpr,
+#				 @sequence::TrackCaloMatching.matching_cpr ]
 
 Stntuple.crv_reco            : [ @sequence::CrvRecoMCPackage.CrvRecoMCSequence ]
 
@@ -383,56 +361,56 @@ Stntuple.tpr_reco            : [ @sequence::Tracking.TPRDeM ,
 				 MergePatRecTpr, 
 				 @sequence::TrackCaloMatching.matching_tpr ]
 
-Stntuple.mpr_reco        : [ @sequence::Tracking.TPRDeM , 
-			     @sequence::CalPatRec.reco, 
-			     MergePatRec, 
-			     @sequence::TrackCaloMatching.matching ]
+# Stntuple.mpr_reco        : [ @sequence::Tracking.TPRDeM , 
+# 			     @sequence::CalPatRec.reco, 
+# 			     MergePatRec, 
+#			     @sequence::TrackCaloMatching.matching ]
 
-Stntuple.cpr_reco_dem    : [ @sequence::CalPatRec.dem_reco, 
-			     MergePatRecCprDem, 
-			     @sequence::TrackCaloMatching.matching_cpr_dem ]
+# Stntuple.cpr_reco_dem    : [ @sequence::CalPatRec.dem_reco, 
+# 			     MergePatRecCprDem, 
+# 			     @sequence::TrackCaloMatching.matching_cpr_dem ]
 
-Stntuple.tpr_reco_dem    : [ @sequence::Tracking.TPRDeM , 
-			     MergePatRecTprDem, 
-			     @sequence::TrackCaloMatching.matching_tpr_dem ]
+# Stntuple.tpr_reco_dem    : [ @sequence::Tracking.TPRDeM , 
+# 			     MergePatRecTprDem, 
+# 			     @sequence::TrackCaloMatching.matching_tpr_dem ]
 
-Stntuple.mpr_reco_dem    : [ @sequence::Tracking.TPRDeM , 
-			     @sequence::CalPatRec.dem_reco, 
-			     MergePatRecDem, 
-			     @sequence::TrackCaloMatching.matching_dem,
-			     AvikPIDNewDem
-			    ]
+# Stntuple.mpr_reco_dem    : [ @sequence::Tracking.TPRDeM , 
+# 			     @sequence::CalPatRec.dem_reco, 
+# 			     MergePatRecDem, 
+# 			     @sequence::TrackCaloMatching.matching_dem,
+# 			     AvikPIDNewDem
+# 			    ]
 
-Stntuple.cpr_reco_dep    : [ @sequence::CalPatRec.dep_reco, 
- 			     MergePatRecCprDep, 
- 			     @sequence::TrackCaloMatching.matching_cpr_dep
-			    ]
+# Stntuple.cpr_reco_dep    : [ @sequence::CalPatRec.dep_reco, 
+# 			     MergePatRecCprDep, 
+# 			     @sequence::TrackCaloMatching.matching_cpr_dep
+# 			    ]
 
-Stntuple.tpr_reco_dep    : [ @sequence::Tracking.TPRDeP , 
- 			     MergePatRecTprDep, 
- 			     @sequence::TrackCaloMatching.matching_tpr_dep ]
+# Stntuple.tpr_reco_dep    : [ @sequence::Tracking.TPRDeP , 
+#  			     MergePatRecTprDep, 
+#  			     @sequence::TrackCaloMatching.matching_tpr_dep ]
 
-Stntuple.mpr_reco_dep    : [ @sequence::Tracking.TPRDeP , 
-			     @sequence::CalPatRec.dep_reco, 
-			     MergePatRecDep, 
-			     @sequence::TrackCaloMatching.matching_dep,
-			     AvikPIDNewDep
-			    ]
+# Stntuple.mpr_reco_dep    : [ @sequence::Tracking.TPRDeP , 
+# 			     @sequence::CalPatRec.dep_reco, 
+# 			     MergePatRecDep, 
+# 			     @sequence::TrackCaloMatching.matching_dep,
+# 			     AvikPIDNewDep
+#			    ]
 
-Stntuple.dem_reco        : [ @sequence::Tracking.TPRDeM  , @sequence::CalPatRec.dem_reco, MergePatRecDem, 
-			     @sequence::TrackCaloMatching.matching_dem, AvikPIDNewDem ]
+# Stntuple.dem_reco        : [ @sequence::Tracking.TPRDeM  , @sequence::CalPatRec.dem_reco, MergePatRecDem, 
+# 			     @sequence::TrackCaloMatching.matching_dem, AvikPIDNewDem ]
 
-Stntuple.dpp_reco        : [ @sequence::kludge_Tracking_TPRDpP, MergePatRecDpp,
-			     @sequence::TrackCaloMatching.matching_dpp   ]
+# Stntuple.dpp_reco        : [ @sequence::kludge_Tracking_TPRDpP, MergePatRecDpp,
+# 			     @sequence::TrackCaloMatching.matching_dpp   ]
 
-Stntuple.dmm_reco        : [ @sequence::Tracking.TPRDmuM, @sequence::CalPatRec.dmm_reco, MergePatRecDmm, 
-			     @sequence::TrackCaloMatching.matching_dmm, AvikPIDNewDmm ]
+# Stntuple.dmm_reco        : [ @sequence::Tracking.TPRDmuM, @sequence::CalPatRec.dmm_reco, MergePatRecDmm, 
+# 			     @sequence::TrackCaloMatching.matching_dmm, AvikPIDNewDmm ]
 
-Stntuple.dep_reco        : [ @sequence::Tracking.TPRDeP  , @sequence::CalPatRec.dep_reco, MergePatRecDep, 
-			     @sequence::TrackCaloMatching.matching_dep, AvikPIDNewDep ]
+# Stntuple.dep_reco        : [ @sequence::Tracking.TPRDeP  , @sequence::CalPatRec.dep_reco, MergePatRecDep, 
+# 			     @sequence::TrackCaloMatching.matching_dep, AvikPIDNewDep ]
 
-Stntuple.dmp_reco        : [ @sequence::Tracking.TPRDmuP , @sequence::CalPatRec.dmp_reco, MergePatRecDmp, 
-			     @sequence::TrackCaloMatching.matching_dmp, AvikPIDNewDmp ]
+# Stntuple.dmp_reco        : [ @sequence::Tracking.TPRDmuP , @sequence::CalPatRec.dmp_reco, MergePatRecDmp, 
+# 			     @sequence::TrackCaloMatching.matching_dmp, AvikPIDNewDmp ]
 #------------------------------------------------------------------------------
 # new tracking sequences: 2 lists in the end, 'MH' is the new default (MergeHelix)
 #------------------------------------------------------------------------------
@@ -468,29 +446,29 @@ Stntuple.paths : {
 
     gcl                        : [ genCountLogger ]
 
-    path_gen_digi_reco_stn_dem : [ @sequence::Stntuple.gen_g4_time_map,
-				   @sequence::Stntuple.digis          ,
-				   @sequence::Stntuple.trk_hit_reco       ,
-				   @sequence::Stntuple.cal_reco       ,
-				   @sequence::Stntuple.dem_reco       ,
-				   @sequence::Stntuple.stnmaker_dem
-				  ]
+#    path_gen_digi_reco_stn_dem : [ @sequence::Stntuple.gen_g4_time_map,
+#				   @sequence::Stntuple.digis          ,
+#				   @sequence::Stntuple.trk_hit_reco       ,
+#				   @sequence::Stntuple.cal_reco       ,
+#				   @sequence::Stntuple.dem_reco       ,
+#				   @sequence::Stntuple.stnmaker_dem
+#				  ]
     
-    path_gen_digi_reco_stn_dep : [ @sequence::Stntuple.gen_g4_time_map,
-				   @sequence::Stntuple.digis          ,
-				   @sequence::Stntuple.trk_hit_reco   ,
-				   @sequence::Stntuple.cal_reco       ,
-				   @sequence::Stntuple.dep_reco       ,
-				   @sequence::Stntuple.stnmaker_dep
-				  ]
+#    path_gen_digi_reco_stn_dep : [ @sequence::Stntuple.gen_g4_time_map,
+#				   @sequence::Stntuple.digis          ,
+#				   @sequence::Stntuple.trk_hit_reco   ,
+#				   @sequence::Stntuple.cal_reco       ,
+#				   @sequence::Stntuple.dep_reco       ,
+#				   @sequence::Stntuple.stnmaker_dep
+#				  ]
     
-    path_gen_digi_reco_stn_dmm : [ @sequence::Stntuple.gen_g4_time_map,
-				   @sequence::Stntuple.digis          ,
-				   @sequence::Stntuple.trk_hit_reco       ,
-				   @sequence::Stntuple.cal_reco       ,
-				   @sequence::Stntuple.dmm_reco       ,
-				   @sequence::Stntuple.stnmaker_dmm
-				  ]
+#    path_gen_digi_reco_stn_dmm : [ @sequence::Stntuple.gen_g4_time_map,
+#				   @sequence::Stntuple.digis          ,
+#				   @sequence::Stntuple.trk_hit_reco       ,
+#				   @sequence::Stntuple.cal_reco       ,
+#				   @sequence::Stntuple.dmm_reco       ,
+#				   @sequence::Stntuple.stnmaker_dmm
+#				  ]
 
     path_gen_digi_reco_stn_uep : [ @sequence::Stntuple.gen_g4_time_map,
 				   @sequence::Stntuple.digis          ,
@@ -508,62 +486,62 @@ Stntuple.paths : {
 				   @sequence::Stntuple.stnmaker
 				  ]
 
-    path_gen_digi_reco_stn_dem_dmm : [ @sequence::Stntuple.gen_g4_time_map,
-				       @sequence::Stntuple.digis          ,
-				       @sequence::Stntuple.trk_hit_reco       ,
-				       @sequence::Stntuple.cal_reco       ,
-				       @sequence::Stntuple.dem_reco       ,
-				       @sequence::Stntuple.dmm_reco       ,
-				       @sequence::Stntuple.stnmaker_dem_dmm
-				      ]
+#    path_gen_digi_reco_stn_dem_dmm : [ @sequence::Stntuple.gen_g4_time_map,
+#				       @sequence::Stntuple.digis          ,
+#				       @sequence::Stntuple.trk_hit_reco       ,
+#				       @sequence::Stntuple.cal_reco       ,
+#				       @sequence::Stntuple.dem_reco       ,
+#				       @sequence::Stntuple.dmm_reco       ,
+#				       @sequence::Stntuple.stnmaker_dem_dmm
+#				      ]
 
-    path_gen_digi_reco_stn_dem_umm : [ @sequence::Stntuple.gen_g4_time_map,
-				       @sequence::Stntuple.digis          ,
-				       @sequence::Stntuple.trk_hit_reco       ,
-				       @sequence::Stntuple.cal_reco       ,
-				       @sequence::Stntuple.dem_reco       ,
-				       @sequence::Stntuple.umm_reco       ,
-				       @sequence::Stntuple.stnmaker_dem_umm
-				      ]
-    
-    path_gen_digi_reco_stn_dem_ump : [ @sequence::Stntuple.gen_g4_time_map,
-				       @sequence::Stntuple.digis          ,
-				       @sequence::Stntuple.trk_hit_reco       ,				       
-				       @sequence::Stntuple.cal_reco       ,
-				       @sequence::Stntuple.dem_reco       ,
-				       @sequence::Stntuple.ump_reco       ,
-				       @sequence::Stntuple.stnmaker_dem_ump
-				      ]
+#     path_gen_digi_reco_stn_dem_umm : [ @sequence::Stntuple.gen_g4_time_map,
+# 				       @sequence::Stntuple.digis          ,
+# 				       @sequence::Stntuple.trk_hit_reco       ,
+# 				       @sequence::Stntuple.cal_reco       ,
+# 				       @sequence::Stntuple.dem_reco       ,
+# 				       @sequence::Stntuple.umm_reco       ,
+# 				       @sequence::Stntuple.stnmaker_dem_umm
+# 				      ]
+#     
+#     path_gen_digi_reco_stn_dem_ump : [ @sequence::Stntuple.gen_g4_time_map,
+# 				       @sequence::Stntuple.digis          ,
+# 				       @sequence::Stntuple.trk_hit_reco       ,				       
+# 				       @sequence::Stntuple.cal_reco       ,
+# 				       @sequence::Stntuple.dem_reco       ,
+# 				       @sequence::Stntuple.ump_reco       ,
+# 				       @sequence::Stntuple.stnmaker_dem_ump
+# 				      ]
 
-    path_gen_digi_reco_stn_tcm : [ @sequence::Stntuple.gen_g4_time_map,
-				   @sequence::Stntuple.digis          ,
-				   @sequence::Stntuple.trk_hit_reco       ,
-				   @sequence::Stntuple.cal_reco       ,
-				   @sequence::Stntuple.tpr_reco       ,
-				   @sequence::Stntuple.cpr_reco       ,
-				   @sequence::Stntuple.mpr_reco       ,
-				   @sequence::Stntuple.stnmaker_tcm
-				  ]
-    
-    path_gen_digi_reco_stn_tcm_dem : [ @sequence::Stntuple.gen_g4_time_map ,
-				       @sequence::Stntuple.digis           ,
-				       @sequence::Stntuple.trk_hit_reco    ,
-				       @sequence::Stntuple.cal_reco        ,
-				       @sequence::Stntuple.tpr_reco_dem    ,
-				       @sequence::Stntuple.cpr_reco_dem    ,
-				       @sequence::Stntuple.mpr_reco_dem    ,
-				       @sequence::Stntuple.stnmaker_tcm_dem
-				      ]
+#     path_gen_digi_reco_stn_tcm : [ @sequence::Stntuple.gen_g4_time_map,
+# 				   @sequence::Stntuple.digis          ,
+# 				   @sequence::Stntuple.trk_hit_reco       ,
+# 				   @sequence::Stntuple.cal_reco       ,
+# 				   @sequence::Stntuple.tpr_reco       ,
+# 				   @sequence::Stntuple.cpr_reco       ,
+# 				   @sequence::Stntuple.mpr_reco       ,
+# 				   @sequence::Stntuple.stnmaker_tcm
+# 				  ]
+#     
+#     path_gen_digi_reco_stn_tcm_dem : [ @sequence::Stntuple.gen_g4_time_map ,
+# 				       @sequence::Stntuple.digis           ,
+# 				       @sequence::Stntuple.trk_hit_reco    ,
+# 				       @sequence::Stntuple.cal_reco        ,
+# 				       @sequence::Stntuple.tpr_reco_dem    ,
+# 				       @sequence::Stntuple.cpr_reco_dem    ,
+# 				       @sequence::Stntuple.mpr_reco_dem    ,
+# 				       @sequence::Stntuple.stnmaker_tcm_dem
+# 				      ]
 
-    path_gen_digi_reco_stn_tcm_dep : [ @sequence::Stntuple.gen_g4_time_map ,
-				       @sequence::Stntuple.digis           ,
-				       @sequence::Stntuple.trk_hit_reco    ,
-				       @sequence::Stntuple.cal_reco        ,
-				       @sequence::Stntuple.tpr_reco_dep    ,
-				       @sequence::Stntuple.cpr_reco_dep    ,
-				       @sequence::Stntuple.mpr_reco_dep    ,
-				       @sequence::Stntuple.stnmaker_tcm_dep
-				      ]
+#     path_gen_digi_reco_stn_tcm_dep : [ @sequence::Stntuple.gen_g4_time_map ,
+# 				       @sequence::Stntuple.digis           ,
+# 				       @sequence::Stntuple.trk_hit_reco    ,
+# 				       @sequence::Stntuple.cal_reco        ,
+# 				       @sequence::Stntuple.tpr_reco_dep    ,
+# 				       @sequence::Stntuple.cpr_reco_dep    ,
+# 				       @sequence::Stntuple.mpr_reco_dep    ,
+# 				       @sequence::Stntuple.stnmaker_tcm_dep
+# 				      ]
 #------------------------------------------------------------------------------
 #
 #------------------------------------------------------------------------------
@@ -592,34 +570,34 @@ physics : {
 #	   , dioMixer, protonMixer, neutronMixer, photonMixer, ootMixer, flashMixer
 #------------------------------------------------------------------------------
     event_filter   : [ EventFilter             ]
-    gen_hits       : [ @sequence::gen_hits_seq ]
-    mc             : [ @sequence::gen_hits_seq , @sequence::CaloCluster.Reco ]
+#    gen_hits       : [ @sequence::gen_hits_seq ]
+#    mc             : [ @sequence::gen_hits_seq , @sequence::CaloCluster.Reco ]
 #
 #    allpatrec_reco              : [ @sequence::CaloCluster.Reco, @sequence::allPatRecSeq ]
 #    trkpatrec_reco              : [ @sequence::CaloCluster.Reco, @sequence::trkPatRecSeq ]
 #    calpatrec_reco              : [ @sequence::CaloCluster.Reco, @sequence::calPatRecSeq ]
 #
-    allpatrec_reco_stnmaker     : [ @sequence::CaloCluster.Reco, @sequence::allPatRecSeq, @sequence::pidSeq, @sequence::stnmaker_seq ]
-    trkpatrec_reco_stnmaker     : [ @sequence::CaloCluster.Reco, @sequence::trkPatRecSeq, @sequence::pidSeq, @sequence::stnmaker_seq ]
-    calpatrec_reco_stnmaker     : [ @sequence::CaloCluster.Reco, @sequence::calPatRecSeq, @sequence::pidSeq, @sequence::stnmaker_seq ]
+#    allpatrec_reco_stnmaker     : [ @sequence::CaloCluster.Reco, @sequence::allPatRecSeq, @sequence::pidSeq, @sequence::stnmaker_seq ]
+#    trkpatrec_reco_stnmaker     : [ @sequence::CaloCluster.Reco, @sequence::trkPatRecSeq, @sequence::pidSeq, @sequence::stnmaker_seq ]
+#    calpatrec_reco_stnmaker     : [ @sequence::CaloCluster.Reco, @sequence::calPatRecSeq, @sequence::pidSeq, @sequence::stnmaker_seq ]
 #------------------------------------------------------------------------------
 # only electron reconstruction turned on
 #------------------------------------------------------------------------------
-    gen_trkpatrec_reco_stnmaker : [ @sequence::gen_hits_seq ,
-				    @sequence::CaloCluster.Reco  , @sequence::trkPatRecSeq,
-				    @sequence::vadimPidSeq , @sequence::stnmaker_seq  ]
+#    gen_trkpatrec_reco_stnmaker : [ @sequence::gen_hits_seq ,
+#				    @sequence::CaloCluster.Reco  , @sequence::trkPatRecSeq,
+#				    @sequence::vadimPidSeq , @sequence::stnmaker_seq  ]
 
-    gen_calpatrec_reco_stnmaker : [ @sequence::generatorSeq, @sequence::hitMakerSeq ,
-				    @sequence::CaloCluster.Reco  , @sequence::calPatRecSeq, 
-				    @sequence::vadimPidSeq , @sequence::stnmaker_seq  ]
+#    gen_calpatrec_reco_stnmaker : [ @sequence::generatorSeq, @sequence::hitMakerSeq ,
+#				    @sequence::CaloCluster.Reco  , @sequence::calPatRecSeq, 
+#				    @sequence::vadimPidSeq , @sequence::stnmaker_seq  ]
 
-    gen_allpatrec_reco_stnmaker    : [ @sequence::generatorSeq, @sequence::hitMakerSeq ,
-				       @sequence::CaloCluster.Reco  , @sequence::allPatRecSeq,
-				       @sequence::vadimPidSeq , @sequence::stnmaker_seq ]
+#    gen_allpatrec_reco_stnmaker    : [ @sequence::generatorSeq, @sequence::hitMakerSeq ,
+#				       @sequence::CaloCluster.Reco  , @sequence::allPatRecSeq,
+#				       @sequence::vadimPidSeq , @sequence::stnmaker_seq ]
 
-    gen_allpatrec_digi_stnmaker    : [ @sequence::generatorSeq, @sequence::digiMakerSeq ,
-				       @sequence::CaloCluster.Reco  , @sequence::allPatRecSeq, @sequence::vadimPidSeq, 
-				       @sequence::stnmaker_seq  ]
+#    gen_allpatrec_digi_stnmaker    : [ @sequence::generatorSeq, @sequence::digiMakerSeq ,
+#				       @sequence::CaloCluster.Reco  , @sequence::allPatRecSeq, @sequence::vadimPidSeq, 
+#				       @sequence::stnmaker_seq  ]
 #------------------------------------------------------------------------------
 # same with mixed background 
 #------------------------------------------------------------------------------
@@ -632,45 +610,45 @@ physics : {
 #------------------------------------------------------------------------------
 # event display paths
 #------------------------------------------------------------------------------
-    allpatrec_reco_display      : [ @sequence::CaloCluster.Reco, @sequence::allPatRecSeq, @sequence::vadimPidSeq, MuHitDisplay ]
-    calpatrec_reco_display      : [ @sequence::CaloCluster.Reco, @sequence::calPatRecSeq, @sequence::vadimPidSeq, MuHitDisplay ]
-    trkpatrec_reco_display      : [ @sequence::CaloCluster.Reco, @sequence::trkPatRecSeq, @sequence::vadimPidSeq, MuHitDisplay ]
+#    allpatrec_reco_display      : [ @sequence::CaloCluster.Reco, @sequence::allPatRecSeq, @sequence::vadimPidSeq, MuHitDisplay ]
+#   calpatrec_reco_display      : [ @sequence::CaloCluster.Reco, @sequence::calPatRecSeq, @sequence::vadimPidSeq, MuHitDisplay ]
+#    trkpatrec_reco_display      : [ @sequence::CaloCluster.Reco, @sequence::trkPatRecSeq, @sequence::vadimPidSeq, MuHitDisplay ]
 
-    dem_reco_display            : [ @sequence::CaloCluster.Reco, 
-				    @sequence::allPatRecSeq,
-				    @sequence::vadimPidSeq, 
-				    MuHitDisplay ]
+#    dem_reco_display            : [ @sequence::CaloCluster.Reco, 
+#				    @sequence::allPatRecSeq,
+#				    @sequence::vadimPidSeq, 
+#				    MuHitDisplay ]
 
-    hit_reco_display_dem        : [ @sequence::CommonMC.DigiSim, 
-				    @sequence::hitMakerSeq,
-				    @sequence::CaloCluster.Reco, 
-				    @sequence::allPatRecSeq,
-				    @sequence::vadimPidSeq, 
-				    MuHitDisplay ]
+#    hit_reco_display_dem        : [ @sequence::CommonMC.DigiSim, 
+#				    @sequence::hitMakerSeq,
+#				    @sequence::CaloCluster.Reco, 
+#				    @sequence::allPatRecSeq,
+#				    @sequence::vadimPidSeq, 
+#				    MuHitDisplay ]
 
-    digi_reco_display_dem       : [ @sequence::digiMakerSeq ,
-				    @sequence::CaloCluster.Reco, 
-				    @sequence::allPatRecSeq,
-				    @sequence::vadimPidSeq, 
-				    MuHitDisplay ]
+#    digi_reco_display_dem       : [ @sequence::digiMakerSeq ,
+#				    @sequence::CaloCluster.Reco, 
+#				    @sequence::allPatRecSeq,
+#				    @sequence::vadimPidSeq, 
+#				    MuHitDisplay ]
 #
-    gen_allpatrec_reco_display  : [ @sequence::generatorSeq, @sequence::hitMakerSeq ,
-				    @sequence::CaloCluster.Reco  , @sequence::allPatRecSeq, @sequence::vadimPidSeq, 
-				    MuHitDisplay ]
+#    gen_allpatrec_reco_display  : [ @sequence::generatorSeq, @sequence::hitMakerSeq ,
+#				    @sequence::CaloCluster.Reco  , @sequence::allPatRecSeq, @sequence::vadimPidSeq, 
+#				    MuHitDisplay ]
 
-    gen_allpatrec_digi_display  : [ @sequence::generatorSeq, @sequence::digiMakerSeq ,
-				    @sequence::CaloCluster.Reco  , @sequence::allPatRecSeq, @sequence::vadimPidSeq, 
-				    @sequence::stnmaker_seq , MuHitDisplay ]
+#    gen_allpatrec_digi_display  : [ @sequence::generatorSeq, @sequence::digiMakerSeq ,
+#				    @sequence::CaloCluster.Reco  , @sequence::allPatRecSeq, @sequence::vadimPidSeq, 
+#				    @sequence::stnmaker_seq , MuHitDisplay ]
 
-    gen_calpatrec_reco_display  : [ @sequence::generatorSeq, @sequence::hitMakerSeq,
-				    @sequence::CaloCluster.Reco, @sequence::calPatRecSeq, @sequence::vadimPidSeq, MuHitDisplay ]
+#    gen_calpatrec_reco_display  : [ @sequence::generatorSeq, @sequence::hitMakerSeq,
+#				    @sequence::CaloCluster.Reco, @sequence::calPatRecSeq, @sequence::vadimPidSeq, MuHitDisplay ]
 
-    gen_trkpatrec_reco_display  : [ @sequence::generatorSeq, @sequence::hitMakerSeq,
-				    @sequence::CaloCluster.Reco, @sequence::trkPatRecSeq, @sequence::vadimPidSeq, MuHitDisplay ]
+#    gen_trkpatrec_reco_display  : [ @sequence::generatorSeq, @sequence::hitMakerSeq,
+#				    @sequence::CaloCluster.Reco, @sequence::trkPatRecSeq, @sequence::vadimPidSeq, MuHitDisplay ]
 
-    gen_allpatrec_dem_dmm_reco_display : [ @sequence::generatorSeq, @sequence::hitMakerSeq,
-					   @sequence::CaloCluster.Reco, @sequence::allPatRecDemDmmSeq,
-					   @sequence::avikPidSeq, MuHitDisplay ]
+#    gen_allpatrec_dem_dmm_reco_display : [ @sequence::generatorSeq, @sequence::hitMakerSeq,
+#					   @sequence::CaloCluster.Reco, @sequence::allPatRecDemDmmSeq,
+#					   @sequence::avikPidSeq, MuHitDisplay ]
 
 #------------------------------------------------------------------------------
     trigger_paths  : [   ]

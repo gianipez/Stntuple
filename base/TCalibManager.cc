@@ -41,7 +41,7 @@ int   TCalibManager::SetPass(const char* Pass, int Force) {
   FILE    *f;
   int      minrun, maxrun, done(0);
   char     pass_file[500], c[500], filename[500], subdetector[50];
-  char     table_name[50], fullname[500];
+  char     table_name[50], fullname[1000];
 
   TObjArray      list_of_subdetectors;
   TString        sub;
@@ -130,7 +130,8 @@ int   TCalibManager::SetPass(const char* Pass, int Force) {
 	fscanf(f,"%i",&maxrun);
 	fscanf(f,"%s",filename);
 				        // create new range and apped it to the list
-	sprintf(fullname,"%s/%s/%s",fDirectory.Data(),detname,filename);
+	//	sprintf(fullname,"%s/%s/%s",fDirectory.Data(),detname,filename);
+	snprintf(fullname,1000,"%s/%s/%s",fDirectory.Data(),detname,filename);
 	range = new TCalibRunRange(minrun,maxrun,fullname);
 
 	table = GetTable(subdetector,table_name);

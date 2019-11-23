@@ -75,8 +75,8 @@ Int_t StntupleInitMu2eVDetDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent, int
   }
 
   if (list_of_hits == NULL) {
-    char warning[100];
-    sprintf(warning," WARNING: StepPointMCCollection by %s:%s is missing. BAIL OUT\n",
+    char warning[500];
+    snprintf(warning,500," WARNING: StepPointMCCollection by %s:%s is missing. BAIL OUT\n",
 	   step_module_label,step_description);
     mf::LogWarning(oname) << warning;
     return -1;

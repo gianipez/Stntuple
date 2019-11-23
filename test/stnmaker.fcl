@@ -49,18 +49,18 @@ physics : {
 		 @sequence::Stntuple.stnmaker_De
 		]
 #------------------------------------------------------------------------------
-# old reco path: TrkPatRec and CalPatRec fully separated
+# OBSOLETE: old reco path: TrkPatRec and CalPatRec fully separated
 #------------------------------------------------------------------------------
-    p3       : [ @sequence::Stntuple.gen_g4_time_map ,
-		 @sequence::Stntuple.digis           ,
-		 @sequence::Stntuple.trk_hit_reco    ,
-		 @sequence::Stntuple.cal_reco        ,
-		 @sequence::Stntuple.tpr_reco_dem    ,
-		 @sequence::Stntuple.cpr_reco_dem    ,
-		 @sequence::Stntuple.mpr_reco_dem    ,
-		 @sequence::Stntuple.crv_reco        ,
-		 @sequence::Stntuple.stnmaker_tcm_dem
-		]
+#    p3       : [ @sequence::Stntuple.gen_g4_time_map ,
+#		 @sequence::Stntuple.digis           ,
+#		 @sequence::Stntuple.trk_hit_reco    ,
+#		 @sequence::Stntuple.cal_reco        ,
+#		 @sequence::Stntuple.tpr_reco_dem    ,
+#		 @sequence::Stntuple.cpr_reco_dem    ,
+#		 @sequence::Stntuple.mpr_reco_dem    ,
+#		 @sequence::Stntuple.crv_reco        ,
+#		 @sequence::Stntuple.stnmaker_tcm_dem
+#		]
 #------------------------------------------------------------------------------
 # read, reconstruct, run event display
 #------------------------------------------------------------------------------
