@@ -328,7 +328,7 @@ int TStnAna::DeleteModule(const char* name) {
 // want to keep it around for a while
 //-----------------------------------------------------------------------------
 int TStnAna::ReloadModule(const char* name, const char* filename) {
-  char fname[200], soname[200], cmd[200];
+  char fname[200], soname[200], cmd[500];
   char class_name[100];
 					// the following complication is only needed 
 					// to fool the compiler which pretends to be smart
@@ -1570,7 +1570,7 @@ int TStnAna::MergeHistograms(const char* List, const char* OutputFile) {
   // writes output into OutputFile
 
 
-  char  cmd[200];
+  char  cmd[500];
 
   //TFile*          f;
   TFile*          output_file(NULL);

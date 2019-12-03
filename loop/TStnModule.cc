@@ -210,7 +210,7 @@ TCanvas* TStnModule::NewSlide(const char* name,
 {
   // create new canvas with user-defined number of pads
 
-  char canvas_name[120], p1_name[120], p2_name[120], p3_name[120];
+  char canvas_name[120], p1_name[130], p2_name[130], p3_name[130];
 
   TCanvas* slide;
 
