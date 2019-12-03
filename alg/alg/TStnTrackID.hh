@@ -42,9 +42,11 @@ public:
 					// tight object cuts
     TH1F*    fNActive     [5];
     TH1F*    fFitCons     [5];
-    TH1F*    fT0          [5];
-    TH1F*    fT0Err       [5];
+    TH1F*    fChi2Dof     [5];
     TH1F*    fMomErr      [5];
+    TH1F*    fT0Err       [5];
+    TH1F*    fT0          [5];
+    TH1F*    fDNa         [5];
     TH1F*    fTanDip      [5];
     TH1F*    fD0          [5];
     TH1F*    fRMax        [5];

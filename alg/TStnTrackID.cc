@@ -155,7 +155,9 @@ void TStnTrackID::FillHistograms(Hist_t* Hist, TStnTrack* Track, Int_t Mode) {
   else if (Mode == 2) id_word = LooseIDWord(Track);
 
   float nactive = Track->NActive();
+  float dna     = Track->NHits()-Track->NActive();
   float fcons   = Track->FitCons();
+  float chi2dof = Track->Chi2Dof();
   float t0      = Track->T0();
   float t0err   = Track->T0Err();
   //  float mom     = Track->P();
@@ -175,6 +177,10 @@ void TStnTrackID::FillHistograms(Hist_t* Hist, TStnTrack* Track, Int_t Mode) {
   if ((id_word & ~kFitConsBit) == 0) Hist->fFitCons[1]->Fill(fcons);
   if (id_word == 0) Hist->fFitCons[4]->Fill(fcons);
 
+  Hist->fChi2Dof[0]->Fill(chi2dof);
+  if ((id_word & ~kChi2DofBit) == 0) Hist->fChi2Dof[1]->Fill(chi2dof);
+  if (id_word == 0) Hist->fChi2Dof[4]->Fill(chi2dof);
+
   Hist->fT0[0]->Fill(t0);
   if ((id_word & ~kT0Bit) == 0) Hist->fT0[1]->Fill(t0);
   if (id_word == 0) Hist->fT0[4]->Fill(t0);
@@ -186,6 +192,10 @@ void TStnTrackID::FillHistograms(Hist_t* Hist, TStnTrack* Track, Int_t Mode) {
   Hist->fMomErr[0]->Fill(momerr);
   if ((id_word & ~kMomErrBit) == 0) Hist->fMomErr[1]->Fill(momerr);
   if (id_word == 0) Hist->fMomErr[4]->Fill(momerr);
+
+  Hist->fDNa[0]->Fill(dna);
+  if ((id_word & ~kDNaBit) == 0) Hist->fDNa[1]->Fill(dna);
+  if (id_word == 0) Hist->fDNa[4]->Fill(dna);
 
   Hist->fTanDip[0]->Fill(tandip);
   if ((id_word & ~kTanDipBit) == 0) Hist->fTanDip[1]->Fill(tandip);
@@ -223,6 +233,10 @@ void TStnTrackID::FillHistograms(Hist_t* Hist, TStnTrack* Track, Int_t Mode) {
   if ((id_word & kFitConsBit) != 0)                         goto END;
   Hist->fFitCons[3]->Fill(fcons);
   
+  Hist->fChi2Dof[2]->Fill(chi2dof);
+  if ((id_word & kChi2DofBit) != 0)                         goto END;
+  Hist->fChi2Dof[3]->Fill(chi2dof);
+  
   Hist->fT0[2]->Fill(t0);
   if ((id_word & kT0Bit) != 0)                              goto END;
   Hist->fT0[3]->Fill(t0);
@@ -234,6 +248,10 @@ void TStnTrackID::FillHistograms(Hist_t* Hist, TStnTrack* Track, Int_t Mode) {
   Hist->fMomErr[2]->Fill(momerr);
   if ((id_word & kMomErrBit) != 0)                          goto END;
   Hist->fMomErr[3]->Fill(momerr);
+  
+  Hist->fDNa[2]->Fill(dna);
+  if ((id_word & kDNaBit) != 0)                             goto END;
+  Hist->fDNa[3]->Fill(dna);
   
   Hist->fTanDip[2]->Fill(tandip);
   if ((id_word & kTanDipBit) != 0)                          goto END;
