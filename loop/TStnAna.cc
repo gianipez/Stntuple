@@ -1300,7 +1300,7 @@ int  TStnAna::SaveFolder(TFolder* Folder, TDirectory* Dir) {
 //-----------------------------------------------------------------------------
   Dir->cd();
   //  dir = new TDirectory(Folder->GetName(),Folder->GetName(),"");
-  dir = Dir->mkdir(Folder->GetName(),Folder->GetName());
+  dir = Dir->mkdir(Folder->GetName(),Folder->GetTitle());
   dir->cd();
 
 //   printf(" ------------------- Dir: %s, new dir: %s\n",
