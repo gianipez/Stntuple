@@ -135,7 +135,7 @@ int TTxtCatalogServer::InitChain(TChain*     Chain,
   int        lorun, hirun, nev, loevt, hievt;
   float      size;
   char       buf[1000], fn[100], fs[100], date[100], time[100];
-  char       remote_server[200], remote_dir[200], remote_file[200];
+  char       remote_server[200], remote_dir[200], remote_file[500];
   char*      line;
   TObjArray  list_of_filesets;
   TString    cmd;
@@ -244,8 +244,8 @@ int TTxtCatalogServer::InitDataset(TStnDataset*     Dataset,
   int          time, lorun, hirun, rmin, rmax, nev, loevt, hievt, status;
   int          n_filesets, mc_flag;
   float        size;
-  char         buf[10000], date[1000], ctime[2000], fn[2000], fs[1000];
-  char         full_name[200], directory[200], server[200], pnfs_path[1000];
+  char         buf[10000], date[1000], ctime[2000], fn[2000], fs[3000];
+  char         full_name[3000], directory[200], server[200], pnfs_path[1000];
   const char   *line, *book, *dset, *dir;
   TObjArray    *list_of_filesets;
   TObjString   *ostr;

@@ -1,0 +1,400 @@
+///////////////////////////////////////////////////////////////////////////////
+// this file is to be included, can't use standalone mode
+// it contains two plot_hist_1D functions with different call signatures
+//
+// overlay two histograms with the same ModuleName/HistName from two files
+// defined by Ds1 and Ds2, HistName like "spmc_1/mom"
+// Print = -1: don't print, store the name in the hist record instead
+///////////////////////////////////////////////////////////////////////////////
+#ifndef __plot_hist_1D__
+#define __plot_hist_1D__
+
+#include "TH1.h"
+#include "TH2.h"
+
+#include "Stntuple/scripts/hist_data.hh"
+#include "Stntuple/scripts/plot_utilities.hh"
+#include "Stntuple/val/stntuple_val_functions.hh"
+//-----------------------------------------------------------------------------
+// plot one hist
+//-----------------------------------------------------------------------------
+void plot_hist_1D(hist_data_t* Hist1, int Print = 0) {
+  TCanvas* canvas(nullptr);
+  
+  char figure_name[200];
+//-----------------------------------------------------------------------------
+// figure out clone histogram name, what if histogram is defined ?
+//-----------------------------------------------------------------------------
+  TH1F*   hpx1  (nullptr); 
+  TString h1name(Hist1->fName);
+
+  if (Hist1->fNewName == "") h1name.ReplaceAll("/","_");
+  else                       h1name = Hist1->fNewName;
+
+  hist_file_t* hf1 = Hist1->fFile;
+
+  if  (hf1) hpx1 = (TH1F*) gh1(hf1->fName,Hist1->fModule,Hist1->fName)->Clone(h1name);
+  else      hpx1 = (TH1F*) Hist1->fHist->Clone(h1name);
+  
+  if (Hist1->fRebin > 0) hpx1->Rebin(Hist1->fRebin);
+//-----------------------------------------------------------------------------
+// scale, if requested
+//-----------------------------------------------------------------------------
+  if (Hist1->fScale > 0) hpx1->Scale(Hist1->fScale);
+//-----------------------------------------------------------------------------
+// create a canvas
+//-----------------------------------------------------------------------------
+  TString canvas_name(Hist1->fModule);
+  canvas_name += "_";
+  canvas_name += h1name;
+  
+  if (Hist1->fCanvasName != "") canvas_name = Hist1->fCanvasName;
+
+  canvas = new TCanvas(canvas_name.Data(),canvas_name.Data(),1200,800);
+  canvas->SetLogy(Hist1->fYLogScale);
+//-----------------------------------------------------------------------------
+// the two histograms correspond to slightly different NPOT
+//-----------------------------------------------------------------------------
+  int col = kRed-3;
+  if(Hist1->fLineColor > 0) col =  Hist1->fLineColor;
+  hpx1->SetLineColor(col);
+  hpx1->SetLineWidth(2);
+  hpx1->SetTitle("");
+
+  if (Hist1->fMarkerStyle >=0) hpx1->SetMarkerStyle(Hist1->fMarkerStyle);
+  if (Hist1->fMarkerColor >=0) hpx1->SetMarkerColor(Hist1->fMarkerColor);
+  if (Hist1->fMarkerSize  >=0) hpx1->SetMarkerSize (Hist1->fMarkerSize );
+
+  if (Hist1->fXMin < Hist1->fXMax) hpx1->GetXaxis()->SetRangeUser(Hist1->fXMin,Hist1->fXMax);
+  if (Hist1->fXAxisTitle != ""   ) hpx1->GetXaxis()->SetTitle(Hist1->fXAxisTitle.Data());
+
+  if (Hist1->fYMin < Hist1->fYMax) hpx1->GetYaxis()->SetRangeUser(Hist1->fYMin,Hist1->fYMax);
+
+  hpx1->Draw();
+//-----------------------------------------------------------------------------
+// position statbox - need to update the canvas first
+//-----------------------------------------------------------------------------
+  printf("before printing statbox\n");
+  canvas->Modified();
+  canvas->Update();
+  double stats;
+  hpx1->GetStats(&stats);
+  printf("stats = %10.3f\n",stats);
+//-----------------------------------------------------------------------------
+// add legend
+//-----------------------------------------------------------------------------
+  float xmin{0.65}, ymin{0.25}, xmax{0.90}, ymax{0.35};
+  if (Hist1->fLegendXMin > 0) { // redefine the legend position, normalized coords
+    xmin = Hist1->fLegendXMin;
+    ymin = Hist1->fLegendYMin;
+    xmax = Hist1->fLegendXMax;
+    ymax = Hist1->fLegendYMax;
+  }
+  
+  printf("emoe 1 \n");
+  
+  TLegend* leg = new TLegend(xmin,ymin,xmax,ymax);
+  leg->AddEntry(hpx1,Hist1->fLabel.Data(),"pl");  // "pl"
+  leg->SetBorderSize(0);
+  leg->Draw();
+  printf("emoe 2 \n");
+//-----------------------------------------------------------------------------
+// write DS names inside the plot
+//-----------------------------------------------------------------------------
+  TString label;
+
+  if (Hist1->fPlotLabel != "") label = Hist1->fPlotLabel;
+  else                         label = Hist1->fName;
+
+  draw_label_ndc(label.Data(),0.15,0.86,0.03,52); // upper left corner
+
+  printf("emoe 3 \n");
+  //  canvas->Modified(); canvas->Update();
+//-----------------------------------------------------------------------------
+// do we need to add something else? Print = -1 serves that purpose
+//-----------------------------------------------------------------------------
+  if (Hist1->fPlotName == "") {
+    TString hn1(Hist1->fName);
+
+    TString fol1 = hn1(0,hn1.Index('/'));
+    TString nam1 = hn1(hn1.Index('/')+1,hn1.Length());
+
+    if (Hist1->fYLogScale == 1) {
+      Hist1->fPlotName = Form("%s_%s_log",fol1.Data(),nam1.Data());
+    }
+    else {
+      Hist1->fPlotName = Form("%s_%s_lin",fol1.Data(),nam1.Data());
+    }
+  }
+  
+  printf("emoe 4 \n");
+  if (Print == -1) {
+    Hist1->fCanvas   = canvas;
+    Hist1->fHist     = hpx1;
+    Hist1->fOutputFn = Form("%s/eps/%s.eps",FiguresDir,Hist1->fPlotName.Data());
+  }
+  else { 
+//-----------------------------------------------------------------------------
+// .png files are written into /png/ subdirectory
+//-----------------------------------------------------------------------------
+    printf("emoe 5 : Print = %i\n",Print);
+    if (Print == 1) {
+      canvas->Print(Form("%s/eps/%s.eps",FiguresDir,Hist1->fPlotName.Data())) ;
+    }
+  }
+    printf("emoe 6\n");
+  return;
+}
+
+
+//-----------------------------------------------------------------------------
+// compare two histograms with different ModuleName/HistName's from two different files
+// HistName like "spmc_1/mom"
+//-----------------------------------------------------------------------------
+void plot_hist_1D(hist_data_t* Hist1,  hist_data_t*  Hist2, int Print = 0) {
+  
+  char figure_name[200];
+
+//-----------------------------------------------------------------------------
+// figure out clone histogram names
+//-----------------------------------------------------------------------------
+  TString h1name(Hist1->fName), h2name(Hist2->fName);
+
+  if (Hist1->fNewName == "") h1name.ReplaceAll("/","_");
+  else                       h1name = Hist1->fNewName;
+
+  if (Hist2->fNewName == "") h2name.ReplaceAll("/","_");
+  else                       h2name = Hist2->fNewName;
+
+  hist_file_t* hf1 = Hist1->fFile;
+  hist_file_t* hf2 = Hist2->fFile;
+  
+  TH1F* hpx1 = (TH1F*) gh1(hf1->fName,Hist1->fModule,Hist1->fName)->Clone(h1name);
+  if (Hist1->fRebin > 0) hpx1->Rebin(Hist1->fRebin);
+  
+  TH1F* hpx2 = (TH1F*) gh1(hf2->fName,Hist2->fModule,Hist2->fName)->Clone(h2name);
+  if (Hist2->fRebin > 0) hpx2->Rebin(Hist2->fRebin);
+
+  stn_dataset_t* ds1 = hf1->fDataset;
+  stn_dataset_t* ds2 = hf2->fDataset;
+
+  if (Hist2->fScale == 1) {
+    
+    double scale = (ds1->fNGenEvents+0.)/(ds2->fNGenEvents+0.);
+    printf("ds1->fNGenEvents, ds2->fNGenEvents, scale: %li %li %f\n",ds1->fNGenEvents, ds2->fNGenEvents, scale);
+
+    hpx2->Scale(scale);
+  }
+  
+  if (Hist2->fScale == 2) {
+    double scale = hpx1->Integral()/hpx2->Integral();
+    hpx2->Scale(scale);
+  }
+//-----------------------------------------------------------------------------
+// create a canvas
+//-----------------------------------------------------------------------------
+  TString canvas_name(ds1->fID);
+  canvas_name += "_";
+  canvas_name += Hist1->fModule;
+  canvas_name += "_";
+  canvas_name += h1name;
+  canvas_name += "_vs_";
+  canvas_name += Hist2->fModule;
+  canvas_name += "_";
+  canvas_name += h2name;
+  
+  if (Hist1->fCanvasName != "") canvas_name = Hist1->fCanvasName;
+
+  TCanvas* c = new TCanvas(canvas_name.Data(),canvas_name.Data(),1200,800);
+  c->SetLogy(Hist1->fYLogScale);
+//-----------------------------------------------------------------------------
+// the two histograms correspond to slightly different NPOT
+//-----------------------------------------------------------------------------
+  int col = kRed-3;
+  if(Hist1->fLineColor > 0) col =  Hist1->fLineColor;
+
+  hpx1->SetLineColor(col);
+  hpx1->SetLineWidth(2);
+  hpx1->SetTitle("");
+
+  if (Hist1->fMarkerStyle >=0) hpx1->SetMarkerStyle(Hist1->fMarkerStyle);
+  if (Hist1->fMarkerColor >=0) hpx1->SetMarkerColor(Hist1->fMarkerColor);
+  if (Hist1->fMarkerSize  >=0) hpx1->SetMarkerSize (Hist1->fMarkerSize );
+
+  if (Hist1->fXMin < Hist1->fXMax) hpx1->GetXaxis()->SetRangeUser(Hist1->fXMin,Hist1->fXMax);
+  if (Hist1->fXAxisTitle != ""   ) hpx1->GetXaxis()->SetTitle(Hist1->fXAxisTitle.Data());
+
+  if (Hist1->fYMin < Hist1->fYMax) hpx1->GetYaxis()->SetRangeUser(Hist1->fYMin,Hist1->fYMax);
+
+  hpx1->Draw("ep");
+
+  hpx2->SetLineWidth(1);
+
+  if (Hist2->fLineColor >=0) hpx2->SetLineColor(Hist2->fLineColor);
+  if (Hist2->fFillStyle >=0) hpx2->SetFillStyle(Hist2->fFillStyle);
+  if (Hist2->fFillColor >=0) hpx2->SetFillColor(Hist2->fFillColor);
+
+  if (Hist2->fMarkerStyle >=0) hpx2->SetMarkerStyle(Hist2->fMarkerStyle);
+  if (Hist2->fMarkerColor >=0) hpx2->SetMarkerColor(Hist2->fMarkerColor);
+  if (Hist2->fMarkerSize  >=0) hpx2->SetMarkerSize (Hist2->fMarkerSize );
+
+  if (Hist2->fMarkerStyle >=0) hpx2->Draw("ep,sames");
+  else                         hpx2->Draw("sames");
+//-----------------------------------------------------------------------------
+// position statboxes - need to update the canvas first
+//-----------------------------------------------------------------------------
+  c->Modified();
+  c->Update();
+  plot_stat_box(hpx1,0.65,0.65,0.9,0.9);
+  plot_stat_box(hpx2,0.65,0.40,0.9,0.65);
+//-----------------------------------------------------------------------------
+// add legend
+//-----------------------------------------------------------------------------
+  float xmin{0.65}, ymin{0.25}, xmax{0.90}, ymax{0.35};
+  if (Hist1->fLegendXMin > 0) { // redefine the legend position, normalized coords
+    xmin = Hist1->fLegendXMin;
+    ymin = Hist1->fLegendYMin;
+    xmax = Hist1->fLegendXMax;
+    ymax = Hist1->fLegendYMax;
+  }
+  
+  TLegend* leg = new TLegend(xmin,ymin,xmax,ymax);
+  leg->AddEntry(hpx1,Hist1->fLabel.Data(),"pl");  // "pl"
+  leg->AddEntry(hpx2,Hist2->fLabel.Data(),"pl");
+  leg->SetBorderSize(0);
+  leg->Draw();
+//-----------------------------------------------------------------------------
+// write DS names inside the plot
+//-----------------------------------------------------------------------------
+  TString label;
+
+  if (Hist1->fPlotLabel != "") {
+    label = Hist1->fPlotLabel;
+  }
+  else {
+    label = Hist1->fName;
+    if (Hist1->fName != Hist2->fName) {
+      label += " vs ";
+      label += Hist2->fName;
+    }
+  }
+
+  draw_label_ndc(label.Data(),0.15,0.86,0.03,52); // lower left corner
+
+  c->Modified(); c->Update();
+//-----------------------------------------------------------------------------
+// do we need to add something else? Print = -1 serves that purpose
+//-----------------------------------------------------------------------------
+  if (Hist1->fPlotName == "") {
+    TString hn1(Hist1->fName), hn2(Hist2->fName);
+
+    TString fol1 = hn1(0,hn1.Index('/'));
+    TString nam1 = hn1(hn1.Index('/')+1,hn1.Length());
+
+    TString fol2 = hn2(0,hn2.Index('/'));
+    TString nam2 = hn2(hn2.Index('/')+1,hn2.Length());
+
+    if (Hist1->fYLogScale == 1) {
+      Hist1->fPlotName = Form("%s_%s_vs_%s_%s_log",ds1->fID.Data(),fol1.Data(),fol2.Data(),nam1.Data());
+    }
+    else {
+      Hist1->fPlotName = Form("%s_%s_vs_%s_%s_lin",ds1->fID.Data(),fol1.Data(),fol2.Data(),nam1.Data());
+    }
+  }
+  
+  if (Print == -1) {
+    Hist1->fCanvas   = c;
+    Hist1->fHist     = hpx1;
+    Hist1->fOutputFn = Form("%s/eps/%s.eps",FiguresDir,Hist1->fPlotName.Data());
+  }
+  else { 
+//-----------------------------------------------------------------------------
+// .png files are written into /png/ subdirectory
+//-----------------------------------------------------------------------------
+    if (Print == 1) {
+      c->Print(Form("%s/eps/%s.eps",FiguresDir,Hist1->fPlotName.Data())) ;
+    }
+  }
+  return;
+}
+
+
+//-----------------------------------------------------------------------------
+// perform a fairly common task - fit histogram with a gaussian
+// HistName like "spmc_1/mom"
+//-----------------------------------------------------------------------------
+void fit_gaus_hist_1D(hist_data_t* Hist, const char* FOpt, const char* GOpt, double XMin, double XMax, int Print = 0) {
+
+  char figure_name[200];
+
+  TString hname(Hist->fName);
+
+  if (Hist->fNewName == "") hname.ReplaceAll("/","_");
+  else                      hname = Hist->fNewName;
+
+  hist_file_t*   hf = Hist->fFile;
+  stn_dataset_t* ds = hf->fDataset;
+  
+  TH1F* hpx1 = (TH1F*) gh1(hf->fName,Hist->fModule,Hist->fName)->Clone(hname);
+
+  if (Hist->fRebin > 0) hpx1->Rebin(Hist->fRebin);
+//-----------------------------------------------------------------------------
+// create a canvas
+//-----------------------------------------------------------------------------
+  TString canvas_name(Hist->fModule);
+  canvas_name += "_";
+  canvas_name += hname;
+  canvas_name += "_fit_gaus";
+  canvas_name += "_";
+  canvas_name += Hist->fName;
+  
+  if (Hist->fCanvasName != "") canvas_name = Hist->fCanvasName;
+  TCanvas* c = new TCanvas(canvas_name.Data(),canvas_name.Data(),Hist->fCanvasSizeX,Hist->fCanvasSizeY);
+  c->SetLogy(Hist->fYLogScale);
+//-----------------------------------------------------------------------------
+// fit histogram
+//-----------------------------------------------------------------------------
+  if (Hist->fLineColor > 0) hpx1->SetLineColor(Hist->fLineColor);
+  hpx1->SetLineWidth(1);
+  hpx1->SetTitle("");
+  if (Hist->fXMin < Hist->fXMax) hpx1->GetXaxis()->SetRangeUser(Hist->fXMin,Hist->fXMax);
+  if (Hist->fXAxisTitle != ""  ) hpx1->GetXaxis()->SetTitle(Hist->fXAxisTitle.Data());
+  hpx1->Fit("gaus",FOpt,GOpt,XMin,XMax);
+//-----------------------------------------------------------------------------
+// position statbox - need to update the canvas first
+//-----------------------------------------------------------------------------
+  c->Modified();
+  c->Update();
+  plot_stat_box(hpx1,0.6,0.5,0.9,0.9);
+//-----------------------------------------------------------------------------
+// add legend
+//-----------------------------------------------------------------------------
+  TLegend* leg = new TLegend(0.65,0.30,0.90,0.38);
+  leg->AddEntry(hpx1,Hist->fLabel.Data(),"pl");  // "pl"
+  leg->SetBorderSize(0);
+  leg->Draw();
+//-----------------------------------------------------------------------------
+// label the plot
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// write dataset names inside the plot
+//-----------------------------------------------------------------------------
+  TString label(ds->fID);
+
+  if (Hist->fPlotLabel != "") label = Hist->fPlotLabel;
+
+  draw_label_ndc(label.Data(),0.15,0.86,0.03,52); // lower left corner
+
+  c->Modified(); c->Update();
+//-----------------------------------------------------------------------------
+// .png files are written into /png/ subdirectory
+//-----------------------------------------------------------------------------
+  if (Print == 1) {
+    if (Hist->fPlotName == "") {
+      Hist->fPlotName = Form("%s_fit_gaus",Hist->fName.Data());
+    }
+    c->Print(Form("%s/eps/%s.eps",FiguresDir,Hist->fPlotName.Data())) ;
+  }
+}
+
+#endif

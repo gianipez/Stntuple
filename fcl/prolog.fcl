@@ -6,8 +6,11 @@ BEGIN_PROLOG
 # initialization template
 # 
 # they can be redefined 
+# see example of redefining GEN_ID in Stntuple/test/read_reco_stnmaker.fcl
 #------------------------------------------------------------------------------
 TIME_OFFSET_MAPS : { inputs : [ "compressDigiMCs:protonTimeMap", "compressDigiMCs:muonTimeMap" ] }
+GEN_ID           : "unknown"     # by default, store all particles
+
 
 StntupleModuleFclDefaults : {
     interactiveMode : 0
@@ -28,10 +31,7 @@ StntupleModuleFclDefaults : {
 }
 #------------------------------------------------------------------------------
 # default configuration of StntupleMaker
-# see example of redefining GEN_ID in 
 #------------------------------------------------------------------------------
-GEN_ID : "unknown"                     # by default, store all
-
 StntupleMakerTemplate : { module_type:StntupleMaker
     @table::StntupleModuleFclDefaults                   # defaults of the base class
     module_name          : StntupleMaker
