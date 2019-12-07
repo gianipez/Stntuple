@@ -3,6 +3,7 @@
 //  2014-06-23: remove vane support
 //-----------------------------------------------------------------------------
 #include <cstdio>
+#include <algorithm>
 #include "TROOT.h"
 #include "TFolder.h"
 #include "TLorentzVector.h"
@@ -36,6 +37,7 @@
 #include "RecoDataProducts/inc/KalRepPtrCollection.hh"
 #include "RecoDataProducts/inc/KalRepCollection.hh"
 #include "BTrkData/inc/TrkStrawHit.hh"
+#include "BTrkData/inc/TrkCaloHit.hh"
 #include "BTrkData/inc/Doublet.hh"
 #include "RecoDataProducts/inc/TrkQual.hh"
 #include "TrkReco/inc/DoubletAmbigResolver.hh"
@@ -1063,6 +1065,57 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
     }
 
     track->fEp = track->fClusterE/track->fP2;
+      
+    //--------------------------------------------------------------------------------
+    // now set the parameters associated with the TrkCaloHit
+    //--------------------------------------------------------------------------------
+    const mu2e::TrkCaloHit*    tch;
+    TStnTrack::InterData_t*    vtch;
+
+    for (auto it=krep_hits->begin(); it!=krep_hits->end(); it++) {
+      tch   = dynamic_cast<const mu2e::TrkCaloHit*> (*it);
+      //-----------------------------------------------------------------------------
+      // skip TrkStrawHit hit
+      //-----------------------------------------------------------------------------
+      if (! tch) continue;
+      vtch = &(track->fTrkCaloHit);
+      const mu2e::CaloCluster*cl = &(tch->caloCluster());
+      XYZVec cpos = Geom::toXYZVec(bc->geomUtil().mu2eToTracker(bc->geomUtil().diskFFToMu2e( cl->diskId(), cl->cog3Vector())));
+    
+      CLHEP::Hep3Vector pos;
+      tch->hitPosition(pos);
+
+      vtch->fID           = cl->diskId();		// 
+      vtch->fClusterIndex = -1;         // cluster index in the list of clusters
+
+      // the following includes the (Calibrated) light-propagation time delay.  It should eventually be put in the reconstruction FIXME!
+      // This velocity should come from conditions FIXME!
+      vtch->fTime         = tch->hitT0().t0();			// extrapolated track time, not corrected by _dtOffset
+      vtch->fEnergy       = cl->energyDep(); // cluster energy
+      vtch->fXTrk         = pos.x();
+      vtch->fYTrk         = pos.y();
+      vtch->fZTrk         = pos.z();
+      // vtch->fNxTrk        = -9999.;		// track direction cosines in the intersection point
+      // vtch->fNyTrk        = -9999.;
+      // vtch->fNzTrk        = -9999.;
+      vtch->fXCl          = cpos.x();			// cluster coordinates
+      vtch->fYCl          = cpos.y();
+      vtch->fZCl          = cpos.z();
+      // vtch->fDx           = -9999.;			// TRK-CL
+      // vtch->fDy           = -9999.;			// TRK-CL
+      // vtch->fDz           = -9999.;
+      vtch->fDt           = tch->hitT0().t0() - (tch->time() + std::min((float)200.0,std::max((float)0.0,(float)tch->hitLen()))*0.005 + tch->timeOffset());			// TRK-CL , _corrected_ by _dTOffset (!)
+      // vtch->fDu           = -9999.;			// ** added in V6
+      // vtch->fDv           = -9999.;			// ** added in V6
+      // vtch->fChi2Match    = -9999.;		// track-cluster match chi&^2 (coord)
+      // vtch->fChi2Time     = -9999.;		// track-cluster match chi&^2 (time)
+      vtch->fPath         = tch->hitLen();			// track path in the disk
+      // vtch->fIntDepth     = -9999.;             // ** added in V6 :assumed interaction depth
+      vtch->fDr           = tch->poca().doca();                   // ** added in V10: DR(cluster-track), signed
+      // vtch->fSInt         = -9999.;                 // ** added in V10: interaction length, calculated
+      vtch->fCluster      = cl;
+      //    vtch->fExtrk        = NULL;
+    }
   }
 					// on return set event and run numbers
 					// to mark block as initialized

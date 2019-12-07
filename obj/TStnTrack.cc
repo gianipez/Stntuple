@@ -1623,7 +1623,7 @@ void TStnTrack::Streamer(TBuffer& R__b) {
     else if (R__v ==  8) ReadV8  (R__b);
     else if (R__v ==  9) ReadV9  (R__b);
     else if (R__v == 10) ReadV10 (R__b);
-    else {
+    else if ( (R__v == 11) || (R__v == 12)){
 //-----------------------------------------------------------------------------
 // current version: V12, is different from V11 only by renaming Chi2C -> TBack
 // the memory layout is the same
@@ -1649,6 +1649,35 @@ void TStnTrack::Streamer(TBuffer& R__b) {
 
       if (imaxep >= 0) fVMaxEp = &fDisk[imaxep];
       else             fVMaxEp = NULL;
+    }
+    else {
+      fMomentum.Streamer(R__b);
+      fHitMask.Streamer(R__b);
+      fExpectedHitMask.Streamer(R__b);
+
+      R__b.ReadFastArray(&fNumber,nwi);
+      R__b.ReadFastArray(&fChi2,nwf);
+					// read intersection info
+      R__b >> imins;
+      R__b >> imaxep;
+
+      for (int i=0; i<kNDisks; i++) {
+	R__b >> fDisk[i].fID;
+	R__b >> fDisk[i].fClusterIndex;
+	R__b.ReadFastArray(&fDisk[i].fTime,nwf_vint);
+      }
+    
+      if (imins >= 0) fVMinS = &fDisk[imins];
+      else            fVMinS = NULL;
+
+      if (imaxep >= 0) fVMaxEp = &fDisk[imaxep];
+      else             fVMaxEp = NULL;
+      
+      R__b >> fTrkCaloHit.fID;
+      R__b >> fTrkCaloHit.fClusterIndex;
+      R__b.ReadFastArray(&fTrkCaloHit.fTime,nwf_vint);
+
+      fVTCH = &fTrkCaloHit;
     }
   }
   else {
@@ -1677,6 +1706,10 @@ void TStnTrack::Streamer(TBuffer& R__b) {
       R__b << fDisk[i].fClusterIndex;
       R__b.WriteFastArray(&fDisk[i].fTime,nwf_vint);
     }
+    
+    R__b << fTrkCaloHit.fID;
+    R__b << fTrkCaloHit.fClusterIndex;
+    R__b.WriteFastArray(&fTrkCaloHit.fTime,nwf_vint);
   }
 }
 
@@ -1768,6 +1801,40 @@ void TStnTrack::Clear(Option_t* Opt) {
   
   fVMinS        = NULL;
   fVMaxEp       = NULL;
+
+  fTrkCaloHit.fID           = -1;
+  fTrkCaloHit.fClusterIndex = -1;
+  fTrkCaloHit.fEnergy       = -1.;
+
+  fTrkCaloHit.fXTrk         = -1.e6;
+  fTrkCaloHit.fYTrk         = -1.e6;
+  fTrkCaloHit.fZTrk         = -1.e6;
+  fTrkCaloHit.fTime         = -1.e6;
+  fTrkCaloHit.fNxTrk        = -1.e6;
+  fTrkCaloHit.fNyTrk        = -1.e6;
+  fTrkCaloHit.fNzTrk        = -1.e6;
+			   
+  fTrkCaloHit.fXCl          = -1.e6;
+  fTrkCaloHit.fYCl          = -1.e6;
+  fTrkCaloHit.fZCl          = -1.e6;
+			   
+  fTrkCaloHit.fDx           = -1.e6;
+  fTrkCaloHit.fDy           = -1.e6;
+  fTrkCaloHit.fDz           = -1.e6;
+  fTrkCaloHit.fDt           = -1.e6;
+			   
+  fTrkCaloHit.fDu           = -1.e6;
+  fTrkCaloHit.fDv           = -1.e6;
+			   
+  fTrkCaloHit.fChi2Match    = 1.e6;
+  fTrkCaloHit.fChi2Time     = 1.e6;
+  fTrkCaloHit.fPath         = 1.e6;
+  fTrkCaloHit.fIntDepth     = 1.e6;
+  fTrkCaloHit.fDr           = 1.e6;
+  fTrkCaloHit.fSInt         = 1.e6;
+  fTrkCaloHit.fCluster      = NULL;
+  fTrkCaloHit.fExtrk        = NULL;
+
 					// by definition, LogLH < 0
   fEleLogLHCal  =  1.;
   fMuoLogLHCal  =  1.;
