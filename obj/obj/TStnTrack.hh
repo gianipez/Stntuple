@@ -93,7 +93,10 @@ class TStnTrack : public TObject {
     kNFreeIntsV11  =  5,     //         V11: add Dave's TrkQual, I/O doesn't change
     kNFreeFloatsV11=  3,
 
-    kNFreeInts     =  3,     //         V12: add helix and seed indices, I/O doesn't change
+    kNFreeIntsV12  =  3,     //         V12: add helix and seed indices, I/O doesn't change
+    kNFreeFloatsV12=  3,
+
+    kNFreeInts     =  3,     //         V13: add interData for housing the TrkCaloHit info
     kNFreeFloats   =  3
   };
 
@@ -206,6 +209,7 @@ public:
   float                     fFloat[kNFreeFloats]; // provision for future I/O expansion
 
   InterData_t               fDisk [kNDisks];      // track intersections with disks
+  InterData_t               fTrkCaloHit;          // TrkCaloHit info
 //-----------------------------------------------------------------------------
 //  transient data members, all the persistent ones should go above
 //-----------------------------------------------------------------------------
@@ -214,6 +218,8 @@ public:
 
   InterData_t*                   fVMinS;	      //! intersection with min S
   InterData_t*                   fVMaxEp;	      //! intersection with max E/P
+  InterData_t*                   fVTCH;               //! TrackCaloHit info
+
   KalRep*                        fKalRep[4];          //! different fits, sequence: e-, e+, mu-, mu+
 
   int                            fITmp[ 5];           //!
@@ -272,6 +278,12 @@ public:
   float  Dz       () const { return fDz; }
   float  Chi2Dof  () const { return fChi2/(NActive()-5+1.e-12) ; }
   float  ClusterE () const { return fClusterE;    }
+
+  int    TCH_diskId () const { if (fVTCH) { return fTrkCaloHit.fID;} else {return -1e6;} }
+  float  TCH_Ep     () const { if (fVTCH) { return fTrkCaloHit.fEnergy/fP2;} else {return -1.e6;} }
+  float  TCH_Dt     () const { if (fVTCH) { return fTrkCaloHit.fDt;} else {return -1.e6;} }
+  float  TCH_Doca   () const { if (fVTCH) { return fTrkCaloHit.fDr;} else {return -1.e6;} }
+  float  TCH_HitLen () const { if (fVTCH) { return fTrkCaloHit.fPath;} else {return -1.e6;} }
 
   float  TBack    () const { return fTBack; }
 
@@ -332,7 +344,7 @@ public:
   void ReadV9 (TBuffer& R__b);
   void ReadV10(TBuffer& R__b);
 
-  ClassDef(TStnTrack,12)
+  ClassDef(TStnTrack,13)
 
 };
 
