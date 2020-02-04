@@ -22,6 +22,7 @@ double smooth::Eval(double* X) {
       break;
     }
   }
+  //  printf("smooth::Eval  x = %12.5e i0 = %i nx = %i\n",x,i0,nx);
 //-----------------------------------------------------------------------------
 // if X is outside the interpolation range, return zero
 //-----------------------------------------------------------------------------
@@ -37,10 +38,11 @@ double smooth::Eval(double* X) {
   }
   else if (i0 == nx-1) {
     i1 = i0-1;
-    x1 = X[i1];
+    x1 = fX[i1];
     dx = x-x1;
     f1 = fP0[i1] + dx*fP1[i1] + dx*dx*fP2[i1];
     w1 = 1;
+    //    printf("smooth::Eval i1,x1,dx,f1,w1 = %i %12.5e %12.5e %12.5e %12.5e \n",i1,x1,dx,f1,w1);
   }
   else {
     x0  = fX[i0];
@@ -58,8 +60,8 @@ double smooth::Eval(double* X) {
 
   f   = f0*w0+f1*w1;
 
-  // printf("%10.3f %10.3f %3i %10.3f %3i %10.3f %10.5f %10.5f %10.5f %10.5f %10.5f %10.5f %10.5f %10.5f %10.5f\n",
-  // 	 x,f,i0,x0,i1,x1,fP0[i0],fP1[i0],fP2[i0],dx0,f0,w0,dx1,f1,w1);
+  //  printf("%10.3f %10.3f %3i %10.3f %3i %10.3f %10.5f %10.5f %10.5f %10.5f %10.5f %10.5f %10.5f %10.5f %10.5f\n",
+  //  	 x,f,i0,x0,i1,x1,fP0[i0],fP1[i0],fP2[i0],dx0,f0,w0,dx1,f1,w1);
 
   double scale = fFunc->GetParameter(0);
   return f*scale;
@@ -208,9 +210,12 @@ smooth::smooth(const TGraph* Graph, double XMin, double XMax) {
 
     fX[0 ]   = x[0 ];
     fX[nx-1] = x[nx-1];
+    
     for (int i=1; i<nx-1; i++) {
+      fX [i] = x[i];
+
       y1 = y[i-1];
-      y2 = y[i];
+      y2 = y[i  ];
       y3 = y[i+1];
 
       double dx21 = x[i  ]-x[i-1];
@@ -225,7 +230,6 @@ smooth::smooth(const TGraph* Graph, double XMin, double XMax) {
       fP0[i] = y2;
       fP1[i] = (dy32*dx21*dx21-dy12*dx32*dx32)/d;
       fP2[i] = (dy32*dx21+dy12*dx32)/d;
-      fX [i] = x[i];
 
       // printf(" %2i %12.5e",i,fX[i]);
       // printf(" %12.5le %12.5le %12.5le ",y1,y2,y3);
