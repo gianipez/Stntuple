@@ -67,8 +67,11 @@ void plot_hist_2D(hist_data_t* Hd, int Print = 0) {
   if (Hd->fYMin < Hd->fYMax) hpx1->GetYaxis()->SetRangeUser(Hd->fYMin,Hd->fYMax);
   
   if (Hd->fXAxisTitle != ""   ) hpx1->GetXaxis()->SetTitle(Hd->fXAxisTitle.Data());
+  if (Hd->fYAxisTitle != ""   ) hpx1->GetYaxis()->SetTitle(Hd->fYAxisTitle.Data());
 
   if (Hd->fMarkerStyle > 0) hpx1->SetMarkerStyle(Hd->fMarkerStyle);
+
+  if (Hd->fStats == 0) hpx1->SetStats(0);
   hpx1->Draw();
 //-----------------------------------------------------------------------------
 // position statbox - need to update the canvas first
@@ -80,7 +83,7 @@ void plot_hist_2D(hist_data_t* Hd, int Print = 0) {
 // add legend - not sure what legend is needed
 //-----------------------------------------------------------------------------
   float xmin{0.65}, ymin{0.25}, xmax{0.90}, ymax{0.35};
-  if (Hd->fLegendXMin > 0) { // redefine the legend position, normalized coords
+  if (Hd->fLegendXMin > 0) {             // redefine the legend position, normalized coords
     xmin = Hd->fLegendXMin;
     ymin = Hd->fLegendYMin;
     xmax = Hd->fLegendXMax;

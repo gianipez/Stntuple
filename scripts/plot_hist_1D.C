@@ -50,7 +50,10 @@ void plot_hist_1D(hist_data_t* Hist1, int Print = 0) {
   
   if (Hist1->fCanvasName != "") canvas_name = Hist1->fCanvasName;
 
-  canvas = new TCanvas(canvas_name.Data(),canvas_name.Data(),1200,800);
+  int cx = (Hist1->fCanvasSizeX < 0) ? 1200 : Hist1->fCanvasSizeX;
+  int cy = (Hist1->fCanvasSizeY < 0) ?  800 : Hist1->fCanvasSizeY;
+
+  canvas = new TCanvas(canvas_name.Data(),canvas_name.Data(),cx,cy);
   canvas->SetLogy(Hist1->fYLogScale);
 //-----------------------------------------------------------------------------
 // the two histograms correspond to slightly different NPOT
@@ -69,6 +72,8 @@ void plot_hist_1D(hist_data_t* Hist1, int Print = 0) {
   if (Hist1->fXAxisTitle != ""   ) hpx1->GetXaxis()->SetTitle(Hist1->fXAxisTitle.Data());
 
   if (Hist1->fYMin < Hist1->fYMax) hpx1->GetYaxis()->SetRangeUser(Hist1->fYMin,Hist1->fYMax);
+
+  if (Hist1->fStats == 0) hpx1->SetStats(0);
 
   hpx1->Draw();
 //-----------------------------------------------------------------------------
@@ -91,13 +96,15 @@ void plot_hist_1D(hist_data_t* Hist1, int Print = 0) {
     ymax = Hist1->fLegendYMax;
   }
   
-  printf("emoe 1 \n");
-  
-  TLegend* leg = new TLegend(xmin,ymin,xmax,ymax);
-  leg->AddEntry(hpx1,Hist1->fLabel.Data(),"pl");  // "pl"
-  leg->SetBorderSize(0);
-  leg->Draw();
-  printf("emoe 2 \n");
+  //  printf("emoe 1 \n");
+
+  if (Hist1->fLabel != "") {
+    TLegend* leg = new TLegend(xmin,ymin,xmax,ymax);
+    leg->AddEntry(hpx1,Hist1->fLabel.Data(),"pl");  // "pl"
+    leg->SetBorderSize(0);
+    leg->Draw();
+  }
+  //  printf("emoe 2 \n");
 //-----------------------------------------------------------------------------
 // write DS names inside the plot
 //-----------------------------------------------------------------------------
@@ -107,9 +114,6 @@ void plot_hist_1D(hist_data_t* Hist1, int Print = 0) {
   else                         label = Hist1->fName;
 
   draw_label_ndc(label.Data(),0.15,0.86,0.03,52); // upper left corner
-
-  printf("emoe 3 \n");
-  //  canvas->Modified(); canvas->Update();
 //-----------------------------------------------------------------------------
 // do we need to add something else? Print = -1 serves that purpose
 //-----------------------------------------------------------------------------
@@ -127,7 +131,6 @@ void plot_hist_1D(hist_data_t* Hist1, int Print = 0) {
     }
   }
   
-  printf("emoe 4 \n");
   if (Print == -1) {
     Hist1->fCanvas   = canvas;
     Hist1->fHist     = hpx1;
@@ -137,12 +140,10 @@ void plot_hist_1D(hist_data_t* Hist1, int Print = 0) {
 //-----------------------------------------------------------------------------
 // .png files are written into /png/ subdirectory
 //-----------------------------------------------------------------------------
-    printf("emoe 5 : Print = %i\n",Print);
     if (Print == 1) {
       canvas->Print(Form("%s/eps/%s.eps",FiguresDir,Hist1->fPlotName.Data())) ;
     }
   }
-    printf("emoe 6\n");
   return;
 }
 
@@ -169,21 +170,34 @@ void plot_hist_1D(hist_data_t* Hist1,  hist_data_t*  Hist2, int Print = 0) {
   hist_file_t* hf1 = Hist1->fFile;
   hist_file_t* hf2 = Hist2->fFile;
   
-  TH1F* hpx1 = (TH1F*) gh1(hf1->fName,Hist1->fModule,Hist1->fName)->Clone(h1name);
+  TH1F* hpx1;
+
+  if  (hf1) hpx1 = (TH1F*) gh1(hf1->fName,Hist1->fModule,Hist1->fName)->Clone(h1name);
+  else      hpx1 = (TH1F*) Hist1->fHist->Clone(h1name);
+
   if (Hist1->fRebin > 0) hpx1->Rebin(Hist1->fRebin);
   
-  TH1F* hpx2 = (TH1F*) gh1(hf2->fName,Hist2->fModule,Hist2->fName)->Clone(h2name);
+  TH1F* hpx2;
+
+  if  (hf2) hpx2 = (TH1F*) gh1(hf2->fName,Hist2->fModule,Hist2->fName)->Clone(h2name);
+  else      hpx2 = (TH1F*) Hist2->fHist->Clone(h2name);
+
   if (Hist2->fRebin > 0) hpx2->Rebin(Hist2->fRebin);
 
-  stn_dataset_t* ds1 = hf1->fDataset;
-  stn_dataset_t* ds2 = hf2->fDataset;
+  stn_dataset_t* ds1(nullptr);
+  stn_dataset_t* ds2(nullptr);
 
-  if (Hist2->fScale == 1) {
+  if (hf1) {
+    ds1 = hf1->fDataset;
+    ds2 = hf2->fDataset;
+
+    if (Hist2->fScale == 1) {
     
-    double scale = (ds1->fNGenEvents+0.)/(ds2->fNGenEvents+0.);
-    printf("ds1->fNGenEvents, ds2->fNGenEvents, scale: %li %li %f\n",ds1->fNGenEvents, ds2->fNGenEvents, scale);
+      double scale = (ds1->fNGenEvents+0.)/(ds2->fNGenEvents+0.);
+      printf("ds1->fNGenEvents, ds2->fNGenEvents, scale: %li %li %f\n",ds1->fNGenEvents, ds2->fNGenEvents, scale);
 
-    hpx2->Scale(scale);
+      hpx2->Scale(scale);
+    }
   }
   
   if (Hist2->fScale == 2) {
@@ -193,8 +207,12 @@ void plot_hist_1D(hist_data_t* Hist1,  hist_data_t*  Hist2, int Print = 0) {
 //-----------------------------------------------------------------------------
 // create a canvas
 //-----------------------------------------------------------------------------
-  TString canvas_name(ds1->fID);
-  canvas_name += "_";
+  TString canvas_name;
+
+  if(hf1) {
+    canvas_name += ds1->fID;
+    canvas_name += "_";
+  }
   canvas_name += Hist1->fModule;
   canvas_name += "_";
   canvas_name += h1name;
@@ -205,7 +223,10 @@ void plot_hist_1D(hist_data_t* Hist1,  hist_data_t*  Hist2, int Print = 0) {
   
   if (Hist1->fCanvasName != "") canvas_name = Hist1->fCanvasName;
 
-  TCanvas* c = new TCanvas(canvas_name.Data(),canvas_name.Data(),1200,800);
+  int cx = (Hist1->fCanvasSizeX < 0) ? 1200 : Hist1->fCanvasSizeX;
+  int cy = (Hist1->fCanvasSizeY < 0) ?  800 : Hist1->fCanvasSizeY;
+
+  TCanvas* c = new TCanvas(canvas_name.Data(),canvas_name.Data(),cx,cy);
   c->SetLogy(Hist1->fYLogScale);
 //-----------------------------------------------------------------------------
 // the two histograms correspond to slightly different NPOT
@@ -214,7 +235,7 @@ void plot_hist_1D(hist_data_t* Hist1,  hist_data_t*  Hist2, int Print = 0) {
   if(Hist1->fLineColor > 0) col =  Hist1->fLineColor;
 
   hpx1->SetLineColor(col);
-  hpx1->SetLineWidth(2);
+  if (Hist1->fLineWidth != 1) hpx1->SetLineWidth(Hist1->fLineWidth);
   hpx1->SetTitle("");
 
   if (Hist1->fMarkerStyle >=0) hpx1->SetMarkerStyle(Hist1->fMarkerStyle);
@@ -226,27 +247,40 @@ void plot_hist_1D(hist_data_t* Hist1,  hist_data_t*  Hist2, int Print = 0) {
 
   if (Hist1->fYMin < Hist1->fYMax) hpx1->GetYaxis()->SetRangeUser(Hist1->fYMin,Hist1->fYMax);
 
-  hpx1->Draw("ep");
+  if (Hist1->fStats == 0) hpx1->SetStats(0);
+
+  if (Hist1->fDrawOpt == "") hpx1->Draw("ep");
+  else                       hpx1->Draw(Hist1->fDrawOpt.Data());
 
   hpx2->SetLineWidth(1);
 
-  if (Hist2->fLineColor >=0) hpx2->SetLineColor(Hist2->fLineColor);
-  if (Hist2->fFillStyle >=0) hpx2->SetFillStyle(Hist2->fFillStyle);
-  if (Hist2->fFillColor >=0) hpx2->SetFillColor(Hist2->fFillColor);
+  if (Hist2->fLineColor >= 0) hpx2->SetLineColor(Hist2->fLineColor);
+  if (Hist2->fFillStyle >= 0) hpx2->SetFillStyle(Hist2->fFillStyle);
+  if (Hist2->fFillColor >= 0) hpx2->SetFillColor(Hist2->fFillColor);
+  if (Hist2->fLineWidth != 1) hpx2->SetLineWidth(Hist2->fLineWidth);
 
   if (Hist2->fMarkerStyle >=0) hpx2->SetMarkerStyle(Hist2->fMarkerStyle);
   if (Hist2->fMarkerColor >=0) hpx2->SetMarkerColor(Hist2->fMarkerColor);
   if (Hist2->fMarkerSize  >=0) hpx2->SetMarkerSize (Hist2->fMarkerSize );
 
-  if (Hist2->fMarkerStyle >=0) hpx2->Draw("ep,sames");
-  else                         hpx2->Draw("sames");
+  if (Hist2->fStats == 0) hpx2->SetStats(0);
+
+  if (Hist2->fDrawOpt == "") hpx2->Draw("ep,sames");
+  else {
+    TString opt = Hist2->fDrawOpt;
+    opt += ",sames";
+    hpx2->Draw(opt.Data());
+  }
 //-----------------------------------------------------------------------------
 // position statboxes - need to update the canvas first
 //-----------------------------------------------------------------------------
   c->Modified();
   c->Update();
-  plot_stat_box(hpx1,0.65,0.65,0.9,0.9);
-  plot_stat_box(hpx2,0.65,0.40,0.9,0.65);
+
+  if (Hist1->fStats != 0) {
+    plot_stat_box(hpx1,0.65,0.65,0.9,0.9);
+    plot_stat_box(hpx2,0.65,0.40,0.9,0.65);
+  }
 //-----------------------------------------------------------------------------
 // add legend
 //-----------------------------------------------------------------------------
@@ -257,12 +291,14 @@ void plot_hist_1D(hist_data_t* Hist1,  hist_data_t*  Hist2, int Print = 0) {
     xmax = Hist1->fLegendXMax;
     ymax = Hist1->fLegendYMax;
   }
-  
-  TLegend* leg = new TLegend(xmin,ymin,xmax,ymax);
-  leg->AddEntry(hpx1,Hist1->fLabel.Data(),"pl");  // "pl"
-  leg->AddEntry(hpx2,Hist2->fLabel.Data(),"pl");
-  leg->SetBorderSize(0);
-  leg->Draw();
+
+  if (Hist1->fLabel != "") {
+    TLegend* leg = new TLegend(xmin,ymin,xmax,ymax);
+    leg->AddEntry(hpx1,Hist1->fLabel.Data(),"pl");  // "pl"
+    leg->AddEntry(hpx2,Hist2->fLabel.Data(),"pl");
+    leg->SetBorderSize(0);
+    leg->Draw();
+  }
 //-----------------------------------------------------------------------------
 // write DS names inside the plot
 //-----------------------------------------------------------------------------
@@ -295,10 +331,12 @@ void plot_hist_1D(hist_data_t* Hist1,  hist_data_t*  Hist2, int Print = 0) {
     TString nam2 = hn2(hn2.Index('/')+1,hn2.Length());
 
     if (Hist1->fYLogScale == 1) {
-      Hist1->fPlotName = Form("%s_%s_vs_%s_%s_log",ds1->fID.Data(),fol1.Data(),fol2.Data(),nam1.Data());
+      if (hf1) Hist1->fPlotName = Form("%s_%s_vs_%s_%s_log",ds1->fID.Data(),fol1.Data(),fol2.Data(),nam1.Data());
+      else     Hist1->fPlotName = Form("%s_vs_%s_%s_log",fol1.Data(),fol2.Data(),nam1.Data());
     }
     else {
-      Hist1->fPlotName = Form("%s_%s_vs_%s_%s_lin",ds1->fID.Data(),fol1.Data(),fol2.Data(),nam1.Data());
+      if (hf1) Hist1->fPlotName = Form("%s_%s_vs_%s_%s_lin",ds1->fID.Data(),fol1.Data(),fol2.Data(),nam1.Data());
+      else     Hist1->fPlotName = Form("%s_vs_%s_%s_lin",fol1.Data(),fol2.Data(),nam1.Data());
     }
   }
   
@@ -365,7 +403,10 @@ void fit_gaus_hist_1D(hist_data_t* Hist, const char* FOpt, const char* GOpt, dou
 //-----------------------------------------------------------------------------
   c->Modified();
   c->Update();
-  plot_stat_box(hpx1,0.6,0.5,0.9,0.9);
+
+  if (Hist->fStats != 0) {
+    plot_stat_box(hpx1,0.6,0.5,0.9,0.9);
+  }
 //-----------------------------------------------------------------------------
 // add legend
 //-----------------------------------------------------------------------------

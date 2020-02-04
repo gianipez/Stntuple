@@ -52,6 +52,7 @@ public:
 
     d->fNEvents    = NEvents;
     d->fNGenEvents = NGenEvents;
+    d->fBook       = this;
     
     fListOfDatasets.push_back(d);
     return d;
@@ -77,6 +78,24 @@ public:
   }
 
   
+  hist_file_t* FindHistFile(const char* DsID, const char* ProductionJob, const char* JobName) {
+    hist_file_t* hf(nullptr);
+
+    for(int i=0; i<fListOfHistFiles.size(); i++) {
+      hist_file_t* f = fListOfHistFiles[i];
+      if ((f->fDataset->fID == DsID) && (f->fProductionJob == ProductionJob) && (f->fJobName == JobName)) {
+	hf = f;
+	break;
+      }
+    }
+    if (hf == nullptr) {
+      printf(" stn::book::FindHistFile ERROR: cant find file for dsid=\'%s\' ProductionJob=\'%s\' JobName=\'%s\' in book=\'%s\', return NULL\n",
+	     DsID,ProductionJob,JobName,fName.Data());
+    }
+    return hf;
+  }
+
+  
   hist_file_t* NewHistFile(const char* DsID, const char* ProductionJob, const char* JobName) {
 
     hist_file_t* hf(nullptr);
@@ -84,9 +103,18 @@ public:
     stn_dataset_t* ds = FindDataset(DsID);
 
     if (ds) {
-      hf = new hist_file_t(Form("%s/%s.%s.%s.hist",fHistDir.Data(),DsID,ProductionJob,JobName),
-			   ds,ProductionJob,JobName);
+      if (ProductionJob[0] != '\0') {
+	hf = new hist_file_t(Form("%s/%s.%s.%s.hist",fHistDir.Data(),DsID,ProductionJob,JobName),
+			     ds,ProductionJob,JobName);
+      }
+      else {
+	hf = new hist_file_t(Form("%s/%s.%s.hist",fHistDir.Data(),DsID,JobName),
+			     ds,ProductionJob,JobName);
+      }
       fListOfHistFiles.push_back(hf);
+    }
+    else {
+      printf(" stn_book::NewHistFile ERROR: cant find dataset for dsid: %s. Bail out\n",DsID);
     }
     return hf;
   }
