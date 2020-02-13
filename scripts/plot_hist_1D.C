@@ -75,7 +75,7 @@ void plot_hist_1D(hist_data_t* Hist1, int Print = 0) {
 
   if (Hist1->fStats == 0) hpx1->SetStats(0);
 
-  hpx1->Draw();
+  hpx1->Draw(Hist1->fDrawOpt.Data());
 //-----------------------------------------------------------------------------
 // position statbox - need to update the canvas first
 //-----------------------------------------------------------------------------
@@ -278,8 +278,8 @@ void plot_hist_1D(hist_data_t* Hist1,  hist_data_t*  Hist2, int Print = 0) {
   c->Update();
 
   if (Hist1->fStats != 0) {
-    plot_stat_box(hpx1,0.65,0.65,0.9,0.9);
-    plot_stat_box(hpx2,0.65,0.40,0.9,0.65);
+    plot_stat_box(hpx1,Hist1->fStatBoxXMin,Hist1->fStatBoxYMin,Hist1->fStatBoxXMax,Hist1->fStatBoxYMax);
+    plot_stat_box(hpx2,Hist2->fStatBoxXMin,Hist2->fStatBoxYMin,Hist2->fStatBoxXMax,Hist2->fStatBoxYMax);
   }
 //-----------------------------------------------------------------------------
 // add legend

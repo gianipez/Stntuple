@@ -60,7 +60,7 @@ public:
 
   stn_dataset_t* Dataset(int I) { return fListOfDatasets.at(I); }
 
-  stn_dataset_t* FindDataset(const char* DsID) {
+  stn_dataset_t* FindDataset(const char* DsID) const {
     stn_dataset_t* ds(nullptr);
 
     for(int i=0; i<fListOfDatasets.size(); i++) {
@@ -78,7 +78,7 @@ public:
   }
 
   
-  hist_file_t* FindHistFile(const char* DsID, const char* ProductionJob, const char* JobName) {
+  hist_file_t* FindHistFile(const char* DsID, const char* ProductionJob, const char* JobName) const {
     hist_file_t* hf(nullptr);
 
     for(int i=0; i<fListOfHistFiles.size(); i++) {
