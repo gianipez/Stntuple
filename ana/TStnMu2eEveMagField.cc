@@ -24,16 +24,16 @@ TStnMu2eEveMagField::TStnMu2eEveMagField(): TEveMagField() {
   bool _messageOnDefault    (false);
 
   std::string input_file = "Mu2eG4/test/geom_01.txt";
-  
+
   mu2e::SimpleConfig* _config = new mu2e::SimpleConfig(input_file,
 						       _allowReplacement,
 						       _messageOnReplacement,
 						       _messageOnDefault );
-  
+
   std::unique_ptr<mu2e::Beamline> tmp = mu2e::BeamlineMaker::make(*_config);
   fBeamline = std::move(tmp).get();
   tmp.release();
-  
+
   std::unique_ptr<mu2e::BFieldConfig> bfc(mu2e::BFieldConfigMaker(*_config, *fBeamline).getBFieldConfig());
   fBfc      = bfc.get();
   bfc.release();
@@ -46,8 +46,6 @@ TStnMu2eEveMagField::TStnMu2eEveMagField(): TEveMagField() {
 
 //-----------------------------------------------------------------------------
 TStnMu2eEveMagField::~TStnMu2eEveMagField() {
-  // delete [] fZ;
-  // delete [] fBz;
   delete fBeamline;
   delete fBfc;
   delete fBfmm;

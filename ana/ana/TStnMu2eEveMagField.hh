@@ -17,10 +17,6 @@ namespace mu2e {
 
 class TStnMu2eEveMagField: public TEveMagField {
 protected:
-  int    fN;
-  float* fZ;
-  float* fBz;
-
   mu2e::Beamline*           fBeamline;
   mu2e::BFieldConfig*       fBfc;
   mu2e::BFieldManagerMaker* fBfmm;
