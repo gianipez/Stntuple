@@ -11,8 +11,7 @@
 #include "BTrkData/inc/TrkStrawHit.hh"
 
 #include "MCDataProducts/inc/SimParticle.hh"
-#include "MCDataProducts/inc/StepPointMC.hh"
-#include "MCDataProducts/inc/StepPointMCCollection.hh"
+#include "MCDataProducts/inc/StrawGasStep.hh"
 #include "MCDataProducts/inc/StrawDigiMCCollection.hh"
 
 //-----------------------------------------------------------------------------
@@ -32,6 +31,8 @@ Int_t StntupleInitMu2eTrackStrawHitBlock(TStnDataBlock* Block, AbsEvent* AnEvent
   ev_number = AnEvent->event();
   rn_number = AnEvent->run();
 
+  printf("StntupleInitMu2eTrackStrawHitBlock : StrawDigiMC::stepPointMC no longer available. Ask Dave Brown. \n");
+
   if (Block->Initialized(ev_number,rn_number)) return 0;
 
   TTrackStrawHitBlock* data = (TTrackStrawHitBlock*) Block;
@@ -49,7 +50,7 @@ Int_t StntupleInitMu2eTrackStrawHitBlock(TStnDataBlock* Block, AbsEvent* AnEvent
   data->GetDescription("mu2e::StrawDigiMCCollection",sdmc_description );
 
   art::Handle<mu2e::ComboHitCollection>       strh_handle;
-  const mu2e::ComboHitCollection*             list_of_hits(0);
+  const mu2e::ComboHitCollection*             list_of_hits(nullptr);
 
 
   art::Handle<mu2e::KalRepPtrCollection> krepsHandle;
@@ -72,16 +73,16 @@ Int_t StntupleInitMu2eTrackStrawHitBlock(TStnDataBlock* Block, AbsEvent* AnEvent
     if (sdmccH.isValid()) sdmcc = sdmccH.product();
   }
 
-  if (list_of_hits == NULL) {
+  if (list_of_hits == nullptr) {
     printf(" >>> ERROR in StntupleInitMu2eTrackStrawHitBlock: no list_of_hits. BAIL OUT\n");
     return -1;
   }
 //-----------------------------------------------------------------------------
 // 
 //-----------------------------------------------------------------------------
-  const mu2e::StepPointMC  *step;
-  const mu2e::SimParticle  *sim;
-  const mu2e::Straw        *straw;
+  const mu2e::StrawGasStep *step(nullptr);
+  const mu2e::SimParticle  *sim(nullptr);
+  const mu2e::Straw        *straw(nullptr);
     
   TTrackStrawHitData*      hit; 
   data->fNTracks = list_of_kreps->size();
@@ -124,10 +125,10 @@ Int_t StntupleInitMu2eTrackStrawHitBlock(TStnDataBlock* Block, AbsEvent* AnEvent
 
 	const mu2e::StrawDigiMC* sdmc = &sdmcc->at(loc);
 	if (sdmc->wireEndTime(mu2e::StrawEnd::cal) < sdmc->wireEndTime(mu2e::StrawEnd::hv)) {
-	  step = sdmc->stepPointMC(mu2e::StrawEnd::cal).get();
+	  step = sdmc->strawGasStep(mu2e::StrawEnd::cal).get();
 	}
 	else {
-	  step = sdmc->stepPointMC(mu2e::StrawEnd::hv ).get();
+	  step = sdmc->strawGasStep(mu2e::StrawEnd::hv ).get();
 	}
 
 	if (step) {
@@ -145,8 +146,7 @@ Int_t StntupleInitMu2eTrackStrawHitBlock(TStnDataBlock* Block, AbsEvent* AnEvent
 	  else                         gen_index = -1;
 	
 	  sim_id        = simptr->id().asInt();
-	  mc_mom        = step->momentum().mag();
-
+	  mc_mom        = step->momvec().mag();
 
 	  const CLHEP::Hep3Vector& v1 = straw->getMidPoint();
 	  HepPoint p1(v1.x(),v1.y(),v1.z());
@@ -155,7 +155,7 @@ Int_t StntupleInitMu2eTrackStrawHitBlock(TStnDataBlock* Block, AbsEvent* AnEvent
 	  HepPoint    p2(v2.x(),v2.y(),v2.z());
 	      
 	  TrkLineTraj trstraw(p1,straw->getDirection()  ,0.,0.);
-	  TrkLineTraj trstep (p2,step->momentum().unit(),0.,0.);
+	  TrkLineTraj trstep (p2,step->momvec().unit(),0.,0.);
 	      
 	  TrkPoca poca(trstep, 0., trstraw, 0.);
 	

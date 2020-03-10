@@ -42,7 +42,7 @@ namespace mu2e {
 #endif
 
   class StrawHit;
-  class StrawHitMCTruth;
+  //  class StrawHitMCTruth;
   class CaloCluster;
   class CaloProtoCluster;
   class CrvRecoPulse;
@@ -50,6 +50,7 @@ namespace mu2e {
   class CrvCoincidenceCluster;
   class TrkToCaloExtrapol;
   class StepPointMC;
+  class StrawGasStep;
   class GenParticle;
   class SimParticle;
   class TimeCluster;
@@ -188,11 +189,11 @@ public:
 //-----------------------------------------------------------------------------
 // tracking
 //-----------------------------------------------------------------------------
-  void printComboHit      (const mu2e::ComboHit*    Hit, 
-			   const mu2e::StepPointMC* Step,
-			   const char*              Opt   = "", 
-			   int                      INit  = -1,
-			   int                      Flags = -1);
+  void printComboHit      (const mu2e::ComboHit*     Hit, 
+			   const mu2e::StrawGasStep* Step,
+			   const char*               Opt   = "", 
+			   int                       INit  = -1,
+			   int                       Flags = -1);
   
   void printComboHitCollection (const char* StrawHitCollTag, 
 				const char* FlagBgrHitsCollTag,  // 'FlagBgrHits:StrawHits' or 'FlagBgrHits:ComboHits'
@@ -212,11 +213,11 @@ public:
 				const char* StrawHitCollTag  = "makeSH",  // usually, "makeSH"
 				const char* StrawDigiCollTag = "makeSD");
 
-  void printStrawHit      (const mu2e::StrawHit*    Hit, 
-			   const mu2e::StepPointMC* Step,
-			   const char*              Opt   = "", 
-			   int                      INit  = -1,
-			   int                      Flags = -1);
+  void printStrawHit      (const mu2e::StrawHit*     Hit, 
+			   const mu2e::StrawGasStep* Step,
+			   const char*               Opt   = "", 
+			   int                       INit  = -1,
+			   int                       Flags = -1);
   
   void printStrawHitCollection (const char* ModuleLabel, 
 				const char* ProductName = "", 
@@ -224,23 +225,24 @@ public:
 				double TMin = -1.e6,
 				double TMax =  1.e6);
 
-  void printStrawHitMCTruth            (const mu2e::StrawHitMCTruth* Hit, const char* Opt = "");
+  // void printStrawHitMCTruth            (const mu2e::StrawHitMCTruth* Hit, const char* Opt = "");
 
-  void printStrawHitMCTruthCollection  (const char* ModuleLabel, 
-					const char* ProductName = "", 
-					const char* ProcessName = "");
+  // void printStrawHitMCTruthCollection  (const char* ModuleLabel, 
+  // 					const char* ProductName = "", 
+  // 					const char* ProcessName = "");
 
   void printStrawHitPosition           (const mu2e::StrawHitPosition* Pos, const char* Opt = "");
 
   void printStrawHitPositionCollection (const char* ModuleLabel     , 
 					const char* ProductName = "", 
 					const char* ProcessName = "");
-  void printHelixHit      (const mu2e::HelixHit*    HelHit,
-			   const mu2e::ComboHit*    Hit, 
-			   const mu2e::StepPointMC* Step,
-			   const char*              Opt   = "", 
-			   int                      INit  = -1,
-			   int                      Flags = -1);
+
+  void printHelixHit      (const mu2e::HelixHit*     HelHit,
+			   const mu2e::ComboHit*     Hit, 
+			   const mu2e::StrawGasStep* Step,
+			   const char*               Opt   = "", 
+			   int                       INit  = -1,
+			   int                       Flags = -1);
   
   void printTrkCaloHit(const KalRep* Krep, mu2e::TrkCaloHit* CaloHit);
 

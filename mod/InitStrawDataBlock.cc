@@ -8,9 +8,8 @@
 #include "RecoDataProducts/inc/StrawHitCollection.hh"
 
 #include "MCDataProducts/inc/SimParticle.hh"
-#include "MCDataProducts/inc/StepPointMC.hh"
-#include "MCDataProducts/inc/StepPointMCCollection.hh"
 #include "MCDataProducts/inc/StrawDigiMC.hh"
+#include "MCDataProducts/inc/StrawGasStep.hh"
 #include "MCDataProducts/inc/StrawDigiMCCollection.hh"
 
 //-----------------------------------------------------------------------------
@@ -72,7 +71,7 @@ Int_t StntupleInitMu2eStrawDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent, in
   nhits = shc->size();
 
    
-  const mu2e::StepPointMC* step;
+  const mu2e::StrawGasStep* step (nullptr);
   const mu2e::SimParticle* sim;
 
   TStrawHitData*           hit; 
@@ -85,10 +84,10 @@ Int_t StntupleInitMu2eStrawDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent, in
     const mu2e::StrawDigiMC* mcdigi = &mcdigis->at(i);
 
     if (mcdigi->wireEndTime(mu2e::StrawEnd::cal) < mcdigi->wireEndTime(mu2e::StrawEnd::hv)) {
-      step = mcdigi->stepPointMC(mu2e::StrawEnd::cal).get();
+      step = mcdigi->strawGasStep(mu2e::StrawEnd::cal).get();
     }
     else {
-      step = mcdigi->stepPointMC(mu2e::StrawEnd::hv ).get();
+      step = mcdigi->strawGasStep(mu2e::StrawEnd::hv ).get();
     }
 
     hit = data->NewHit();
@@ -108,7 +107,7 @@ Int_t StntupleInitMu2eStrawDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent, in
       else                         gen_index = -1;
       
       sim_id        = simptr->id().asInt();
-      mc_mom        = step->momentum().mag();
+      mc_mom        = step->momvec().mag();
     }
     else {
       pdg_id        = -1;

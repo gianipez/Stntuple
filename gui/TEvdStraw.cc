@@ -23,7 +23,6 @@
 
 #include "TrackerGeom/inc/Straw.hh"
 #include "RecoDataProducts/inc/StrawDigi.hh"
-#include "MCDataProducts/inc/StrawHitMCTruth.hh"
 
 #include "Stntuple/gui/TEvdPanel.hh"
 #include "Stntuple/gui/TEvdStraw.hh"

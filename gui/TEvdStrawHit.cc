@@ -54,6 +54,8 @@ TEvdStrawHit::TEvdStrawHit(const mu2e::ComboHit*    Hit,
   fDir(Wx,Wy),
   fEllipse()
  {
+   printf("TEvdStrawHit::TEvdStrawHit: StrawDidiMC::driftDistance disabled. ask Dave Brown\n");
+
   fSigW  = SigW;
   fSigR  = SigR;
   fMask  = Mask;
@@ -78,10 +80,10 @@ TEvdStrawHit::TEvdStrawHit(const mu2e::ComboHit*    Hit,
   double rdrift(0.);
   if (fStrawDigiMC) {
     if (fStrawDigiMC->wireEndTime(mu2e::StrawEnd::cal) < fStrawDigiMC->wireEndTime(mu2e::StrawEnd::hv)) {
-      rdrift = fStrawDigiMC->driftDistance(mu2e::StrawEnd::cal);
+      rdrift = 5.; // fStrawDigiMC->driftDistance(mu2e::StrawEnd::cal);
     }
     else {
-      rdrift = fStrawDigiMC->driftDistance(mu2e::StrawEnd::hv);
+      rdrift = 5.; // fStrawDigiMC->driftDistance(mu2e::StrawEnd::hv);
     }
   }
       

@@ -16,7 +16,7 @@
 #ifndef __CINT__
 #include "MCDataProducts/inc/PtrStepPointMCVectorCollection.hh"
 #include "MCDataProducts/inc/StepPointMCCollection.hh"
-#include "Mu2eUtilities/inc/SimParticlesWithHits.hh"
+// #include "Mu2eUtilities/inc/SimParticlesWithHits.hh"
 #include "MCDataProducts/inc/GenParticleCollection.hh"
 
 #else
@@ -40,7 +40,7 @@ protected:
   const mu2e::PtrStepPointMCVectorCollection** fListOfHitsMcPtr; 
   const mu2e::StepPointMCCollection**          fSteps; 
   const mu2e::GenParticleCollection**          fGenpColl; 
-  mu2e::SimParticlesWithHits**                 fSimParticlesWithHits;
+  //  mu2e::SimParticlesWithHits**                 fSimParticlesWithHits;
  
   TArc*         fArc;
   TGraph*       fGraph;
@@ -69,9 +69,9 @@ public:
     return *fSteps;
   }
 
-  mu2e::SimParticlesWithHits* GetSimParticlesWithHits() { 
-    return *fSimParticlesWithHits;
-  }
+  // mu2e::SimParticlesWithHits* GetSimParticlesWithHits() { 
+  //   return *fSimParticlesWithHits;
+  // }
 
   const mu2e::GenParticleCollection* GetGenpColl() { return *fGenpColl; }
 //-----------------------------------------------------------------------------
@@ -83,9 +83,9 @@ public:
   void SetStepPointMCCollection(const mu2e::StepPointMCCollection** Coll) { 
     fSteps = Coll;
   }
-  void SetSimParticlesWithHits(mu2e::SimParticlesWithHits** Map) { 
-    fSimParticlesWithHits = Map;
-  }
+  // void SetSimParticlesWithHits(mu2e::SimParticlesWithHits** Map) { 
+  //   fSimParticlesWithHits = Map;
+  // }
 
   void SetGenpColl(const mu2e::GenParticleCollection** Coll) { fGenpColl = Coll; }
 

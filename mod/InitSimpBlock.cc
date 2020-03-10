@@ -84,7 +84,7 @@ int StntupleInitSimpBlock::InitDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent
   if (! fStrawDigiMCCollTag.empty()) {
     bool ok = AnEvent->getByLabel(fStrawDigiMCCollTag,mcdH);
     if (ok) {
-       mcdigis = mcdH.product();
+      mcdigis = mcdH.product();
     }
   }
 
@@ -107,37 +107,42 @@ int StntupleInitSimpBlock::InitDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent
 
     for (int i=0; i<n_straw_hits; i++) vin[i] = 0;
 
-    const mu2e::StepPointMC* step;
+    const mu2e::StrawGasStep* step(nullptr);
 
     for (int i=0; i<n_straw_hits; i++) {
+      printf("StntupleInitSimpBlock::InitDataBlock : StrawDigiMC::stepPointMC no longer available. Ask Dave Brown\n");
+
       const mu2e::StrawDigiMC* mcdigi = &mcdigis->at(i);
+
       if (mcdigi->wireEndTime(mu2e::StrawEnd::cal) < mcdigi->wireEndTime(mu2e::StrawEnd::hv)) {
-	step = mcdigi->stepPointMC(mu2e::StrawEnd::cal).get();
+      	step = mcdigi->strawGasStep(mu2e::StrawEnd::cal).get();
       }
       else {
-	step = mcdigi->stepPointMC(mu2e::StrawEnd::hv ).get();
+      	step = mcdigi->strawGasStep(mu2e::StrawEnd::hv ).get();
       }
     
-      art::Ptr<mu2e::SimParticle> const& simptr = step->simParticle(); 
-      art::Ptr<mu2e::SimParticle> mother        = simptr;
-      while(mother->hasParent())  mother        = mother->parent();
-      const mu2e::SimParticle*    sim           = mother.get();
+      if (step) {
+	art::Ptr<mu2e::SimParticle> const& simptr = step->simParticle(); 
+	art::Ptr<mu2e::SimParticle> mother        = simptr;
+	while(mother->hasParent())  mother        = mother->parent();
+	const mu2e::SimParticle*    sim           = mother.get();
 	  
-      int sim_id = sim->id().asInt();
+	int sim_id = sim->id().asInt();
 
-      int found  = 0;
-      for (int ip=0; ip<np_with_hits; ip++) {
-	if (sim_id == vid[ip]) {
-	  vin[ip] += 1;
-	  found    = 1;
-	  break;
+	int found  = 0;
+	for (int ip=0; ip<np_with_hits; ip++) {
+	  if (sim_id == vid[ip]) {
+	    vin[ip] += 1;
+	    found    = 1;
+	    break;
+	  }
 	}
-      }
 
-      if (found == 0) {
-	vid[np_with_hits] =  sim_id;
-	vin[np_with_hits] =  1;
-	np_with_hits      =+ 1;
+	if (found == 0) {
+	  vid[np_with_hits] =  sim_id;
+	  vin[np_with_hits] =  1;
+	  np_with_hits      =+ 1;
+	}
       }
     }
   }
@@ -267,5 +272,3 @@ int StntupleInitSimpBlock::InitDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent
 
   return 0;
 }
-
-

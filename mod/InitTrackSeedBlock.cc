@@ -32,11 +32,8 @@
 
 #include "MCDataProducts/inc/SimParticle.hh"
 #include "MCDataProducts/inc/SimParticleCollection.hh"
-#include "MCDataProducts/inc/StepPointMC.hh"
-#include "MCDataProducts/inc/StepPointMCCollection.hh"
+#include "MCDataProducts/inc/StrawGasStep.hh"
 #include "MCDataProducts/inc/StrawDigiMCCollection.hh"
-
-#include "TrkDiag/inc/TrkMCTools.hh"
 //-----------------------------------------------------------------------------
 // assume that the collection name is set, so we could grab it from the event
 //-----------------------------------------------------------------------------
@@ -49,6 +46,8 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
   char                      cmbh_module_label   [100], cmbh_description[100];
 
   int  ev_number, rn_number;
+
+  printf("StntupleInitMu2eTrackSeedBlock : StrawDigiMC::stepPointMC no longer available. Ask Dave Brown. \n");
 
   ev_number = Evt->event();
   rn_number = Evt->run();
@@ -151,14 +150,14 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
       if(j==0) first_hit_z = hit->pos().z();
       else if(j==nsh-1) last_hit_z = hit->pos().z();
    
-      const mu2e::StepPointMC* step(0);
+      const mu2e::StrawGasStep* step(nullptr);
       if (mcdigis) {
 	const mu2e::StrawDigiMC* sdmc = &mcdigis->at(loc);
 	if (sdmc->wireEndTime(mu2e::StrawEnd::cal) < sdmc->wireEndTime(mu2e::StrawEnd::hv)) {
-	  step = sdmc->stepPointMC(mu2e::StrawEnd::cal).get();
+	  step = sdmc->strawGasStep(mu2e::StrawEnd::cal).get();
 	}
 	else {
-	  step = sdmc->stepPointMC(mu2e::StrawEnd::hv ).get();
+	  step = sdmc->strawGasStep(mu2e::StrawEnd::hv ).get();
 	}
       }
 
@@ -198,14 +197,14 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
     trackSeed->fSimpId1Hits = max;
     trackSeed->fSimpId2Hits = -1;
 
-    const mu2e::StepPointMC* step(0);
+    const mu2e::StrawGasStep* step(nullptr);
     const mu2e::StrawDigiMC* sdmc = &mcdigis->at(mostvalueindex);
     if (mcdigis) {
       if (sdmc->wireEndTime(mu2e::StrawEnd::cal) < sdmc->wireEndTime(mu2e::StrawEnd::hv)) {
-	step = sdmc->stepPointMC(mu2e::StrawEnd::cal).get();
+	step = sdmc->strawGasStep(mu2e::StrawEnd::cal).get();
       }
       else {
-	step = sdmc->stepPointMC(mu2e::StrawEnd::hv ).get();
+	step = sdmc->strawGasStep(mu2e::StrawEnd::hv ).get();
       }
     }
     const mu2e::SimParticle * sim (0);
@@ -257,16 +256,16 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
       trackSeed->fSimpId2Hits = max;
 
       if (secondmostvalueindex >=0){
-	const mu2e::StepPointMC* step(0);
+	const mu2e::StrawGasStep* step(nullptr);
 	const mu2e::StrawDigiMC* sdmc = &mcdigis->at(secondmostvalueindex);
 	if (sdmc->wireEndTime(mu2e::StrawEnd::cal) < sdmc->wireEndTime(mu2e::StrawEnd::hv)) {
-	  step = sdmc->stepPointMC(mu2e::StrawEnd::cal).get();
+	  step = sdmc->strawGasStep(mu2e::StrawEnd::cal).get();
 	}
 	else {
-	  step = sdmc->stepPointMC(mu2e::StrawEnd::hv ).get();
+	  step = sdmc->strawGasStep(mu2e::StrawEnd::hv ).get();
 	}
 		
-	const mu2e::SimParticle * sim (0);
+	const mu2e::SimParticle * sim (nullptr);
 
 	if (step) {
 	  art::Ptr<mu2e::SimParticle> const& simptr = step->simParticle(); 
@@ -313,9 +312,6 @@ Int_t StntupleInitMu2eTrackSeedBlockLinks(TStnDataBlock* Block, AbsEvent* AnEven
 
   // ev_number = AnEvent->event();
   // rn_number = AnEvent->run();
-
-  //  if (!Block->Initialized(ev_number,rn_number)) return -1;
-
 					// do not do initialize links 2nd time
 
   if (Block->LinksInitialized()) return 0;

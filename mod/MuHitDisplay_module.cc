@@ -58,7 +58,7 @@
 #include "TrackerGeom/inc/Tracker.hh"
 #include "CalorimeterGeom/inc/DiskCalorimeter.hh"
 #include "CalorimeterGeom/inc/Calorimeter.hh"
-#include "Mu2eUtilities/inc/SimParticlesWithHits.hh"
+// #include "Mu2eUtilities/inc/SimParticlesWithHits.hh"
 #include "Mu2eUtilities/inc/SortedStepPoints.hh"
 #include "Mu2eUtilities/inc/TrackTool.hh"
 
@@ -1113,8 +1113,7 @@ namespace mu2e {
     for (int ih=0; ih<n_combo_hits; ++ih) {
 
       ihit = ih;
-
-      hit         = &fComboHitColl->at(ihit);
+      hit  = &fComboHitColl->at(ihit);
 
       if (fStrawHitFlagColl)
 	hit_id_word = &fStrawHitFlagColl->at(ihit);
@@ -1134,9 +1133,13 @@ namespace mu2e {
 
 	  std::vector<StrawDigiIndex> shids;
 	  fShComboHitColl->fillStrawDigiIndices(Evt,ish,shids);
-	  mu2e::StrawDigiMC     const& mcd1  = _strawDigiMCColl->at(shids[0]);
-	  art::Ptr<StepPointMC> const& spmcp = mcd1.stepPointMC(StrawEnd::cal);
-	  const mu2e::SimParticle*     sim   = spmcp->simParticle().get();
+
+	  printf("MuHitDisplay::filter : StrawDigiMC::stepPointMC no longer available. Ask Dave Brown. \n");
+	  
+	  const mu2e::SimParticle*     sim(nullptr);
+	  // thanks Dave ...  mu2e::StrawDigiMC     const& mcd1  = _strawDigiMCColl->at(shids[0]);
+	  // thanks Dave ...  art::Ptr<StepPointMC> const& spmcp = mcd1.stepPointMC(StrawEnd::cal);
+	  // thanks Dave ...  sim = spmcp->simParticle().get();
 	
 	  w = sh->wdir();
 

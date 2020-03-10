@@ -177,21 +177,23 @@ int TTrkVisNode::InitEvent() {
 
     isFromConversion = false;
 
-    const mu2e::StepPointMC   *stmc;
+    printf("TTrkVisNode::InitEvent: no mcdigi->stepPointMC any more\n");
+
+    const mu2e::StrawGasStep* step(nullptr);
     if (mcdigi->wireEndTime(mu2e::StrawEnd::cal) < mcdigi->wireEndTime(mu2e::StrawEnd::hv)) {
-      stmc = mcdigi->stepPointMC(mu2e::StrawEnd::cal).get();
+      step = mcdigi->strawGasStep(mu2e::StrawEnd::cal).get();
     }
     else {
-      stmc = mcdigi->stepPointMC(mu2e::StrawEnd::hv ).get();
+      step = mcdigi->strawGasStep(mu2e::StrawEnd::hv ).get();
     }
 
-    const mu2e::SimParticle* sim = &(*stmc->simParticle());
+    const mu2e::SimParticle* sim = &(*step->simParticle());
     
     if ( sim->fromGenerator() ){
       mu2e::GenParticle* gen = (mu2e::GenParticle*) &(*sim->genParticle());
       //	    if ( gen->generatorId() == mu2e::GenId::conversionGun ){
       if ( gen->generatorId() == mu2e::GenId::StoppedParticleReactionGun ){
-	isFromConversion = true;
+     	isFromConversion = true;
       }
     }
 
@@ -434,4 +436,3 @@ Int_t TTrkVisNode::DistancetoPrimitiveXY(Int_t px, Int_t py) {
 Int_t TTrkVisNode::DistancetoPrimitiveRZ(Int_t px, Int_t py) {
   return 9999;
 }
-

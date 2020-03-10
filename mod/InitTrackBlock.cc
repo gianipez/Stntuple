@@ -49,6 +49,7 @@
 #include "MCDataProducts/inc/SimParticleCollection.hh"
 #include "MCDataProducts/inc/StepPointMCCollection.hh"
 #include "MCDataProducts/inc/StrawDigiMCCollection.hh"
+#include "MCDataProducts/inc/StrawGasStep.hh"
 #include "MCDataProducts/inc/PtrStepPointMCVectorCollection.hh"
 #include "DataProducts/inc/VirtualDetectorId.hh"
 
@@ -532,16 +533,18 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
       track->fNHPerStation[j] = 0;
     }
     
-    int     loc, ipart, nhits, n_straw_hits, found, ntrkhits(0), nhitsambig0(0); // , pdg_code;
-    int     id(-1),  npart(0), part_pdg_code[100], part_nh[100], part_id[100];
+    int     loc, nhits, n_straw_hits, found, ntrkhits(0), nhitsambig0(0); // , pdg_code;
+    int     ipart;
+    int     id(-1),  npart(0), part_nh[100], part_id[100];
+    int     part_pdg_code[100]; 
     int     nwrong = 0;
     double  mcdoca;
 
-    const mu2e::ComboHit      *s_hit0;
-    const mu2e::ComboHit      *s_hit; 
-    const mu2e::SimParticle   *sim(NULL); 
-    const mu2e::StepPointMC   *stmc[2];
-    const mu2e::Straw         *straw;
+    const mu2e::ComboHit      *s_hit0(nullptr);
+    const mu2e::ComboHit      *s_hit (nullptr); 
+    const mu2e::SimParticle   *sim   (nullptr); 
+    const mu2e::StrawGasStep  *stgs  (nullptr);
+    const mu2e::Straw         *straw (nullptr);
 
     n_straw_hits = list_of_combo_hits->size();
 
@@ -571,39 +574,41 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 
 	      const mu2e::StrawDigiMC* mcdigi = &list_of_mc_straw_hits->at(loc);
 
+	      printf("StntupleInitTrackBlock : no StrawDigiMC::stepPointMC any more. Ask Dave Brown.\n");
+
 	      if (mcdigi->wireEndTime(mu2e::StrawEnd::cal) < mcdigi->wireEndTime(mu2e::StrawEnd::hv)) {
-		stmc[0] = mcdigi->stepPointMC(mu2e::StrawEnd::cal).get();
+		stgs = mcdigi->strawGasStep(mu2e::StrawEnd::cal).get();
 	      }
 	      else {
-		stmc[0] = mcdigi->stepPointMC(mu2e::StrawEnd::hv ).get();
+		stgs = mcdigi->strawGasStep(mu2e::StrawEnd::hv ).get();
 	      }
+//-----------------------------------------------------------------------------
+// count number of active hits with R > 200 um and misassigned drift signs
+//-----------------------------------------------------------------------------
+	      if (stgs) {
+		if (hit->driftRadius() > 0.2) {
+		  const CLHEP::Hep3Vector* v1 = &straw->getMidPoint();
+		  HepPoint p1(v1->x(),v1->y(),v1->z());
+		  
+		  CLHEP::Hep3Vector v2 = stgs->position();
+		  HepPoint    p2(v2.x(),v2.y(),v2.z());
+		  
+		  TrkLineTraj trstraw(p1,straw->getDirection()  ,0.,0.);
 
-	      //-----------------------------------------------------------------------------
-	      // count number of active hits with R > 200 um and misassigned drift signs
-	      //-----------------------------------------------------------------------------
-	      if (hit->driftRadius() > 0.2) {
-		const CLHEP::Hep3Vector* v1 = &straw->getMidPoint();
-		HepPoint p1(v1->x(),v1->y(),v1->z());
+		  TrkLineTraj trstep (p2,stgs->momvec().unit(),0.,0.);
+		  
+		  TrkPoca poca(trstep, 0., trstraw, 0.);
 	      
-		const CLHEP::Hep3Vector* v2 = &stmc[0]->position();
-		HepPoint    p2(v2->x(),v2->y(),v2->z());
-	      
-		TrkLineTraj trstraw(p1,straw->getDirection()  ,0.,0.);
-		TrkLineTraj trstep (p2,stmc[0]->momentum().unit(),0.,0.);
-	      
-		TrkPoca poca(trstep, 0., trstraw, 0.);
-	      
-		mcdoca = poca.doca();
-		//-----------------------------------------------------------------------------
-		// if mcdoca and hit->_iamb have different signs, the hit drift direction 
-		// has wrong sign
-		//-----------------------------------------------------------------------------
-		if (hit->ambig()*mcdoca < 0) nwrong += 1;
-
-		if (hit->ambig()       == 0) ++nhitsambig0;
-	      }
+		  mcdoca = poca.doca();
+//-----------------------------------------------------------------------------
+// if mcdoca and hit->_iamb have different signs, the hit drift direction has wrong sign
+//-----------------------------------------------------------------------------
+		  if (hit->ambig()*mcdoca < 0) nwrong      += 1;
+		  if (hit->ambig()       == 0) nhitsambig0 += 1;
+		}
 	    
-	      sim = &(*stmc[0]->simParticle());
+		sim = &(*stgs->simParticle());
+	      }
 	      if (sim != NULL) id = sim->id().asInt();
 	      else {
 		printf(">>> ERROR in %s : sim is NULL, set PDG_CODE to -1\n",oname);
@@ -863,7 +868,7 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 //-----------------------------------------------------------------------------
 // number of MC hits produced by the mother particle
 //-----------------------------------------------------------------------------
-    const mu2e::StepPointMC* step;
+    const mu2e::StrawGasStep* step(nullptr);
 
     track->fNMcStrawHits = 0;
 
@@ -872,21 +877,23 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 	const mu2e::StrawDigiMC* mcdigi = &list_of_mc_straw_hits->at(i);
 
 	if (mcdigi->wireEndTime(mu2e::StrawEnd::cal) < mcdigi->wireEndTime(mu2e::StrawEnd::hv)) {
-	  step = mcdigi->stepPointMC(mu2e::StrawEnd::cal).get();
+	  step = mcdigi->strawGasStep(mu2e::StrawEnd::cal).get();
 	}
 	else {
-	  step = mcdigi->stepPointMC(mu2e::StrawEnd::hv ).get();
+	  step = mcdigi->strawGasStep(mu2e::StrawEnd::hv ).get();
 	}
 
-	art::Ptr<mu2e::SimParticle> const& simptr = step->simParticle(); 
-	art::Ptr<mu2e::SimParticle> mother        = simptr;
-	while(mother->hasParent())  mother        = mother->parent();
-	const mu2e::SimParticle*    sim           = mother.operator ->();
+	if (step) {
+	  art::Ptr<mu2e::SimParticle> const& simptr = step->simParticle(); 
+	  art::Ptr<mu2e::SimParticle> mother        = simptr;
+	  while(mother->hasParent())  mother        = mother->parent();
+	  const mu2e::SimParticle*    sim           = mother.get();
 
-	int sim_id = sim->id().asInt();
+	  int sim_id = sim->id().asInt();
 
-	if (sim_id == track->fPartID) {
-	  track->fNMcStrawHits += 1;
+	  if (sim_id == track->fPartID) {
+	    track->fNMcStrawHits += 1;
+	  }
 	}
       }
     }

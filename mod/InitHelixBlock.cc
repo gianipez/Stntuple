@@ -119,8 +119,9 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
  
   if (list_of_helices) nhelices = list_of_helices->size();
   
-  TParticlePDG* part(0);
+  TParticlePDG* part(nullptr);
   TDatabasePDG* pdg_db = TDatabasePDG::Instance();
+
   static XYZVec zaxis(0.0,0.0,1.0); // unit in z direction
 
   for (int i=0; i<nhelices; i++) {
@@ -211,30 +212,35 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
       if(j==0) first_hit_z = hit->pos().z();
       else if(j==nhits-1) last_hit_z = hit->pos().z();
       
-      //get the MC truth info
+      // get the MC truth info
       if (hit->_flag.hasAnyProperty(mu2e::StrawHitFlag::outlier))         continue;
 
       std::vector<StrawDigiIndex> shids;
       hits->fillStrawDigiIndices(*(Evt),j,shids);
+      
+      printf(" mu2e::TrkMCTools::stepPoint is no longe available, FIXME\n");
 
       for (size_t k=0; k<shids.size(); ++k) {
-	mu2e::StrawDigiMC const&     mcdigi = mcdigis->at(shids[k]);
-	art::Ptr<mu2e::StepPointMC>  spmcp;
-	mu2e::TrkMCTools::stepPoint(spmcp,mcdigi);
-	const mu2e::StepPointMC* Step = spmcp.get();
-      
-	if (Step) {
-	  art::Ptr<mu2e::SimParticle> const& simptr = Step->simParticle(); 
-	  int sim_id        = simptr->id().asInt();
-	  float   dz        = Step->position().z();// - trackerZ0;
-	  hits_simp_id.push_back   (sim_id); 
-	  hits_simp_index.push_back(shids[k]);
-	  hits_simp_z.push_back(dz);
-	  break;
-	}
-      }
+      	const mu2e::StrawDigiMC* sdmc = &mcdigis->at(shids[k]);
 
-      //increase the counter of the StrawHits
+	const mu2e::StrawGasStep* step (nullptr);
+	if (sdmc->wireEndTime(mu2e::StrawEnd::cal) < sdmc->wireEndTime(mu2e::StrawEnd::hv)) {
+	  step = sdmc->strawGasStep(mu2e::StrawEnd::cal).get();
+	}
+	else {
+	  step = sdmc->strawGasStep(mu2e::StrawEnd::hv ).get();
+	}
+
+      	if (step) {
+      	  art::Ptr<mu2e::SimParticle> const& simptr = step->simParticle(); 
+      	  int sim_id        = simptr->id().asInt();
+      	  float   dz        = step->position().z();// - trackerZ0;
+      	  hits_simp_id.push_back   (sim_id); 
+      	  hits_simp_index.push_back(shids[k]);
+      	  hits_simp_z.push_back(dz);
+      	  break;
+      	}
+      }
       nStrawHits += hit->nStrawHits();
     } 
 
@@ -282,14 +288,20 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
       continue;
     }
     
-    mu2e::StrawDigiMC const&     mcdigi = mcdigis->at(mostvalueindex);
-    art::Ptr<mu2e::StepPointMC>  spmcp;
-    mu2e::TrkMCTools::stepPoint(spmcp,mcdigi);
-    const mu2e::StepPointMC* Step = spmcp.get();
-    const mu2e::SimParticle * sim (0);
+    const mu2e::StrawDigiMC* sdmc = &mcdigis->at(mostvalueindex);
 
-    if (Step) {
-      art::Ptr<mu2e::SimParticle> const& simptr = Step->simParticle(); 
+    const mu2e::StrawGasStep* step(nullptr);
+    if (sdmc->wireEndTime(mu2e::StrawEnd::cal) < sdmc->wireEndTime(mu2e::StrawEnd::hv)) {
+      step = sdmc->strawGasStep(mu2e::StrawEnd::cal).get();
+    }
+    else {
+      step = sdmc->strawGasStep(mu2e::StrawEnd::hv ).get();
+    }
+
+    const mu2e::SimParticle* sim(nullptr);
+
+    if (step) {
+      art::Ptr<mu2e::SimParticle> const& simptr = step->simParticle(); 
       helix->fSimpPDG1    = simptr->pdgId();
       art::Ptr<mu2e::SimParticle> mother = simptr;
       part   = pdg_db->GetParticle(helix->fSimpPDG1);
@@ -298,15 +310,15 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
       sim = mother.operator ->();
 
       helix->fSimpPDGM1   = sim->pdgId();
-      
-      double   px = Step->momentum().x();
-      double   py = Step->momentum().y();
-      double   pz = Step->momentum().z();
+    
+      double   px = step->momvec().x();
+      double   py = step->momvec().y();
+      double   pz = step->momvec().z();
       double   mass  (-1.);
       double   energy(-1.);
       if (part) {
-	mass   = part->Mass();
-	energy = sqrt(px*px+py*py+pz*pz+mass*mass);
+    	mass   = part->Mass();
+    	energy = sqrt(px*px+py*py+pz*pz+mass*mass);
       }
       helix->fMom1.SetPxPyPzE(px,py,pz,energy);
 
@@ -336,14 +348,20 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
 
       if (secondmostvalueindex >= 0) {
 
-	mu2e::StrawDigiMC const&     mcdigi = mcdigis->at(secondmostvalueindex);
-	art::Ptr<mu2e::StepPointMC>  spmcp;
-	mu2e::TrkMCTools::stepPoint(spmcp,mcdigi);
-	const mu2e::StepPointMC* Step = spmcp.get();
-	const mu2e::SimParticle * sim (0);
+       	const mu2e::StrawGasStep* step(nullptr);
 
-	if (Step) {
-	  art::Ptr<mu2e::SimParticle> const& simptr = Step->simParticle(); 
+      	const mu2e::StrawDigiMC*  sdmc = &mcdigis->at(secondmostvalueindex);
+	if (sdmc->wireEndTime(mu2e::StrawEnd::cal) < sdmc->wireEndTime(mu2e::StrawEnd::hv)) {
+	  step = sdmc->strawGasStep(mu2e::StrawEnd::cal).get();
+	}
+	else {
+	  step = sdmc->strawGasStep(mu2e::StrawEnd::hv ).get();
+	}
+
+	const mu2e::SimParticle* sim (nullptr);
+
+       	if (step) {
+	  art::Ptr<mu2e::SimParticle> const& simptr = step->simParticle(); 
 	  helix->fSimpPDG2    = simptr->pdgId();
 	  art::Ptr<mu2e::SimParticle> mother = simptr;
 	  part   = pdg_db->GetParticle(helix->fSimpPDG2);
@@ -356,8 +374,8 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
 	  double   px = simptr->startMomentum().x();
 	  double   py = simptr->startMomentum().y();
 	  double   pz = simptr->startMomentum().z();
-	  double   mass(-1.);//  = part->Mass();
-	  double   energy(-1.);// = sqrt(px*px+py*py+pz*pz+mass*mass);
+
+	  double   mass  (-1.), energy(-1.);
 	  if (part) {
 	    mass   = part->Mass();
 	    energy = sqrt(px*px+py*py+pz*pz+mass*mass);
