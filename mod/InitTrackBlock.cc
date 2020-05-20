@@ -574,7 +574,7 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 
 	      const mu2e::StrawDigiMC* mcdigi = &list_of_mc_straw_hits->at(loc);
 
-	      printf("StntupleInitTrackBlock : no StrawDigiMC::stepPointMC any more. Ask Dave Brown.\n");
+	      //	      printf("StntupleInitTrackBlock : no StrawDigiMC::stepPointMC any more. Ask Dave Brown.\n");
 
 	      if (mcdigi->wireEndTime(mu2e::StrawEnd::cal) < mcdigi->wireEndTime(mu2e::StrawEnd::hv)) {
 		stgs = mcdigi->strawGasStep(mu2e::StrawEnd::cal).get();

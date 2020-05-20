@@ -29,7 +29,7 @@ physics : {
     filters  : { @table::Stntuple.filters   }
     analyzers: { @table::Stntuple.analyzers }
 #------------------------------------------------------------------------------
-# MC generation, G4, reconstruction and stntuple making
+# MC generation, G4, reconstruction and stntuple making (e- and e+ included)
 #------------------------------------------------------------------------------
     p1       : [ @sequence::Stntuple.gen_g4_time_map,
 		 @sequence::Stntuple.digis          ,
