@@ -163,16 +163,7 @@ if    ($host == `hostname -f`.strip) then
   f.puts("# BOOK          #{$book}     ");
   f.puts("# DATASET       #{$dataset}  ");
   f.puts("# OUTPUT_DIR    #{$directory}");
-  f.puts(`dir -l #{$directory} | grep #{$pattern} | awk '{print $9}'`);
-
-elsif ($host == 'npenn17.fnal.gov') then
-
-  f.puts("# DATA_SERVER     ");
-  f.puts("# INPUT_DIR     #{$directory}");
-  f.puts("# BOOK          #{$book}     ");
-  f.puts("# DATASET       #{$dataset}  ");
-  f.puts("# OUTPUT_DIR    #{$directory}");
-  f.puts(`rsh -l kristian #{$host} dir -l #{$directory} | grep #{$pattern} | awk '{print $9}'`);
+  f.puts(`dir -l #{$directory} | grep \.stn\$ | grep #{$pattern} | awk '{print $9}'`);
 
 elsif ($host.index('fcdfdata')) then
 
@@ -181,7 +172,7 @@ elsif ($host.index('fcdfdata')) then
   f.puts("# BOOK          #{$book}     ");
   f.puts("# DATASET       #{$dataset}  ");
   f.puts("# OUTPUT_DIR    #{$user}@#{$host}#{$directory}");
-  f.puts(`cdfopr/scripts/caf -h #{$host}:#{$directory} hostdir | grep #{$pattern} | awk '{print $9}'`);
+  f.puts(`cdfopr/scripts/caf -h #{$host}:#{$directory} hostdir | grep \.stn\$ | grep #{$pattern} | awk '{print $9}'`);
 
 elsif ($host.index('fcdfrdc3')) then
   puts "here ...#{$directory} "
@@ -190,7 +181,7 @@ elsif ($host.index('fcdfrdc3')) then
   f.puts("# BOOK          #{$book}     ");
   f.puts("# DATASET       #{$dataset}  ");
   f.puts("# OUTPUT_DIR    #{$user}@#{$host}#{$directory}");
-  f.puts(`ssh -l cdfdata fcdflnx3.fnal.gov dir -l #{$directory} | grep #{$pattern} | awk '{print $9}'`);
+  f.puts(`ssh -l cdfdata fcdflnx3.fnal.gov dir -l #{$directory} | grep \.stn\$ | grep #{$pattern} | awk '{print $9}'`);
 
 else
   f.puts("# DATA_SERVER root://#{$host}  ");
@@ -202,8 +193,7 @@ else
 #  puts "we are here"
 #  puts "ssh -l #{$user} #{$host} ls -l #{$directory} | grep #{$pattern} | awk '{print $9}'"
 
-  f.puts(`ssh -l #{$user} #{$host} ls -l #{$directory}/*.stn | grep #{$pattern} | awk '{print $9}'`);
-
+  f.puts(`ssh -l #{$user} #{$host} ls -l #{$directory} | grep \.stn\$ | grep #{$pattern} | awk '{print $9}'`);
 end
 
 f.close();
