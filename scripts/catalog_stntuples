@@ -7,6 +7,9 @@
 # 
 # starts from already created file-level catalog file and assigns fileset 
 # numbers. Then creates fileset-level catalog
+#
+# N.B. it is assumed that stntuple files have '.stn' extension
+#
 # examples:
 # ---------
 # cdfopr/scripts/catalog_stntuples -h diskpool -d jbmmgh -b ewk/wtaunu -p jbmm
@@ -57,7 +60,7 @@ $nev_fileset     = 200000
 $offline_version = "vX_X_X"
 $dataset         = ""
 $verbose         = 0
-$install_host    = ''
+$install         = nil                       # catalog area
 $pid             = Process.pid.to_s();
 $protocol        = 'rsh'
 $diskpool        = nil;
@@ -75,7 +78,7 @@ opts.each do |opt, arg|
   elsif (opt == "--Directory"      ) ; $directory       = arg 
   elsif (opt == "--help"           ) ; usage()    
   elsif (opt == "--host"           ) ; $host            = arg 
-  elsif (opt == "--install"        ) ; $install_host    = arg 
+  elsif (opt == "--install"        ) ; $install         = arg 
   elsif (opt == "--mode"           ) ; $mode            = arg 
   elsif (opt == "--nev_fileset"    ) ; $nev_fileset     = arg.to_i 
   elsif (opt == "--offline_version") ; $offline_version = arg
@@ -199,7 +202,7 @@ else
 #  puts "we are here"
 #  puts "ssh -l #{$user} #{$host} ls -l #{$directory} | grep #{$pattern} | awk '{print $9}'"
 
-  f.puts(`ssh -l #{$user} #{$host} ls -l #{$directory} | grep #{$pattern} | awk '{print $9}'`);
+  f.puts(`ssh -l #{$user} #{$host} ls -l #{$directory}/*.stn | grep #{$pattern} | awk '{print $9}'`);
 
 end
 
@@ -226,7 +229,8 @@ if ($verbose != 0) ; puts "rc = #{rc}" ; end
 $input_file=$logfile
 file = File.open($input_file);
 
-file_catalog = File.new($dataset.gsub('/','_')+'.files.'+$pid,"w");
+file_catalog_fn = $dataset.gsub('/','_')+'.files.'+$pid;
+file_catalog    = File.new(file_catalog_fn,"w");
 
 $list_of_filesets = Array.new;
 
@@ -326,10 +330,11 @@ file_catalog.close
 #-----------------------------------------------------------------------
 # step 2: final printout of the fileset-level catalog
 #-----------------------------------------------------------------------
-fileset_catalog = File.new('AAA_CATALOG.html.'+$pid,"w");
-comment_line = '#----------------------------------------------';
-comment_line = comment_line+'-------------------------------------------';
-comment_line = comment_line+'-------------------------------------------';
+fileset_catalog_fn = 'AAA_CATALOG.html.'+$pid
+fileset_catalog    = File.new(fileset_catalog_fn,"w");
+comment_line       = '#----------------------------------------------';
+comment_line       = comment_line+'-------------------------------------------';
+comment_line       = comment_line+'-------------------------------------------';
 
 fileset_catalog.puts'<pre>'
 fileset_catalog.puts comment_line
@@ -372,6 +377,10 @@ fileset_catalog.close();
 # installation, if requested
 #-----------------------------------------------------------------------
 if ($install != '') then
+  cdir = $install+'/'+$book+'/'+$dataset
+  rc   = `mkdir -p #{cdir}`
+  rc   = `mv #{fileset_catalog_fn} #{cdir}/AAA_CATALOG.html`
+  rc   = `mv #{file_catalog_fn} #{cdir}/AAA_FILES.txt`
 end
 #-----------------------------------------------------------------------
 # final step: cleanup
