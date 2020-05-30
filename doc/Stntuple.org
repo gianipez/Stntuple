@@ -1,3 +1,3 @@
 # documentation - work in progress
 
-* file:TGenpBlock.org : common problems
+* [[file:TGenpBlock.org][TGenpBlock]] : common problems
