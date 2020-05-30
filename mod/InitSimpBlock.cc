@@ -110,8 +110,6 @@ int StntupleInitSimpBlock::InitDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent
     const mu2e::StrawGasStep* step(nullptr);
 
     for (int i=0; i<n_straw_hits; i++) {
-      //      printf("StntupleInitSimpBlock::InitDataBlock : StrawDigiMC::stepPointMC no longer available. Ask Dave Brown\n");
-
       const mu2e::StrawDigiMC* mcdigi = &mcdigis->at(i);
 
       if (mcdigi->wireEndTime(mu2e::StrawEnd::cal) < mcdigi->wireEndTime(mu2e::StrawEnd::hv)) {

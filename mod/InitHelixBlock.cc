@@ -218,8 +218,6 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
       std::vector<StrawDigiIndex> shids;
       hits->fillStrawDigiIndices(*(Evt),j,shids);
       
-      printf(" mu2e::TrkMCTools::stepPoint is no longe available, FIXME\n");
-
       for (size_t k=0; k<shids.size(); ++k) {
       	const mu2e::StrawDigiMC* sdmc = &mcdigis->at(shids[k]);
 

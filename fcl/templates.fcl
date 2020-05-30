@@ -282,10 +282,10 @@ Stntuple : { @table::Stntuple             # defined in Stntuple/fcl/prolog.fcl
 	@table::TrkHitReco.producers       # defined in TrkHitReco
 
 	@table::CommonTrk.producers
-	TrkQualDeMHPar  : { @table::TrkQual KalSeedCollection: "KFFDeMHPar"  }
-	TrkQualDeMHDar  : { @table::TrkQual KalSeedCollection: "KFFDeMHDar"  }
-	TrkQualDmuMHPar : { @table::TrkQual KalSeedCollection: "KFFDmuMHPar" }
-	TrkQualDmuMHDar : { @table::TrkQual KalSeedCollection: "KFFDmuMHDar" }
+	TrkQualDeMHPar  : { @table::TrkQualDeM  KalSeedCollection: "KFFDeMHPar"  }
+	TrkQualDeMHDar  : { @table::TrkQualDeM  KalSeedCollection: "KFFDeMHDar"  }
+	TrkQualDmuMHPar : { @table::TrkQualDmuM KalSeedCollection: "KFFDmuMHPar" }
+	TrkQualDmuMHDar : { @table::TrkQualDmuM KalSeedCollection: "KFFDmuMHDar" }
 
 	@table::CrvDAQPackage.producers    # defined in CRVResponse
 	@table::CrvRecoMCPackage.producers # defined in CRVResponse

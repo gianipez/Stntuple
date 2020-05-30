@@ -47,8 +47,6 @@ int  StntupleInitMu2eTrackSeedBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mod
 
   int  ev_number, rn_number;
 
-  //  printf("StntupleInitMu2eTrackSeedBlock : StrawDigiMC::stepPointMC no longer available. Ask Dave Brown. \n");
-
   ev_number = Evt->event();
   rn_number = Evt->run();
 

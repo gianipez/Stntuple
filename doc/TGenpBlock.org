@@ -1,0 +1,21 @@
+# -*- mode: org -*
+ *common problems*
+
+* GenpBlock branch in not present in the STNTUPLE:               
+
+  check FCL file, set makeGenp to 1
+  look at file:../mod/StntupleMaker_module.cc::"makeGenp"
+
+* GenpBlock is present, but empty                                
+1) check [[file:../mod/StntupleMaker_module.cc::"genpCollTag"][genpCollTag]] in the FCL : (usual case: 'generate' vs 'CompressDigiMCs')
+
+2) check that the value of [[file:../mod/StntupleMaker_module.cc::"genId"][genId]], if requested, corresponds to the generated process ID
+
+   the check which usually fails: file:../mod/InitGenpBlock.cc::107
+
+   see file:../../MCDataProducts/inc/GenId.hh for the definitions
+
+** Explanation                                                   
+To save space, we tylically reqest to store only one, signal, GenParticle.
+GenParticle is defined by the PDG code and custom Mu2e generator ID (genId)
+One often forgets to redefine the value of genId in FCL

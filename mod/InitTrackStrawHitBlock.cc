@@ -31,8 +31,6 @@ Int_t StntupleInitMu2eTrackStrawHitBlock(TStnDataBlock* Block, AbsEvent* AnEvent
   ev_number = AnEvent->event();
   rn_number = AnEvent->run();
 
-  printf("StntupleInitMu2eTrackStrawHitBlock : StrawDigiMC::stepPointMC no longer available. Ask Dave Brown. \n");
-
   if (Block->Initialized(ev_number,rn_number)) return 0;
 
   TTrackStrawHitBlock* data = (TTrackStrawHitBlock*) Block;
