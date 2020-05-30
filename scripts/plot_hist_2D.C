@@ -69,7 +69,9 @@ void plot_hist_2D(hist_data_t* Hd, int Print = 0) {
   if (Hd->fXAxisTitle != ""   ) hpx1->GetXaxis()->SetTitle(Hd->fXAxisTitle.Data());
   if (Hd->fYAxisTitle != ""   ) hpx1->GetYaxis()->SetTitle(Hd->fYAxisTitle.Data());
 
-  if (Hd->fMarkerStyle > 0) hpx1->SetMarkerStyle(Hd->fMarkerStyle);
+  if (Hd->fMarkerStyle >=0) hpx1->SetMarkerStyle(Hd->fMarkerStyle);
+  if (Hd->fMarkerColor >=0) hpx1->SetMarkerColor(Hd->fMarkerColor);
+  if (Hd->fMarkerSize  >=0) hpx1->SetMarkerSize (Hd->fMarkerSize );
 
   if (Hd->fStats == 0) hpx1->SetStats(0);
   hpx1->Draw();
@@ -78,7 +80,7 @@ void plot_hist_2D(hist_data_t* Hd, int Print = 0) {
 //-----------------------------------------------------------------------------
   c->Modified();
   c->Update();
-  plot_stat_box(hpx1,Hd->fStatBoxXMin,Hd->fStatBoxYMin,Hd->fStatBoxXMax,Hd->fStatBoxYMax);
+  plot_stat_box(hpx1,Hd->fOptStat,Hd->fStatBoxXMin,Hd->fStatBoxYMin,Hd->fStatBoxXMax,Hd->fStatBoxYMax);
 //-----------------------------------------------------------------------------
 // add legend - not sure what legend is needed
 //-----------------------------------------------------------------------------
@@ -90,10 +92,10 @@ void plot_hist_2D(hist_data_t* Hd, int Print = 0) {
     ymax = Hd->fLegendYMax;
   }
   
-  // TLegend* leg = new TLegend(xmin,ymin,xmax,ymax);
-  // leg->AddEntry(hpx1,Hd->fLabel.Data(),"pl");  // "pl"
-  // leg->SetBorderSize(0);
-  // leg->Draw();
+  TLegend* leg = new TLegend(xmin,ymin,xmax,ymax);
+  leg->AddEntry(hpx1,Hd->fLabel.Data(),"pl");  // "pl"
+  leg->SetBorderSize(0);
+  leg->Draw();
 //-----------------------------------------------------------------------------
 // write DS names inside the plot
 //-----------------------------------------------------------------------------
@@ -102,7 +104,8 @@ void plot_hist_2D(hist_data_t* Hd, int Print = 0) {
   if (Hd->fPlotLabel != "") label = Hd->fPlotLabel;
   else                      label = Hd->fName;
 
-  draw_label_ndc(label.Data(),0.15,0.86,0.03,52); // lower left corner
+  // lower left corner
+  draw_label_ndc(label.Data(),Hd->fLabelXMin,Hd->fLabelYMin,Hd->fLabelFontSize,Hd->fLabelFont); 
 
   c->Modified(); c->Update();
 //-----------------------------------------------------------------------------
@@ -161,24 +164,24 @@ void plot_hist_2D(hist_data_t* Hist1,  hist_data_t*  Hist2, int Print = 0) {
   hist_file_t* hf1 = Hist1->fFile;
   hist_file_t* hf2 = Hist2->fFile;
   
-  TH1F* hpx1 = (TH1F*) gh1(hf1->fName,Hist1->fModule,Hist1->fName)->Clone(h1name);
+  TH2F* hpx1 = (TH2F*) gh1(hf1->fName,Hist1->fModule,Hist1->fName)->Clone(h1name);
   if (Hist1->fRebin > 0) hpx1->Rebin(Hist1->fRebin);
   
-  TH1F* hpx2 = (TH1F*) gh1(hf2->fName,Hist2->fModule,Hist2->fName)->Clone(h2name);
+  TH2F* hpx2 = (TH2F*) gh2(hf2->fName,Hist2->fModule,Hist2->fName)->Clone(h2name);
   if (Hist2->fRebin > 0) hpx2->Rebin(Hist2->fRebin);
 
   stn_dataset_t* ds1 = hf1->fDataset;
   stn_dataset_t* ds2 = hf2->fDataset;
 
-  if (Hist2->fScale == 1) {
-    double scale = (ds1->fNGenEvents+0.)/(ds2->fNGenEvents+0.);
-    hpx2->Scale(scale);
-  }
+  // if (Hist2->fScale == 1) {
+  //   double scale = (ds1->fNGenEvents+0.)/(ds2->fNGenEvents+0.);
+  //   hpx2->Scale(scale);
+  // }
   
-  if (Hist2->fScale == 2) {
-    double scale = hpx1->Integral()/hpx2->Integral();
-    hpx2->Scale(scale);
-  }
+  // if (Hist2->fScale == 2) {
+  //   double scale = hpx1->Integral()/hpx2->Integral();
+  //   hpx2->Scale(scale);
+  //  }
 //-----------------------------------------------------------------------------
 // create a canvas
 //-----------------------------------------------------------------------------
@@ -201,8 +204,18 @@ void plot_hist_2D(hist_data_t* Hist1,  hist_data_t*  Hist2, int Print = 0) {
   hpx1->SetLineColor(kRed-3);
   hpx1->SetLineWidth(2);
   hpx1->SetTitle("");
+
+  if (Hist1->fMarkerStyle >=0) hpx1->SetMarkerStyle(Hist1->fMarkerStyle);
+  if (Hist1->fMarkerColor >=0) hpx1->SetMarkerColor(Hist1->fMarkerColor);
+  if (Hist1->fMarkerSize  >=0) hpx1->SetMarkerSize (Hist1->fMarkerSize );
+
   if (Hist1->fXMin < Hist1->fXMax) hpx1->GetXaxis()->SetRangeUser(Hist1->fXMin,Hist1->fXMax);
   if (Hist1->fXAxisTitle != ""   ) hpx1->GetXaxis()->SetTitle(Hist1->fXAxisTitle.Data());
+
+  if (Hist1->fYMin < Hist1->fYMax) hpx1->GetYaxis()->SetRangeUser(Hist1->fYMin,Hist1->fYMax);
+  if (Hist1->fYAxisTitle != ""   ) hpx1->GetYaxis()->SetTitle(Hist1->fYAxisTitle.Data());
+
+  if (Hist1->fStats == 0         ) hpx1->SetStats(0);
 
   hpx1->Draw();
 
@@ -217,15 +230,15 @@ void plot_hist_2D(hist_data_t* Hist1,  hist_data_t*  Hist2, int Print = 0) {
   if (Hist2->fMarkerSize  >=0) hpx2->SetMarkerSize (Hist2->fMarkerSize );
 
   printf("ds2 marker: %i\n",Hist2->fMarkerStyle);
-  if (Hist2->fMarkerStyle >=0) hpx2->Draw("ep,sames");
+  if (Hist2->fMarkerStyle >=0) hpx2->Draw("sames");
   else                         hpx2->Draw("sames");
 //-----------------------------------------------------------------------------
 // position statboxes - need to update the canvas first
 //-----------------------------------------------------------------------------
   c->Modified();
   c->Update();
-  plot_stat_box(hpx1,0.65,0.65,0.9,0.9);
-  plot_stat_box(hpx2,0.65,0.40,0.9,0.65);
+  plot_stat_box(hpx1,Hist1->fOptStat,0.65,0.65,0.9,0.9);
+  plot_stat_box(hpx2,Hist2->fOptStat,0.65,0.40,0.9,0.65);
 //-----------------------------------------------------------------------------
 // add legend
 //-----------------------------------------------------------------------------
@@ -258,7 +271,8 @@ void plot_hist_2D(hist_data_t* Hist1,  hist_data_t*  Hist2, int Print = 0) {
     }
   }
 
-  draw_label_ndc(label.Data(),0.15,0.86,0.03,52); // lower left corner
+  // lower left corner
+  draw_label_ndc(label.Data(),Hist1->fLabelXMin,Hist1->fLabelYMin,Hist1->fLabelFontSize,Hist1->fLabelFont); 
 
   c->Modified(); c->Update();
 //-----------------------------------------------------------------------------

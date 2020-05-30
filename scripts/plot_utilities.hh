@@ -20,12 +20,14 @@ void set_draw_options(TH1* Hist, hist_data_t* Hd) {
 //-----------------------------------------------------------------------------
 // redraw the stat box, with the color of the histogram itself
 //-----------------------------------------------------------------------------
-void plot_stat_box(TH1* Hist, double X1, double Y1, double X2, double Y2) {
+void plot_stat_box(TH1* Hist, int OptStat, double X1, double Y1, double X2, double Y2) {
   TPaveStats* s = (TPaveStats*) Hist->GetListOfFunctions()->FindObject("stats");
   if (s != NULL) {
+    if (OptStat >= 0) s->SetOptStat(OptStat);
     s->SetLineColor(Hist->GetLineColor());
     s->SetTextColor(Hist->GetLineColor());
     s->SetX1NDC(X1); s->SetY1NDC(Y1); s->SetX2NDC(X2); s->SetY2NDC(Y2);
+    s->SetFillStyle(0);
     s->Draw();
   }
   else {

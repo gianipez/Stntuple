@@ -11,11 +11,11 @@
 
 2) check that the value of [[file:../mod/StntupleMaker_module.cc::"genId"][genId]], if requested, corresponds to the generated process ID
 
-   the check which usually fails: file:../mod/InitGenpBlock.cc::107
+   the check which usually fails: [[file:../mod/InitGenpBlock.cc::107][Stntuple/mod/InitGenpBlock.cc]]
 
-   see file:../../MCDataProducts/inc/GenId.hh for the definitions
+   see [[file:../../MCDataProducts/inc/GenId.hh][MCDataProducts/inc/GenId.hh]] for the definitions
 
 ** Explanation                                                   
-To save space, we tylically reqest to store only one, signal, GenParticle.
+To save space, we typically reqest to store only one, signal, GenParticle.
 GenParticle is defined by the PDG code and custom Mu2e generator ID (genId)
 One often forgets to redefine the value of genId in FCL

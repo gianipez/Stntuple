@@ -12,7 +12,13 @@ public:
   TH1*          fHist;                  // if non-null, fFile is not needed
   hist_file_t*  fFile;                  // it contains a pointer to the dataset
   const stn_book* fBook;
+
   TString       fLabel  ;		// label to appear on a plot
+  float         fLabelXMin;
+  float         fLabelYMin;
+  float         fLabelFontSize;
+  float         fLabelFont;
+
   TString       fModule;	        // module name
   TString       fCanvasName;
   int           fCanvasSizeX;
@@ -31,6 +37,7 @@ public:
   float         fYMin;
   float         fYMax;
   int           fStats;
+  int           fOptStat;
   float         fStatBoxXMin;
   float         fStatBoxYMin;
   float         fStatBoxXMax;
@@ -62,6 +69,10 @@ public:
     fCanvasSizeY = -1.;
     fNewName     = "";
     fLabel       = "";
+    fLabelXMin   = 0.15;
+    fLabelYMin   = 0.86;
+    fLabelFontSize = 0.03;
+    fLabelFont     = 52; // lower left corner
     fLineColor   = -1;
     fLineWidth   =  1;
     fMarkerSize  = -1;
@@ -74,6 +85,7 @@ public:
     fYMin        =  0;
     fYMax        = -1;
     fStats       =  1;
+    fOptStat     = -1;
     fStatBoxXMin =  0.65;
     fStatBoxYMin =  0.65;
     fStatBoxXMax =  0.90;
@@ -103,6 +115,10 @@ public:
     fCanvasSizeY = -1.;
     fNewName     = "";
     fLabel       = "";
+    fLabelXMin   = 0.15;
+    fLabelYMin   = 0.86;
+    fLabelFontSize = 0.03;
+    fLabelFont     = 52; // lower left corner
     fLineColor   = -1;
     fLineWidth   =  1;
     fMarkerSize  = -1;
@@ -115,6 +131,7 @@ public:
     fYMin        =  0;
     fYMax        = -1;
     fStats       =  1;
+    fOptStat     = -1;
     fStatBoxXMin =  0.65;
     fStatBoxYMin =  0.65;
     fStatBoxXMax =  0.90;
@@ -143,7 +160,11 @@ public:
     fCanvasSizeX = 1200.;
     fCanvasSizeY =  800.;
     fNewName     = "";
-    fLabel       = "";
+    fLabel         = "";
+    fLabelXMin     = 0.15;
+    fLabelYMin     = 0.86;
+    fLabelFontSize = 0.03;
+    fLabelFont     = 52; // lower left corner
     fLineColor   = -1;
     fLineWidth   =  1;
     fMarkerSize  = -1;
@@ -156,6 +177,7 @@ public:
     fYMin        =  0;
     fYMax        = -1;
     fStats       =  1;
+    fOptStat     = -1;
     fStatBoxXMin =  0.65;
     fStatBoxYMin =  0.65;
     fStatBoxXMax =  0.90;
