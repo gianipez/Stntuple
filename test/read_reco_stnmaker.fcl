@@ -12,7 +12,7 @@ BEGIN_PROLOG
   GEN_ID       @protect_ignore: CeEndpoint
 END_PROLOG
 
-#include "Stntuple/test/stnmaker.fcl"
+#include "Stntuple/fcl/stnmaker.fcl"
 
 services.TFileService.fileName            : "nts._USER_.read_reco_stnmaker.xxx.000001.root"
 physics.filters.InitStntuple.histFileName : "nts._USER_.read_reco_stnmaker.xxx.000001.stn"

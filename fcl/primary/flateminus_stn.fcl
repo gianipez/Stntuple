@@ -1,8 +1,8 @@
 # -*- mode:tcl -*-
 #------------------------------------------------------------------------------
-# p1 : default reconstruction path
-# p2 : read and ntuple (use with RootInput to ntuple MDC'2018 files)
-# p3 : path to debug the TPR and CPR reconstruction paths separately
+# stntuple dataset generated with JobConfg/primary/flateminus.fcl 
+# p21 (defined in Stntuple/fcl/stnmaker.fcl) : standard reconstruction paths, no CRV reco 
+# _USER_ below to be replaced by the real user name, fcl sucks
 #------------------------------------------------------------------------------
 BEGIN_PROLOG
   bgHitFiles                  : @nil
@@ -14,9 +14,9 @@ END_PROLOG
 
 #include "Stntuple/test/stnmaker.fcl"
 
-services.TFileService.fileName            : "nts._USER_.read_reco_stnmaker.xxx.000001.root"
-physics.filters.InitStntuple.histFileName : "nts._USER_.read_reco_stnmaker.xxx.000001.stn"
-outputs.detectorOutput.fileName           : "sim._USER_.read_reco_stnmaker.xxx.000001.art"
+services.TFileService.fileName            : "nts._USER_.flateminus_stn.xxx.000001.root"
+physics.filters.InitStntuple.histFileName : "nts._USER_.flateminus_stn.xxx.000001.stn"
+outputs.detectorOutput.fileName           : "sim._USER_.flateminus_stn.xxx.000001.art"
 #------------------------------------------------------------------------------
 # iclude MVA's
 #------------------------------------------------------------------------------

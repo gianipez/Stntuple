@@ -12,7 +12,7 @@ BEGIN_PROLOG
   PROCESS_NAME @protect_ignore: EMinusGunStnmaker
 END_PROLOG
 
-#include "Stntuple/test/stnmaker.fcl"
+#include "Stntuple/fcl/stnmaker.fcl"
 #------------------------------------------------------------------------------
 # uncomment the next 2 lines if you want the DST (.art) file to be written out
 #-----------------------------------------------------------------------------

@@ -50,6 +50,10 @@ physics.producers.generate                      : { @table::Stntuple.producers.e
 physics.producers.generate.physics.pdgId        : -11
 physics.producers.g4run.physics.physicsListName : "QGSP_BERT"
 #------------------------------------------------------------------------------
+# include MVAs
+#------------------------------------------------------------------------------
+#include "Stntuple/fcl/trk_qual.fcl"
+#------------------------------------------------------------------------------
 # debugging
 #------------------------------------------------------------------------------
 # physics.producers.CalPatRecDem.diagLevel : 1

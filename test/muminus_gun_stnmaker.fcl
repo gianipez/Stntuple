@@ -11,7 +11,7 @@ BEGIN_PROLOG
   PROCESS_NAME @protect_ignore: MuMinusGunStnmaker
 END_PROLOG
 
-#include "Stntuple/test/stnmaker.fcl"
+#include "Stntuple/fcl/stnmaker.fcl"
 #------------------------------------------------------------------------------
 # generate muons
 #------------------------------------------------------------------------------
