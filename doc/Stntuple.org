@@ -1,3 +1,10 @@
 # documentation - work in progress
 
-* [[file:TGenpBlock.org][TGenpBlock]] : common problems
+* fcl files
+  the table below lists status of validation of various FCL files
+
+
+
+
+* STNTUPLE data blocks 
+* [[file:TGenpBlock.org][TGenpBlock]]: common problems
