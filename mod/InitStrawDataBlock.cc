@@ -96,9 +96,9 @@ Int_t StntupleInitMu2eStrawDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent, in
       art::Ptr<mu2e::SimParticle> const& simptr = step->simParticle(); 
       art::Ptr<mu2e::SimParticle> mother = simptr;
 
-      while (mother->hasParent()) mother = mother->parent();
+      // while (mother->hasParent()) mother = mother->parent();
 
-      sim = mother.operator ->();
+      sim = mother.get();
 
       pdg_id        = simptr->pdgId();
       mother_pdg_id = sim->pdgId();

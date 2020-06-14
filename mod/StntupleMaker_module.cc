@@ -158,11 +158,12 @@ protected:
 //-----------------------------------------------------------------------------
 // cut-type parameters
 //-----------------------------------------------------------------------------
-  GenId                    fGenId       ;  // generated process ID
+  GenId                    fGenId        ;  // generated process ID
   
-  double                   fMinTActive  ;  // start of the active window
-  double                   fMinECrystal ;  // 
-  double                   fMinSimpEnergy; // min energy of a particle stored in SIMP block
+  double                   fMinTActive   ;  // start of the active window
+  double                   fMinECrystal  ;  // 
+  double                   fSimpMinEnergy; // min energy of a particle to be stored in SIMP block
+  double                   fSimpMaxZ     ; // max Z of a particle to be stored in SIMP block
 
   string                   fCutHelixSeedCollTag; // helix collection to cut on
   int                      fMinNHelices    ; // min number of helices (for cosmics)
@@ -172,7 +173,6 @@ protected:
   TNamedHandle*            fDarHandle;
   TNamedHandle*            fKalDiagHandle;
   TNamedHandle*            fTimeOffsetMapsHandle;
-  //  TNamedHandle*            fMinSimpEnergyHandle;
 
   DoubletAmbigResolver*    fDar;
   KalDiag*                 fKalDiag;
@@ -270,7 +270,8 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
 
   , fMinTActive              (PSet.get<double>        ("minTActive"          ))
   , fMinECrystal             (PSet.get<double>        ("minECrystal"         ))
-  , fMinSimpEnergy           (PSet.get<double>        ("minSimpEnergy"       ))
+  , fSimpMinEnergy           (PSet.get<double>        ("simpMinEnergy"       ))
+  , fSimpMaxZ                (PSet.get<double>        ("simpMaxZ"            ))
   , fCutHelixSeedCollTag     (PSet.get<string>        ("cutHelixSeedCollTag" ))
   , fMinNHelices             (PSet.get<int>           ("minNHelices"         ))
 {
@@ -535,7 +536,8 @@ void StntupleMaker::beginJob() {
     fInitSimpBlock->SetStrawHitsCollTag(fStrawHitsCollTag);
     fInitSimpBlock->SetStrawDigiMCCollTag(fStrawDigiMCCollTag);
     fInitSimpBlock->SetVDHitsCollTag(fVDHitsCollTag);
-    fInitSimpBlock->SetMinSimpEnergy(fMinSimpEnergy);
+    fInitSimpBlock->SetMinSimpEnergy(fSimpMinEnergy);
+    fInitSimpBlock->SetMaxZ         (fSimpMaxZ);
     fInitSimpBlock->SetGenProcessID (fGenId.id());
 
     AddDataBlock("SimpBlock","TSimpBlock",fInitSimpBlock,buffer_size,split_mode,compression_level);
