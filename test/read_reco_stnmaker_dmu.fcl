@@ -9,6 +9,7 @@ BEGIN_PROLOG
   INPUT_MODULE @protect_ignore: RootInput
   TRIGGER_PATH @protect_ignore: p31
   GEN_ID       @protect_ignore: CeEndpoint
+  TIME_MAPS    @protect_ignore: [ "compressDigiMCs:protonTimeMap", "compressDigiMCs:muonTimeMap" ]
   bgHitFiles                  : @nil
 END_PROLOG
 

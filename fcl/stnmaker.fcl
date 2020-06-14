@@ -40,7 +40,8 @@ physics : {
 		 @sequence::Stntuple.stnmaker_De
 		]
 #------------------------------------------------------------------------------
-# reconstruction and stntuple making
+# p2  : electron reconstruction and stntuple making
+# p21 : the same as p2, but no CRV reco
 #------------------------------------------------------------------------------
     p2       : [ @sequence::Stntuple.trk_hit_reco   ,
 		 @sequence::Stntuple.cal_reco       ,
@@ -48,27 +49,28 @@ physics : {
 		 @sequence::Stntuple.crv_reco       ,
 		 @sequence::Stntuple.stnmaker_De
 		]
-#------------------------------------------------------------------------------
-# reconstruction and stntuple making, no CRV reco
-#------------------------------------------------------------------------------
+
     p21      : [ @sequence::Stntuple.trk_hit_reco   ,
 		 @sequence::Stntuple.cal_reco       ,
 		 @sequence::Stntuple.reco_De        ,
 		 @sequence::Stntuple.stnmaker_De
 		]
 #------------------------------------------------------------------------------
-# OBSOLETE: old reco path: TrkPatRec and CalPatRec fully separated
+# p3  : muon reconstruction and stntuple making
+# p31 : the same as p3, but no CRV reco
 #------------------------------------------------------------------------------
-#    p3       : [ @sequence::Stntuple.gen_g4_time_map ,
-#		 @sequence::Stntuple.digis           ,
-#		 @sequence::Stntuple.trk_hit_reco    ,
-#		 @sequence::Stntuple.cal_reco        ,
-#		 @sequence::Stntuple.tpr_reco_dem    ,
-#		 @sequence::Stntuple.cpr_reco_dem    ,
-#		 @sequence::Stntuple.mpr_reco_dem    ,
-#		 @sequence::Stntuple.crv_reco        ,
-#		 @sequence::Stntuple.stnmaker_tcm_dem
-#		]
+    p3       : [ @sequence::Stntuple.trk_hit_reco    ,
+		 @sequence::Stntuple.cal_reco        ,
+		 @sequence::Stntuple.reco_Dmu        ,
+		 @sequence::Stntuple.crv_reco        ,
+		 @sequence::Stntuple.stnmaker_Dmu
+		]
+
+    p31      : [ @sequence::Stntuple.trk_hit_reco    ,
+		 @sequence::Stntuple.cal_reco        ,
+		 @sequence::Stntuple.reco_Dmu        ,
+		 @sequence::Stntuple.stnmaker_Dmu
+		]
 #------------------------------------------------------------------------------
 # read, reconstruct, run event display
 #------------------------------------------------------------------------------

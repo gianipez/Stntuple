@@ -46,7 +46,7 @@ StntupleMakerTemplate : { module_type:StntupleMaker
     makeGenp             : 1
     makeHelices          : 0
     makePid              : 1
-    makeSimp             : 1  # 0: dont write; 1:save all; 2:save primary only
+    makeSimp             : 1  # 0: dont write
     makeStepPointMC      : 1
     makeStrawData        : 0
     makeTracks           : 1
@@ -74,8 +74,14 @@ StntupleMakerTemplate : { module_type:StntupleMaker
 #------------------------------------------------------------------------------
     strawHitsCollTag     : "makeSH"
     strawDigiMCCollTag   : "compressDigiMCs"                     # was "makeSD"
+#------------------------------------------------------------------------------
+# TSimpBlock initialization parameters
+#------------------------------------------------------------------------------
     simpCollTag          : "compressDigiMCs"                     # was "g4run" before
     vdHitsCollTag        : "compressDigiMCs:virtualdetector"     # was "g4run" before
+    simpMinEnergy        : 0.0      # MeV , by default, store all
+    simpMaxZ             : 11800.0  # mm  , by default, do no store calorimeter SimParticles
+
     genpCollTag          : "compressDigiMCs"                     # save signal-only: "generate" 
     genId                : @local::GEN_ID                        # by default, store all
     
@@ -102,9 +108,8 @@ StntupleMakerTemplate : { module_type:StntupleMaker
     trkExtrapol          : TrkExtrapol
     trkCalMatch          : CaloMatching
 
-    minTActive           : 0.     # ns
-    minECrystal          : 1.0    # MeV
-    minSimpEnergy        : 0.0    # MeV , by default, store all
+    minTActive           : 0.       # ns
+    minECrystal          : 1.0      # MeV
 #------------------------------------------------------------------------------
 # this is the default for Stage1 simulation
 #------------------------------------------------------------------------------
