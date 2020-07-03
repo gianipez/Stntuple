@@ -474,6 +474,10 @@ void StntupleMaker::beginJob() {
 
     for (int i=0; i<nb; i++) {
       const char*    block_name = fHelixBlockName[i].data();
+//-----------------------------------------------------------------------------
+// empty data block name is just a place holder, skip such
+//-----------------------------------------------------------------------------
+      if (block_name[0] == 0x0)                             continue;
       TStnDataBlock* db         = AddDataBlock(block_name, 
 					       "TStnHelixBlock",
 					       StntupleInitMu2eHelixBlock,
@@ -481,8 +485,8 @@ void StntupleMaker::beginJob() {
 					       split_mode,
 					       compression_level);
       if (db) {
-	db->AddCollName("mu2e::HelixSeedCollection"  , fHelixCollTag[i].data()      );
-	db->AddCollName("mu2e::StrawDigiMCCollection",fStrawDigiMCCollTag.data()   );
+	db->AddCollName("mu2e::HelixSeedCollection"  , fHelixCollTag[i].data()   );
+	db->AddCollName("mu2e::StrawDigiMCCollection",fStrawDigiMCCollTag.data() );
 //-----------------------------------------------------------------------------
 // for links: time cluster block not defined/saved for merged helix collection - 
 // shall we save it?
@@ -515,6 +519,8 @@ void StntupleMaker::beginJob() {
 
     for (int i=0; i<nblocks; i++) {
       const char* block_name  = fPidBlockName[i].data();
+      if (block_name[0] == 0x0)                             continue;
+
       TStnDataBlock* db = AddDataBlock(block_name,
 				       "TStnPidBlock",
 				       StntupleInitMu2ePidBlock,
@@ -591,6 +597,7 @@ void StntupleMaker::beginJob() {
 
     for (int i=0; i<nblocks; i++) {
       const char* block_name = fTimeClusterBlockName[i].data();
+      if (block_name[0] == 0x0)                             continue;
       TStnDataBlock* db   = AddDataBlock(block_name, 
 					 "TStnTimeClusterBlock",
 					 StntupleInitMu2eTimeClusterBlock,
