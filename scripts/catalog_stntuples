@@ -366,7 +366,7 @@ fileset_catalog.close();
 #-----------------------------------------------------------------------
 # installation, if requested
 #-----------------------------------------------------------------------
-if ($install != '') then
+if ($install) then
   cdir = $install+'/'+$book+'/'+$dataset
   rc   = `mkdir -p #{cdir}`
   rc   = `mv #{fileset_catalog_fn} #{cdir}/AAA_CATALOG.html`
