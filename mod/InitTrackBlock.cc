@@ -232,7 +232,7 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 
   char   cmbh_module_label[100], cmbh_description[100];
   char   sdmc_module_label[100], sdmc_description[100];
-  char   stmc_module_label[100], stmc_description[100];
+  //  char   stmc_module_label[100], stmc_description[100];
   char   calo_module_label[100], calo_description[100];
   char   pidp_module_label[100], pidp_description[100];
   char   spmc_module_label[100], spmc_description[100];
@@ -288,8 +288,8 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
   data->GetModuleLabel("mu2e::ComboHitCollection",cmbh_module_label);
   data->GetDescription("mu2e::ComboHitCollection",cmbh_description );
   
-  data->GetModuleLabel("mu2e::PtrStepPointMCVectorCollection",stmc_module_label);
-  data->GetDescription("mu2e::PtrStepPointMCVectorCollection",stmc_description );
+  // data->GetModuleLabel("mu2e::PtrStepPointMCVectorCollection",stmc_module_label);
+  // data->GetDescription("mu2e::PtrStepPointMCVectorCollection",stmc_description );
 
   data->GetModuleLabel("mu2e::StrawDigiMCCollection",sdmc_module_label);
   data->GetDescription("mu2e::StrawDigiMCCollection",sdmc_description );
@@ -330,11 +330,11 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
   }
 
 
-  art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandle;
-  if (stmc_module_label[0] != 0) {
-    if (stmc_description[0] == 0) AnEvent->getByLabel(stmc_module_label,mcptrHandle);
-    else                       AnEvent->getByLabel(stmc_module_label,stmc_description, mcptrHandle);
-  }
+  // art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandle;
+  // if (stmc_module_label[0] != 0) {
+  //   if (stmc_description[0] == 0) AnEvent->getByLabel(stmc_module_label,mcptrHandle);
+  //   else                       AnEvent->getByLabel(stmc_module_label,stmc_description, mcptrHandle);
+  // }
 
   art::Handle<mu2e::ComboHitCollection> shHandle;
   if (cmbh_module_label[0] != 0) {
