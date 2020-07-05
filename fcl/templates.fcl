@@ -6,7 +6,7 @@
 #
 # reconstruction and analysis modules
 #------------------------------------------------------------------------------
-#include "su2020/common/templates.fcl"
+#include "JobConfig/common/su2020_templates.fcl"
 
 Stntuple : { @table::Stntuple             # defined in Stntuple/fcl/prolog.fcl
 
