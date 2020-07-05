@@ -626,11 +626,12 @@ void StntupleMaker::beginJob() {
 					    split_mode,
 					    compression_level);
       if (db) {
-	db->AddCollName("mu2e::HelixSeedCollection"  ,fHelixCollTag[i].data()    );
+	db->AddCollName("mu2e::HelixSeedCollection"  ,fHelixCollTag    [i].data());
 	db->AddCollName("mu2e::KalSeedCollection"    ,fTrackSeedCollTag[i].data());
-	db->AddCollName("HelixBlockName"             ,fHelixBlockName[i].data()  );
+	db->AddCollName("HelixBlockName"             ,fHelixBlockName  [i].data());
 	db->AddCollName("mu2e::StrawDigiMCCollection",fStrawDigiMCCollTag.data() );
 	db->AddCollName("mu2e::ComboHitCollection"   ,fStrawHitsCollTag.data()   );
+
 	SetResolveLinksMethod(block_name,StntupleInitMu2eTrackSeedBlockLinks);	
       }
     }
