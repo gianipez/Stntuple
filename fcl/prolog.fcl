@@ -491,8 +491,9 @@ Stntuple : {
 
 	    timeClusterBlockName       : [ "TimeClusterBlockDe"  , "TimeClusterBlockDmu"]
   	    timeClusterCollTag         : [ "MHFinderDe"          , "MHFinderDmu"        ]
+# there should be one-to-one mapping between track seed and helix blocks
 	    helixBlockName             : [ "HelixBlock"          , "HelixBlockDmu"      ]
-	    helixCollTag               : [ "MHFinderDe"          , "MHFinderTprDe"      ]
+	    helixCollTag               : [ "MHFinderDe"          , "MHFinderDmu"        ]
 
 	    trackSeedBlockName         : [ "TrackSeedBlock"      , "TrackSeedBlockDmu"  ]
 	    trackSeedCollTag           : [ "KSFDeMH"             , "KSFDmuMH"           ]
