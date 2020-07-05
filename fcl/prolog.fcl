@@ -188,6 +188,8 @@ MuHitDisplay: { module_type:MuHitDisplay                 # the class name;
 Stntuple : {
     producers : {}  # empty table
 
+    analyzers : {}  # empty table
+
     filters : {
 	InitStntuple : { module_type:InitStntuple
 	    @table::StntupleModuleFclDefaults                   # defaults of the base class
@@ -479,6 +481,39 @@ Stntuple : {
 	    pidBlockName               : [ ""                    , "PidBlock"           ]
 	    pidCollTag                 : [       ""              , "AvikPIDNew"         ]
 	}
+
+	StntupleMakerDeDmu : { @table::StntupleMakerTemplate 
+	    makePid                    : 0
+	    makeTrackSeeds             : 1
+	    makeTimeClusters           : 1
+	    makeHelices                : 1
+	    makeStepPointMC            : 1
+
+	    timeClusterBlockName       : [ "TimeClusterBlockDe"  , "TimeClusterBlockDmu"]
+  	    timeClusterCollTag         : [ "MHFinderDe"          , "MHFinderDmu"        ]
+	    helixBlockName             : [ "HelixBlock"          , "HelixBlockDmu"      ]
+	    helixCollTag               : [ "MHFinderDe"          , "MHFinderTprDe"      ]
+
+	    trackSeedBlockName         : [ "TrackSeedBlock"      , "TrackSeedBlockDmu"  ]
+	    trackSeedCollTag           : [ "KSFDeMH"             , "KSFDmuMH"           ]
+
+	    trackBlockName             : [ "TrackBlockPar"       , "TrackBlockDar"      , "TrackBlockParDmu"     , "TrackBlockDarDmu"     ]
+	    trackCollTag               : [ "KFFDeMHPar"          , "KFFDeMHDar"         , "KFFDmuMHPar"          , "KFFDmuMHDar"          ]
+	    trackTsBlockName           : [ "TrackSeedBlock"      , "TrackSeedBlock"     , "TrackSeedBlockDmu"    , "TrackSeedBlockDmu"    ]
+	    trackTsCollTag             : [ "KSFDeMH"             , "KSFDeMH"            , "KSFDmuMH"             , "KSFDmuMH"             ]
+
+	    tciCollTag                 : [ "TciDeMHPar"          , "TciDeMHDar"         , "TciDmuMHPar"          , "TciDmuMHDar"          ]
+	    tcmCollTag                 : [ "TcmDeMHPar"          , "TcmDeMHDar"         , "TcmDmuMHPar"          , "TcmDmuMHDar"          ]
+	    trkQualCollTag             : [ "TrkQualDeMHPar"      , "TrkQualDeMHDar"     , "TrkQualDmuMHPar"      , "TrkQualDmuMHDar"      ]
+	    trackSHBlockName           : [ "TrackHitBlockPar"    , "TrackHitBlockDar"   , "TrackHitBlockParDmu"  , "TrackHitBlockDarDmu"  ]
+	    pidBlockName               : [ ""                    , "PidBlock"           , ""                     , "PidBlockDmu"          ]
+	    pidCollTag                 : [ ""                    , "AvikPIDNew"         , ""                     , "AvikPIDNewDmu"        ]
+
+	    spmcBlockName              : [ "SpmcBlockVDet"                   ]
+	    spmcCollTag                : [ "compressDigiMCs:virtualdetector" ]
+	    statusG4Tag                : [ "g4run"                           ]
+	}
+
 #------------------------------------------------------------------------------
 # trigger studies
 #------------------------------------------------------------------------------
@@ -612,6 +647,6 @@ Stntuple.stnmaker_trig    : [ InitStntuple, StntupleMakerTrig,                  
 #------------------------------------------------------------------------------
 Stntuple.stnmaker_De      : [ InitStntuple, StntupleMakerDe  ,                  FillStntuple ]
 Stntuple.stnmaker_Dmu     : [ InitStntuple, StntupleMakerDmu ,                  FillStntuple ]
-Stntuple.stnmaker_De_Dmu  : [ InitStntuple, StntupleMakerDe, StntupleMakerDmu , FillStntuple ]
+Stntuple.stnmaker_De_Dmu  : [ InitStntuple, StntupleMakerDeDmu,                 FillStntuple ]
 
 END_PROLOG

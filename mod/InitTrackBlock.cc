@@ -381,20 +381,11 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
     bc = (const mu2e::Calorimeter*) h.get();
   }
 
-
-  // int xxx(0);
-
   for (int itrk=0; itrk<ntrk; itrk++) {
     track          = data->NewTrack();
     art::Handle<mu2e::KalRepCollection> handle;
     art::Ptr<KalRep> const& ptr = list_of_kreps->at(itrk);
     AnEvent->get(ptr.id(), handle);
-    // fhicl::ParameterSet const& pset = handle.provenance()->parameterSet();
-    // string module_type = pset.get<std::string>("module_type");
-    // if      (module_type == "CalTrkFit"  ) xxx =  1;
-    // else if (module_type == "KalFinalFit") xxx =  0;
-    // else                                   xxx = -1;
-
 //-----------------------------------------------------------------------------
 // track-only-based particle ID, initialization ahs already happened in the constructor
 //-----------------------------------------------------------------------------
@@ -413,10 +404,6 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
     if (list_of_algs) {
       alg_id = &list_of_algs->at(itrk);
       mask   = alg_id->BestID() | (alg_id->AlgMask() << 16);
-
-      // if (xxx != alg_id->BestID()) { 
-      // 	printf (" *** InitTrackBlock ERROR: we are in alg_id trouble: xxx = %2i best = %i\n",xxx,alg_id->BestID());
-      // }
     }
 
     track->fAlgorithmID = mask;
@@ -440,18 +427,6 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 	last = hit;
       }
     }
-
-    // if (dynamic_cast<const mu2e::TrkStrawHit*> (first) == nullptr) { 
-    //   printf("ERROR in StntupleInitTrackBlock for Event: %8i : first hit is not a mu2e::TrkStrawHit, test fltLen*\n",ev_number);
-    //   double len = first->fltLen();
-    //   printf("first->fltLen() = %10.3f\n",len);
-    // }
-
-    // if (dynamic_cast<const mu2e::TrkStrawHit*> (last ) == nullptr) { 
-    //   printf("ERROR in StntupleInitTrackBlock for Event: %8i : last  hit is not a mu2e::TrkStrawHit, test fltLen*\n",ev_number);
-    //   double len = last->fltLen();
-    //   printf("last->fltLen() = %10.3f\n",len);
-    // }
 
     if (first) h1_fltlen = first->fltLen();
     if (last ) hn_fltlen = last->fltLen();
