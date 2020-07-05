@@ -84,27 +84,17 @@ int  StntupleInitMu2eHelixBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
   cb->GetModuleLabel("mu2e::HelixSeedCollection", helix_module_label);
   cb->GetDescription("mu2e::HelixSeedCollection", helix_description );
 
-  //  art::Handle<mu2e::AlgorithmIDCollection> aidcH;
   art::Handle<mu2e::HelixSeedCollection>   hch;
-  // const fhicl::ParameterSet*               pset(nullptr);
-  //  std::string                              module_type;
 
   if (helix_module_label[0] != 0) {
     if (helix_description[0] == 0) {
-      //      Evt->getByLabel(helix_module_label,aidcH);
       Evt->getByLabel(helix_module_label,hch);
     }
     else {
-      //      Evt->getByLabel(helix_module_label,helix_description,aidcH);
       Evt->getByLabel(helix_module_label,helix_description,hch);
     }
 
-    // if (aidcH.isValid()) aid_coll = (mu2e::AlgorithmIDCollection*) aidcH.product();
-    // if (hch.isValid()) { 
-    //   list_of_helices = hch.product();
-    //   pset            = &hch.provenance()->parameterSet();
-    //   module_type     = pset->get<std::string>("module_type");
-    //    }
+    if (hch.isValid()) list_of_helices = hch.product();
   }
 
   const mu2e::StrawDigiMCCollection* mcdigis(0);
