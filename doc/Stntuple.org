@@ -1,6 +1,6 @@
 # documentation - work in progress
 
-* fcl files                          
+* fcl files                                                
   the table below lists status of validation of various FCL files
 
 |-----------------------------------------+----------------------+----------|
@@ -10,8 +10,8 @@
 |-----------------------------------------+----------------------+----------|
 | Stntuple/fcl/primary/flateminus_stn.fcl | <2020-05-31 Sun>     |          |
 
-* stnana - STNTUPLE analysis framework
-* STNTUPLE user analysis packages
+* [[file:stnana.org][stnana]] - STNTUPLE analysis framework
+* STNTUPLE user analysis packages                          
 
  - User analysis code is organized in packages, similar to Offline packages. 
    STNTUPLE analysis packages are specified in the .rootrc file , their list 

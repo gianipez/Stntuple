@@ -1,0 +1,59 @@
+* STNANA: Stntuple interactive framework
+
+** To run an interactive STNTUPLE analysis job you need to open a ROOT session, and load and run the stnana.C script:
+
+#+begin_src C
+root [0] .L stnana.C 
+root [1] stnana("file","nts.user.eminus_gun_stnmaker.xxx.000001.stn","","","val_stn(11,28)/save=eminus_gun_stnmaker.hist",100)
+#+end_src
+
+stnana provides an interface to STNTUPLE event loop utility. The call parameters specify
+
+- dataset to run on: first 4 parameters, see explanation below
+- configuration of the analysis job: which analysis code should be executed within the event loop
+- number of events to run on
+
+The example above runs the analysis job configured by ROOT function val_stn(11,28) on first 100 events 
+of the file nts.user.eminus_gun_stnmaker.xxx.000001.stn. '11' and '28' are the call parameters passed to val_stn().
+
+The following example
+
+#+begin_src C
+      root[1] stnana("detsim","cnvs0202","","","track_ana()",10000)
+#+end_src
+
+runs the track_ana() function on first 10000 events of the dataset defined by the book="detsim" and dsname="cnvs0202".
+
+WARNING: track_ana() function is not defined by default, don't try to call it.
+
+** stnana call format
+
+#+begin_src C
+void stnana (TString Book, TString Dataset, TString Fileset = "", TString File = "",TString JobName="lumi()",int NEvents = 0) ; 
+#+end_src
+
+First 4 parameters describe the input dataset: (read more on STNTUPLE datasets)
+
+- Book : the book name, used in cataloging. One can have several books and have datasets 
+  with the same name defined in different books
+  - book = "file" : run on a single file, in this case the 2nd parameter (dataset) is the file name
+
+- Dataset : dataset name
+
+- Fileset : fileset name. Fileset is a part of a dataset, several files located in the same directory. 
+  Division of a dataset into filesets is purely logical. A fileset combines several files, such that it is 
+  convenient to run a single analysis job on a fileset
+
+- File : file name
+
+- JobName : name of the configuration script, for example, "catalog()". JobName may include options 
+  separated by '/', i.e. "catalog()/save=a.hist/grl=none,101,500"
+
+  - allowed options:
+
+  - /save : defines name of the histogram file. When the job finishes, the histograms will be saved 
+    into a file with the predefined name. The file name can't include '/' characters, so the file has 
+    to be stored in the current directory
+  - /grl : name of the good run list (Mu2e doesn't have such yet)
+
+- NEvents : number of events to be processed. If NEvents<=0 (default): process all events ​
