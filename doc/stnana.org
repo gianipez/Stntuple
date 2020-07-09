@@ -1,6 +1,6 @@
-* STNANA: Stntuple interactive framework
+* STNANA: Stntuple interactive analysis framework
 
-** To run an interactive STNTUPLE analysis job you need to open a ROOT session, and load and run the stnana.C script:
+*To run an interactive STNTUPLE analysis job you need to open a ROOT session, and load and run the stnana.C script*:
 
 #+begin_src C
 root [0] .L stnana.C 
