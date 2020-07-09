@@ -16,14 +16,15 @@
  - User analysis code is organized in packages, similar to Offline packages. 
    STNTUPLE analysis packages are specified in the .rootrc file , their list 
    can be extended with '+' lines as shown below
-
- #------------------------------------------------------------------------------ 
- # stnana packages, this example adds a single package - 'murat' - to the list of analysis packages
- #------------------------------------------------------------------------------ 
+#+begin_src org
+#------------------------------------------------------------------------------ 
+# stnana packages, this example adds a single package - 'murat' - to the list of analysis packages
+#------------------------------------------------------------------------------ 
  Stnana.Package                Stntuple 
  +Stnana.Package               murat  
  +Stnana.Package               muminus_eplus
  +Stnana.Package               piplusenu
+#+end_src
 
  An analysis package pkg (replace $pkg with the name of your choice) should have 
  the following subdirectories:
