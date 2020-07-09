@@ -36,13 +36,16 @@
  - see an example in Stntuple/ana/scripts/load_stnana_scripts_Stntuple.C
  - make your own loader script, following the template
 
- Each loaded script may define one or multiple job configurations - see Stntuple/ana/scripts/validation.C
+ - each loaded script defines one or multiple job configurations - see example in 
+   [[file:../ana/scripts/validation.C][Stntuple/ana/scripts/validation.C]]
 
- file $pkg/ana/scripts/modules.hh declares user analysis modules
+ - file $pkg/ana/scripts/modules.hh declares user analysis modules - see example in 
+   [[file:../ana/scripts/modules.hh][Stntuple/ana/scripts/modules.hh]] (the namespace there doesn't have to be replicated)
 
- - Stntuple/ana/scripts directory contains examples of the analysis job configuration scripts
- - Stntuple/scripts/.rootrc file shows how to configure Unix.*.Root.MacroPath - path for loading ROOT macros
- - Internal structure of a user analysis package[edit]
+ - [[file:../ana/scripts][Stntuple/ana/scripts]] directory contains examples of the analysis job configuration scripts
+ - [[file:../scripts/.rootrc][Stntuple/scripts/.rootrc]] file shows how to configure Unix.*.Root.MacroPath - path for loading ROOT macros
+
+ - Internal structure of a user analysis package
 
 #+begin_src org
   /mu2e/app/users/murat/mdc2018_prof/MyAna/ana:
