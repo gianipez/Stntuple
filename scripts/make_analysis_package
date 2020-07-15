@@ -2,8 +2,8 @@
 #------------------------------------------------------------------------------
 # create a prototype of a user analysis package by cloning and renaming templates 
 # from Stntuple/ana 
-# call:  
-#           make_analysis_package [pkg]
+# call format:  
+#                 make_analysis_package [pkg]
 #
 #  pkg : name of the user analysis package to be created, default:"MyAna"
 #------------------------------------------------------------------------------
