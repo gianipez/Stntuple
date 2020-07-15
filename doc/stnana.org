@@ -1,6 +1,6 @@
 * STNANA: Stntuple interactive analysis framework     
 
-** running interactively:  
+** running interactively:                
 
 to run an interactive STNTUPLE analysis job, open a ROOT session, load and run [[file:../scripts/stnana.C][Stntuple/scripts/stnana.C]] :
 
@@ -28,7 +28,7 @@ runs the track_ana() function on first 10000 events of the dataset defined by th
 
 WARNING: track_ana() function is not defined by default, don't try to call it.
 
-** stnana call format      
+** stnana call format                    
 
 #+begin_src C
 void stnana (TString Book, TString Dataset, TString Fileset = "", TString File = "",TString JobName="lumi()",int NEvents = 0) ; 
@@ -124,10 +124,10 @@ root [4] stntuple::m_val->fTrackBlock->NTracks()
 (int) 0
 #+end_src
 
+** Printing STNTUPLE data blocks         
 
-** Printing STNTUPLE data blocks
-
-Each STNTUPLE data block has ::Print(..) function which could be called from the compiled code as well as interactively. One can process an event and print is data directly from the ROOT prompt.
+Each STNTUPLE data block has ::Print(..) function which could be called from the compiled code as well as interactively. 
+One can process an event and print is data directly from the ROOT prompt.
 Here is an example of how to print a track block:
 
 #+begin_src

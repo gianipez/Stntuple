@@ -47,18 +47,9 @@ END_PROLOG
 outputs      : { @table::su2020.outputs   }
 
 Stntuple.physics : {
-    producers: { 
-#	@table::su2020.producers
-	@table::Stntuple.producers 
-    }
-    filters  : { 
-#	@table::su2020.filters   
-	@table::Stntuple.filters   
-    }
-    analyzers: { 
-#	@table::su2020.analyzers 
-	@table::Stntuple.analyzers 
-    }
+    producers: { @table::Stntuple.producers }
+    filters  : { @table::Stntuple.filters   }
+    analyzers: { @table::Stntuple.analyzers }
 #------------------------------------------------------------------------------
 # add trigger paths 
 #------------------------------------------------------------------------------
@@ -75,7 +66,7 @@ Stntuple.physics : {
 #------------------------------------------------------------------------------
 # output file names 
 #------------------------------------------------------------------------------
-services.TFileService.fileName            : "nts._USER_.stnmaker.xxx.000000_00000000.root"
+services.TFileService.fileName            : "nts..stnmaker.xxx.000000_00000000.root"
 outputs.defaultOutput.fileName            : "sim._USER_.stnmaker.xxx.000001.art"
 #------------------------------------------------------------------------------
 # uncomment to avoid waisting time on the initialization of detailed neutron 
