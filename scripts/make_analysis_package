@@ -123,7 +123,7 @@ for i in ${!scripts[@]} ; do
 	sed "s/stntuple:://g" >| $f2
 done
 #------------------------------------------------------------------------------
-# finally, append .rootrc and rootlogon.C
+# modify .rootrc and rootlogon.C to include new package
 #------------------------------------------------------------------------------
 if [ ".`cat .rootrc | grep +Stnana.Package | grep $pkg`" == '.' ] ; then 
   echo "+Stnana.Package                $pkg" >> .rootrc
@@ -134,3 +134,8 @@ cat rootlogon.C | awk -v pkg=$pkg '
   else print $0; 
   endif 
 }' >| rootlogon.C.new ; mv  rootlogon.C.new rootlogon.C
+#------------------------------------------------------------------------------
+# finally, run build_config
+#------------------------------------------------------------------------------
+source $pkg/scripts/build_config
+echo package $pkg successfully created
