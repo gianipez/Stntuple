@@ -843,10 +843,10 @@ int THttpCatalogServer::InitDataset(TStnDataset*     Dataset,
 // at Fermilab, need VOMS certificate: kinit->kx509->voms-proxy-init
 // xroot://fndca1.fnal.gov/pnfs/fnal.gov/usr/mu2e/scratch/users/murat/
 //-----------------------------------------------------------------------------
-	    TString s    = srv->GetFile();
-	    TString path = s(0,s.Length());
+ 	    TString s    = srv->GetFile();
+ 	    TString path = s(0,s.Length());
 
-####	    //	    sprintf(full_name,"root://%s//%s/%s",hostname,path.Data(),fn);
+// ####	    //	    sprintf(full_name,"root://%s//%s/%s",hostname,path.Data(),fn);
 	    sprintf(full_name,"//%s/%s",path.Data(),fn);
 	  }
 	  else {
