@@ -161,7 +161,7 @@ Stntuple.paths : {
     stntuple_p31 : [ @sequence::su2020.trk_hit_reco    ,
 		     @sequence::su2020.calo_reco       ,
 		     @sequence::su2020.trk_reco_dmu    ,
-		     @sequence::su2020.post_reco_dmu   ,    # track-calo matching and PID
+		     @sequence::Stntuple.post_reco_dmu ,    # track-calo matching and PID
 		     @sequence::Stntuple.stnmaker_Dmu         # stntupling
 		    ]
 #------------------------------------------------------------------------------
