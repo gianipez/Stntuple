@@ -12,7 +12,7 @@
 #
 # examples:
 # ---------
-# cdfopr/scripts/catalog_stntuples -h diskpool -d jbmmgh -b ewk/wtaunu -p jbmm
+# cdfopr/scripts/catalog_stntuples -h diskpool -d jbmmgh -b ewk/wtaunu -p jbmm --install /web/sites/mu2e.fnal.gov/htdocs/atwork/computing/Stntuple/cafdfc
 #
 # if pattern is not defined, it is assumed to coinside with the dataset name
 # $nev_fileset: number of events per fileset, default:200000
@@ -38,7 +38,7 @@ opts = GetoptLong.new(
   [ "--dataset"        , "-d",        GetoptLong::REQUIRED_ARGUMENT ],
   [ "--Directory"      , "-D",        GetoptLong::REQUIRED_ARGUMENT ],
   [ "--help"           , "-h",        GetoptLong::NO_ARGUMENT       ],
-  [ "--install"        , "-i",        GetoptLong::REQUIRED_ARGUMENT ],
+  [ "--install"        , "-i",        GetoptLong::OPTIONAL_ARGUMENT ],
   [ "--host"           , "-H",        GetoptLong::REQUIRED_ARGUMENT ],
   [ "--pattern"        , "-p",        GetoptLong::REQUIRED_ARGUMENT ],
   [ "--mode"           , "-m",        GetoptLong::REQUIRED_ARGUMENT ],
@@ -62,7 +62,8 @@ $nev_fileset     = 200000
 $offline_version = "vX_X_X"
 $dataset         = ""
 $verbose         = 0
-$install         = nil                       # catalog area
+$install         = nil                       # flag
+$install_dir     = '/web/sites/mu2e.fnal.gov/htdocs/atwork/computing/Stntuple/cafdfc'  # default directory
 $pid             = Process.pid.to_s();
 $protocol        = 'rsh'
 $diskpool        = nil;
@@ -83,7 +84,11 @@ opts.each do |opt, arg|
   elsif (opt == "--Directory"      ) ; $directory       = arg 
   elsif (opt == "--help"           ) ; usage()    
   elsif (opt == "--host"           ) ; $host            = arg 
-  elsif (opt == "--install"        ) ; $install         = arg 
+  elsif (opt == "--install"        ) then
+    $install     = 1
+    if (arg != "") then 
+      $install_dir = arg; 
+    end
   elsif (opt == "--mode"           ) ; $mode            = arg 
   elsif (opt == "--nev_fileset"    ) ; $nev_fileset     = arg.to_i 
   elsif (opt == "--offline_version") ; $offline_version = arg
@@ -261,7 +266,7 @@ a  = file.readlines().sort{|x,y|
 }
 
 a.each { |line|
-  puts"line = #{line}"
+  # puts"line = #{line}"
   xx = line[0,1]
   if ( xx != "#" ) 
     a = line.split();
@@ -394,7 +399,7 @@ fileset_catalog.close();
 # installation, if requested
 #-----------------------------------------------------------------------
 if ($install) then
-  cdir = $install+'/'+$book+'/'+$dataset
+  cdir = $install_dir+'/'+$book+'/'+$dataset
   rc   = `mkdir -p #{cdir}`
   rc   = `mv #{fileset_catalog_fn} #{cdir}/AAA_CATALOG.html`
   rc   = `mv #{file_catalog_fn} #{cdir}/AAA_FILES.txt`
