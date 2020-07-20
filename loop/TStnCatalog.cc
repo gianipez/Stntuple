@@ -47,7 +47,7 @@ TStnCatalog::TStnCatalog(const char* name) :
   cmd += " | sed 's/#.*//' | awk '{if(NF>1) print $0}'"; //remove comments
   cmd += " | awk '{if ($3 == \"""\""") {x=\"txt\"} else {x=$3} {print $2 \" \" x}}' | uniq";
 
-  printf("cmd = %s\n",cmd.Data());
+  //  printf("cmd = %s\n",cmd.Data());
   f    = gSystem->OpenPipe(cmd.Data(),"r");
   fListOfCatalogServers = new TObjArray();
   TStnCatalogServer* server;
