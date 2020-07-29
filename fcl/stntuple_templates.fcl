@@ -116,6 +116,8 @@ Stntuple.post_reco_dmu   : [ @sequence::TrackCaloMatching.matching_DmuMHPar  ,
 #------------------------------------------------------------------------------
 Stntuple.paths : {
     @table::su2020.paths
+
+    stntuple_p0  : [ @sequence::Stntuple.stnmaker ]
 #------------------------------------------------------------------------------
 # MC generation, G4, reconstruction and stntuple making (e- and e+ included)
 #------------------------------------------------------------------------------

@@ -8,9 +8,9 @@ BEGIN_PROLOG
 # they can be redefined 
 # see example of redefining GEN_ID in Stntuple/test/read_reco_stnmaker.fcl
 #------------------------------------------------------------------------------
-TIME_OFFSET_MAPS : { inputs : [ "compressDigiMCs:protonTimeMap", "compressDigiMCs:muonTimeMap" ] }
-GEN_ID           : "unknown"     # by default, store all particles
-
+TIME_OFFSET_MAPS    : { inputs : [ "compressDigiMCs:protonTimeMap", "compressDigiMCs:muonTimeMap" ] }
+GEN_ID              : "unknown"                                   # by default, store all particles
+STN_VDHITS_COLL_TAG : "compressDigiMCs:virtualdetector"
 
 StntupleModuleFclDefaults : {
     interactiveMode : 0
@@ -76,11 +76,13 @@ StntupleMakerTemplate : { module_type:StntupleMaker
     strawDigiMCCollTag   : "compressDigiMCs"                     # was "makeSD"
 #------------------------------------------------------------------------------
 # TSimpBlock initialization parameters
+# vdHitsCollTag is used by TStnTrackBlock and TSimpBlock, hits on virtual detectors 
+# are stored in SpmcBlockVDet block, so all three have to be consistent
 #------------------------------------------------------------------------------
     simpCollTag          : "compressDigiMCs"                     # was "g4run" before
-    vdHitsCollTag        : "compressDigiMCs:virtualdetector"     # was "g4run" before
-    simpMinEnergy        : 0.0      # MeV , by default, store all
-    simpMaxZ             : 11800.0  # mm  , by default, do no store calorimeter SimParticles
+    vdHitsCollTag        : @local::STN_VDHITS_COLL_TAG           # was "g4run" before
+    simpMinEnergy        : 0.0                                   # MeV , by default, store all
+    simpMaxZ             : 11800.0                               # mm  , by default, do no store calorimeter SimParticles
 
     genpCollTag          : "compressDigiMCs"                     # save signal-only: "generate" 
     genId                : @local::GEN_ID                        # by default, store all
@@ -114,7 +116,7 @@ StntupleMakerTemplate : { module_type:StntupleMaker
 # this is the default for Stage1 simulation
 #------------------------------------------------------------------------------
     spmcBlockName        : [ "SpmcBlockVDet"                  , "SpmcBlock"             ]
-    spmcCollTag          : [ "compressDigiMCs:virtualdetector", "muonBeamFilter:mubeam" ]
+    spmcCollTag          : [ @local::STN_VDHITS_COLL_TAG      , "muonBeamFilter:mubeam" ]
     statusG4Tag          : [ "g4run"                          , "g4run"                 ]
 #------------------------------------------------------------------------------
 # filtering
