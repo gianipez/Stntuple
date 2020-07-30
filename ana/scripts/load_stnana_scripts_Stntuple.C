@@ -15,6 +15,7 @@ int load_stnana_scripts_Stntuple() {
   char        macro[200];
 
   const char* script[] = { 
+    "calorimeter.C", "PWD",
     "catalog.C"    , "PWD",
     "crv.C"        , "PWD",
     "debug.C"      , "PWD",
