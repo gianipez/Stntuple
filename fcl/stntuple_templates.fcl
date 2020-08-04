@@ -118,6 +118,8 @@ Stntuple.paths : {
     @table::su2020.paths
 #------------------------------------------------------------------------------
 # MC generation, G4, reconstruction and stntuple making (e- and e+ included)
+# p1  : generate, simulate ... 
+# p01 : read    , simulate ... 
 #------------------------------------------------------------------------------
     stntuple_p1  : [ @sequence::su2020.gen_g4_time_map,
 		     @sequence::su2020.digis          ,
@@ -125,7 +127,16 @@ Stntuple.paths : {
 		     @sequence::su2020.calo_reco      ,
 		     @sequence::su2020.trk_reco_de    ,
 		     @sequence::su2020.crv_reco       ,
-		     @sequence::Stntuple.post_reco_de   , 
+		     @sequence::Stntuple.post_reco_de , 
+		     @sequence::Stntuple.stnmaker_De
+		    ]
+    stntuple_p01 : [ g4run, detectorFilter, @sequence::CommonMC.DigiSim,   # @sequence::Stntuple.gen_g4_time_map,
+		     @sequence::su2020.digis          ,
+		     @sequence::su2020.trk_hit_reco   ,
+		     @sequence::su2020.calo_reco      ,
+		     @sequence::su2020.trk_reco_de    ,
+		     @sequence::su2020.crv_reco       ,
+		     @sequence::Stntuple.post_reco_de , 
 		     @sequence::Stntuple.stnmaker_De
 		    ]
 #------------------------------------------------------------------------------
