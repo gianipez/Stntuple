@@ -19,6 +19,7 @@ class TStnValidationModule;
 namespace stntuple {
   TStnDebugModule*            m_dbg   = nullptr;
   TDFCModule*                 m_dfc   = nullptr;
+  TStnClusterAnaModule*       m_cls   = nullptr;
   TStnCrvAnaModule*           m_crv   = nullptr;
   TStnLumiMonModule*          m_lum   = nullptr;
   TStnEventDisplayModule*     m_evd   = nullptr;

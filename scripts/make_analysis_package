@@ -29,9 +29,9 @@ declare -a modules
 declare -a scripts
 declare -a m_names
 
-modules=(GenAna   TrackAna TriggerAna CrvAna HelixAna TrackSeedAna)
-scripts=(genp.C   trk.C    trigger.C  crv.C  helix.C  trs.C       )
-m_names=(m_gen    m_trk    m_trig     m_crv  m_hel    m_trs       )
+modules=(GenAna   TrackAna TriggerAna CrvAna HelixAna TrackSeedAna ClusterAna)
+scripts=(genp.C   trk.C    trigger.C  crv.C  helix.C  trs.C        calorimeter.C)
+m_names=(m_gen    m_trk    m_trig     m_crv  m_hel    m_trs        m_cls)
 
 for m in ${modules[@]}; do
     m1=Stn$m ; # echo m1 = $m1
@@ -77,12 +77,13 @@ cat << "EOF"                                      >> $pkg/ana/scripts/load_stnan
   char        macro[200];
 
   const char* script[] = { 
+    "calorimeter.C", "PWD",
+    "crv.C"        , "PWD",
     "genp.C"       , "PWD",
-    "trk.C"       , "PWD",
-    "trs.C"       , "PWD",
-    "trigger.C"   , "PWD",
-    "helix.C"     , "PWD",
-    "crv.C"       , "PWD",
+    "trk.C"        , "PWD",
+    "trs.C"        , "PWD",
+    "trigger.C"    , "PWD",
+    "helix.C"      , "PWD",
     0 
   };
 
