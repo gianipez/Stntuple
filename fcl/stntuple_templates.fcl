@@ -178,9 +178,9 @@ Stntuple.paths : {
 		     @sequence::Stntuple.stnmaker_Dmu         # stntupling
 		    ]
 #------------------------------------------------------------------------------
-# p40 : (e+mu) reconstruction and stntuple making
+# p40 : full downstream (e+mu) reconstruction and stntuple making
 # p41 : the same as p40, but no CRV reco
-    # p42 : same as p41, but w/o Andy's reco_compression
+# p42 : same as p41, but w/o reco_compression which crashes on muon decays in flight
 #------------------------------------------------------------------------------
     stntuple_p40 : [ @sequence::su2020.trk_hit_reco   ,
 		     @sequence::su2020.calo_reco      ,
@@ -191,8 +191,7 @@ Stntuple.paths : {
 		     @sequence::su2020.reco_compression ,
 		     @sequence::Stntuple.post_reco_de   ,    # track-calo matching and electron PID
 		     @sequence::Stntuple.post_reco_dmu  ,    # track-calo matching and muo PID
-		     @sequence::Stntuple.stnmaker_De    ,
-		     @sequence::Stntuple.stnmaker_Dmu    
+		     @sequence::Stntuple.stnmaker_De_Dmu
 		   ]
 
     stntuple_p41 : [ @sequence::su2020.trk_hit_reco     ,
