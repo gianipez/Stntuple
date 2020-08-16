@@ -27,15 +27,15 @@
  +Stnana.Package               piplusenu
 #+end_src
 
- An analysis package pkg (replace $pkg with the name of your choice) should have 
+ An analysis package *pkg* (replace *$pkg* with the name of your choice) should have 
  the following subdirectories:
 
- - $pkg/ana           : contains analysis code (analysis modules) 
- - $pkg/ana/scripts   : contains job configuration scripts 
- - $pkg/ana/scripts directory should contain a script named load_stnana_scripts_$pkg.C, 
-   which at startup loads in ​​analysis job configuration scripts.
- - see an example in Stntuple/ana/scripts/load_stnana_scripts_Stntuple.C
- - make your own loader script, following the template
+ - *$pkg/ana*           : contains analysis code (analysis modules) 
+ - *$pkg/ana/scripts*   : contains job configuration scripts 
+ - *$pkg/ana/scripts* directory should contain a script named *load_stnana_scripts_$pkg.C*, 
+   which at startup loads in ​​analysis job configuration scripts. See an example 
+   in [[file:../ana/scripts/load_stnana_scripts_Stntuple.C][Stntuple/ana/scripts/load_stnana_scripts_Stntuple.C]], make your own loader script, 
+   following the template
 
  - each loaded script defines one or multiple job configurations - see example in 
    [[file:../ana/scripts/validation.C][Stntuple/ana/scripts/validation.C]]
@@ -44,6 +44,7 @@
    [[file:../ana/scripts/modules.hh][Stntuple/ana/scripts/modules.hh]] (the namespace there doesn't have to be replicated)
 
  - [[file:../ana/scripts][Stntuple/ana/scripts]] directory contains examples of the analysis job configuration scripts
+
  - [[file:../scripts/.rootrc][Stntuple/scripts/.rootrc]] file shows how to configure Unix.*.Root.MacroPath - path for loading ROOT macros
 
  - Internal structure of a user analysis package
@@ -80,13 +81,4 @@
   -rw-r--r-- 1 murat mu2e  674 Jun 22 18:32 trk.C
 #+end_src
 
-* *------------------------------------------------------------------------------*
-* STNTUPLE DATA BLOCKS 
-* *------------------------------------------------------------------------------*
-* [[file:TGenpBlock.org][TGenpBlock]]: common problems
-* TSimpBlock:                        
-
-  fGenProcessID : if not specified, store only SimParticles corresponding to the 
-                  generator-level particles, do not store the ones produced by Geant
-  fMaxZ         : by default, do not store particles produced in the calorimeter
-  fMinEnergy    : energy threshold for particles to be stored
+* [[file:data_blocks.org][Stntuple data blocks]]
