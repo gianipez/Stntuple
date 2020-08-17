@@ -182,10 +182,10 @@ Stntuple.paths : {
 # p41 : the same as p40, but no CRV reco
 # p42 : same as p41, but w/o reco_compression which crashes on muon decays in flight
 #------------------------------------------------------------------------------
-    stntuple_p40 : [ @sequence::su2020.trk_hit_reco   ,
-		     @sequence::su2020.calo_reco      ,
-		     @sequence::su2020.trk_reco_de    ,
-		     @sequence::su2020.trk_reco_dmu   ,
+    stntuple_p40 : [ @sequence::su2020.trk_hit_reco     ,
+		     @sequence::su2020.calo_reco        ,
+		     @sequence::su2020.trk_reco_de      ,
+		     @sequence::su2020.trk_reco_dmu     ,
 		     @sequence::su2020.trk_reco_sep     ,    # Andy
 		     @sequence::su2020.crv_reco         ,    # Andy
 		     @sequence::su2020.reco_compression ,
