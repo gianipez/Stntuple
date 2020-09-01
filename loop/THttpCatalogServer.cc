@@ -377,8 +377,8 @@ int THttpCatalogServer::GetDatasetKey(const char* Book,
 }
 
 //_____________________________________________________________________________
-int THttpCatalogServer::InitChain(TChain*     Chain, 
-				 const char* Book,
+int THttpCatalogServer::InitChain(TChain*    Chain  , 
+				 const char* Book   ,
 				 const char* Dataset, 
 				 const char* Fileset,
 				 const char* File   ,
@@ -397,7 +397,7 @@ int THttpCatalogServer::InitChain(TChain*     Chain,
 //-----------------------------------------------------------------------------
 int THttpCatalogServer::InitDataset(TStnDataset*     Dataset,
 				    const char*      Book   ,
-				    const char*      Name   ,
+				    const char*      Dsid   ,
 				    const char*      Fileset,
 				    const char*      File   ,
 				    Int_t            MinRun ,
@@ -419,7 +419,7 @@ int THttpCatalogServer::InitDataset(TStnDataset*     Dataset,
 //-----------------------------------------------------------------------------
   if (strcmp(Book,"") != 0) {
     // inititalize dataset, otherwise assume it to be already initialized
-    int rc = Dataset->Init(Book,Name,MinRun,MaxRun,Type);
+    int rc = Dataset->Init(Book,Dsid,MinRun,MaxRun,Type);
     if (rc < 0) return rc;
   }
 
