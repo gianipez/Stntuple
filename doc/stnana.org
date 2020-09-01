@@ -37,8 +37,12 @@ void stnana (TString Book, TString Dataset, TString Fileset = "", TString File =
 First 4 parameters in a call to *stnana* describe the input dataset: (read more on STNTUPLE datasets)
 
 - *Book* : the book name, used in cataloging. One can have several books and have datasets 
-  with the same name defined in different books
+           with the same name defined in different books
+
+  special values:
+
   - book = "file" : run on a single file, in this case the 2nd parameter (dataset) is the file name
+  - book = "dir"  : use all files from directory *Fileset* with the name pattern *File*
 
 - *Dataset* : the dataset name
 
