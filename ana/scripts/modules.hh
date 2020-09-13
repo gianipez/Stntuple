@@ -11,6 +11,7 @@ class TStnGeneratorModule;		// event generator base class
 class TStnHelixAnaModule;
 class TStnLumiMonModule;
 class TStnPhotosAnaModule;
+class TStnSpmcAnaModule;
 class TStnTrackAnaModule;
 class TStnTrackSeedAnaModule;
 class TStnTriggerAnaModule;
@@ -27,6 +28,7 @@ namespace stntuple {
   TStnGeneratorModule*        m_stg   = nullptr;
   TStnHelixAnaModule*         m_hel   = nullptr;
   TStnPhotosAnaModule*        m_pho   = nullptr;
+  TStnSpmcAnaModule*          m_spmc  = nullptr;
   TStnTrackAnaModule*         m_trk   = nullptr;
   TStnTrackSeedAnaModule*     m_trs   = nullptr;
   TStnTriggerAnaModule*       m_trig  = nullptr;
