@@ -2,9 +2,10 @@
 #------------------------------------------------------------------------------
 # make STNTUPLE from the output of the stage 4 simulation  - 
 # step point MC's in the detector volume
+# flash S5 uses only the proton time map 
 #------------------------------------------------------------------------------
 BEGIN_PROLOG
-  TIME_MAPS        @protect_ignore: [ ]
+  TIME_MAPS        @protect_ignore: [ "protonTimeMap" ]
   TIME_OFFSET_MAPS @protect_ignore: { inputs : @local::TIME_MAPS }
   TRIGGER_PATHS    @protect_ignore: [ stntuple_p0 ]
 END_PROLOG
