@@ -123,7 +123,9 @@ Stntuple.paths : {
 # p1  : generate, simulate ... 
 # p01 : read    , simulate ... 
 #------------------------------------------------------------------------------
-    stntuple_p1  : [ @sequence::su2020.gen_g4_time_map,
+    stntuple_p1  : [ # @sequence::su2020.gen_g4_time_map,
+		     @sequence::su2020.gen_g4         , 
+		     @sequence::CommonMC.DigiSim      ,  # time maps + window marker
 		     @sequence::su2020.digis          ,
 		     @sequence::su2020.trk_hit_reco   ,
 		     @sequence::su2020.calo_reco      ,
@@ -132,7 +134,8 @@ Stntuple.paths : {
 		     @sequence::Stntuple.post_reco_de , 
 		     @sequence::Stntuple.stnmaker_De
 		    ]
-    stntuple_p01 : [ g4run, detectorFilter, @sequence::CommonMC.DigiSim,   # @sequence::Stntuple.gen_g4_time_map,
+    stntuple_p01 : [ g4run, filterStepPointMomentum   , 
+		     @sequence::CommonMC.DigiSim      ,  #  time maps + window marker
 		     @sequence::su2020.digis          ,
 		     @sequence::su2020.trk_hit_reco   ,
 		     @sequence::su2020.calo_reco      ,
