@@ -73,9 +73,11 @@ void TStnSpmcAnaModule::BookEventHistograms(EventHist_t* Hist, const char* Folde
   //  char name [200];
   //  char title[200];
 
-  HBook1F(Hist->fEventNumber,"evtnum",Form("%s: Event Number",Folder), 1000, 0,  1.e4,Folder);
-  HBook1F(Hist->fRunNumber  ,"runnum",Form("%s: Run   Number",Folder), 1000, 0,  1.e6,Folder);
-  HBook1F(Hist->fNSimp      ,"nsimp" ,Form("%s: N(sim particles)",Folder), 200, 0,  200,Folder);
+  HBook1F(Hist->fEventNumber,"evtnum"  ,Form("%s: Event Number"        ,Folder), 1000, 0,  1.e4,Folder);
+  HBook1F(Hist->fRunNumber  ,"runnum"  ,Form("%s: Run   Number"        ,Folder), 1000, 0,  1.e6,Folder);
+  HBook1F(Hist->fNSimp      ,"nsimp"   ,Form("%s: N(sim particles)"    ,Folder),  200, 0,  200 ,Folder);
+  HBook1F(Hist->fNSpmc      ,"nspmc"   ,Form("%s: N(step points)"      ,Folder),  500, 0,  500 ,Folder);
+  HBook1F(Hist->fNSpmc150   ,"nspmc150",Form("%s: N(step points T>150)",Folder),  200, 0,  200 ,Folder);
 }
 
 //-----------------------------------------------------------------------------
@@ -174,7 +176,7 @@ void TStnSpmcAnaModule::BookHistograms() {
   for (int i=0; i<kNEventHistSets; i++) book_event_histset[i] = 0;
 
   book_event_histset[ 0] = 1;		// all events
-  book_event_histset[ 1] = 0;		// just an example - this should be the default
+  book_event_histset[ 1] = 1;		// events with at least one T>150 step point
 
   for (int i=0; i<kNEventHistSets; i++) {
     if (book_event_histset[i] != 0) {
@@ -303,6 +305,8 @@ void TStnSpmcAnaModule::FillEventHistograms(EventHist_t* Hist) {
   Hist->fEventNumber->Fill(event_number);
   Hist->fRunNumber->Fill(run_number);
   Hist->fNSimp->Fill(fNSimp);
+  Hist->fNSpmc->Fill(fNSpmc);
+  Hist->fNSpmc150->Fill(fNSpmc150);
 }
 
 //-----------------------------------------------------------------------------
@@ -460,7 +464,7 @@ int TStnSpmcAnaModule::BeginJob() {
 //-----------------------------------------------------------------------------
 // register data blocks 'SpmcBlock' or 'StepPointMCBlock' (old)
 //-----------------------------------------------------------------------------
-  RegisterDataBlock(fSpmcBlockName.Data(),"TStepPointMCBlock",&fStepPointMCBlock);
+  RegisterDataBlock(fSpmcBlockName.Data(),"TStepPointMCBlock",&fSpmcBlock);
   RegisterDataBlock("SimpBlock"          ,"TSimpBlock"       ,&fSimpBlock       );
   RegisterDataBlock(fVDetBlockName.Data(),"TStepPointMCBlock",&fVDetBlock       );
 //-----------------------------------------------------------------------------
@@ -552,9 +556,9 @@ void TStnSpmcAnaModule::FillHistograms() {
   TStepPointMC* spmc;
   SpmcData_t    spmc_data;
 
-  int nsteps = fStepPointMCBlock->NStepPoints();
+  int nsteps = fSpmcBlock->NStepPoints();
   for (int i=0; i<nsteps; i++) {
-    spmc             = fStepPointMCBlock->StepPointMC(i);
+    spmc             = fSpmcBlock->StepPointMC(i);
     //    float p          = spmc->Mom()->Mag();
     //    float t          = spmc->Time();
     int pdg_code     = spmc->PDGCode();
@@ -635,7 +639,7 @@ int TStnSpmcAnaModule::BeginRun() {
 //_____________________________________________________________________________
 int TStnSpmcAnaModule::Event(int ientry) {
 
-  fStepPointMCBlock->GetEntry(ientry);
+  fSpmcBlock->GetEntry(ientry);
   fSimpBlock->GetEntry(ientry);
   fVDetBlock->GetEntry(ientry);
 //-----------------------------------------------------------------------------
@@ -644,11 +648,20 @@ int TStnSpmcAnaModule::Event(int ientry) {
 // if there are several hits, use the first one
 //-----------------------------------------------------------------------------
   fNVDetHits = fVDetBlock->NStepPoints();
-
-  fNSimp = fSimpBlock->NParticles();
+  fNSimp     = fSimpBlock->NParticles();
 
   fPbarCosThPV = -2.;
   fPbarMomPV   = -1.;
+//-----------------------------------------------------------------------------
+// number of step points with T>150
+//-----------------------------------------------------------------------------
+  fNSpmc     = fSpmcBlock->NStepPoints();
+  fNSpmc150  = 0;
+
+  for (int i=0; i<fNSpmc; i++) {
+    TStepPointMC* spmc = fSpmcBlock->StepPointMC(i);
+    if (spmc->Time() > 150) fNSpmc150++;
+  }
 //-----------------------------------------------------------------------------
 // determine the cross section weight looking at the first particle with the PDG code of an antiproton
 //-----------------------------------------------------------------------------
@@ -707,7 +720,6 @@ int TStnSpmcAnaModule::Event(int ientry) {
       printf(" TStnSpmcAnaModule::Event ERROR: too many SimParticles\n");
     }
   }
-    
 //-----------------------------------------------------------------------------
 // everything is precalculated, fill histograms
 //-----------------------------------------------------------------------------
@@ -752,9 +764,9 @@ void TStnSpmcAnaModule::Debug() {
 // the "STOP" volume, one hit per particle
 //-----------------------------------------------------------------------------
   if (GetDebugBit(6) == 1) {
-    int nsteps = fStepPointMCBlock->NStepPoints();
+    int nsteps = fSpmcBlock->NStepPoints();
     for (int i=0; i<nsteps; i++) {
-      TStepPointMC* spmc = fStepPointMCBlock->StepPointMC(i);
+      TStepPointMC* spmc = fSpmcBlock->StepPointMC(i);
       float p            = spmc->Mom()->Mag();
       float t            = spmc->Time();
       int pdg_code       = spmc->PDGCode();
@@ -765,9 +777,9 @@ void TStnSpmcAnaModule::Debug() {
     }
   }    
   if (GetDebugBit(7) == 1) {
-    int nsteps = fStepPointMCBlock->NStepPoints();
+    int nsteps = fSpmcBlock->NStepPoints();
     for (int i=0; i<nsteps; i++) {
-      TStepPointMC* spmc = fStepPointMCBlock->StepPointMC(i);
+      TStepPointMC* spmc = fSpmcBlock->StepPointMC(i);
       float p            = spmc->Mom()->Mag();
       float t            = spmc->Time();
       int pdg_code       = spmc->PDGCode();

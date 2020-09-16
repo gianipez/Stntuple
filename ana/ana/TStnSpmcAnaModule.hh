@@ -34,6 +34,8 @@ public:
     TH1F*      fRunNumber;
     TH1F*      fEventNumber;
     TH1F*      fNSimp;
+    TH1F*      fNSpmc;
+    TH1F*      fNSpmc150;
   };
 
   struct SimpHist_t : public HistBase_t {
@@ -122,7 +124,7 @@ public:
 public:
 					// pointers to the data blocks used
   TSimpBlock*           fSimpBlock;  
-  TStepPointMCBlock*    fStepPointMCBlock;
+  TStepPointMCBlock*    fSpmcBlock;
   TStepPointMCBlock*    fVDetBlock;
 					// histograms filled
   Hist_t                fHist;
@@ -145,6 +147,9 @@ public:
   int                   fNSimp;
   int                   fStage;
 
+  int                   fNSpmc;
+  int                   fNSpmc150;
+
   SimpData_t            fSimData[kMaxNSimp];
 
   TStntuple*            fStnt;
@@ -153,6 +158,7 @@ public:
 					// antiproton-specific : in the production vertex
   double                fPbarCosThPV;
   double                fPbarMomPV;
+
 //-----------------------------------------------------------------------------
 //  functions
 //-----------------------------------------------------------------------------
