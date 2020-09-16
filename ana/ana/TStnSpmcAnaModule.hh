@@ -20,8 +20,8 @@
 
 #include "Stntuple/alg/TStntuple.hh"
 
-#include "murat/ana/HistBase_t.h"
-#include "murat/ana/SimPar_t.hh"
+// #include "murat/ana/HistBase_t.h"
+// #include "murat/ana/SimPar_t.hh"
 #include "Stntuple/ana/StnVDetData_t.hh"
 
 class TStnSpmcAnaModule: public TStnModule {
@@ -30,7 +30,7 @@ public:
 //-----------------------------------------------------------------------------
 //  histograms
 //-----------------------------------------------------------------------------
-  struct EventHist_t : public HistBase_t {
+  struct EventHist_t { // : public HistBase_t {
     TH1F*      fRunNumber;
     TH1F*      fEventNumber;
     TH1F*      fNSimp;
@@ -38,7 +38,7 @@ public:
     TH1F*      fNSpmc150;
   };
 
-  struct SimpHist_t : public HistBase_t {
+  struct SimpHist_t { // : public HistBase_t {
     TH1F*      fVolumeID;		       //
     TH1F*      fStage;
     TH1F*      fGeneratorID;
@@ -55,7 +55,7 @@ public:
     TH2F*      fCosThVsMomPV;		// for antiprotons
   };
 
-  struct SpmcHist_t : public HistBase_t {
+  struct SpmcHist_t { // : public HistBase_t {
     TH1F*      fVolumeID;		       //
     TH1F*      fGenIndex;		       //
     TH1F*      fSimID;
@@ -79,7 +79,7 @@ public:
     TH2F*      fCosThVsMomPV;		// for antiprotons
   };
 
-  struct VDetHist_t : public HistBase_t {
+  struct VDetHist_t { // : public HistBase_t {
     TH1F*      fIndex   ;
     TH1F*      fPDGCode ;		       //
     TH1F*      fGenCode ;		       // generator code
