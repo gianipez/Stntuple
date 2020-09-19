@@ -1072,8 +1072,9 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
 
       // the following includes the (Calibrated) light-propagation time delay.  It should eventually be put in the reconstruction FIXME!
       // This velocity should come from conditions FIXME!
-      vtch->fTime         = tch->hitT0().t0();			// extrapolated track time, not corrected by _dtOffset
-      vtch->fEnergy       = cl->energyDep(); // cluster energy
+
+      vtch->fTime         = tch->hitT0().t0();          // extrapolated track time, not corrected by _dtOffset
+      vtch->fEnergy       = cl->energyDep();            // cluster energy
       vtch->fXTrk         = pos.x();
       vtch->fYTrk         = pos.y();
       vtch->fZTrk         = pos.z();
@@ -1083,17 +1084,17 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
       vtch->fXCl          = cpos.x();			// cluster coordinates
       vtch->fYCl          = cpos.y();
       vtch->fZCl          = cpos.z();
-      // vtch->fDx           = -9999.;			// TRK-CL
-      // vtch->fDy           = -9999.;			// TRK-CL
-      // vtch->fDz           = -9999.;
-      vtch->fDt           = tch->hitT0().t0() - (tch->time() + std::min((float)200.0,std::max((float)0.0,(float)tch->hitLen()))*0.005 + tch->timeOffset());			// TRK-CL , _corrected_ by _dTOffset (!)
+      vtch->fDx           = vtch->fXTrk - vtch->fXCl;	// TRK-CL
+      vtch->fDy           = vtch->fYTrk - vtch->fYCl;	// TRK-CL
+      vtch->fDz           = vtch->fZTrk - vtch->fZCl;	// TRK-CL
+      vtch->fDt           = tch->hitT0().t0() - tch->time();
       // vtch->fDu           = -9999.;			// ** added in V6
       // vtch->fDv           = -9999.;			// ** added in V6
       // vtch->fChi2Match    = -9999.;		// track-cluster match chi&^2 (coord)
       // vtch->fChi2Time     = -9999.;		// track-cluster match chi&^2 (time)
       vtch->fPath         = tch->hitLen();			// track path in the disk
-      // vtch->fIntDepth     = -9999.;             // ** added in V6 :assumed interaction depth
-      vtch->fDr           = tch->poca().doca();                   // ** added in V10: DR(cluster-track), signed
+      vtch->fIntDepth     = -9999.;                     // ** added in V6 :assumed interaction depth
+      vtch->fDr           = tch->poca().doca();         // distance of closest approach
       // vtch->fSInt         = -9999.;                 // ** added in V10: interaction length, calculated
       vtch->fCluster      = cl;
       //    vtch->fExtrk        = NULL;
