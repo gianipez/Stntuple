@@ -119,8 +119,8 @@ Int_t TStntuple::Init(Int_t RunNumber) {
 //-----------------------------------------------------------------------------
 // parameterization of the DIO spectrum on Al
 // from Czarnecki et al, Phys.Rev.D84:013006,2011 (http://www.arxiv.org/abs/1106.4756)
-// the weights are normalized to the unit integral,
-// full histogram from ConditionsServiceso the histogram used has to 
+// function is normalized to the unit integral,
+// full histogram from ConditionsService, so the histogram used has to 
 // be divided by the number of events and, then, scaled to the expected number 
 // of protons on target
 //-----------------------------------------------------------------------------
@@ -132,7 +132,7 @@ double TStntuple::DioWeightAlFull(double E) {
 //-----------------------------------------------------------------------------
 // parameterization of the DIO spectrum on Al
 // from Czarnecki et al, Phys.Rev.D84:013006,2011 (http://www.arxiv.org/abs/1106.4756)
-// the weights are normalized to the unit integral, so the histogram used has to 
+// function is normalized to the unit integral, so the histogram used has to 
 // be divided by the number of events and, then, scaled to the expected number 
 // of protons on target
 //-----------------------------------------------------------------------------
