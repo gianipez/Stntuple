@@ -51,9 +51,9 @@ physics : {
 # here need MC time offsets
 	    TimeOffsets     : [ @sequence::TIME_MAPS ]
 
-	    spmcBlockName   : [ "SpmcVDetBlock"         , "SpmcTrackerBlock" ]
-	    spmcCollTag     : [ "g4run:virtualdetector" , "g4run:tracker"    ]
-	    statusG4Tag     : [ "g4run:Sim"             , "g4run:Sim"        ]
+	    spmcBlockName   : [ "SpmcVDetBlock"         , "SpmcTrackerBlock" , "SpmcCaloBlock"    , "SpmcCaloROBlock"    ]
+	    spmcCollTag     : [ "g4run:virtualdetector" , "g4run:tracker"    , "g4run:calorimeter", "g4run:calorimeterRO"]
+	    statusG4Tag     : [ "g4run:Sim"             , "g4run:Sim"        , "g4run:Sim"        , "g4run:Sim"          ]
 	}
 
 	InitStntuple : { @table::filters.InitStntuple 
