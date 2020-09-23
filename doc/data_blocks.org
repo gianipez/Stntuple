@@ -1,14 +1,13 @@
 #
 * STNTUPLE data blocks
 * ------------------------------------------------------------------------------
-* [[file:TGenpBlock.org][TGenpBlock]]: common problems
-
-* [[file:../obj/obj/TTrackStrawHitBlock.hh][TTrackStrawHitBlock]] :
+* [[file:TGenpBlock.org][TGenpBlock]]: common problems           
+* [[file:../obj/obj/TTrackStrawHitBlock.hh][TTrackStrawHitBlock]] :                   
 
   this block is used when one wants to store only the track hits (for displaying them, for example),
   and save space by not storing all 3000-4000 hits of the microbunch, otherwise use [[file:../obj/obj/TStrawDataBlock.hh][TStrawDataBlock]]
 
-* [[file:../obj/obj/TSimpBlock.hh][TSimpBlock]]:                        
+* [[file:../obj/obj/TSimpBlock.hh][TSimpBlock]]:                             
 
   fGenProcessID : if not specified, store only SimParticles corresponding to the 
                   generator-level particles, do not store the ones produced by Geant

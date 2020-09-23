@@ -1,7 +1,7 @@
 
 * How to catalog a STNTUPLE dataset
 
-Catalog of a STNTUPLE dataset is created by the [[file:../scripts/catalog_stntuples][Stntuple/scripts/catalog_stntuples]] script, see its source for instructions
+  Catalog of a STNTUPLE dataset is created by the [[file:../scripts/catalog_stntuples][Stntuple/scripts/catalog_stntuples]] script, see its source for instructions
 
 ** Call format:
 
@@ -17,7 +17,7 @@ Parameters:
 -u user  : user name on a remote host to login
 #+end_src
 
-** Cataloging steps:
+** Cataloging steps:   
 
 - move fileset and file catalogs to /web/sites/mu2e.fnal.gov/htdocs/atwork/computing/Stnuple/cafdfc/$BOOK, 
   $BOOK here stands for your book, (coordinate with murat@fnal.gov and gianipez@pi.infn.it)
@@ -44,7 +44,7 @@ for example, /publicweb/m/murat
 
 Use files in /web/sites/mu2e.fnal.gov/htdocs/atwork/computing/Stnuple/cafdfc/mdc2018 as templates
 
-** Notes on the catalog file format:
+** Notes on the catalog file format:                       
 
 #+begin_src
 Lines starting from '#' are comment lines. Exceptions ?? metadata lines (keys are 'NTOTAL:' and such, no space between 'NTOTAL' and ':')
@@ -59,7 +59,7 @@ If a AAA_DESCRIPTION.html file exists in the dataset catalog directory, a link t
 of the book. This allows to have a more detailed description of the dataset available on the web.  The metadata may or may not 
 be present, currently no software tools rely on the metadata presence.
 
-** example 
+** example                                                 
 
 #+begin_src
 # cataloging 
