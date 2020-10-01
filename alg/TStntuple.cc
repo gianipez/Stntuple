@@ -212,8 +212,8 @@ double TStntuple::DioWeightTi(double E) {
 //-----------------------------------------------------------------------------
 // RMC closure approximation weight, 
 // normalization: integral(weight,0,KMax) = KMax, such that the distribution
-// on N events sampled uniformly from 0 to KMax with the given weight has an 
-// integral of N
+// on N events sampled uniformly from 0 to KMax with the given weight 
+// has a sum of weights equal to N
 //-----------------------------------------------------------------------------
 double TStntuple::RMC_ClosureAppxWeight(double K, double KMax) {
   double x, w{20.}, weight{0};
