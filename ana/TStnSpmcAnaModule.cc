@@ -42,8 +42,8 @@ TStnSpmcAnaModule::TStnSpmcAnaModule(const char* name, const char* title):
 {
   // fPdgCode       = 11;
   // fGeneratorCode = 28;
-  fSpmcBlockName = "SpmcBlock";
-  fVDetBlockName = "VDetBlock";
+  fSpmcBlockName = "SpmcTrackerBlock";
+  fVDetBlockName = "SpmcVDetBlock";
 
   fPdgDb = TDatabasePDG::Instance();
 
