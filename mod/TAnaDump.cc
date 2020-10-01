@@ -2409,34 +2409,34 @@ void TAnaDump::printComboHitCollection(const char* StrawHitCollTag   ,
     return;
   }
 
-  art::Handle<mu2e::StrawHitFlagCollection> shfcH;
-  const mu2e::StrawHitFlagCollection*       shfcol(nullptr);
-  fEvent->getByLabel<mu2e::StrawHitFlagCollection>(FlagBgrHitsCollTag,shfcH);
-  if (shfcH.isValid()) shfcol = shfcH.product();
-  else {
-    printf("ERROR: cant find StrawHitFlagCollection tag=%s, avalable collections are:\n",FlagBgrHitsCollTag);
+  // art::Handle<mu2e::StrawHitFlagCollection> shfcH;
+  // const mu2e::StrawHitFlagCollection*       shfcol(nullptr);
+  // fEvent->getByLabel<mu2e::StrawHitFlagCollection>(FlagBgrHitsCollTag,shfcH);
+  // if (shfcH.isValid()) shfcol = shfcH.product();
+  // else {
+  //   printf("ERROR: cant find StrawHitFlagCollection tag=%s, avalable collections are:\n",FlagBgrHitsCollTag);
 
-    vector<art::Handle<mu2e::StrawHitFlagCollection>> list;
-    const art::Provenance*                            prov;
-    const art::Handle<mu2e::StrawHitFlagCollection>*  handle;
+  //   vector<art::Handle<mu2e::StrawHitFlagCollection>> list;
+  //   const art::Provenance*                            prov;
+  //   const art::Handle<mu2e::StrawHitFlagCollection>*  handle;
 
-    art::Selector  selector(art::ProductInstanceNameSelector(""));
-    fEvent->getMany(selector,list);
+  //   art::Selector  selector(art::ProductInstanceNameSelector(""));
+  //   fEvent->getMany(selector,list);
 
-    for (auto it = list.begin(); it != list.end(); it++) {
-      handle = it.operator -> ();
-      if (handle->isValid()) {
-	prov = handle->provenance();
+  //   for (auto it = list.begin(); it != list.end(); it++) {
+  //     handle = it.operator -> ();
+  //     if (handle->isValid()) {
+  // 	prov = handle->provenance();
 	
-	printf("moduleLabel: %-20s, productInstanceName: %-20s, processName:= %-30s\n" ,
-	       prov->moduleLabel().data(),
-	       prov->productInstanceName().data(),
-	       prov->processName().data()
-	       );
-      }
-    }
-    return;
-  }
+  // 	printf("moduleLabel: %-20s, productInstanceName: %-20s, processName:= %-30s\n" ,
+  // 	       prov->moduleLabel().data(),
+  // 	       prov->productInstanceName().data(),
+  // 	       prov->processName().data()
+  // 	       );
+  //     }
+  //   }
+  //   return;
+  //  }
 
   art::Handle<mu2e::StrawDigiMCCollection> mcdH;
   fEvent->getByLabel<mu2e::StrawDigiMCCollection>(StrawDigiMCCollTag,mcdH);
@@ -2473,7 +2473,8 @@ void TAnaDump::printComboHitCollection(const char* StrawHitCollTag   ,
       step = mcdigi->strawGasStep(mu2e::StrawEnd::hv ).get();
     }
 					// assuming it doesn't move beyond 32 bits
-    flags = *((int*) &shfcol->at(i));
+    //    flags = *((int*) &shfcol->at(i));
+    flags = *((int*) &hit->flag());
     if (banner_printed == 0) {
       printComboHit(hit, step, "banner");
       banner_printed = 1;
