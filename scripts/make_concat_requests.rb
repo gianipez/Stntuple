@@ -206,11 +206,11 @@ class ConcatenationRequest
     @tmp_file.puts "// DATASET         #{$dataset}"
     @tmp_file.puts "// BOOK            #{$book}"
     @tmp_file.puts "//----------------------------------------------"
-    @tmp_file.puts "int n_concatenation_jobs() {"
-    @tmp_file.puts "  return __NJOBS__;"
+    @tmp_file.puts "void n_concatenation_jobs(int* N) {"
+    @tmp_file.puts "  *N = __NJOBS__;"
     @tmp_file.puts "}"
     @tmp_file.puts "//----------------------------------------------"
-    @tmp_file.puts "int init_chain(TChain* Chain, int JobNumber, TString& OutputDir, TString& Book, TString& Dataset) {"
+    @tmp_file.puts "int init_chain(TChain* Chain, int JobNumber, TString* OutputDir, TString* Book, TString* Dataset) {"
   end
 
 #------------------------------------------------------------------------------
@@ -263,9 +263,9 @@ class ConcatenationRequest
     @tmp_file.puts "//----------------------------------------------"
     @tmp_file.puts "// total size:     #{@total_size}"
     @tmp_file.puts "//----------------------------------------------"
-    @tmp_file.puts "    Dataset   = \"#{$dataset}\";"
-    @tmp_file.puts "    Book      = \"#{$book}\";"
-    @tmp_file.puts "    OutputDir = \"#{$output_dir}\";"
+    @tmp_file.puts "    *Dataset   = \"#{$dataset}\";"
+    @tmp_file.puts "    *Book      = \"#{$book}\";"
+    @tmp_file.puts "    *OutputDir = \"#{$output_dir}\";"
  
     nf = @list.length;
     for i in 0...nf
