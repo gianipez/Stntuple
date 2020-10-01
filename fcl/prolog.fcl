@@ -571,7 +571,7 @@ Stntuple : {
 #------------------------------------------------------------------------------
 	StntupleMaker4 : { @table::StntupleMakerTemplate 
 	    trackBlockName         : [ "TrackBlockDem"           , "TrackBlockDmm"           , "TrackBlockUep"           , "TrackBlockUmp"            ]
-	    trackSHBlockName       : [ "TrackHitBlockDem"        , "TrackHitBlockDmm"        , "TrackHitBlockUep"        , "TrackHitBlockUmp"         ] 
+	    trackSHBlockName       : [ "TrackHitBlockDem"        , "TrackHitBlockDmm"        , "TrackHitBlockUep"        , "TrackHitBlockUmp"         ]
 	    trackCollTag           : [ "MergePatRecDem"          , "MergePatRecDmm"          , "MergePatRecUep"          , "MergePatRecUmp"           ]
 	    tciCollTag             : [ "TrackCaloIntersectionDem", "TrackCaloIntersectionDmm", "TrackCaloIntersectionUep", "TrackCaloIntersectionUmp" ]
 	    tcmCollTag             : [ "TrackCaloMatchingDem"    , "TrackCaloMatchingDmm"    , "TrackCaloMatchingUep"    , "TrackCaloMatchingUmp"     ]
