@@ -53,6 +53,7 @@
 #include "Stntuple/mod/InitCrvClusterBlock.hh"
 #include "Stntuple/mod/InitGenpBlock.hh"
 #include "Stntuple/mod/InitSimpBlock.hh"
+#include "Stntuple/mod/InitStrawDataBlock.hh"
 #include "Stntuple/mod/InitStepPointMCBlock.hh"
 #include "Stntuple/mod/InitTriggerBlock.hh"
 
@@ -107,7 +108,7 @@ protected:
   string                   fGenpCollTag;
 
   string                   fSimpCollTag;
-  string                   fStrawHitsCollTag;
+  string                   fStrawHitCollTag;
   string                   fStrawDigiMCCollTag;
 
   string                   fCrvRecoPulseCollTag;            //
@@ -151,8 +152,9 @@ protected:
 //-----------------------------------------------------------------------------
   StntupleInitCrvPulseBlock*   fInitCrvPulseBlock;
   StntupleInitCrvClusterBlock* fInitCrvClusterBlock;
-  StntupleInitSimpBlock*       fInitSimpBlock;
   StntupleInitGenpBlock*       fInitGenpBlock;
+  StntupleInitSimpBlock*       fInitSimpBlock;
+  StntupleInitStrawDataBlock*  fInitStrawDataBlock;
   StntupleInitTriggerBlock*    fInitTriggerBlock;
   TObjArray*                   fInitStepPointMCBlock;
 //-----------------------------------------------------------------------------
@@ -232,7 +234,7 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
   
   , fGenpCollTag             (PSet.get<string>        ("genpCollTag"         ))
   , fSimpCollTag             (PSet.get<string>        ("simpCollTag"         ))
-  , fStrawHitsCollTag        (PSet.get<string>        ("strawHitsCollTag"    ))
+  , fStrawHitCollTag         (PSet.get<string>        ("strawHitCollTag"     ))
   , fStrawDigiMCCollTag      (PSet.get<string>        ("strawDigiMCCollTag"  ))
 
   , fCrvRecoPulseCollTag         (PSet.get<string>    ("crvRecoPulseCollTag"         ))
@@ -284,8 +286,10 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
 
   fInitCrvPulseBlock    = nullptr;
   fInitCrvClusterBlock  = nullptr;
-  fInitSimpBlock        = nullptr;
   fInitGenpBlock        = nullptr;
+  fInitSimpBlock        = nullptr;
+  fInitStrawDataBlock   = nullptr;
+
   fInitStepPointMCBlock = new TObjArray();
   fInitStepPointMCBlock->SetOwner(kTRUE);
 //-----------------------------------------------------------------------------
@@ -394,7 +398,7 @@ void StntupleMaker::beginJob() {
 // header block is always there
 //-----------------------------------------------------------------------------
   TStnHeaderBlock* header = (TStnHeaderBlock*) Event()->GetDataBlock("HeaderBlock");
-  header->AddCollName("mu2e::StrawHitCollection",fStrawHitsCollTag.data());
+  header->AddCollName("mu2e::StrawHitCollection",fStrawHitCollTag.data());
 //-----------------------------------------------------------------------------
 // calorimeter hit data
 // this is not RAW hit data yet...
@@ -538,8 +542,9 @@ void StntupleMaker::beginJob() {
 //-----------------------------------------------------------------------------
   if (fMakeSimp) {
     fInitSimpBlock = new StntupleInitSimpBlock();
+
     fInitSimpBlock->SetSimpCollTag(fSimpCollTag);
-    fInitSimpBlock->SetStrawHitsCollTag(fStrawHitsCollTag);
+    fInitSimpBlock->SetStrawHitCollTag(fStrawHitCollTag);
     fInitSimpBlock->SetStrawDigiMCCollTag(fStrawDigiMCCollTag);
     fInitSimpBlock->SetVDHitsCollTag(fVDHitsCollTag);
     fInitSimpBlock->SetMinSimpEnergy(fSimpMinEnergy);
@@ -579,15 +584,12 @@ void StntupleMaker::beginJob() {
 // straw hit data
 //-----------------------------------------------------------------------------
   if (fMakeStrawData) {
-    TStnDataBlock* db = AddDataBlock("StrawDataBlock","TStrawDataBlock",
-				     StntupleInitMu2eStrawDataBlock,
-				     buffer_size,
-				     split_mode,
-				     compression_level);
-    if (db) {
-      db->AddCollName("mu2e::StrawHitCollection"   ,fStrawHitsCollTag.data());
-      db->AddCollName("mu2e::StrawDigiMCCollection",fStrawDigiMCCollTag.data());
-    }
+    fInitStrawDataBlock = new StntupleInitStrawDataBlock();
+
+    fInitStrawDataBlock->SetStrawHitCollTag (fStrawHitCollTag);
+    fInitStrawDataBlock->SetStrawDigiMCCollTag(fStrawDigiMCCollTag);
+
+    AddDataBlock("StrawDataBlock","TStrawDataBlock",fInitStrawDataBlock,buffer_size,split_mode,compression_level);
   }
 //--------------------------------------------------------------------------------
 // time clusters
@@ -630,7 +632,7 @@ void StntupleMaker::beginJob() {
 	db->AddCollName("mu2e::KalSeedCollection"    ,fTrackSeedCollTag[i].data());
 	db->AddCollName("HelixBlockName"             ,fHelixBlockName  [i].data());
 	db->AddCollName("mu2e::StrawDigiMCCollection",fStrawDigiMCCollTag.data() );
-	db->AddCollName("mu2e::ComboHitCollection"   ,fStrawHitsCollTag.data()   );
+	db->AddCollName("mu2e::ComboHitCollection"   ,fStrawHitCollTag.data()    );
 
 	SetResolveLinksMethod(block_name,StntupleInitMu2eTrackSeedBlockLinks);	
       }
@@ -651,8 +653,8 @@ void StntupleMaker::beginJob() {
 					   split_mode,
 					   compression_level);
       if (block) {
-	block->AddCollName("mu2e::KalRepCollection"              ,fTrackCollTag[i].data ());
-	block->AddCollName("mu2e::StrawHitCollection"            ,fStrawHitsCollTag.data());
+	block->AddCollName("mu2e::KalRepCollection"              ,fTrackCollTag[i].data()   );
+	block->AddCollName("mu2e::StrawHitCollection"            ,fStrawHitCollTag.data()   );
 	block->AddCollName("mu2e::StrawDigiMCCollection"         ,fStrawDigiMCCollTag.data());
 	//      SetResolveLinksMethod(block_name,StntupleInitMu2eTrackBlockLinks);
       }
@@ -678,7 +680,7 @@ void StntupleMaker::beginJob() {
 //-----------------------------------------------------------------------------
       if (track_data) {
 	track_data->AddCollName("mu2e::KalRepCollection"              ,fTrackCollTag[i].data()    );
-	track_data->AddCollName("mu2e::ComboHitCollection"            ,fStrawHitsCollTag.data()   );
+	track_data->AddCollName("mu2e::ComboHitCollection"            ,fStrawHitCollTag.data()    );
 	track_data->AddCollName("mu2e::StrawDigiMCCollection"         ,fStrawDigiMCCollTag.data() );
 	track_data->AddCollName("mu2e::TrkCaloIntersectCollection"    ,fTciCollTag [i].data()     );
 	track_data->AddCollName("mu2e::CaloClusterCollection"         ,fCaloClusterMaker.data()   );
