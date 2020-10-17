@@ -53,7 +53,7 @@ StntupleMakerTemplate : { module_type:StntupleMaker
     makeTrackStrawHits   : 0
     makeTrackSeeds       : 0
     makeTimeClusters     : 0
-    makeTrigger          : 0
+    makeTrigger          : 1
     
     KalDiag              : { @table::KalDiagDirect    }
     DoubletAmbigResolver : { @table::TrkReco.DoubletAmbigResolver }
@@ -72,7 +72,7 @@ StntupleMakerTemplate : { module_type:StntupleMaker
 # module is running upstream, simply copies its output
 # 'spmc' stands for 'StepPointMC'
 #------------------------------------------------------------------------------
-    strawHitsCollTag     : "makeSH"
+    strawHitCollTag      : "makeSH"
     strawDigiMCCollTag   : "compressDigiMCs"                     # was "makeSD"
 #------------------------------------------------------------------------------
 # TSimpBlock initialization parameters
@@ -572,7 +572,7 @@ Stntuple : {
 #------------------------------------------------------------------------------
 	StntupleMaker4 : { @table::StntupleMakerTemplate 
 	    trackBlockName         : [ "TrackBlockDem"           , "TrackBlockDmm"           , "TrackBlockUep"           , "TrackBlockUmp"            ]
-	    trackSHBlockName       : [ "TrackHitBlockDem"        , "TrackHitBlockDmm"        , "TrackHitBlockUep"        , "TrackHitBlockUmp"         ] 
+	    trackSHBlockName       : [ "TrackHitBlockDem"        , "TrackHitBlockDmm"        , "TrackHitBlockUep"        , "TrackHitBlockUmp"         ]
 	    trackCollTag           : [ "MergePatRecDem"          , "MergePatRecDmm"          , "MergePatRecUep"          , "MergePatRecUmp"           ]
 	    tciCollTag             : [ "TrackCaloIntersectionDem", "TrackCaloIntersectionDmm", "TrackCaloIntersectionUep", "TrackCaloIntersectionUmp" ]
 	    tcmCollTag             : [ "TrackCaloMatchingDem"    , "TrackCaloMatchingDmm"    , "TrackCaloMatchingUep"    , "TrackCaloMatchingUmp"     ]

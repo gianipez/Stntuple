@@ -71,8 +71,8 @@ int StntupleInitSimpBlock::InitDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent
   // Block->GetDescription("mu2e::StepPointMCCollection",g4_description );
 
   art::Handle<mu2e::StrawHitCollection> shHandle;
-  if (! fStrawHitsCollTag.empty()) {
-    bool ok = AnEvent->getByLabel(fStrawHitsCollTag,shHandle);
+  if (! fStrawHitCollTag.empty()) {
+    bool ok = AnEvent->getByLabel(fStrawHitCollTag,shHandle);
     if (ok) {
       list_of_straw_hits = shHandle.product();
       n_straw_hits      = list_of_straw_hits->size();

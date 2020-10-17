@@ -12,14 +12,8 @@
 
    this step will create a script with N jobs
    root.exe
-   .L Stntuple/ana/scripts/dh.C
    .L pos00s51b0_concat_request.C  // defines init_chain and n_concatenation_jobs
+   .L Stntuple/ana/scripts/dh.C
    dh::concatenate()               // 
 
-
-# cataloging 
-
-dsid=mumi0s51b0; 
- dir=/pnfs/mu2e/persistent/users/mu2epro/su2020/stntuple/$dsid
-catalog_dir=/web/sites/mu2e.fnal.gov/htdocs/atwork/computing/Stntuple/cafdfc
-Stntuple/scripts/catalog_stntuples --access=xrootd -b su2020 -d $dsid -D $dir -p $dsid --install $catalog_dir
+# uploading to SAM

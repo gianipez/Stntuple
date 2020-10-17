@@ -44,7 +44,7 @@ END_PROLOG
 #   #include "JobConfig/common/su2020_templates.fcl"
 #include "Stntuple/fcl/stntuple_templates.fcl"
 
-outputs      : { @table::su2020.outputs   }
+Stntuple.outputs      : { @table::su2020.outputs   }
 
 Stntuple.physics : {
     producers: { @table::Stntuple.producers }
@@ -68,17 +68,6 @@ Stntuple.physics : {
 #------------------------------------------------------------------------------
 services.TFileService.fileName            : "nts..stnmaker.xxx.000000_00000000.root"
 outputs.defaultOutput.fileName            : "sim._USER_.stnmaker.xxx.000001.art"
-#------------------------------------------------------------------------------
-# uncomment to avoid waisting time on the initialization of detailed neutron 
-# cross sections - that shouldn't affect the electron simulation 
-#------------------------------------------------------------------------------
-# physics.producers.g4run.physics.physicsListName : "QGSP_BERT"
-#------------------------------------------------------------------------------
-# debugging
-#------------------------------------------------------------------------------
-# physics.producers.CalPatRecDem.diagLevel : 1
-# physics.producers.CalPatRecDmm.diagLevel : 1
-# physics.producers.AvikPID.debugLevel     : 100
 #------------------------------------------------------------------------------
 # this is it
 #------------------------------------------------------------------------------
