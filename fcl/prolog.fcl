@@ -87,8 +87,8 @@ StntupleMakerTemplate : { module_type:StntupleMaker
     genpCollTag          : "compressDigiMCs"                     # save signal-only: "generate" 
     genId                : @local::GEN_ID                        # by default, store all
     
-    timeClusterBlockName : ["TimeClusterBlock" ]                 # to be renamed, *FIXME*
-    timeClusterCollTag   : ["CalTimePeakFinder"]                 # to be renamed into CalTimeClusterFinder *FIXME* 
+    timeClusterBlockName : ["TimeClusterBlock"   ]               # to be renamed, *FIXME*
+    timeClusterCollTag   : ["TimeClusterFinderDe"]               # 
 
     helixBlockName       : []
     helixCollTag         : []

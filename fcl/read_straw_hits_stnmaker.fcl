@@ -44,4 +44,6 @@ physics.filters.StntupleMakerDe.makeStepPointMC         : 1
 physics.filters.StntupleMakerDe.spmcBlockName           : [ "SpmcBlock"               ]
 physics.filters.StntupleMakerDe.spmcCollTag             : [ "compressDigiMCs:tracker" ]
 physics.filters.StntupleMakerDe.statusG4Tag             : [ "g4run"                   ]
+physics.filters.StntupleMakerDe.makeTimeClusters        : 1
+physics.filters.StntupleMakerDe.timeClusterCollTag      : [ "TimeClusterFinderDe"     ]
 #------------------------------------------------------------------------------

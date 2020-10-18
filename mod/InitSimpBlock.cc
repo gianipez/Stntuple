@@ -65,11 +65,6 @@ int StntupleInitSimpBlock::InitDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent
   TSimpBlock* simp_block = (TSimpBlock*) Block;
   simp_block->Clear();
 
-  //  char   module_name[100], h_name[100];
-
-  // Block->GetModuleLabel("mu2e::StepPointMCCollection",g4_module_label);
-  // Block->GetDescription("mu2e::StepPointMCCollection",g4_description );
-
   art::Handle<mu2e::StrawHitCollection> shHandle;
   if (! fStrawHitCollTag.empty()) {
     bool ok = AnEvent->getByLabel(fStrawHitCollTag,shHandle);

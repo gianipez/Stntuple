@@ -1,6 +1,6 @@
 //-----------------------------------------------------------------------------
 //  Apr 2016 G. Pezzullo: initialization of the MU2E STNTUPLE TimePeak block
-//  2020-10-18 P.M. rewrite 
+//
 //-----------------------------------------------------------------------------
 #include <cstdio>
 #include "TROOT.h"
@@ -17,8 +17,6 @@
 #include "Stntuple/obj/TStnHelix.hh"
 #include "Stntuple/obj/TStnHelixBlock.hh"
 
-#include "Stntuple/mod/InitTimeClusterBlock.hh"
-
 #include "art/Framework/Principal/Handle.h"
 #include "art/Framework/Principal/Event.h"
 
@@ -29,62 +27,62 @@
 
 #include "RecoDataProducts/inc/TimeCluster.hh"
 #include "RecoDataProducts/inc/HelixSeed.hh"
-#include "RecoDataProducts/inc/StrawHitIndex.hh"
-
-#include "MCDataProducts/inc/StrawDigiMCCollection.hh"
-#include "MCDataProducts/inc/StrawGasStep.hh"
-#include "MCDataProducts/inc/SimParticle.hh"
 
 #include "RecoDataProducts/inc/CaloCluster.hh"
 //-----------------------------------------------------------------------------
 // assume that the collection name is set, so we could grab it from the event
 //-----------------------------------------------------------------------------
-int  StntupleInitTimeClusterBlock::InitDataBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
+int  StntupleInitMu2eTimeClusterBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
+
+  const mu2e::TimeClusterCollection*               list_of_tclusters(0);
+
+  char   tcluster_module_label[100], tcluster_description[100]; 
+  char   strh_module_label[100], strh_description[100];
+  char   sdmc_module_label[100], sdmc_description[100];
 
   TStnTimeClusterBlock*         cb = (TStnTimeClusterBlock*) Block;
 
   cb->Clear();
 
-  const mu2e::TimeClusterCollection*        list_of_tclusters(nullptr);
+  cb->GetModuleLabel("mu2e::TimeClusterCollection", tcluster_module_label);
+  cb->GetDescription("mu2e::TimeClusterCollection", tcluster_description );
 
-  art::Handle<mu2e::TimeClusterCollection>  tccH;
-  int                                       ntc(0);
+  data->GetModuleLabel("mu2e::StrawHitCollection",strh_module_label);
+  data->GetDescription("mu2e::StrawHitCollection",strh_description );
 
-  if (! fTimeClusterCollTag.empty()) {
-    bool ok = Evt->getByLabel(fTimeClusterCollTag,tccH);
-    if (ok) {
-      list_of_tclusters = tccH.product();
-      ntc               = list_of_tclusters->size();
-    }
-  }
+  data->GetModuleLabel("mu2e::StrawDigiMCCollection",sdmc_module_label);
+  data->GetDescription("mu2e::StrawDigiMCCollection",sdmc_description );
 
-  art::Handle<mu2e::ComboHitCollection>    chcH;
-  const mu2e::ComboHitCollection*          chc(nullptr);
-
-  if (! fStrawHitCollTag.empty()) {
-    bool ok = Evt->getByLabel(fStrawHitCollTag,chcH);
-    if (ok) {
-      chc          = chcH.product();
-    }
+  art::Handle<mu2e::TimeClusterCollection>               tcluster_handle;
+  if (tcluster_module_label[0] != 0){
+    Evt->getByLabel(tcluster_module_label, tcluster_handle);
+    if (tcluster_handle.isValid()) list_of_tclusters = tcluster_handle.product();
   }
 
   art::Handle<mu2e::StrawDigiMCCollection> sdmccH;
-  const mu2e::StrawDigiMCCollection*       mcdigis(nullptr);
+  const mu2e::StrawDigiMCCollection*       sdmcc(nullptr);
 
-  if (! fStrawDigiMCCollTag.empty()) {
-    bool ok = Evt->getByLabel(fStrawDigiMCCollTag,sdmccH);
-    if (ok) {
-      mcdigis = sdmccH.product();
-    }
+  art::Handle<mu2e::ComboHitCollection>    shcH;
+  const mu2e::ComboHitCollection*          shc(nullptr);
+
+  if (strh_module_label[0] != 0) {
+    if (strh_description[0] == 0) AnEvent->getByLabel(strh_module_label,shcH);
+    else                          AnEvent->getByLabel(strh_module_label,strh_description,shcH);
+
+    if (shcH.isValid()) shc = shcH.product();
+
+    AnEvent->getByLabel(sdmc_module_label,sdmc_description,sdmccH);
+    if (sdmccH.isValid()) sdmcc = sdmccH.product();
   }
 
-  if (chc == nullptr) {
-    printf(" >>> ERROR in StntupleInitMu2eTrackStrawHitBlock: ComboHitColl \"%s\" not found. BAIL OUT\n",fStrawHitCollTag.encode().data());
+  if (shc == nullptr) {
+    printf(" >>> ERROR in StntupleInitMu2eTrackStrawHitBlock: no list_of_hits. BAIL OUT\n");
     return -1;
   }
 
   const mu2e::CaloCluster     *cluster(0);
   const mu2e::TimeCluster     *tmpTCl(0);
+  int                          ntc(0);
  
   if (list_of_tclusters) ntc = list_of_tclusters->size();
   
@@ -125,13 +123,13 @@ int  StntupleInitTimeClusterBlock::InitDataBlock(TStnDataBlock* Block, AbsEvent*
     simm[0] = nullptr;
 
     for (int ih=0; ih<tc->fNComboHits; ih++) {
-      StrawHitIndex hit_index = tmpTCl->hits().at(ih);
-      //      const mu2e::ComboHit* hit = chc->at(shi);
+      StrawHitIndex shi = tmpTCl->hits().at(ih);
+      const mu2e::ComboHit* hit = shc->at(shi);
 
-      std::vector<StrawDigiIndex> shids;
-      chc->fillStrawDigiIndices((const art::Event&) *Evt,hit_index,shids);
+      vector<StrawDigiIndex> shids;
+      chc->fillStrawDigiIndices((const art::Event&) *Event,ih,shids);
       
-      const mu2e::StrawDigiMC* mcdigi = &mcdigis->at(shids[0]);
+      const mu2e::StrawDigiMC* mcdigi = &sdmcc->at(shids[0]);
       
       if (mcdigi->wireEndTime(mu2e::StrawEnd::cal) < mcdigi->wireEndTime(mu2e::StrawEnd::hv)) {
 	step = mcdigi->strawGasStep(mu2e::StrawEnd::cal).get();
@@ -149,7 +147,7 @@ int  StntupleInitTimeClusterBlock::InitDataBlock(TStnDataBlock* Block, AbsEvent*
 //-----------------------------------------------------------------------------
 // accumulate list of sim particle ID's for this time cluster
 //-----------------------------------------------------------------------------
-      int found = 0;
+      found = 0;
       for (int ip=0; ip<np; ip++) {
 	if (id == sim_id[ip]) {
 	  found       = 1;
@@ -180,7 +178,7 @@ int  StntupleInitTimeClusterBlock::InitDataBlock(TStnDataBlock* Block, AbsEvent*
 	ipart  = ip;
       }
     }
-    
+
     if (ipart >= 0) {
       best_sim        = simm    [ipart];
       tc->fSimID      = sim_id  [ipart];
@@ -194,7 +192,7 @@ int  StntupleInitTimeClusterBlock::InitDataBlock(TStnDataBlock* Block, AbsEvent*
 }
 
 //_____________________________________________________________________________
-Int_t StntupleInitTimeClusterBlock::ResolveLinks(TStnDataBlock* Block, AbsEvent* AnEvent, int Mode) 
+Int_t StntupleInitMu2eTimeClusterBlockLinks(TStnDataBlock* Block, AbsEvent* AnEvent, int Mode) 
 {
   // Mu2e version, do nothing
 
@@ -211,7 +209,7 @@ Int_t StntupleInitTimeClusterBlock::ResolveLinks(TStnDataBlock* Block, AbsEvent*
 
   TStnEvent*                 ev;
   TStnTimeClusterBlock*      hb;
-
+             tc;
   TStnHelixBlock*            tsb;
   TStnHelix*                 helixseed;
 

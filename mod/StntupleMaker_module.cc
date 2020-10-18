@@ -56,6 +56,7 @@
 #include "Stntuple/mod/InitStrawDataBlock.hh"
 #include "Stntuple/mod/InitStepPointMCBlock.hh"
 #include "Stntuple/mod/InitTriggerBlock.hh"
+#include "Stntuple/mod/InitTimeClusterBlock.hh"
 
 #include "Stntuple/mod/InitStntupleDataBlocks.hh"
 #include "Stntuple/mod/StntupleUtilities.hh"
@@ -157,6 +158,7 @@ protected:
   StntupleInitStrawDataBlock*  fInitStrawDataBlock;
   StntupleInitTriggerBlock*    fInitTriggerBlock;
   TObjArray*                   fInitStepPointMCBlock;
+  TObjArray*                   fInitTimeClusterBlock;
 //-----------------------------------------------------------------------------
 // cut-type parameters
 //-----------------------------------------------------------------------------
@@ -292,6 +294,9 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
 
   fInitStepPointMCBlock = new TObjArray();
   fInitStepPointMCBlock->SetOwner(kTRUE);
+
+  fInitTimeClusterBlock = new TObjArray();
+  fInitTimeClusterBlock->SetOwner(kTRUE);
 //-----------------------------------------------------------------------------
 // fTimeOffsets is owned by the TAnaDump singleton
 //-----------------------------------------------------------------------------
@@ -599,18 +604,17 @@ void StntupleMaker::beginJob() {
 
     for (int i=0; i<nblocks; i++) {
       const char* block_name = fTimeClusterBlockName[i].data();
-      if (block_name[0] == 0x0)                             continue;
-      TStnDataBlock* db   = AddDataBlock(block_name, 
-					 "TStnTimeClusterBlock",
-					 StntupleInitMu2eTimeClusterBlock,
-					 buffer_size,
-					 split_mode,
-					 compression_level);
-      if (db) {
-	db->AddCollName("mu2e::HelixSeedCollection"  ,fHelixCollTag[i].data()      );
- 	db->AddCollName("mu2e::TimeClusterCollection",fTimeClusterCollTag[i].data());
-	//      SetResolveLinksMethod(block_name,StntupleInitMu2eTimeClusterBlockLinks);
-      }
+
+      StntupleInitTimeClusterBlock* init_block = new StntupleInitTimeClusterBlock();
+      fInitTimeClusterBlock->Add(init_block);
+
+      init_block->SetTimeClusterCollTag(fTimeClusterCollTag[i]);
+      //      init_block->SetHelixCollTag      (fHelixCollTag[i]);
+
+      init_block->SetStrawHitCollTag   (fStrawHitCollTag);
+      init_block->SetStrawDigiMCCollTag(fStrawDigiMCCollTag);
+
+      AddDataBlock(block_name,"TStnTimeClusterBlock",init_block,buffer_size,split_mode,compression_level);
     }
   }
 //--------------------------------------------------------------------------------
