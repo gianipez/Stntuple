@@ -604,6 +604,7 @@ void StntupleMaker::beginJob() {
 
     for (int i=0; i<nblocks; i++) {
       const char* block_name = fTimeClusterBlockName[i].data();
+      if ((block_name[0] == 0) || (block_name[0] == ' ')) continue;
 
       StntupleInitTimeClusterBlock* init_block = new StntupleInitTimeClusterBlock();
       fInitTimeClusterBlock->Add(init_block);

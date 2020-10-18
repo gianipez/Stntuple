@@ -126,44 +126,48 @@ int  StntupleInitTimeClusterBlock::InitDataBlock(TStnDataBlock* Block, AbsEvent*
 
     for (int ih=0; ih<tc->fNComboHits; ih++) {
       StrawHitIndex hit_index = tmpTCl->hits().at(ih);
-      //      const mu2e::ComboHit* hit = chc->at(shi);
+      const mu2e::ComboHit* hit = &chc->at(hit_index);
 
-      std::vector<StrawDigiIndex> shids;
-      chc->fillStrawDigiIndices((const art::Event&) *Evt,hit_index,shids);
+      int nsh = hit->nStrawHits();
+      for (int ish=0; ish<nsh; ish++) {
+	int i2 = hit->index(ish);
+	std::vector<StrawDigiIndex> shids;
+	chc->fillStrawDigiIndices((const art::Event&) *Evt,i2,shids);
       
-      const mu2e::StrawDigiMC* mcdigi = &mcdigis->at(shids[0]);
+	const mu2e::StrawDigiMC* mcdigi = &mcdigis->at(shids[0]);
       
-      if (mcdigi->wireEndTime(mu2e::StrawEnd::cal) < mcdigi->wireEndTime(mu2e::StrawEnd::hv)) {
-	step = mcdigi->strawGasStep(mu2e::StrawEnd::cal).get();
-      }
-      else {
-	step = mcdigi->strawGasStep(mu2e::StrawEnd::hv ).get();
-      }
+	if (mcdigi->wireEndTime(mu2e::StrawEnd::cal) < mcdigi->wireEndTime(mu2e::StrawEnd::hv)) {
+	  step = mcdigi->strawGasStep(mu2e::StrawEnd::cal).get();
+	}
+	else {
+	  step = mcdigi->strawGasStep(mu2e::StrawEnd::hv ).get();
+	}
       
-      int id(-1);
-      const mu2e::SimParticle* sim(nullptr);
-      if (step) {
-	sim = step->simParticle().get(); 
-	id  = sim->id().asInt();
-      }
+	int id(-1);
+	const mu2e::SimParticle* sim(nullptr);
+	if (step) {
+	  sim = step->simParticle().get(); 
+	  id  = sim->id().asInt();
+	}
 //-----------------------------------------------------------------------------
 // accumulate list of sim particle ID's for this time cluster
 //-----------------------------------------------------------------------------
-      int found = 0;
-      for (int ip=0; ip<np; ip++) {
-	if (id == sim_id[ip]) {
-	  found       = 1;
-	  sim_nh[ip] += 1;
-	  break;
+	int found = 0;
+	for (int ip=0; ip<np; ip++) {
+	  if (id == sim_id[ip]) {
+	    found       = 1;
+	    sim_nh[ip] += 1;
+	    break;
+	  }
 	}
-      }
-	    
-      if (sim && (found == 0)) {
-	sim_id  [np] = id;
-	simm    [np] = sim;
-	pdg_code[np] = sim->pdgId();
-	sim_nh  [np] = 1;
-	np          += 1;
+	
+	if (sim && (found == 0)) {
+	  sim_id  [np] = id;
+	  simm    [np] = sim;
+	  pdg_code[np] = sim->pdgId();
+	  sim_nh  [np] = 1;
+	  np          += 1;
+	}
       }
     }
 //-----------------------------------------------------------------------------
