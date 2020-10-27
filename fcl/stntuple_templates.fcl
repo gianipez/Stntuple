@@ -6,8 +6,6 @@
 #
 # reconstruction and analysis modules
 #------------------------------------------------------------------------------
-#include "JobConfig/common/su2020_templates.fcl"
-
 Stntuple : { 
     @table::Stntuple             # defined in Stntuple/fcl/prolog.fcl
 
@@ -66,9 +64,9 @@ Stntuple : {
 # sequences: can't define recursively within one namespace
 # aiming for ultimate unification of the reco sequences, use su2020 sequences as much as possible 
 #------------------------------------------------------------------------------
-Stntuple.gen_g4              : [ @sequence::su2020.gen_g4 ]
+Stntuple.gen_g4              : [ @sequence::su2020.gen_g4           ]
 Stntuple.gen_g4_detFilter    : [ @sequence::su2020.gen_g4_detFilter ]
-Stntuple.gen_g4_time_map     : [ @sequence::su2020.gen_g4_time_map  ]
+Stntuple.gen_g4_pbi          : [ @sequence::su2020.gen_g4_pbi       ]
 
 Stntuple.digis               : [ @sequence::su2020.digis ]
 
@@ -270,7 +268,8 @@ Stntuple.paths : {
 #------------------------------------------------------------------------------
 # p7: MC generation, G4, reconstruction and Event Display
 #------------------------------------------------------------------------------
-    stntuple_p7  : [ @sequence::su2020.gen_g4_time_map,
+    stntuple_p7  : [ @sequence::su2020.gen_g4_pbi     ,
+		     @sequence::CommonMC.DigiSim      ,  # TimeMaps, EWMProducer
 		     @sequence::su2020.digis          ,
 		     @sequence::su2020.trk_hit_reco   ,
 		     @sequence::su2020.calo_reco      ,

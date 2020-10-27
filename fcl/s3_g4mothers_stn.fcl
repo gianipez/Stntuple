@@ -10,7 +10,7 @@ END_PROLOG
 
 #include "Stntuple/fcl/stnmaker.fcl"
 
-process_name : G4S1MubeamStn
+process_name : S2G4MothersStn
 
 source       : { module_type : RootInput fileNames : ["undefined", "undefined"] }
 
@@ -32,16 +32,17 @@ physics : { @table::Stntuple.physics
 	    makeTracks       : 0
 	    makeTrigger      : 0
 
-	    simpCollTag      : "muonBeamFilter"
+	    simpCollTag      : "mothersFilter"
 
-	    spmcBlockName    : ["SpmcBlock"            , "VDetBlock"                      ]
-	    spmcCollTag      : ["muonBeamFilter:mubeam", "muonBeamFilter:virtualdetector" ]
-	    statusG4Tag      : [ "g4run"               , "g4run"                          ]
+	    spmcBlockName    : [ "SpmcBlock"                    , "VDetBlock"                     ]
+	    spmcCollTag      : [ "mothersFilter:DetectorMother" , "mothersFilter:virtualdetector" ]
+	    statusG4Tag      : [ "g4run"                        , "g4run"                         ]
 	}
     }
 
     out           : [ ]                   # [defaultOutput]/[]
-    end_paths     : [ gcl, out ]
+#    end_paths     : [ gcl, out ]
+    end_paths     : [ out ]
 }
 
 #------------------------------------------------------------------------------
@@ -50,6 +51,6 @@ physics : { @table::Stntuple.physics
 # physics.out                               : [ detectorOutput ]
 # outputs.detectorOutput.SelectEvents       : [ path_gen_digi_reco_stn_dem_dmm ]
 
-services.TFileService.fileName            : "nts.${user}.g4s1_mubeam_stn.${project}.${sequencer}.hist"
-physics.filters.InitStntuple.histFileName : "nts.${user}.g4s1_mubeam_stn.${project}.${sequencer}.stn"
-outputs.detectorOutput.fileName           : "sim.${user}.g4s1_mubeam_stn.${project}.${sequencer}.art"
+services.TFileService.fileName            : "nts.user.s1_g4mothers_stn.project.sequencer.hist"
+physics.filters.InitStntuple.histFileName : "nts.user.s1_g4mothers_stn.project.sequencer.stn"
+outputs.detectorOutput.fileName           : "sim.user.s1_g4mothers_stn.project.sequencer.art"

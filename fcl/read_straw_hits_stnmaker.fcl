@@ -7,7 +7,7 @@
 BEGIN_PROLOG
   INPUT_MODULE  @protect_ignore: RootInput
   TRIGGER_PATHS @protect_ignore: [ stntuple_p21 ]
-  GEN_ID        @protect_ignore: CeEndpoint
+  GEN_ID        @protect_ignore: "unknown"          # to store all SimParticles
   TIME_MAPS     @protect_ignore: [ "compressDigiMCs:protonTimeMap", "compressDigiMCs:muonTimeMap" ]
 END_PROLOG
 
@@ -31,13 +31,14 @@ physics      : {
     end_paths     : [ out ]
 }
 
-services.TFileService.fileName            : "nts._USER_.xxx.read_reco_stnmaker_de.000001.root"
-physics.filters.InitStntuple.histFileName : "nts._USER_.xxx.read_reco_stnmaker_de.000001.stn"
-outputs.detectorOutput.fileName           : "sim._USER_.xxx.read_reco_stnmaker_de.000001.art"
+services.TFileService.fileName            : "nts._user_.read_straw_hits.xxx.%06r_%08s.root"
+physics.filters.InitStntuple.histFileName : "nts._user_.read_straw_hits.xxx.%06r_%08s.stn"
+outputs.detectorOutput.fileName           : "sim._user_.read_straw_hits.xxx.%06r_%08s.art"
 #------------------------------------------------------------------------------
 # configure STNTUPLE maker
 #------------------------------------------------------------------------------
 physics.filters.StntupleMakerDe.makeStrawData           : 1
+physics.filters.StntupleMakerDe.makeTrigger             : 0
 physics.filters.StntupleMakerDe.makeCalData             : 1
 physics.filters.StntupleMakerDe.makeSimp                : 1
 physics.filters.StntupleMakerDe.makeStepPointMC         : 1
