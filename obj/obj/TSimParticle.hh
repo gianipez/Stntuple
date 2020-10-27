@@ -54,11 +54,12 @@ public:
 //-----------------------------------------------------------------------------
 // accessors
 //-----------------------------------------------------------------------------
-  int    Number      () const { return fNumber;       }
-  int    NStrawHits  () const { return fNStrawHits;   }
-  int    PDGCode     () const { return fPdgCode;      }
-  int    ParentID    () const { return fParentID;     }
   int    CreationCode() const { return fCreationCode; }
+  int    GeneratorID () const { return fGeneratorID;  }
+  int    NStrawHits  () const { return fNStrawHits;   }
+  int    Number      () const { return fNumber;       }
+  int    ParentID    () const { return fParentID;     }
+  int    PDGCode     () const { return fPdgCode;      }
 
   int    StartVolumeIndex () const { return fStartVolumeIndex; }
   int    EndVolumeIndex   () const { return fEndVolumeIndex  ; }
