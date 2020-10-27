@@ -15,6 +15,7 @@
 #include "TROOT.h"
 #include "TChain.h"
 #include "TInterpreter.h"
+#include "TEnv.h"
 #include "TDirectory.h"
 #include "TSystem.h"
 #include "TBranchElement.h"
@@ -137,7 +138,7 @@ int TStnAna::Init() {
   fEvent               = 0;
   fNProcessedEvents    = 0;
   fNPassedEvents       = 0;
-  fNEventsToReport     = 500;
+  fNEventsToReport     = std::stoi(gEnv->GetValue("Stnana.ReportFrequency","500"));
   fOutputFile          = 0;
   fOutputTree          = 0;
   fOutputModule        = 0;
