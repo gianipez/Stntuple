@@ -53,6 +53,7 @@ public:
 	   int StartVolumeIndex, int EndVolumeIndex, int GeneratorID);
 //-----------------------------------------------------------------------------
 // accessors
+// use TObject::GetUniqueID() to access the TSimParticle ID
 //-----------------------------------------------------------------------------
   int    CreationCode() const { return fCreationCode; }
   int    GeneratorID () const { return fGeneratorID;  }
