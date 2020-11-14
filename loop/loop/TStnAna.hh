@@ -139,7 +139,7 @@ public:
   virtual int Continue        (Int_t Nev   );
   virtual int ProcessRun      (Int_t RunMin, Int_t RunMax = -1);
   virtual int ProcessEntry    (Int_t Ientry);
-  virtual int ProcessEvent    (Int_t Run, Int_t Event, int Subrun = -1);
+  virtual int ProcessEvent    (Int_t Run, int Subrun, Int_t Event);
   virtual int ProcessEventList(TEventList*   EventList);
   virtual int ProcessEventList(Int_t*        EventList);
   virtual int SetSplit        (Int_t ind, Int_t tot); // run part ind of tot
