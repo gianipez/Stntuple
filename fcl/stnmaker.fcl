@@ -12,10 +12,12 @@
 # job configuration file using "@protect_ignore:" FCL construct
 #------------------------------------------------------------------------------
 BEGIN_PROLOG
-  bgHitFiles   : @nil
-  INPUT_MODULE : EmptyEvent
-  TRIGGER_PATH : stntuple_p1
-  PROCESS_NAME : Stnmaker
+  bgHitFiles          : @nil
+  INPUT_MODULE        : EmptyEvent
+  TRIGGER_PATH        : stntuple_p1
+  PROCESS_NAME        : Stnmaker
+  BLIND_TIME          : 500                                  # default
+  STN_VDHITS_COLL_TAG : "compressDigiMCs:virtualdetector"
 END_PROLOG
 
 #include "fcl/minimalMessageService.fcl"
