@@ -76,55 +76,58 @@ int StntupleInitStrawDataBlock::InitDataBlock(TStnDataBlock* Block, AbsEvent* Ev
   int   pdg_id, mother_pdg_id, sim_id, gen_index;
   float mc_mom;
 
-  const mu2e::ComboHit* ch0 = &chc->at(0);
+
+  if (nhits > 0) {
+
+    const mu2e::ComboHit* ch0 = &chc->at(0);
  
-  for (int i=0; i<nhits; i++) {
-    const mu2e::StrawHit* sh = &shc->at(i);
-    const mu2e::ComboHit* ch = &chc->at(i);
+    for (int i=0; i<nhits; i++) {
+      const mu2e::StrawHit* sh = &shc->at(i);
+      const mu2e::ComboHit* ch = &chc->at(i);
 
-    size_t ih  = ch-ch0;
-    vector<StrawDigiIndex> shids;
-    chc->fillStrawDigiIndices((const art::Event&)*Event,ih,shids);
+      size_t ih  = ch-ch0;
+      vector<StrawDigiIndex> shids;
+      chc->fillStrawDigiIndices((const art::Event&)*Event,ih,shids);
 
-    const mu2e::StrawDigiMC* mcdigi = &sdmcc->at(shids[0]);
+      const mu2e::StrawDigiMC* mcdigi = &sdmcc->at(shids[0]);
 
-    if (mcdigi->wireEndTime(mu2e::StrawEnd::cal) < mcdigi->wireEndTime(mu2e::StrawEnd::hv)) {
-      step = mcdigi->strawGasStep(mu2e::StrawEnd::cal).get();
-    }
-    else {
-      step = mcdigi->strawGasStep(mu2e::StrawEnd::hv ).get();
-    }
+      if (mcdigi->wireEndTime(mu2e::StrawEnd::cal) < mcdigi->wireEndTime(mu2e::StrawEnd::hv)) {
+	step = mcdigi->strawGasStep(mu2e::StrawEnd::cal).get();
+      }
+      else {
+	step = mcdigi->strawGasStep(mu2e::StrawEnd::hv ).get();
+      }
 
-    hit = data->NewHit();
+      hit = data->NewHit();
 
-    if (step) {
-      art::Ptr<mu2e::SimParticle> const& simptr = step->simParticle(); 
-      art::Ptr<mu2e::SimParticle> mother = simptr;
+      if (step) {
+	art::Ptr<mu2e::SimParticle> const& simptr = step->simParticle(); 
+	art::Ptr<mu2e::SimParticle> mother = simptr;
 
-      while (mother->hasParent()) mother = mother->parent();
+	while (mother->hasParent()) mother = mother->parent();
 
-      sim = mother.get();
+	sim = mother.get();
 
-      pdg_id        = simptr->pdgId();
-      mother_pdg_id = sim->pdgId();
+	pdg_id        = simptr->pdgId();
+	mother_pdg_id = sim->pdgId();
 
-      if (simptr->fromGenerator()) gen_index = simptr->genParticle()->generatorId().id();
-      else                         gen_index = -1;
+	if (simptr->fromGenerator()) gen_index = simptr->genParticle()->generatorId().id();
+	else                         gen_index = -1;
       
-      sim_id        = simptr->id().asInt();
-      mc_mom        = step->momvec().mag();
-    }
-    else {
-      pdg_id        = -1;
-      mother_pdg_id = -1;
-      gen_index     = -1;
-      sim_id        = -1;
-      mc_mom        = -1.;
-    }
+	sim_id        = simptr->id().asInt();
+	mc_mom        = step->momvec().mag();
+      }
+      else {
+	pdg_id        = -1;
+	mother_pdg_id = -1;
+	gen_index     = -1;
+	sim_id        = -1;
+	mc_mom        = -1.;
+      }
 
-    hit->Set(sh->strawId().asUint16(), sh->time(), sh->dt(), sh->energyDep(),
-	     pdg_id, mother_pdg_id, gen_index, sim_id, mc_mom);
-    
+      hit->Set(sh->strawId().asUint16(), sh->time(), sh->dt(), sh->energyDep(),
+	       pdg_id, mother_pdg_id, gen_index, sim_id, mc_mom);
+    }
   }
 
   data->f_RunNumber   = rn_number;
