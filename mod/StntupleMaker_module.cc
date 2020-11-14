@@ -116,6 +116,8 @@ protected:
   string                   fCrvCoincidenceCollTag;          //
   string                   fCrvCoincidenceClusterCollTag;   //
 
+  string                   fTriggerResultsTag;
+
   string                   fVDHitsCollTag;                  // hits on virtual detectors (StepPointMCCollection)
 
   vector<string>           fTimeClusterBlockName;
@@ -243,6 +245,8 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
   , fCrvCoincidenceCollTag       (PSet.get<string>    ("crvCoincidenceCollTag"       ))
   , fCrvCoincidenceClusterCollTag(PSet.get<string>    ("crvCoincidenceClusterCollTag"))
 
+  , fTriggerResultsTag       (PSet.get<string>        ("triggerResultsTag"   ))
+
   , fVDHitsCollTag           (PSet.get<string>        ("vdHitsCollTag"       ))
   , fTimeClusterBlockName    (PSet.get<vector<string>>("timeClusterBlockName"))
   , fTimeClusterCollTag      (PSet.get<vector<string>>("timeClusterCollTag"  ))
@@ -291,6 +295,7 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
   fInitGenpBlock        = nullptr;
   fInitSimpBlock        = nullptr;
   fInitStrawDataBlock   = nullptr;
+  fInitTriggerBlock     = nullptr;
 
   fInitStepPointMCBlock = new TObjArray();
   fInitStepPointMCBlock->SetOwner(kTRUE);
@@ -709,6 +714,7 @@ void StntupleMaker::beginJob() {
 //-----------------------------------------------------------------------------
   if (fMakeTrigger) {
     fInitTriggerBlock = new StntupleInitTriggerBlock();
+    fInitTriggerBlock->SetTriggerResultsTag(fTriggerResultsTag);
 
     AddDataBlock("TriggerBlock","TStnTriggerBlock",
 		 fInitTriggerBlock,
