@@ -274,7 +274,7 @@ int TStnCatalog::InitDataset(TStnDataset* Dataset) {
 //_____________________________________________________________________________
 int TStnCatalog::InitDataset(TStnDataset* Dataset            ,
 			     const char*  Book               ,
-			     const char*  Name               ,
+			     const char*  Dsid               ,
 			     const char*  Fileset ,
 			     const char*  File    ,
 			     Int_t        MinRun  ,
@@ -282,13 +282,13 @@ int TStnCatalog::InitDataset(TStnDataset* Dataset            ,
 			     const char*  Type    )
 {
   int                rc = -1;
-  TStnCatalogServer* s  = GetCatalogServer(Book,Name);
+  TStnCatalogServer* s  = GetCatalogServer(Book,Dsid);
 
   if (s) {
-    rc = s->InitDataset(Dataset,Book,Name,Fileset,File,MinRun,MaxRun,Type);
+    rc = s->InitDataset(Dataset,Book,Dsid,Fileset,File,MinRun,MaxRun,Type);
   }
   else {
-    Error("InitDataset",Form("Cant find book=%s dataset=%s\n",Book,Name));
+    Error("InitDataset",Form("Cant find book=%s dataset=%s\n",Book,Dsid));
   }
   return rc;
 }
@@ -302,7 +302,10 @@ TStnCatalogServer* TStnCatalog::GetCatalogServer(const char* Book   ,
   TIter it(fListOfCatalogServers);
 
   while ((server = (TStnCatalogServer*) it.Next())) {
-    if ((strcmp(Book,"file") == 0) || (strcmp(Book,"dir") == 0))
+    if ((strcmp(Book,"file") == 0) || (strcmp(Book,"dir") == 0) || (strcmp(Book,"list") == 0))
+//-----------------------------------------------------------------------------
+// in special cases above only need to maintain the workflow - the server is not needed
+//-----------------------------------------------------------------------------
       break;
     if (server->FindDataset(Book,Dataset) != 0)
       break;

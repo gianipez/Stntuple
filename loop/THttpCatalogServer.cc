@@ -410,10 +410,10 @@ int THttpCatalogServer::InitDataset(TStnDataset*     Dataset,
   float        size;
   char         buf[10000], date[1000], ctime[2000], fn[2000], fs[3000], fstemp[1000];
   char         full_name[3000], directory[200], server[200], pnfs_path[1000];
-  const char   *line, *book, *dset, *dir;
+  const char   *line, *book, *dset;
   TObjArray    *list_of_filesets;
   TObjString   *ostr;
-  TStnFileset  *fileset/*, *fset*/;
+  TStnFileset  *fileset;
   TString      cmd;
   TString      s_file;
 //-----------------------------------------------------------------------------
@@ -430,15 +430,16 @@ int THttpCatalogServer::InitDataset(TStnDataset*     Dataset,
 //  handle case of a single file
 //-----------------------------------------------------------------------------
   if (strcmp(book,"file") == 0) {
-    Dataset->AddFile(dset);
+    Dataset->AddFile(File);
     return 0;
   }
   else if (strcmp(book,"dir") == 0) {
 //-----------------------------------------------------------------------------
-// Fileset is the directory name , File is the filename patters
+// Fileset is the directory name , File is the filename pattern
 //-----------------------------------------------------------------------------
-    dir = Fileset;
-    cmd = Form("ls -al %s | grep %s | awk '{print $9}'",dir,File);
+    const char* dir     = Fileset;
+    const char* pattern = File;
+    cmd = Form("ls -al %s | grep %s | awk '{print $9}'",dir,pattern);
     pipe = gSystem->OpenPipe(cmd,"r");
 
     while (fgets(buf,10000,pipe)) { 
@@ -448,7 +449,21 @@ int THttpCatalogServer::InitDataset(TStnDataset*     Dataset,
     }
     return 0;
   }
+  else if (strcmp(book,"list") == 0) {
+//-----------------------------------------------------------------------------
+// Book='list', File: filename of a text file containing filenames of stntuple files
+//                    one filename per line, lines starting with '#' are skipped
+//-----------------------------------------------------------------------------
+    cmd = Form("cat %s | awk '{if (substr($0,1,1) != \"#\") print $1}'",File);
+    pipe = gSystem->OpenPipe(cmd,"r");
 
+    while (fgets(buf,10000,pipe)) { 
+      sscanf(buf,"%s",fn);
+      printf("fn = %s\n",fn);
+      Dataset->AddFile(fn);
+    }
+    return 0;
+  }
 //-----------------------------------------------------------------------------
 // this is a cataloged dataset, verify AAA_CATALOG.html
 //-----------------------------------------------------------------------------

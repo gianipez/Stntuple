@@ -131,8 +131,8 @@ Int_t TStnDataset::Init(const char* Book,
 
   fDoneBadFiles   = 0;
 
-  if ((strcmp(Book,"file") == 0) || (strcmp(Book,"dir") == 0)) fCataloged = 0;
-  else                                                         fCataloged = 1;
+  if ((strcmp(Book,"file") == 0) || (strcmp(Book,"dir") == 0) || (strcmp(Book,"list") == 0)) fCataloged = 0;
+  else                                                                                       fCataloged = 1;
 
   return 0;
 }
