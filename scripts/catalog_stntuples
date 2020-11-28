@@ -178,26 +178,7 @@ if    ($host == `hostname -f`.strip) then
   f.puts("# BOOK          #{$book}     ");
   f.puts("# DATASET       #{$dataset}  ");
   f.puts("# OUTPUT_DIR    #{$directory}");
-  f.puts(`dir -l #{$directory} | grep \.stn\$ | grep #{$pattern} | awk '{print $9}'`);
-
-elsif ($host.index('fcdfdata')) then
-
-  f.puts("# DATA_SERVER root://#{$host}  ");
-  f.puts("# INPUT_DIR     #{$directory}");
-  f.puts("# BOOK          #{$book}     ");
-  f.puts("# DATASET       #{$dataset}  ");
-  f.puts("# OUTPUT_DIR    #{$user}@#{$host}#{$directory}");
-  f.puts(`cdfopr/scripts/caf -h #{$host}:#{$directory} hostdir | grep \.stn\$ | grep #{$pattern} | awk '{print $9}'`);
-
-elsif ($host.index('fcdfrdc3')) then
-  puts "here ...#{$directory} "
-  f.puts("# DATA_SERVER dcap://#{$host}  ");
-  f.puts("# INPUT_DIR     #{$directory}");
-  f.puts("# BOOK          #{$book}     ");
-  f.puts("# DATASET       #{$dataset}  ");
-  f.puts("# OUTPUT_DIR    #{$user}@#{$host}#{$directory}");
-  f.puts(`ssh -l cdfdata fcdflnx3.fnal.gov dir -l #{$directory} | grep \.stn\$ | grep #{$pattern} | awk '{print $9}'`);
-
+  f.puts(`dir -al #{$directory} | grep \.stn\$  | grep #{$pattern} | awk -v dir=#{$directory} '{print dir"/"$9}'`);
 else
   f.puts("# DATA_SERVER root://#{$host}  ");
   f.puts("# INPUT_DIR     #{$directory}");
@@ -208,7 +189,7 @@ else
 #  puts "we are here"
 #  puts "ssh -l #{$user} #{$host} ls -l #{$directory} | grep #{$pattern} | awk '{print $9}'"
 
-  f.puts(`ssh -l #{$user} #{$host} ls -l #{$directory} | grep \.stn\$ | grep #{$pattern} | awk '{print $9}'`);
+  f.puts(`ssh -l #{$user} #{$host} ls -l #{$directory}/ | grep \.stn\$ | grep #{$pattern} | awk '{print dir"/"$9}'`);
 end
 
 f.close();
@@ -218,7 +199,7 @@ $logfile   = 'catalog_stntuples.'+Process.pid.to_s()+'.log'
 
 f1 = File.new($tmp_script,'w');
 f1.puts('{');
-f1.puts('  gInterpreter->LoadMacro("Stntuple/ana/scripts/dh_catalog.C");');
+f1.puts('  gInterpreter->LoadMacro("Stntuple/ana/scripts/dh.C");');
 f1.puts("  gInterpreter->ProcessLine(\"dh::catalog_list_of_files(\\\"#{$request_file}\\\",#{$mode})\");");
 f1.puts('}');
 f1.close();

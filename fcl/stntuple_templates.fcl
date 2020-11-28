@@ -6,8 +6,6 @@
 #
 # reconstruction and analysis modules
 #------------------------------------------------------------------------------
-#include "JobConfig/common/su2020_templates.fcl"
-
 Stntuple : { 
     @table::Stntuple             # defined in Stntuple/fcl/prolog.fcl
 
@@ -66,9 +64,9 @@ Stntuple : {
 # sequences: can't define recursively within one namespace
 # aiming for ultimate unification of the reco sequences, use su2020 sequences as much as possible 
 #------------------------------------------------------------------------------
-Stntuple.gen_g4              : [ @sequence::su2020.gen_g4 ]
+Stntuple.gen_g4              : [ @sequence::su2020.gen_g4           ]
 Stntuple.gen_g4_detFilter    : [ @sequence::su2020.gen_g4_detFilter ]
-Stntuple.gen_g4_time_map     : [ @sequence::su2020.gen_g4_time_map  ]
+Stntuple.gen_g4_pbi          : [ @sequence::su2020.gen_g4_pbi       ]
 
 Stntuple.digis               : [ @sequence::su2020.digis ]
 
@@ -125,7 +123,7 @@ Stntuple.paths : {
 #------------------------------------------------------------------------------
     stntuple_p1  : [ # @sequence::su2020.gen_g4_time_map,
 		     @sequence::su2020.gen_g4         , 
-		     @sequence::CommonMC.DigiSim      ,  # time maps + window marker
+		     @sequence::CommonMC.DigiSim      ,     # time maps + window marker
 		     @sequence::su2020.digis          ,
 		     @sequence::su2020.trk_hit_reco   ,
 		     @sequence::su2020.calo_reco      ,
@@ -135,7 +133,7 @@ Stntuple.paths : {
 		     @sequence::Stntuple.stnmaker_De
 		    ]
     stntuple_p01 : [ g4run, filterStepPointMomentum   , 
-		     @sequence::CommonMC.DigiSim      ,  #  time maps + window marker
+		     @sequence::CommonMC.DigiSim      ,     #  time maps + window marker
 		     @sequence::su2020.digis          ,
 		     @sequence::su2020.trk_hit_reco   ,
 		     @sequence::su2020.calo_reco      ,
@@ -152,15 +150,15 @@ Stntuple.paths : {
 		     @sequence::su2020.calo_reco      ,
 		     @sequence::su2020.trk_reco_de    ,
 		     @sequence::su2020.crv_reco       ,
-		     @sequence::Stntuple.post_reco_de   ,    # track-calo matching and PID
+		     @sequence::Stntuple.post_reco_de ,     # track-calo matching and PID
 		     @sequence::Stntuple.stnmaker_De
 		   ]
 
     stntuple_p21 : [ @sequence::su2020.trk_hit_reco   ,
 		     @sequence::su2020.calo_reco      ,
 		     @sequence::su2020.trk_reco_de    ,
-		     @sequence::Stntuple.post_reco_de   ,    # track-calo matching and PID
-		     @sequence::Stntuple.stnmaker_De         # stntupling
+		     @sequence::Stntuple.post_reco_de ,     # track-calo matching and PID
+		     @sequence::Stntuple.stnmaker_De        # stntupling
 		    ]
 #------------------------------------------------------------------------------
 # p3  : muon reconstruction and stntuple making
@@ -170,7 +168,7 @@ Stntuple.paths : {
 		     @sequence::su2020.calo_reco       ,
 		     @sequence::su2020.trk_reco_dmu    ,
 		     @sequence::su2020.crv_reco        ,
-		     @sequence::Stntuple.post_reco_dmu   ,    # track-calo matching and PID
+		     @sequence::Stntuple.post_reco_dmu ,    # track-calo matching and PID
 		     @sequence::Stntuple.stnmaker_Dmu
 		    ]
 
@@ -178,7 +176,7 @@ Stntuple.paths : {
 		     @sequence::su2020.calo_reco       ,
 		     @sequence::su2020.trk_reco_dmu    ,
 		     @sequence::Stntuple.post_reco_dmu ,    # track-calo matching and PID
-		     @sequence::Stntuple.stnmaker_Dmu         # stntupling
+		     @sequence::Stntuple.stnmaker_Dmu       # stntupling
 		    ]
 #------------------------------------------------------------------------------
 # p40 : full downstream (e+mu) reconstruction and stntuple making
@@ -270,7 +268,8 @@ Stntuple.paths : {
 #------------------------------------------------------------------------------
 # p7: MC generation, G4, reconstruction and Event Display
 #------------------------------------------------------------------------------
-    stntuple_p7  : [ @sequence::su2020.gen_g4_time_map,
+    stntuple_p7  : [ @sequence::su2020.gen_g4_pbi     ,
+		     @sequence::CommonMC.DigiSim      ,  # TimeMaps, EWMProducer
 		     @sequence::su2020.digis          ,
 		     @sequence::su2020.trk_hit_reco   ,
 		     @sequence::su2020.calo_reco      ,

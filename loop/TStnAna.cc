@@ -15,6 +15,7 @@
 #include "TROOT.h"
 #include "TChain.h"
 #include "TInterpreter.h"
+#include "TEnv.h"
 #include "TDirectory.h"
 #include "TSystem.h"
 #include "TBranchElement.h"
@@ -137,7 +138,7 @@ int TStnAna::Init() {
   fEvent               = 0;
   fNProcessedEvents    = 0;
   fNPassedEvents       = 0;
-  fNEventsToReport     = 500;
+  fNEventsToReport     = std::stoi(gEnv->GetValue("Stnana.ReportFrequency","500"));
   fOutputFile          = 0;
   fOutputTree          = 0;
   fOutputModule        = 0;
@@ -442,7 +443,7 @@ int TStnAna::BeginRun() {
 
 //_____________________________________________________________________________
 int TStnAna::ProcessEventList(TEventList* EventList) {
-  // process event list
+  // process event list, event list contains a list of entries, not (run,subrun,event) things
 
   int   n, ientry,rc;
 
@@ -648,11 +649,12 @@ int TStnAna::ProcessEntry(int Entry) {
 }
 
 //_____________________________________________________________________________
-int TStnAna::ProcessEvent(int Run, int Event, int Subrun) {
+int TStnAna::ProcessEvent(int Run, int Subrun, int Event) {
   // process one event with the given run/event numbers. This method is not as 
   // fast as ProcessEntry, because it starts searching from the beginning of 
   // the tree
   // in this mode ignore bad run list
+  // 2020-11-07: change the call signature to (run,subrun,event)
 
   TIter it(fModuleList);
 				// prepare to read next event

@@ -13,16 +13,13 @@
 
 class StntupleInitTriggerBlock : public TStnInitDataBlock {
 public:
-  //  art::InputTag   fCrvRecoPulseCollTag;
-  //  art::InputTag   fCrvCoincidenceClusterCollTag;
+  art::InputTag   fTriggerResultsTag;
 //-----------------------------------------------------------------------------
 // functions
 //-----------------------------------------------------------------------------
 public:
 
-  // void   SetCrvRecoPulseCollTag         (std::string& Tag) { fCrvRecoPulseCollTag          = art::InputTag(Tag); }
-  // void   SetCrvCoincidenceClusterCollTag(std::string& Tag) { fCrvCoincidenceClusterCollTag = art::InputTag(Tag); }
-
+  void   SetTriggerResultsTag (std::string& Tag) { fTriggerResultsTag = art::InputTag(Tag); }
   
   virtual int InitDataBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode);
   virtual int ResolveLinks (TStnDataBlock* Block, AbsEvent* Evt, int Mode);

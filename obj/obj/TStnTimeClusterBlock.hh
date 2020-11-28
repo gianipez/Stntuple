@@ -12,9 +12,7 @@
 #include "TBuffer.h"
 
 class TStnTimeClusterBlock: public TStnDataBlock {
-
-  friend Int_t StntupleInitMu2eTimeClusterBlock     (TStnDataBlock*, AbsEvent* , int);
-  friend Int_t StntupleInitMu2eTimeClusterBlockLinks(TStnDataBlock*, AbsEvent* , int);
+  friend class StntupleInitTimeClusterBlock;
 public:
 //----------------------------------------------------------------------------
 //  data members
@@ -30,9 +28,9 @@ public:
   virtual ~TStnTimeClusterBlock();
 
   TStnTimeCluster* NewTimeCluster() {
-    TStnTimeCluster* trackSeed = new ((*fListOfTimeClusters)[fNTimeClusters]) TStnTimeCluster();
+    TStnTimeCluster* tc = new ((*fListOfTimeClusters)[fNTimeClusters]) TStnTimeCluster();
     fNTimeClusters++;
-    return trackSeed;
+    return tc;
   }
 //-----------------------------------------------------------------------------
 // accessors

@@ -8,9 +8,8 @@ BEGIN_PROLOG
 # they can be redefined 
 # see example of redefining GEN_ID in Stntuple/test/read_reco_stnmaker.fcl
 #------------------------------------------------------------------------------
-TIME_OFFSET_MAPS    : { inputs : [ "compressDigiMCs:protonTimeMap", "compressDigiMCs:muonTimeMap" ] }
-GEN_ID              : "unknown"                                   # by default, store all particles
-STN_VDHITS_COLL_TAG : "compressDigiMCs:virtualdetector"
+# TIME_MAPS           : [ "compressDigiMCs:protonTimeMap", "compressDigiMCs:muonTimeMap" ]
+# GEN_ID              : "unknown"                                   # by default, store all particles
 
 StntupleModuleFclDefaults : {
     interactiveMode : 0
@@ -18,7 +17,7 @@ StntupleModuleFclDefaults : {
 # unlike everywhere else, TAnaDump sets mcTruth to 1 by default
 #------------------------------------------------------------------------------
     TAnaDump : {
-	timeOffsetMaps  : @local::TIME_OFFSET_MAPS
+	timeOffsetMaps  : { inputs : [ @sequence::CommonMC.TimeMaps ] }
 	printUtils      : { @table::TrkReco.PrintUtils 
 	    mcTruth     : 1
 	}
@@ -80,6 +79,7 @@ StntupleMakerTemplate : { module_type:StntupleMaker
 # are stored in SpmcBlockVDet block, so all three have to be consistent
 #------------------------------------------------------------------------------
     simpCollTag          : "compressDigiMCs"                     # was "g4run" before
+    triggerResultsTag    : "TriggerResults:current_process"      # 
     vdHitsCollTag        : @local::STN_VDHITS_COLL_TAG           # was "g4run" before
     simpMinEnergy        : 0.0                                   # MeV , by default, store all
     simpMaxZ             : 11800.0                               # mm  , by default, do no store calorimeter SimParticles
@@ -87,8 +87,8 @@ StntupleMakerTemplate : { module_type:StntupleMaker
     genpCollTag          : "compressDigiMCs"                     # save signal-only: "generate" 
     genId                : @local::GEN_ID                        # by default, store all
     
-    timeClusterBlockName : ["TimeClusterBlock" ]                 # to be renamed, *FIXME*
-    timeClusterCollTag   : ["CalTimePeakFinder"]                 # to be renamed into CalTimeClusterFinder *FIXME* 
+    timeClusterBlockName : ["TimeClusterBlock"   ]               # to be renamed, *FIXME*
+    timeClusterCollTag   : ["TimeClusterFinderDe"]               # 
 
     helixBlockName       : []
     helixCollTag         : []

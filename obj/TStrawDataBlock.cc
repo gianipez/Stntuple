@@ -60,9 +60,7 @@ void TStrawDataBlock::Print(Option_t* opt) const {
       hit->Print("banner");
       banner_printed = 1;
     }
-    else {
-      hit->Print("data");
-    }
+    hit->Print("data");
   }
 }
 

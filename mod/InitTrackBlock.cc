@@ -50,7 +50,6 @@
 #include "MCDataProducts/inc/StepPointMCCollection.hh"
 #include "MCDataProducts/inc/StrawDigiMCCollection.hh"
 #include "MCDataProducts/inc/StrawGasStep.hh"
-#include "MCDataProducts/inc/PtrStepPointMCVectorCollection.hh"
 #include "DataProducts/inc/VirtualDetectorId.hh"
 
 #include "RecoDataProducts/inc/StrawDigi.hh"
@@ -288,9 +287,6 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
   data->GetModuleLabel("mu2e::ComboHitCollection",cmbh_module_label);
   data->GetDescription("mu2e::ComboHitCollection",cmbh_description );
   
-  // data->GetModuleLabel("mu2e::PtrStepPointMCVectorCollection",stmc_module_label);
-  // data->GetDescription("mu2e::PtrStepPointMCVectorCollection",stmc_description );
-
   data->GetModuleLabel("mu2e::StrawDigiMCCollection",sdmc_module_label);
   data->GetDescription("mu2e::StrawDigiMCCollection",sdmc_description );
 
@@ -328,13 +324,6 @@ Int_t StntupleInitMu2eTrackBlock  (TStnDataBlock* Block, AbsEvent* AnEvent, Int_
     AnEvent->getByLabel(trkq_coll_tag,trkQualHandle);
     if (trkQualHandle.isValid()) list_of_trkqual = trkQualHandle.product();
   }
-
-
-  // art::Handle<mu2e::PtrStepPointMCVectorCollection> mcptrHandle;
-  // if (stmc_module_label[0] != 0) {
-  //   if (stmc_description[0] == 0) AnEvent->getByLabel(stmc_module_label,mcptrHandle);
-  //   else                       AnEvent->getByLabel(stmc_module_label,stmc_description, mcptrHandle);
-  // }
 
   art::Handle<mu2e::ComboHitCollection> shHandle;
   if (cmbh_module_label[0] != 0) {

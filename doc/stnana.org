@@ -41,8 +41,10 @@ First 4 parameters in a call to *stnana* describe the input dataset: (read more 
 
   special values:
 
-  - book = "file" : run on a single file, in this case the 2nd parameter (dataset) is the file name
-  - book = "dir"  : use all files from directory *Fileset* with the name pattern *File*
+  - book = "file" : run on a single file, in this case the 4th parameter (*File*) is the file name
+  - book = "dir"  : use all files from directory *Fileset* with the name pattern given by *File*
+  - book = "list" : filelist, *File* contains a list of stntuple file names, one filename per line; 
+                    - lines starting with '#' ignored (comment lines)
 
 - *Dataset* : the dataset name
 
@@ -50,7 +52,7 @@ First 4 parameters in a call to *stnana* describe the input dataset: (read more 
   Division of a dataset into filesets is purely logical. A fileset combines several files, such that it is 
   convenient to run a single analysis job on a fileset
 
-- *File* : file name
+- *File* : file name; for special book names, *File* has a special meaning - see above
 
 - JobName : name of the configuration script, for example, "catalog()". JobName may include options 
   separated by '/', i.e. "catalog()/save=a.hist/grl=none,101,500"

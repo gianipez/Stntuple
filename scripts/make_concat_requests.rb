@@ -350,8 +350,8 @@ class ConcatenationRequest
 
       word = @list_of_files[i].strip.split(" ");
 #  puts " word = #{word} #{word.length} #{word[4]}"
-      name = word[8]
-      size = word[4].to_i
+      name = word[0]
+      size = File.size(name); # word[4].to_i
 
       if ($input_dir != "") then 
         filename = "#{$input_dir}/#{name}"

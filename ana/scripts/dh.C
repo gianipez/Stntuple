@@ -45,7 +45,12 @@ int  catalog_file(const char* InputFile,
   catalog = new TStnCatalog();
   
   dset    = new TStnDataset();
-  catalog->InitDataset(dset,"file",InputFile,"","");
+
+  printf("before init_dataset : input file: %s\n",InputFile);
+
+  catalog->InitDataset(dset,"file","","",InputFile);
+
+  printf("after init_dataset : input file: %s\n",InputFile);
 
   x = new TStnAna(dset);
 
@@ -71,6 +76,7 @@ int  catalog_file(const char* InputFile,
 	   InputFile,OutputDir,Dataset,Book,DbID);
   }
 
+  printf(" -- debug: before Run\n");
   x->Run();
 
   int rc = m_dfc->ReturnCode();
@@ -185,13 +191,13 @@ void catalog_list_of_files(const char* RequestFile, Int_t Mode=11) {
 // form remote file name 
 //-----------------------------------------------------------------------------
         if (strcmp(data_server,".") != 0) {
-          sprintf(fn,"%s/%s/%s",data_server,input_dir,file);
+          sprintf(fn,"%s/%s",data_server,file);
 	}
 	else {
-          sprintf(fn,"%s/%s",input_dir,file);
+          sprintf(fn,"%s",file);
 	}
 
-	//      printf("--- cataloging %s\n",fn);
+	printf("[catalog_list_of_files] : cataloging %s\n",fn);
 
 	catalog_file(fn,Mode,output_dir,dataset_id,book);
       }

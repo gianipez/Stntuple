@@ -321,7 +321,7 @@ int TStnCatalogServer::InitDataset(TStnDataset*     Dataset,
 //  handle case of a single file
 //-----------------------------------------------------------------------------
   if (strcmp(book,"file") == 0) {
-    Dataset->AddFile(dset);
+    Dataset->AddFile(File);
     return 0;
   }
   else if (strcmp(book,"dir") == 0) {
