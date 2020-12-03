@@ -84,23 +84,10 @@ void TStnTriggerBlock::Clear(Option_t* opt) {
 //_____________________________________________________________________________
 void TStnTriggerBlock::Print(Option_t* opt) const {
   // print contents of the trigger block
+
+  printf(" TriggerBlock: exec : %5i trigger_table : %5i calib_jobset: %5i npaths : %3i", fExecVersion, fPhysTable, fCalibJobSet, fNPaths);
 					// TSID
- //  printf(" ---------------------------------- TSID ------------------------------\n");
- //  printf(" part mess_id bc bheader turn_counter B0 BC TI AM Myron L2B ev_id \n");
- //  printf(" ----------------------------------------------------------------------\n");
- //  printf(" %4i",fTsid.PartitionNumber());
- //  printf(" %7i",fTsid.MessageId());
- //  printf(" %2i",fTsid.BunchCounter());
- //  printf(" %6x",fTsid.BoardHeader());
- //  printf(" %10i",fTsid.TurnCounter());
- //  printf(" %2i",fTsid.B0Marker());
- //  printf(" %2i",fTsid.BCMarker());
- //  printf(" %2i",fTsid.TIMarker());
- //  printf(" %2i",fTsid.AbortMarker());
- //  printf(" %2i",fTsid.MyronBucket());
- //  printf(" %1i",fTsid.L2Buffer());
- //  printf(" %10i",fTsid.EventId());
- //  printf("\n");
+  printf("\n");
 
  // if (strstr(opt,"tl1d") != 0 || strstr(opt,"TL2D") != 0) {
  //   fTl1d.Print();
