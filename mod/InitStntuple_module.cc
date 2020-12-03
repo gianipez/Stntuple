@@ -133,7 +133,7 @@ int InitStntuple::InitTriggerTable() {
   trigger_table->AddTrigger(new TStnTrigger(10,10,"caloMVACE_trigger"          ,1));
   trigger_table->AddTrigger(new TStnTrigger(11,11,"unbiased_trigger"           ,1));
   trigger_table->AddTrigger(new TStnTrigger(12,12,"caloPhoton_trigger"         ,1));
-  trigger_table->AddTrigger(new TStnTrigger(31,31,"TriggerPath"                ,1)); // guess, obsolete
+  trigger_table->AddTrigger(new TStnTrigger(31,31,"p1"                         ,1)); // a kludge to get rid of su2020 warnings
 			      //  }
   return 0;
 }

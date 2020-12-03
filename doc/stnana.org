@@ -45,6 +45,8 @@ First 4 parameters in a call to *stnana* describe the input dataset: (read more 
   - book = "dir"  : use all files from directory *Fileset* with the name pattern given by *File*
   - book = "list" : filelist, *File* contains a list of stntuple file names, one filename per line; 
                     - lines starting with '#' ignored (comment lines)
+  - book = "sam"  : access dataset stored in SAM, in this case the *Dataset* parameter is the SAM dataset definition
+                    - to be implemented (need to figure how to deal with prestaging) 
 
 - *Dataset* : the dataset name
 

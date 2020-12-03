@@ -51,7 +51,7 @@ int StntupleInitTriggerBlock::InitDataBlock(TStnDataBlock* Block, AbsEvent* Even
     TObjArray list(200);
 
     block->fNPaths = trn.getTrigPaths().size();
-    block->fPaths.Init(nbits);
+    // block->fPaths.Init(nbits);
 
     for (int i=0; i<block->fNPaths; i++) {
       const std::string& name = trn.getTrigPath(i);
