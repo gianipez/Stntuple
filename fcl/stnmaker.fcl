@@ -42,6 +42,7 @@ END_PROLOG
 # services are initialized in Stntuple/fcl/stntuple_templates.fcl
 #------------------------------------------------------------------------------
 #include "JobConfig/common/trigger_templates.fcl"
+#include "JobConfig/common/su2020_mixing_templates.fcl"
 #include "JobConfig/common/su2020_templates.fcl"
 #include "Stntuple/fcl/stntuple_templates.fcl"
 

@@ -79,7 +79,7 @@ StntupleMakerTemplate : { module_type:StntupleMaker
 # are stored in SpmcBlockVDet block, so all three have to be consistent
 #------------------------------------------------------------------------------
     simpCollTag          : "compressDigiMCs"                     # was "g4run" before
-    triggerResultsTag    : "TriggerResults:current_process"      # 
+    triggerResultsTag    : "TriggerResults"                      # assume TriggerResults produced at digi step
     vdHitsCollTag        : @local::STN_VDHITS_COLL_TAG           # was "g4run" before
     simpMinEnergy        : 0.0                                   # MeV , by default, store all
     simpMaxZ             : 11800.0                               # mm  , by default, do no store calorimeter SimParticles
