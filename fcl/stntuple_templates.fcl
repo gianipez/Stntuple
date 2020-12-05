@@ -23,41 +23,6 @@ Stntuple : {
 	@table::su2020.analyzers
 	@table::Stntuple.analyzers
     }
-#------------------------------------------------------------------------------
-# all Stntuple modules are filters, they are defined in Stntuple/fcl/prolog.fcl
-# event mixing modules - all clones of the same module.
-# each clone takes certain collections from the input file and adds them to the event
-#------------------------------------------------------------------------------
-# FIXME#	@table::EventMixing.filters
-# FIXME        flashMixer           : { @table::mixerTemplate
-# FIXME#	    fileNames : @local::bgHitFiles 
-# FIXME	    detail: { @table::mixerTemplate.detail g4ModuleLabel:flashMixer genModuleLabel:flashMixer }
-# FIXME	}
-# FIXME	ootMixer             : { @table::mixerTemplate
-# FIXME#	    fileNames : @local::bgHitFiles 
-# FIXME	    detail: { @table::mixerTemplate.detail g4ModuleLabel:ootMixer   genModuleLabel:ootMixer   }
-# FIXME	}
-# FIXME	dioMixer             : { @table::mixerTemplate
-# FIXME#	    fileNames : @local::bgHitFiles 
-# FIXME	    detail: { @table::mixerTemplate.detail g4ModuleLabel:dioMixer   genModuleLabel:dioMixer   }
-# FIXME	}
-# FIXME	neutronMixer         : { @table::mixerTemplate
-# FIXME#	    fileNames : @local::bgHitFiles 
-# FIXME	    detail: { @table::mixerTemplate.detail g4ModuleLabel:neutronMixer genModuleLabel:neutronMixer }
-# FIXME	}
-# FIXME	photonMixer          : { @table::mixerTemplate
-# FIXME#	    fileNames : @local::bgHitFiles 
-# FIXME	    detail: { @table::mixerTemplate.detail g4ModuleLabel:photonMixer genModuleLabel:photonMixer }
-# FIXME	}
-# FIXME	protonMixer          : { @table::mixerTemplate
-# FIXME#	    fileNames : @local::bgHitFiles 
-# FIXME	    detail: { @table::mixerTemplate.detail g4ModuleLabel:protonMixer genModuleLabel:protonMixer }
-# FIXME	}
-# FIXME	deuteronMixer          : { @table::mixerTemplate
-# FIXME#	    fileNames : @local::bgHitFiles 
-# FIXME	    detail: { @table::mixerTemplate.detail g4ModuleLabel:deuteronMixer genModuleLabel:deuteronMixer }
-# FIXME	}
-#------------------------------------------------------------------------------
 }
 
 #------------------------------------------------------------------------------
@@ -132,6 +97,7 @@ Stntuple.paths : {
 		     @sequence::Stntuple.post_reco_de , 
 		     @sequence::Stntuple.stnmaker_De
 		    ]
+
     stntuple_p01 : [ g4run, filterStepPointMomentum   , 
 		     @sequence::CommonMC.DigiSim      ,     #  time maps + window marker
 		     @sequence::su2020.digis          ,
