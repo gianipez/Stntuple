@@ -7,10 +7,8 @@ BEGIN_PROLOG
 # 
 # they can be redefined 
 # see example of redefining GEN_ID in Stntuple/test/read_reco_stnmaker.fcl
+# to be included by Stntuple/fcl/stnmaker.fcl
 #------------------------------------------------------------------------------
-# TIME_MAPS           : [ "compressDigiMCs:protonTimeMap", "compressDigiMCs:muonTimeMap" ]
-# GEN_ID              : "unknown"                                   # by default, store all particles
-
 StntupleModuleFclDefaults : {
     interactiveMode : 0
 #------------------------------------------------------------------------------
@@ -452,9 +450,9 @@ Stntuple : {
 	    pidBlockName               : [ ""                    , "PidBlock"             ]
 	    pidCollTag                 : [ ""                    , "AvikPIDNew"           ]
 
-	    spmcBlockName              : [ "SpmcBlockVDet"                   ]
-	    spmcCollTag                : [ "compressDigiMCs:virtualdetector" ]
-	    statusG4Tag                : [ "g4run"                           ]
+	    spmcBlockName              : [ "SpmcBlockVDet"             ]
+	    spmcCollTag                : [ @local::STN_VDHITS_COLL_TAG ]
+	    statusG4Tag                : [ "g4run"                     ]
 	}
 
 	StntupleMakerDmu : { @table::StntupleMakerTemplate 
@@ -482,6 +480,10 @@ Stntuple : {
 	    trackSHBlockName           : [ "TrackHitBlockPar"    , "TrackHitBlockDar"   ]
 	    pidBlockName               : [ ""                    , "PidBlock"           ]
 	    pidCollTag                 : [       ""              , "AvikPIDNew"         ]
+
+	    spmcBlockName              : [ "SpmcBlockVDet"             ]
+	    spmcCollTag                : [ @local::STN_VDHITS_COLL_TAG ]
+	    statusG4Tag                : [ "g4run"                     ]
 	}
 
 	StntupleMakerDeDmu : { @table::StntupleMakerTemplate 
@@ -512,9 +514,9 @@ Stntuple : {
 	    pidBlockName               : [ ""                    , "PidBlock"           , ""                     , "PidBlockDmu"          ]
 	    pidCollTag                 : [ ""                    , "AvikPIDNew"         , ""                     , "AvikPIDNewDmu"        ]
 
-	    spmcBlockName              : [ "SpmcBlockVDet"                   ]
-	    spmcCollTag                : [ "compressDigiMCs:virtualdetector" ]
-	    statusG4Tag                : [ "g4run"                           ]
+	    spmcBlockName              : [ "SpmcBlockVDet"             ]
+	    spmcCollTag                : [ @local::STN_VDHITS_COLL_TAG ]
+	    statusG4Tag                : [ "g4run"                     ]
 	}
 
 #------------------------------------------------------------------------------
