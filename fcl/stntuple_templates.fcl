@@ -29,9 +29,9 @@ Stntuple : {
 # sequences: can't define recursively within one namespace
 # aiming for ultimate unification of the reco sequences, use su2020 sequences as much as possible 
 #------------------------------------------------------------------------------
-Stntuple.gen_g4              : [ @sequence::su2020.gen_g4           ]
-Stntuple.gen_g4_detFilter    : [ @sequence::su2020.gen_g4_detFilter ]
-Stntuple.gen_g4_pbi          : [ @sequence::su2020.gen_g4_pbi       ]
+Stntuple.gen_g4              : [ @sequence::su2020.gen_g4               ]
+Stntuple.gen_g4_pbi_detFilter: [ @sequence::su2020.gen_g4_pbi_detFilter ]
+Stntuple.gen_g4_pbi          : [ @sequence::su2020.gen_g4_pbi           ]
 
 Stntuple.digis               : [ @sequence::su2020.digis ]
 
