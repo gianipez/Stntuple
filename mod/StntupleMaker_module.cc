@@ -109,6 +109,8 @@ protected:
   string                   fGenpCollTag;
 
   string                   fSimpCollTag;
+
+  string                   fComboHitCollTag;
   string                   fStrawHitCollTag;
   string                   fStrawDigiMCCollTag;
 
@@ -238,6 +240,8 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
   
   , fGenpCollTag             (PSet.get<string>        ("genpCollTag"         ))
   , fSimpCollTag             (PSet.get<string>        ("simpCollTag"         ))
+
+  , fComboHitCollTag         (PSet.get<string>        ("comboHitCollTag"     ))
   , fStrawHitCollTag         (PSet.get<string>        ("strawHitCollTag"     ))
   , fStrawDigiMCCollTag      (PSet.get<string>        ("strawDigiMCCollTag"  ))
 
@@ -618,6 +622,7 @@ void StntupleMaker::beginJob() {
       //      init_block->SetHelixCollTag      (fHelixCollTag[i]);
 
       init_block->SetStrawHitCollTag   (fStrawHitCollTag);
+      init_block->SetComboHitCollTag   (fComboHitCollTag);
       init_block->SetStrawDigiMCCollTag(fStrawDigiMCCollTag);
 
       AddDataBlock(block_name,"TStnTimeClusterBlock",init_block,buffer_size,split_mode,compression_level);

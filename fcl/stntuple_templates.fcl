@@ -30,14 +30,15 @@ Stntuple : {
 # aiming for ultimate unification of the reco sequences, use su2020 sequences as much as possible 
 #------------------------------------------------------------------------------
 Stntuple.gen_g4              : [ @sequence::su2020.gen_g4               ]
-Stntuple.gen_g4_pbi_detFilter: [ @sequence::su2020.gen_g4_pbi_detFilter ]
 Stntuple.gen_g4_pbi          : [ @sequence::su2020.gen_g4_pbi           ]
+Stntuple.gen_g4_pbi_detFilter: [ @sequence::su2020.gen_g4_pbi_detFilter ]
 
 Stntuple.digis               : [ @sequence::su2020.digis ]
 
 Stntuple.mix                 : [ dioMixer, protonMixer, neutronMixer, photonMixer, ootMixer, flashMixer ]
 Stntuple.mix_time_map        : [ @sequence::Stntuple.mix, @sequence::CommonMC.DigiSim ]
-Stntuple.gen_g4_mix_time_map : [ @sequence::Stntuple.gen_g4, @sequence::Stntuple.mix, @sequence::CommonMC.DigiSim ]
+
+# Stntuple.gen_g4_mix_time_map : [ @sequence::Stntuple.gen_g4, @sequence::Stntuple.mix, @sequence::CommonMC.DigiSim ]
 
 #------------------------------------------------------------------------------
 # proton reconstruction
@@ -83,13 +84,14 @@ Stntuple.paths : {
     stntuple_p0  : [ @sequence::Stntuple.stnmaker ]
 #------------------------------------------------------------------------------
 # MC generation, G4, reconstruction and stntuple making (e- and e+ included)
-# p1  : generate, simulate ... 
+# p1  : generate, simulate, reconstruct - no digi_compression ... 
 # p01 : read    , simulate ... 
 #------------------------------------------------------------------------------
     stntuple_p1  : [ # @sequence::su2020.gen_g4_time_map,
-		     @sequence::su2020.gen_g4         , 
+		     @sequence::su2020.gen_g4_pbi     , 
 		     @sequence::CommonMC.DigiSim      ,     # time maps + window marker
 		     @sequence::su2020.digis          ,
+#		     compressDigiMCs                  ,
 		     @sequence::su2020.trk_hit_reco   ,
 		     @sequence::su2020.calo_reco      ,
 		     @sequence::su2020.trk_reco_de    ,
@@ -101,6 +103,7 @@ Stntuple.paths : {
     stntuple_p01 : [ g4run, filterStepPointMomentum   , 
 		     @sequence::CommonMC.DigiSim      ,     #  time maps + window marker
 		     @sequence::su2020.digis          ,
+		     compressDigiMCs                  ,
 		     @sequence::su2020.trk_hit_reco   ,
 		     @sequence::su2020.calo_reco      ,
 		     @sequence::su2020.trk_reco_de    ,
@@ -237,6 +240,7 @@ Stntuple.paths : {
     stntuple_p7  : [ @sequence::su2020.gen_g4_pbi     ,
 		     @sequence::CommonMC.DigiSim      ,  # TimeMaps, EWMProducer
 		     @sequence::su2020.digis          ,
+		     compressDigMCs                   ,
 		     @sequence::su2020.trk_hit_reco   ,
 		     @sequence::su2020.calo_reco      ,
 		     @sequence::su2020.trk_reco_de    ,

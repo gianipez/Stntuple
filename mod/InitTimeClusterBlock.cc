@@ -38,6 +38,9 @@
 #include "RecoDataProducts/inc/CaloCluster.hh"
 //-----------------------------------------------------------------------------
 // assume that the collection name is set, so we could grab it from the event
+// ComboHitCollection and StrawHitCollection are of the same time, the first one 
+// contains real combo hits (one combo hit could be made out of more than one straw hit),
+// the other one has a combo hit per straw digi
 //-----------------------------------------------------------------------------
 int  StntupleInitTimeClusterBlock::InitDataBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode) {
 
@@ -61,10 +64,20 @@ int  StntupleInitTimeClusterBlock::InitDataBlock(TStnDataBlock* Block, AbsEvent*
   art::Handle<mu2e::ComboHitCollection>    chcH;
   const mu2e::ComboHitCollection*          chc(nullptr);
 
-  if (! fStrawHitCollTag.empty()) {
-    bool ok = Evt->getByLabel(fStrawHitCollTag,chcH);
+  art::Handle<mu2e::ComboHitCollection>    shcH;
+  const mu2e::ComboHitCollection*          shc(nullptr);
+
+  if (! fComboHitCollTag.empty()) {
+    bool ok = Evt->getByLabel(fComboHitCollTag,chcH);
     if (ok) {
       chc          = chcH.product();
+    }
+  }
+
+  if (! fStrawHitCollTag.empty()) {
+    bool ok = Evt->getByLabel(fStrawHitCollTag,shcH);
+    if (ok) {
+      shc          = shcH.product();
     }
   }
 
@@ -114,7 +127,7 @@ int  StntupleInitTimeClusterBlock::InitDataBlock(TStnDataBlock* Block, AbsEvent*
     tc->fPosY         = tmpTCl->position().y();     
     tc->fPosZ         = tmpTCl->position().z();
 //-----------------------------------------------------------------------------
-// loop over the 1-sh combo hits to determine the matching MC particle
+// loop over combo hits to determine the matching MC particle
 //-----------------------------------------------------------------------------
     const mu2e::StrawGasStep* step (nullptr);
 
@@ -127,12 +140,14 @@ int  StntupleInitTimeClusterBlock::InitDataBlock(TStnDataBlock* Block, AbsEvent*
     for (int ih=0; ih<tc->fNComboHits; ih++) {
       StrawHitIndex hit_index = tmpTCl->hits().at(ih);
       const mu2e::ComboHit* hit = &chc->at(hit_index);
-
+//-----------------------------------------------------------------------------
+// loop over straw hits of one combo hit
+//-----------------------------------------------------------------------------
       int nsh = hit->nStrawHits();
       for (int ish=0; ish<nsh; ish++) {
 	int i2 = hit->index(ish);
 	std::vector<StrawDigiIndex> shids;
-	chc->fillStrawDigiIndices((const art::Event&) *Evt,i2,shids);
+	shc->fillStrawDigiIndices((const art::Event&) *Evt,i2,shids);
       
 	const mu2e::StrawDigiMC* mcdigi = &mcdigis->at(shids[0]);
       

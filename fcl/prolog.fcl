@@ -69,6 +69,7 @@ StntupleMakerTemplate : { module_type:StntupleMaker
 # module is running upstream, simply copies its output
 # 'spmc' stands for 'StepPointMC'
 #------------------------------------------------------------------------------
+    comboHitCollTag      : "makePH"
     strawHitCollTag      : "makeSH"
     strawDigiMCCollTag   : "compressDigiMCs"                     # was "makeSD"
 #------------------------------------------------------------------------------
