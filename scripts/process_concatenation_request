@@ -86,7 +86,7 @@ fi
 cat $request_file >> $LOGFILE
 
 root.exe  -b -l <<EOF  >> $LOGFILE
-.L Stntuple/ana/scripts/dh.C
+.L Stntuple/scripts/dh.C
 gInterpreter->LoadMacro("$request_file");
 dh::concatenate($JOB_NUMBER)
 EOF
