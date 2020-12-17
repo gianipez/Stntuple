@@ -2,8 +2,8 @@
 
 * General information
 
-  - interface                 : file:./obj/obj/TSimpBlock.hh
-  - initialization code       : file:../mod/InitSimpBlock.cc
+  - interface                 : [[file:../obj/obj/TSimpBlock.hh][Stntuple/obj/obj/TSimpBlock.hh]]
+  - initialization code       : [[file:../mod/InitSimpBlock.cc][Stntuple/mod/InitSimpBlock.cc]]
 
   - initialization parameters :                                                
 #+begin_src parameters 
