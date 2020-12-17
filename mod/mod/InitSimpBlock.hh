@@ -20,6 +20,7 @@ public:
   float           fMinSimpEnergy;
   float           fMaxZ;
   int             fGenProcessID;
+  int             fPdgID;
 //-----------------------------------------------------------------------------
 // functions
 //-----------------------------------------------------------------------------
@@ -32,6 +33,7 @@ public:
   void   SetMinSimpEnergy     (double       MinE) { fMinSimpEnergy      = MinE              ; }
   void   SetMaxZ              (double       MaxZ) { fMaxZ               = MaxZ              ; }
   void   SetGenProcessID      (int          ID  ) { fGenProcessID       = ID                ; }
+  void   SetPdgID             (int          ID  ) { fPdgID              = ID                ; }
 
   virtual int InitDataBlock(TStnDataBlock* Block, AbsEvent* Evt, int Mode);
   //  virtual int ResolveLinks (TStnDataBlock* Block, AbsEvent* Evt, int Mode);

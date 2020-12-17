@@ -167,6 +167,7 @@ protected:
 // cut-type parameters
 //-----------------------------------------------------------------------------
   GenId                    fGenId        ;  // generated process ID
+  int                      fPdgId        ;  // PDG ID of the simparticle to be stored, 0 by default
   
   double                   fMinTActive   ;  // start of the active window
   double                   fMinECrystal  ;  // 
@@ -279,6 +280,7 @@ StntupleMaker::StntupleMaker(fhicl::ParameterSet const& PSet):
   , fCaloClusterMaker        (PSet.get<string>        ("caloClusterMaker"    ))
 
   , fGenId(GenId::findByName (PSet.get<std::string>   ("genId"              )))
+  , fPdgId                   (PSet.get<int>           ("pdgId"               ))
 
   , fMinTActive              (PSet.get<double>        ("minTActive"          ))
   , fMinECrystal             (PSet.get<double>        ("minECrystal"         ))
@@ -480,6 +482,7 @@ void StntupleMaker::beginJob() {
     fInitGenpBlock = new StntupleInitGenpBlock();
     fInitGenpBlock->SetGenpCollTag(fGenpCollTag);
     fInitGenpBlock->SetGenProcessID (fGenId.id());
+    fInitGenpBlock->SetPdgID        (fPdgId     );
 
     AddDataBlock("GenpBlock","TGenpBlock",fInitGenpBlock,buffer_size,split_mode,compression_level);
   }
@@ -564,6 +567,7 @@ void StntupleMaker::beginJob() {
     fInitSimpBlock->SetMinSimpEnergy(fSimpMinEnergy);
     fInitSimpBlock->SetMaxZ         (fSimpMaxZ);
     fInitSimpBlock->SetGenProcessID (fGenId.id());
+    fInitSimpBlock->SetPdgID        (fPdgId);
 
     AddDataBlock("SimpBlock","TSimpBlock",fInitSimpBlock,buffer_size,split_mode,compression_level);
   }
