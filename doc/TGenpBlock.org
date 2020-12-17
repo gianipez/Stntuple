@@ -1,10 +1,10 @@
 # -*- mode: org -*
 
-* interface                 : file:./obj/obj/TGenpBlock.hh
-* initialization code       : file:../mod/InitGenpBlock.cc
+* interface                 : [[file:../obj/obj/TGenpBlock.hh][Stntuple/obj/obj/TGenpBlock.hh]]
+* initialization code       : [[file:../mod/InitGenpBlock.cc][Stntuple/mod/InitGenpBlock.cc]]
 * ------------------------------------------------------------------------------
 * setting generator ID : identifies particles of interest                      
-  default - "unknown" is defined in file:../fcl/prolog.fcl::GEN_ID
+  default - "unknown" is defined in [[file:../fcl/prolog.fcl::@local::GEN_ID][Stntuple/fcl/prolog.fcl]]
 
 * ------------------------------------------------------------------------------
 * *common problems*
