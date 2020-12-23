@@ -1844,6 +1844,10 @@ void TStnTrack::Clear(Option_t* Opt) {
   fRSlopeErr    = -1.;
 					// for the same reason, E/P > 0
   fEp           = -1.;
+
+					// a kludgy attempt to initalize temp vars
+  for (int i=0; i<5;  i++) fITmp[i] = -1;
+  for (int i=0; i<10; i++) fTmp [i] = -1.e6;
 }
 
 //_____________________________________________________________________________
@@ -1890,5 +1894,15 @@ Int_t TStnTrack::GetMomentum(TLorentzVector* Momentum) {
 }
 
 
+//-----------------------------------------------------------------------------
+// kludge: uses fITmp[0] !
+//-----------------------------------------------------------------------------
+float TStnTrack::TrkQual() const {
+  if (fITmp[0] < 0) return fTrkQual;
+  else               {
+    int loc = fITmp[0];
+    return fTmp[loc];
+  }
+}
 
 // } // end namespace

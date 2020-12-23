@@ -98,7 +98,7 @@ int TStnTrackID::IDWord(TStnTrack* Track) {
   mom_err        = Track->fFitMomErr;
   d0             = Track->fD0;              // signed impact parameter, convention: mu2e-781
   rmax           = fabs(d0+2./Track->C0()); // 2/c0 - signed diameter
-  trk_qual       = Track->DaveTrkQual();
+  trk_qual       = Track->TrkQual();        // by default - Dave's , can be redefined !
 
   if (fcons            <  fMinFitCons  ) id_word |= kFitConsBit ;
   if (chi2dof          >  fMaxChi2Dof  ) id_word |= kChi2DofBit ;
