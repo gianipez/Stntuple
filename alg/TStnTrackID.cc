@@ -72,6 +72,8 @@ TStnTrackID::TStnTrackID(const char* Name): TNamed(Name,Name) {
 
   for (int i=0; i< kNFreeInts  ; i++) fInteger[i] = 0;
   for (int i=0; i< kNFreeFloats; i++) fFloat  [i] = 0;
+
+  fLocTrkQual     = -1;
 }
 
 
@@ -98,7 +100,9 @@ int TStnTrackID::IDWord(TStnTrack* Track) {
   mom_err        = Track->fFitMomErr;
   d0             = Track->fD0;              // signed impact parameter, convention: mu2e-781
   rmax           = fabs(d0+2./Track->C0()); // 2/c0 - signed diameter
-  trk_qual       = Track->TrkQual();        // by default - Dave's , can be redefined !
+
+  if (fLocTrkQual < 0) trk_qual = Track->DaveTrkQual();        // by default - Dave's , can be redefined !
+  else                 trk_qual = Track->Tmp(fLocTrkQual);
 
   if (fcons            <  fMinFitCons  ) id_word |= kFitConsBit ;
   if (chi2dof          >  fMaxChi2Dof  ) id_word |= kChi2DofBit ;
