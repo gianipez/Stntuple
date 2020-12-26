@@ -521,6 +521,38 @@ Stntuple : {
 	    statusG4Tag                : [ "g4run"                     ]
 	}
 
+	StntupleMakerDeDmuDar : { @table::StntupleMakerTemplate 
+	    makePid                    : 0
+	    makeTrackSeeds             : 1
+	    makeTimeClusters           : 1
+	    makeHelices                : 1
+	    makeStepPointMC            : 1
+
+	    timeClusterBlockName       : [ "TimeClusterBlockDe"  , "TimeClusterBlockDmu" ]
+  	    timeClusterCollTag         : [ "MHFinderDe"          , "MHFinderDmu"         ]
+	    helixBlockName             : [ "HelixBlockDe"        , "HelixBlockDmu"       ]
+	    helixCollTag               : [ "MHFinderDe"          , "MHFinderDmu"         ]
+
+	    trackSeedBlockName         : [ "TrackSeedBlockDe"    , "TrackSeedBlockDmu"   ]
+	    trackSeedCollTag           : [ "KSFDeMH"             , "KSFDmuMH"            ]
+
+	    trackBlockName             : [ "TrackBlockDarDe"     , "TrackBlockDarDmu"    ]
+	    trackCollTag               : [ "KFFDeMHDar"          , "KFFDmuMHDar"         ]
+	    trackTsBlockName           : [ "TrackSeedBlockDe"    , "TrackSeedBlockDmu"   ]
+	    trackTsCollTag             : [ "KSFDeMH"             , "KSFDmuMH"            ]
+
+	    tciCollTag                 : [ "TciDeMHDar"          , "TciDmuMHDar"         ]
+	    tcmCollTag                 : [ "TcmDeMHDar"          , "TcmDmuMHDar"         ]
+	    trkQualCollTag             : [ "TrkQualDeMHDar"      , "TrkQualDmuMHDar"     ]
+	    trackSHBlockName           : [ "TrackHitBlockDarDe"  , "TrackHitBlockDarDmu" ]
+	    pidBlockName               : [ "PidBlockDe"          , "PidBlockDmu"         ]
+	    pidCollTag                 : [ "AvikPIDNew"          , "AvikPIDNewDmu"       ]
+
+	    spmcBlockName              : [ "SpmcBlockVDet"             ]
+	    spmcCollTag                : [ @local::STN_VDHITS_COLL_TAG ]
+	    statusG4Tag                : [ "g4run"                     ]
+	}
+
 #------------------------------------------------------------------------------
 # trigger studies
 #------------------------------------------------------------------------------
@@ -655,5 +687,7 @@ Stntuple.stnmaker_trig    : [ InitStntuple, StntupleMakerTrig,                  
 Stntuple.stnmaker_De      : [ InitStntuple, StntupleMakerDe  ,                  FillStntuple ]
 Stntuple.stnmaker_Dmu     : [ InitStntuple, StntupleMakerDmu ,                  FillStntuple ]
 Stntuple.stnmaker_De_Dmu  : [ InitStntuple, StntupleMakerDeDmu,                 FillStntuple ]
+
+Stntuple.stnmaker_De_Dmu_dar : [ InitStntuple, StntupleMakerDeDmuDar,           FillStntuple ]
 
 END_PROLOG
