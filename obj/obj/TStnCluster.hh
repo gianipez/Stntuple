@@ -103,6 +103,8 @@ public:
   float   Nx         () { return fNx;    }
   float   Ny         () { return fNy;    }
 
+  float   SeedFr     () { return fFrE1;  }
+
   float   SigX       () { return fSigZ;  }
   float   SigY       () { return fSigY;  }
   float   SigZ       () { return fSigZ;  }
