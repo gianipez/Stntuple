@@ -46,11 +46,11 @@ int  catalog_file(const char* InputFile,
   
   dset    = new TStnDataset();
 
-  printf("before init_dataset : input file: %s\n",InputFile);
+  // printf("before init_dataset : input file: %s\n",InputFile);
 
   catalog->InitDataset(dset,"file","","",InputFile);
 
-  printf("after init_dataset : input file: %s\n",InputFile);
+  // printf("after init_dataset : input file: %s\n",InputFile);
 
   x = new TStnAna(dset);
 
@@ -197,7 +197,7 @@ void catalog_list_of_files(const char* RequestFile, Int_t Mode=11) {
           sprintf(fn,"%s",file);
 	}
 
-	printf("[catalog_list_of_files] : cataloging %s\n",fn);
+	// printf("[catalog_list_of_files] : cataloging %s\n",fn);
 
 	catalog_file(fn,Mode,output_dir,dataset_id,book);
       }
