@@ -172,7 +172,9 @@ void TStnTrackID::FillHistograms(Hist_t* Hist, TStnTrack* Track, Int_t Mode) {
   float tandip  = Track->TanDip();
   float d0      = Track->D0();
   float rmax    = Track->RMax();
+
   float trkqual = Track->DaveTrkQual();
+  if (fLocTrkQual >= 0) trkqual = Track->Tmp(fLocTrkQual);
 //-----------------------------------------------------------------------------
 //  1. number of points
 //-----------------------------------------------------------------------------
@@ -217,9 +219,8 @@ void TStnTrackID::FillHistograms(Hist_t* Hist, TStnTrack* Track, Int_t Mode) {
   if (id_word == 0) Hist->fRMax[4]->Fill(rmax);
 
   Hist->fTrkQual[0]->Fill(trkqual);
-  if ((id_word & ~kRMaxBit) == 0) Hist->fTrkQual[1]->Fill(trkqual);
+  if ((id_word & ~kTrkQualBit) == 0) Hist->fTrkQual[1]->Fill(trkqual);
   if (id_word == 0) Hist->fTrkQual[4]->Fill(trkqual);
-
 //-----------------------------------------------------------------------------
 //  single histogram showing how often every particular cut failed
 //-----------------------------------------------------------------------------
