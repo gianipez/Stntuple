@@ -89,20 +89,12 @@ void plot_hist_1D(hist_data_t* Hist1, int Print = 0) {
   hpx1->GetStats(&stats);
   printf("stats = %10.3f\n",stats);
 //-----------------------------------------------------------------------------
-// add legend
+// add legend, normalized coords
 //-----------------------------------------------------------------------------
-  float xmin{0.65}, ymin{0.25}, xmax{0.90}, ymax{0.35};
-  if (Hist1->fLegendXMin > 0) { // redefine the legend position, normalized coords
-    xmin = Hist1->fLegendXMin;
-    ymin = Hist1->fLegendYMin;
-    xmax = Hist1->fLegendXMax;
-    ymax = Hist1->fLegendYMax;
-  }
-  
   //  printf("emoe 1 \n");
 
   if (Hist1->fLabel != "") {
-    TLegend* leg = new TLegend(xmin,ymin,xmax,ymax);
+    TLegend* leg = new TLegend(Hist1->fLegendXMin,Hist1->fLegendYMin,Hist1->fLegendXMax,Hist1->fLegendYMax);
     leg->AddEntry(hpx1,Hist1->fLabel.Data(),"pl");  // "pl"
     leg->SetBorderSize(0);
     leg->SetFillStyle(0);
@@ -288,18 +280,10 @@ void plot_hist_1D(hist_data_t* Hist1,  hist_data_t*  Hist2, int Print = 0) {
     plot_stat_box(hpx2,Hist2->fOptStat,Hist2->fStatBoxXMin,Hist2->fStatBoxYMin,Hist2->fStatBoxXMax,Hist2->fStatBoxYMax);
   }
 //-----------------------------------------------------------------------------
-// add legend
+// add legend, normalized coordinates
 //-----------------------------------------------------------------------------
-  float xmin{0.65}, ymin{0.25}, xmax{0.90}, ymax{0.35};
-  if (Hist1->fLegendXMin > 0) { // redefine the legend position, normalized coords
-    xmin = Hist1->fLegendXMin;
-    ymin = Hist1->fLegendYMin;
-    xmax = Hist1->fLegendXMax;
-    ymax = Hist1->fLegendYMax;
-  }
-
   if (Hist1->fLabel != "") {
-    TLegend* leg = new TLegend(xmin,ymin,xmax,ymax);
+    TLegend* leg = new TLegend(Hist1->fLegendXMin,Hist1->fLegendYMin,Hist1->fLegendXMax,Hist1->fLegendYMax);
     leg->AddEntry(hpx1,Hist1->fLabel.Data(),"pl");  // "pl"
     leg->AddEntry(hpx2,Hist2->fLabel.Data(),"pl");
     leg->SetBorderSize(0);
@@ -455,17 +439,9 @@ int plot_hist_1d(hist_data_t* Hist, int NHist, int Print = 0) {
 // start forming legend
 //-----------------------------------------------------------------------------
   TLegend*  leg(nullptr);
-  float xmin{0.65}, ymin{0.25}, xmax{0.90}, ymax{0.35};
-
-  if (Hist1->fLegendXMin > 0) { // redefine the legend position, normalized coords
-    xmin = Hist1->fLegendXMin;
-    ymin = Hist1->fLegendYMin;
-    xmax = Hist1->fLegendXMax;
-    ymax = Hist1->fLegendYMax;
-  }
 
   if (Hist1->fLabel != "") {
-    leg = new TLegend(xmin,ymin,xmax,ymax);
+    leg = new TLegend(Hist1->fLegendXMin,Hist1->fLegendYMin,Hist1->fLegendXMax,Hist1->fLegendYMax);
     leg->AddEntry(hpx1,Hist1->fLabel.Data(),"pl");
     leg->SetBorderSize(0);
     leg->SetFillStyle(0);
@@ -671,7 +647,7 @@ void fit_gaus_hist_1D(hist_data_t* Hist, const char* FOpt, const char* GOpt, dou
 //-----------------------------------------------------------------------------
 // add legend
 //-----------------------------------------------------------------------------
-  TLegend* leg = new TLegend(0.65,0.30,0.90,0.38);
+  TLegend* leg = new TLegend(Hist->fLegendXMin,Hist->fLegendYMin,Hist->fLegendXMax,Hist->fLegendYMax);
   leg->AddEntry(hpx1,Hist->fLabel.Data(),"pl");  // "pl"
   leg->SetBorderSize(0);
   leg->SetFillStyle(0);
