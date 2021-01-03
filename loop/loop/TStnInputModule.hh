@@ -51,8 +51,9 @@ public:
   virtual Double_t  GetFiles   () { return fNFiles; }
   Double_t          GetEntry   () { return fEntry; }
   Int_t             FindEvent  (Int_t Run, Int_t Event);
-  TStnDataset*      GetDataset (int i) {
-    return (TStnDataset*) fDatasetList->At(i); }
+
+  TStnDataset*      GetDataset (int i) { return (TStnDataset*) fDatasetList->At(i); }
+
   TChain*           GetChain   () { return fChain; }
 
 					// returns pointer to TStnDataBlock,

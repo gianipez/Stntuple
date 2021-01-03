@@ -13,7 +13,9 @@
 
 ClassImp(TStnDataset)
 
-//_____________________________________________________________________________
+//-----------------------------------------------------------------------------
+// PDGCode=0 doesn't make sense - choose it as a default for this reason
+//-----------------------------------------------------------------------------
 TStnDataset::TStnDataset(const char* Name): TNamed(Name,Name) {
   // non-cataloged dataset
 
@@ -31,6 +33,7 @@ TStnDataset::TStnDataset(const char* Name): TNamed(Name,Name) {
   fDoneBadFiles   = 0;
   fNGenEvents     = -1;
   fMCProcessCode  = -1;
+  fPDGCode        = 0;
 }
 
 //_____________________________________________________________________________
