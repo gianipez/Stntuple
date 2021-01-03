@@ -2,7 +2,7 @@
 #------------------------------------------------------------------------------
 #  usage: 
 #  ------
-#  cdfopr/scripts/catalog_stntuples -b book -d dataset -m mode -v verbose   \
+#  Stntuple/scripts/catalog_stntuples -b book -d dataset -m mode -v verbose   \
 #                                   -u user -h host -D directory -p pattern 
 # 
 # starts from already created file-level catalog file and assigns fileset 
@@ -199,7 +199,7 @@ $logfile   = 'catalog_stntuples.'+Process.pid.to_s()+'.log'
 
 f1 = File.new($tmp_script,'w');
 f1.puts('{');
-f1.puts('  gInterpreter->LoadMacro("Stntuple/ana/scripts/dh.C");');
+f1.puts('  gInterpreter->LoadMacro("Stntuple/scripts/dh.C");');
 f1.puts("  gInterpreter->ProcessLine(\"dh::catalog_list_of_files(\\\"#{$request_file}\\\",#{$mode})\");");
 f1.puts('}');
 f1.close();

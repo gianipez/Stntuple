@@ -56,25 +56,36 @@ Stntuple.crv_reco            : [ @sequence::su2020.crv_reco     ]
 # assume Stntuple.
 # new tracking sequences: 2 lists in the end, 'MH' is the new default (MergeHelix)
 #------------------------------------------------------------------------------
-Stntuple.post_reco_de    : [ @sequence::TrackCaloMatching.matching_DeMHPar ,
-			     AvikPIDNewDeMHPar                               ,
-			     TrkQualDeMHPar                                  ,
-			     @sequence::TrackCaloMatching.matching_DeMHDar   ,
-			     AvikPIDNewDeMHDar                               ,
-			     TrkQualDeMHDar
+Stntuple.post_reco_de_par : [ @sequence::TrackCaloMatching.matching_DeMHPar ,
+			      AvikPIDNewDeMHPar                             ,
+			      TrkQualDeMHPar                                  
+			    ]
+
+Stntuple.post_reco_de_dar : [ @sequence::TrackCaloMatching.matching_DeMHDar   ,
+			      AvikPIDNewDeMHDar                               ,
+			      TrkQualDeMHDar
+			     ]
+
+Stntuple.post_reco_de    : [ @sequence::Stntuple.post_reco_de_par,
+			     @sequence::Stntuple.post_reco_de_dar
 			    ]
 #------------------------------------------------------------------------------
 # muon post-core-reconstruction path
 # new tracking sequences: 2 lists in the end, 'MH' is the new default (MergeHelix)
 #------------------------------------------------------------------------------
-Stntuple.post_reco_dmu   : [ @sequence::TrackCaloMatching.matching_DmuMHPar  ,
-			     AvikPIDNewDmuMHPar                              ,
-			     TrkQualDmuMHPar                                 ,
-			     @sequence::TrackCaloMatching.matching_DmuMHDar  ,
-			     AvikPIDNewDmuMHDar                              ,
-			     TrkQualDmuMHDar
-			    ]
+Stntuple.post_reco_dmu_par : [ @sequence::TrackCaloMatching.matching_DmuMHPar,
+			       AvikPIDNewDmuMHPar                              ,
+			       TrkQualDmuMHPar
+			      ]
 
+Stntuple.post_reco_dmu_dar : [ @sequence::TrackCaloMatching.matching_DmuMHDar  ,
+			       AvikPIDNewDmuMHDar                              ,
+			       TrkQualDmuMHDar
+			      ]
+
+Stntuple.post_reco_dmu     : [ @sequence::Stntuple.post_reco_dmu_par,
+			       @sequence::Stntuple.post_reco_dmu_dar
+			      ]
 #------------------------------------------------------------------------------
 # paths
 #------------------------------------------------------------------------------
@@ -111,6 +122,18 @@ Stntuple.paths : {
 		     @sequence::Stntuple.post_reco_de , 
 		     @sequence::Stntuple.stnmaker_De
 		    ]
+
+    stntuple_p02_dar : [ @sequence::su2020.gen_g4_pbi       , 
+			 @sequence::CommonMC.DigiSim        ,     # time maps + window marker
+			 @sequence::su2020.digis            ,
+			 @sequence::su2020.trk_hit_reco     ,
+			 @sequence::su2020.calo_reco        ,
+			 @sequence::su2020.trk_reco_de_dar  ,
+			 @sequence::su2020.trk_reco_dmu_dar ,
+			 @sequence::Stntuple.post_reco_de_dar,    # track-calo matching and electron PID
+			 @sequence::Stntuple.post_reco_dmu_dar,    # track-calo matching and muo PID
+			 @sequence::Stntuple.stnmaker_De_Dmu_dar 
+			]
 #------------------------------------------------------------------------------
 # p2  : electron reconstruction and stntuple making
 # p21 : the same as p2, but no CRV reco
@@ -148,9 +171,10 @@ Stntuple.paths : {
 		     @sequence::Stntuple.stnmaker_Dmu       # stntupling
 		    ]
 #------------------------------------------------------------------------------
-# p40 : full downstream (e+mu) reconstruction and stntuple making
-# p41 : the same as p40, but no CRV reco
-# p42 : same as p41, but w/o reco_compression which crashes on muon decays in flight
+# p40     : full downstream (e+mu) reconstruction and stntuple making
+# p41     : same as p40, but no CRV reco
+# p42     : same as p41, but w/o reco_compression which crashes on muon decays in flight
+# p42_dar : same as p42, but only DAR reco for downstream electrons and muons
 #------------------------------------------------------------------------------
     stntuple_p40 : [ @sequence::su2020.trk_hit_reco     ,
 		     @sequence::su2020.calo_reco        ,
@@ -188,6 +212,15 @@ Stntuple.paths : {
 		     @sequence::Stntuple.stnmaker_De_Dmu 
 		   ]
 
+    stntuple_p42_dar : [ @sequence::su2020.trk_hit_reco     ,
+			 @sequence::su2020.calo_reco        ,
+			 @sequence::su2020.trk_reco_de_dar  ,
+			 @sequence::su2020.trk_reco_dmu_dar ,
+			 @sequence::Stntuple.post_reco_de_dar,    # track-calo matching and electron PID
+			 @sequence::Stntuple.post_reco_dmu_dar,    # track-calo matching and muo PID
+			 @sequence::Stntuple.stnmaker_De_Dmu_dar 
+			]
+
     stntuple_p43 : [ @sequence::CrvDAQPackage.CrvDAQSequence, 
 		     @sequence::su2020.trk_hit_reco     ,
 		     @sequence::su2020.calo_reco        ,
@@ -200,7 +233,6 @@ Stntuple.paths : {
 		     @sequence::Stntuple.post_reco_dmu  ,    # track-calo matching and muo PID
 		     @sequence::Stntuple.stnmaker_De_Dmu
 		   ]
-
 #------------------------------------------------------------------------------
 # read, reconstruct
 #------------------------------------------------------------------------------

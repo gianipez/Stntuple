@@ -72,6 +72,8 @@ TStnTrackID::TStnTrackID(const char* Name): TNamed(Name,Name) {
 
   for (int i=0; i< kNFreeInts  ; i++) fInteger[i] = 0;
   for (int i=0; i< kNFreeFloats; i++) fFloat  [i] = 0;
+
+  fLocTrkQual     = -1;
 }
 
 
@@ -98,7 +100,9 @@ int TStnTrackID::IDWord(TStnTrack* Track) {
   mom_err        = Track->fFitMomErr;
   d0             = Track->fD0;              // signed impact parameter, convention: mu2e-781
   rmax           = fabs(d0+2./Track->C0()); // 2/c0 - signed diameter
-  trk_qual       = Track->TrkQual();        // by default - Dave's , can be redefined !
+
+  if (fLocTrkQual < 0) trk_qual = Track->DaveTrkQual();        // by default - Dave's , can be redefined !
+  else                 trk_qual = Track->Tmp(fLocTrkQual);
 
   if (fcons            <  fMinFitCons  ) id_word |= kFitConsBit ;
   if (chi2dof          >  fMaxChi2Dof  ) id_word |= kChi2DofBit ;
@@ -168,7 +172,9 @@ void TStnTrackID::FillHistograms(Hist_t* Hist, TStnTrack* Track, Int_t Mode) {
   float tandip  = Track->TanDip();
   float d0      = Track->D0();
   float rmax    = Track->RMax();
+
   float trkqual = Track->DaveTrkQual();
+  if (fLocTrkQual >= 0) trkqual = Track->Tmp(fLocTrkQual);
 //-----------------------------------------------------------------------------
 //  1. number of points
 //-----------------------------------------------------------------------------
@@ -213,9 +219,8 @@ void TStnTrackID::FillHistograms(Hist_t* Hist, TStnTrack* Track, Int_t Mode) {
   if (id_word == 0) Hist->fRMax[4]->Fill(rmax);
 
   Hist->fTrkQual[0]->Fill(trkqual);
-  if ((id_word & ~kRMaxBit) == 0) Hist->fTrkQual[1]->Fill(trkqual);
+  if ((id_word & ~kTrkQualBit) == 0) Hist->fTrkQual[1]->Fill(trkqual);
   if (id_word == 0) Hist->fTrkQual[4]->Fill(trkqual);
-
 //-----------------------------------------------------------------------------
 //  single histogram showing how often every particular cut failed
 //-----------------------------------------------------------------------------
