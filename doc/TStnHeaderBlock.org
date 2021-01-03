@@ -1,0 +1,9 @@
+# -*- mode: org -*
+
+- always present
+
+* interface                 : [[file:../obj/obj/TStnHeaderBlock.hh][Stntuple/obj/obj/TStnHeaderBlock.hh]]
+* initialization code       : [[file:../mod/InitHeaderBlock.cc][Stntuple/mod/InitHeaderBlock.cc]]
+* created in                : [[file:../mod/InitStntuple_module.cc::76][Stntuple/mod/InitStntuple_module.cc]]
+* ------------------------------------------------------------------------------
+* back to file:data_blocks.org

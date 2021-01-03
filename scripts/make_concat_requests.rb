@@ -56,7 +56,7 @@ $pattern        = ""
 $format         = "dst"
 $iuser          = `whoami`.strip
 $list_of_files  = nil
-$max_file_size  = 1100000000
+$max_file_size  = 1600000000
 $ouser          = `whoami`.strip
 $output_dir     = "fcdfsgi2"
 $output_tcl_dir = ""
@@ -103,7 +103,7 @@ opts.each do |opt, arg|
   elsif (opt == "--list_of_files" ) then
     $list_of_files = arg
   elsif (opt == "--max_file_size" ) ; then 
-    $max_file_size = arg.to_i*1000000
+    $max_file_size = arg.to_i*1024*1024
   elsif (opt == "--output_dir"    ) 
 #-----------------------------------------------------------------------
 #  output directory
@@ -458,7 +458,7 @@ if __FILE__ == $PROGRAM_NAME
   puts "emoe! #{$PROGRAM_NAME}"
   if ($verbose) then puts(">>>>>>>>>>>>>> creating concatenation request"); end
 
-  req = ConcatenationRequest.new($format,1500000000);
+  req = ConcatenationRequest.new($format,$max_file_size);
 
   req.make_request_file();
 end

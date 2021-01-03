@@ -400,7 +400,7 @@ int plot_hist_1d(hist_data_t* Hist, int NHist, int Print = 0) {
 //-----------------------------------------------------------------------------
 // create a canvas
 //-----------------------------------------------------------------------------
-  TString canvas_name("");
+  TString canvas_name("c_plot_hist_1D");
 
   if (Hist1->fCanvasName != "") {
     canvas_name = Hist1->fCanvasName;
@@ -420,7 +420,7 @@ int plot_hist_1d(hist_data_t* Hist, int NHist, int Print = 0) {
 //-----------------------------------------------------------------------------
 // initially, create canvas with an empty name
 //-----------------------------------------------------------------------------
-  TCanvas* c = new TCanvas("c_plot_hist_1D","plot_hist_1D",cx,cy);
+  TCanvas* c = new TCanvas(canvas_name,canvas_name,cx,cy);
   c->SetLogy(Hist1->fYLogScale);
 //-----------------------------------------------------------------------------
 // the two histograms may correspond to slightly different NPOT
@@ -494,7 +494,7 @@ int plot_hist_1d(hist_data_t* Hist, int NHist, int Print = 0) {
     else      hpx2 = (TH1F*) Hist2->fHist->Clone(h2name);
     if (Hist2->fRebin > 0) hpx2->Rebin(Hist2->fRebin);
 //-----------------------------------------------------------------------------
-// in case there are 2 histograms, add the nam of the second one to the canvas name
+// in case there are 2 histograms, add the name of the second one to the canvas name
 //-----------------------------------------------------------------------------
     if ((Hist1->fCanvasName == "") && (NHist == 2)) {
       canvas_name += "_vs_";

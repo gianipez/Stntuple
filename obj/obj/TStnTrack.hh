@@ -317,9 +317,10 @@ public:
   float  C0         () const { return fC0;      }
   float  Phi0       () const { return fPhi0;    }
   float  DaveTrkQual() const { return fTrkQual; }  // kept for not hurting previous Ana codes
-  float  TrkQual    () const { return fTrkQual; }
+  float  TrkQual    () const ;
 
   float  RMax       () const { return fabs(fD0+2/fC0); }
+  float  Tmp   (int I) const { return fTmp[I]; }
 //-----------------------------------------------------------------------------
 // setters
 //-----------------------------------------------------------------------------
@@ -327,6 +328,9 @@ public:
   void   SetAlgorithmID   (int ID) { fAlgorithmID = ID; }
   void   SetHelixIndex    (int I ) { fHelixIndex  = I;  }
   void   SetTrackSeedIndex(int I ) { fSeedIndex   = I;  }
+
+  void   SetITmp          (int I, int   Val) { fITmp[I] = Val; }
+  void   SetTmp           (int I, float Val) { fTmp [I] = Val; }
 //-----------------------------------------------------------------------------
 // overloaded methods of TObject
 //-----------------------------------------------------------------------------

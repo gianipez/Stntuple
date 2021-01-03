@@ -106,12 +106,13 @@ int StntupleInitGenpBlock::InitDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent
 	   ip != coll->end(); ip++) {
 	gp       = ip.operator -> ();
 	gen_id   = (int) gp->generatorId().id();
+	pdg_code = (int) gp->pdgId();
 //-----------------------------------------------------------------------------
 // conditionally. store only particles corresponding to the requested process
 //-----------------------------------------------------------------------------
-	if ((fGenProcessID > 0) && (gen_id != fGenProcessID)) continue;
+	if ((fGenProcessID > 0) && (gen_id   != fGenProcessID)) continue;
+	if ((fPdgID       != 0) && (pdg_code != fPdgID       )) continue;
 
-	pdg_code = (int) gp->pdgId();
 	part     = pdg_db->GetParticle(pdg_code);
 
 	px     = gp->momentum().x();

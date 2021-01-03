@@ -83,9 +83,10 @@ protected:
   float      fMaxChi2Dof;		// max chi2/DOF (as alternative)
   float      fMinFNa;                   // fraction of active hits
 
-  Float_t    fFloat[kNFreeFloats];	// spare words, added in V5
+  float      fFloat[kNFreeFloats];	// spare words, added in V5
 
-  void*      fEOR;		// ! end of record
+  void*      fEOR;	                // ! end of record
+  int        fLocTrkQual;               // ! if >=0, TrkQual is stored in TStnTrack::fTmp[fLocTrkQual]
 //-----------------------------------------------------------------------------
 //  methods
 //-----------------------------------------------------------------------------
@@ -134,7 +135,9 @@ public:
   void    SetMaxTanDip   (Float_t TanDip ) { fMaxTanDip     = TanDip;  }
 
   void    SetMinTrkQual  (Float_t TrkQual) { fMinTrkQual    = TrkQual; }
-  void    SetUseMask     (int     Mask)    { fUseMask       = Mask   ; }
+  void    SetUseMask     (int     Mask   ) { fUseMask       = Mask   ; }
+
+  void    SetLocTrkQual  (int     Loc    ) { fLocTrkQual    = Loc    ; }
 //-----------------------------------------------------------------------------
 // other methods
 //-----------------------------------------------------------------------------

@@ -171,6 +171,7 @@ int StntupleInitSimpBlock::InitDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent
       else      generator_id = -1;
 
       if ((fGenProcessID > 0) && (generator_id != fGenProcessID)) continue;
+      if ((fPdgID       != 0) && (pdg_code     != fPdgID       )) continue;
       
       creation_code    = sim->creationCode();
       termination_code = sim->stoppingCode();

@@ -1,20 +1,20 @@
 # -*- mode: org -*
 
-* setting generator ID : identifies particles of interest
-  default - "unknown" is defined in file:../fcl/prolog.fcl::GEN_ID
+* interface                 : [[file:../obj/obj/TGenpBlock.hh][Stntuple/obj/obj/TGenpBlock.hh]]
+* initialization code       : [[file:../mod/InitGenpBlock.cc][Stntuple/mod/InitGenpBlock.cc]]
+* ------------------------------------------------------------------------------
+* setting generator ID : identifies particles of interest                      
+  default - "unknown" is defined in [[file:../fcl/prolog.fcl::@local::GEN_ID][Stntuple/fcl/prolog.fcl]]
 
-
-
-
-* *------------------------------------------------------------------------------*
+* ------------------------------------------------------------------------------
 * *common problems*
-* *------------------------------------------------------------------------------*
-* GenpBlock branch in not present in the STNTUPLE:               
+* ------------------------------------------------------------------------------
+* GenpBlock branch in not present in the STNTUPLE:                            
 
   check FCL file, set makeGenp to 1
   look at file:../mod/StntupleMaker_module.cc::"makeGenp"
 
-* GenpBlock is present, but empty                                
+* GenpBlock is present, but empty                                             
 1) check [[file:../mod/StntupleMaker_module.cc::"genpCollTag"][genpCollTag]] in the FCL : (usual case: 'generate' vs 'CompressDigiMCs')
 
 2) check that the value of [[file:../mod/StntupleMaker_module.cc::"genId"][genId]], if requested, corresponds to the generated process ID
@@ -24,6 +24,6 @@
    see [[file:../../MCDataProducts/inc/GenId.hh][MCDataProducts/inc/GenId.hh]] for the definitions
 
 ** Explanation                                                   
-To save space, we typically reqest to store only one, signal, GenParticle.
+To save space, we typically request to store only one, signal, GenParticle.
 GenParticle is defined by the PDG code and custom Mu2e generator ID (genId)
 One often forgets to redefine the value of genId in FCL

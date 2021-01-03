@@ -7,10 +7,8 @@ BEGIN_PROLOG
 # 
 # they can be redefined 
 # see example of redefining GEN_ID in Stntuple/test/read_reco_stnmaker.fcl
+# to be included by Stntuple/fcl/stnmaker.fcl
 #------------------------------------------------------------------------------
-# TIME_MAPS           : [ "compressDigiMCs:protonTimeMap", "compressDigiMCs:muonTimeMap" ]
-# GEN_ID              : "unknown"                                   # by default, store all particles
-
 StntupleModuleFclDefaults : {
     interactiveMode : 0
 #------------------------------------------------------------------------------
@@ -71,6 +69,7 @@ StntupleMakerTemplate : { module_type:StntupleMaker
 # module is running upstream, simply copies its output
 # 'spmc' stands for 'StepPointMC'
 #------------------------------------------------------------------------------
+    comboHitCollTag      : "makePH"
     strawHitCollTag      : "makeSH"
     strawDigiMCCollTag   : "compressDigiMCs"                     # was "makeSD"
 #------------------------------------------------------------------------------
@@ -85,7 +84,8 @@ StntupleMakerTemplate : { module_type:StntupleMaker
     simpMaxZ             : 11800.0                               # mm  , by default, do no store calorimeter SimParticles
 
     genpCollTag          : "compressDigiMCs"                     # save signal-only: "generate" 
-    genId                : @local::GEN_ID                        # by default, store all
+    genId                : @local::GEN_ID                        # defined in Stntuple/fcl/stnmaker.fcl, by default, store all simparticles
+    pdgId                : @local::PDG_ID                        # defined in Stntuple/fcl/stnmaker.fcl, by default, don't check PDG ID
     
     timeClusterBlockName : ["TimeClusterBlock"   ]               # to be renamed, *FIXME*
     timeClusterCollTag   : ["TimeClusterFinderDe"]               # 
@@ -453,9 +453,9 @@ Stntuple : {
 	    pidBlockName               : [ ""                    , "PidBlock"             ]
 	    pidCollTag                 : [ ""                    , "AvikPIDNew"           ]
 
-	    spmcBlockName              : [ "SpmcBlockVDet"                   ]
-	    spmcCollTag                : [ "compressDigiMCs:virtualdetector" ]
-	    statusG4Tag                : [ "g4run"                           ]
+	    spmcBlockName              : [ "SpmcBlockVDet"             ]
+	    spmcCollTag                : [ @local::STN_VDHITS_COLL_TAG ]
+	    statusG4Tag                : [ "g4run"                     ]
 	}
 
 	StntupleMakerDmu : { @table::StntupleMakerTemplate 
@@ -483,6 +483,10 @@ Stntuple : {
 	    trackSHBlockName           : [ "TrackHitBlockPar"    , "TrackHitBlockDar"   ]
 	    pidBlockName               : [ ""                    , "PidBlock"           ]
 	    pidCollTag                 : [       ""              , "AvikPIDNew"         ]
+
+	    spmcBlockName              : [ "SpmcBlockVDet"             ]
+	    spmcCollTag                : [ @local::STN_VDHITS_COLL_TAG ]
+	    statusG4Tag                : [ "g4run"                     ]
 	}
 
 	StntupleMakerDeDmu : { @table::StntupleMakerTemplate 
@@ -513,9 +517,41 @@ Stntuple : {
 	    pidBlockName               : [ ""                    , "PidBlock"           , ""                     , "PidBlockDmu"          ]
 	    pidCollTag                 : [ ""                    , "AvikPIDNew"         , ""                     , "AvikPIDNewDmu"        ]
 
-	    spmcBlockName              : [ "SpmcBlockVDet"                   ]
-	    spmcCollTag                : [ "compressDigiMCs:virtualdetector" ]
-	    statusG4Tag                : [ "g4run"                           ]
+	    spmcBlockName              : [ "SpmcBlockVDet"             ]
+	    spmcCollTag                : [ @local::STN_VDHITS_COLL_TAG ]
+	    statusG4Tag                : [ "g4run"                     ]
+	}
+
+	StntupleMakerDeDmuDar : { @table::StntupleMakerTemplate 
+	    makePid                    : 0
+	    makeTrackSeeds             : 1
+	    makeTimeClusters           : 1
+	    makeHelices                : 1
+	    makeStepPointMC            : 1
+
+	    timeClusterBlockName       : [ "TimeClusterBlockDe"  , "TimeClusterBlockDmu" ]
+  	    timeClusterCollTag         : [ "MHFinderDe"          , "MHFinderDmu"         ]
+	    helixBlockName             : [ "HelixBlockDe"        , "HelixBlockDmu"       ]
+	    helixCollTag               : [ "MHFinderDe"          , "MHFinderDmu"         ]
+
+	    trackSeedBlockName         : [ "TrackSeedBlockDe"    , "TrackSeedBlockDmu"   ]
+	    trackSeedCollTag           : [ "KSFDeMH"             , "KSFDmuMH"            ]
+
+	    trackBlockName             : [ "TrackBlockDarDe"     , "TrackBlockDarDmu"    ]
+	    trackCollTag               : [ "KFFDeMHDar"          , "KFFDmuMHDar"         ]
+	    trackTsBlockName           : [ "TrackSeedBlockDe"    , "TrackSeedBlockDmu"   ]
+	    trackTsCollTag             : [ "KSFDeMH"             , "KSFDmuMH"            ]
+
+	    tciCollTag                 : [ "TciDeMHDar"          , "TciDmuMHDar"         ]
+	    tcmCollTag                 : [ "TcmDeMHDar"          , "TcmDmuMHDar"         ]
+	    trkQualCollTag             : [ "TrkQualDeMHDar"      , "TrkQualDmuMHDar"     ]
+	    trackSHBlockName           : [ "TrackHitBlockDarDe"  , "TrackHitBlockDarDmu" ]
+	    pidBlockName               : [ "PidBlockDe"          , "PidBlockDmu"         ]
+	    pidCollTag                 : [ "AvikPIDNew"          , "AvikPIDNewDmu"       ]
+
+	    spmcBlockName              : [ "SpmcBlockVDet"             ]
+	    spmcCollTag                : [ @local::STN_VDHITS_COLL_TAG ]
+	    statusG4Tag                : [ "g4run"                     ]
 	}
 
 #------------------------------------------------------------------------------
@@ -652,5 +688,7 @@ Stntuple.stnmaker_trig    : [ InitStntuple, StntupleMakerTrig,                  
 Stntuple.stnmaker_De      : [ InitStntuple, StntupleMakerDe  ,                  FillStntuple ]
 Stntuple.stnmaker_Dmu     : [ InitStntuple, StntupleMakerDmu ,                  FillStntuple ]
 Stntuple.stnmaker_De_Dmu  : [ InitStntuple, StntupleMakerDeDmu,                 FillStntuple ]
+
+Stntuple.stnmaker_De_Dmu_dar : [ InitStntuple, StntupleMakerDeDmuDar,           FillStntuple ]
 
 END_PROLOG

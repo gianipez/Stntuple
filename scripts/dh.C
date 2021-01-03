@@ -46,11 +46,11 @@ int  catalog_file(const char* InputFile,
   
   dset    = new TStnDataset();
 
-  printf("before init_dataset : input file: %s\n",InputFile);
+  // printf("before init_dataset : input file: %s\n",InputFile);
 
   catalog->InitDataset(dset,"file","","",InputFile);
 
-  printf("after init_dataset : input file: %s\n",InputFile);
+  // printf("after init_dataset : input file: %s\n",InputFile);
 
   x = new TStnAna(dset);
 
@@ -197,7 +197,7 @@ void catalog_list_of_files(const char* RequestFile, Int_t Mode=11) {
           sprintf(fn,"%s",file);
 	}
 
-	printf("[catalog_list_of_files] : cataloging %s\n",fn);
+	// printf("[catalog_list_of_files] : cataloging %s\n",fn);
 
 	catalog_file(fn,Mode,output_dir,dataset_id,book);
       }
@@ -658,9 +658,9 @@ int concatenate(const char* ListOfFiles,
 // }
 
 //-----------------------------------------------------------------------------
-  int concatenate(const char* InitChain, int JobNumber = -1) {
+  int concatenate(const char* InitChainScript, int JobNumber = -1) {
 //-----------------------------------------------------------------------------
-// InitChain is a file name of a ROOT script defining function
+// InitChainScript is a file name of a ROOT script defining function
 //
 // init_chain(TChain* Chain, int JobNumber, TString& OutputDir, TString& Book, TString& Dataset) 
 //
@@ -683,7 +683,7 @@ int concatenate(const char* ListOfFiles,
   char        c[1000], file[1000], fn[1000];
   int         done = 0;
 
-  gInterpreter->LoadMacro(InitChain);
+  gInterpreter->LoadMacro(InitChainScript);
 
   int j1 = 1;
 
@@ -741,9 +741,10 @@ int concatenate(const char* ListOfFiles,
 
     TStnOutputModule* om = new TStnOutputModule(output_file);
 //-----------------------------------------------------------------------------
-//  work around I/O issue with L3 summary block
+// max file size set to 8GB in TStnOutputModule, and could defined when making a concatenation
+// request. No need to redefine it here
 //-----------------------------------------------------------------------------
-    om->SetMaxFileSize(1800);
+//    om->SetMaxFileSize(1800);
     x->SetOutputModule(om);
 
     x->Run();

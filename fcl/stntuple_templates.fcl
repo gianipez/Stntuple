@@ -23,56 +23,22 @@ Stntuple : {
 	@table::su2020.analyzers
 	@table::Stntuple.analyzers
     }
-#------------------------------------------------------------------------------
-# all Stntuple modules are filters, they are defined in Stntuple/fcl/prolog.fcl
-# event mixing modules - all clones of the same module.
-# each clone takes certain collections from the input file and adds them to the event
-#------------------------------------------------------------------------------
-# FIXME#	@table::EventMixing.filters
-# FIXME        flashMixer           : { @table::mixerTemplate
-# FIXME#	    fileNames : @local::bgHitFiles 
-# FIXME	    detail: { @table::mixerTemplate.detail g4ModuleLabel:flashMixer genModuleLabel:flashMixer }
-# FIXME	}
-# FIXME	ootMixer             : { @table::mixerTemplate
-# FIXME#	    fileNames : @local::bgHitFiles 
-# FIXME	    detail: { @table::mixerTemplate.detail g4ModuleLabel:ootMixer   genModuleLabel:ootMixer   }
-# FIXME	}
-# FIXME	dioMixer             : { @table::mixerTemplate
-# FIXME#	    fileNames : @local::bgHitFiles 
-# FIXME	    detail: { @table::mixerTemplate.detail g4ModuleLabel:dioMixer   genModuleLabel:dioMixer   }
-# FIXME	}
-# FIXME	neutronMixer         : { @table::mixerTemplate
-# FIXME#	    fileNames : @local::bgHitFiles 
-# FIXME	    detail: { @table::mixerTemplate.detail g4ModuleLabel:neutronMixer genModuleLabel:neutronMixer }
-# FIXME	}
-# FIXME	photonMixer          : { @table::mixerTemplate
-# FIXME#	    fileNames : @local::bgHitFiles 
-# FIXME	    detail: { @table::mixerTemplate.detail g4ModuleLabel:photonMixer genModuleLabel:photonMixer }
-# FIXME	}
-# FIXME	protonMixer          : { @table::mixerTemplate
-# FIXME#	    fileNames : @local::bgHitFiles 
-# FIXME	    detail: { @table::mixerTemplate.detail g4ModuleLabel:protonMixer genModuleLabel:protonMixer }
-# FIXME	}
-# FIXME	deuteronMixer          : { @table::mixerTemplate
-# FIXME#	    fileNames : @local::bgHitFiles 
-# FIXME	    detail: { @table::mixerTemplate.detail g4ModuleLabel:deuteronMixer genModuleLabel:deuteronMixer }
-# FIXME	}
-#------------------------------------------------------------------------------
 }
 
 #------------------------------------------------------------------------------
 # sequences: can't define recursively within one namespace
 # aiming for ultimate unification of the reco sequences, use su2020 sequences as much as possible 
 #------------------------------------------------------------------------------
-Stntuple.gen_g4              : [ @sequence::su2020.gen_g4           ]
-Stntuple.gen_g4_detFilter    : [ @sequence::su2020.gen_g4_detFilter ]
-Stntuple.gen_g4_pbi          : [ @sequence::su2020.gen_g4_pbi       ]
+Stntuple.gen_g4              : [ @sequence::su2020.gen_g4               ]
+Stntuple.gen_g4_pbi          : [ @sequence::su2020.gen_g4_pbi           ]
+Stntuple.gen_g4_pbi_detFilter: [ @sequence::su2020.gen_g4_pbi_detFilter ]
 
 Stntuple.digis               : [ @sequence::su2020.digis ]
 
 Stntuple.mix                 : [ dioMixer, protonMixer, neutronMixer, photonMixer, ootMixer, flashMixer ]
 Stntuple.mix_time_map        : [ @sequence::Stntuple.mix, @sequence::CommonMC.DigiSim ]
-Stntuple.gen_g4_mix_time_map : [ @sequence::Stntuple.gen_g4, @sequence::Stntuple.mix, @sequence::CommonMC.DigiSim ]
+
+# Stntuple.gen_g4_mix_time_map : [ @sequence::Stntuple.gen_g4, @sequence::Stntuple.mix, @sequence::CommonMC.DigiSim ]
 
 #------------------------------------------------------------------------------
 # proton reconstruction
@@ -90,25 +56,36 @@ Stntuple.crv_reco            : [ @sequence::su2020.crv_reco     ]
 # assume Stntuple.
 # new tracking sequences: 2 lists in the end, 'MH' is the new default (MergeHelix)
 #------------------------------------------------------------------------------
-Stntuple.post_reco_de    : [ @sequence::TrackCaloMatching.matching_DeMHPar ,
-			     AvikPIDNewDeMHPar                               ,
-			     TrkQualDeMHPar                                  ,
-			     @sequence::TrackCaloMatching.matching_DeMHDar   ,
-			     AvikPIDNewDeMHDar                               ,
-			     TrkQualDeMHDar
+Stntuple.post_reco_de_par : [ @sequence::TrackCaloMatching.matching_DeMHPar ,
+			      AvikPIDNewDeMHPar                             ,
+			      TrkQualDeMHPar                                  
+			    ]
+
+Stntuple.post_reco_de_dar : [ @sequence::TrackCaloMatching.matching_DeMHDar   ,
+			      AvikPIDNewDeMHDar                               ,
+			      TrkQualDeMHDar
+			     ]
+
+Stntuple.post_reco_de    : [ @sequence::Stntuple.post_reco_de_par,
+			     @sequence::Stntuple.post_reco_de_dar
 			    ]
 #------------------------------------------------------------------------------
 # muon post-core-reconstruction path
 # new tracking sequences: 2 lists in the end, 'MH' is the new default (MergeHelix)
 #------------------------------------------------------------------------------
-Stntuple.post_reco_dmu   : [ @sequence::TrackCaloMatching.matching_DmuMHPar  ,
-			     AvikPIDNewDmuMHPar                              ,
-			     TrkQualDmuMHPar                                 ,
-			     @sequence::TrackCaloMatching.matching_DmuMHDar  ,
-			     AvikPIDNewDmuMHDar                              ,
-			     TrkQualDmuMHDar
-			    ]
+Stntuple.post_reco_dmu_par : [ @sequence::TrackCaloMatching.matching_DmuMHPar,
+			       AvikPIDNewDmuMHPar                              ,
+			       TrkQualDmuMHPar
+			      ]
 
+Stntuple.post_reco_dmu_dar : [ @sequence::TrackCaloMatching.matching_DmuMHDar  ,
+			       AvikPIDNewDmuMHDar                              ,
+			       TrkQualDmuMHDar
+			      ]
+
+Stntuple.post_reco_dmu     : [ @sequence::Stntuple.post_reco_dmu_par,
+			       @sequence::Stntuple.post_reco_dmu_dar
+			      ]
 #------------------------------------------------------------------------------
 # paths
 #------------------------------------------------------------------------------
@@ -118,13 +95,14 @@ Stntuple.paths : {
     stntuple_p0  : [ @sequence::Stntuple.stnmaker ]
 #------------------------------------------------------------------------------
 # MC generation, G4, reconstruction and stntuple making (e- and e+ included)
-# p1  : generate, simulate ... 
+# p1  : generate, simulate, reconstruct - no digi_compression ... 
 # p01 : read    , simulate ... 
 #------------------------------------------------------------------------------
     stntuple_p1  : [ # @sequence::su2020.gen_g4_time_map,
-		     @sequence::su2020.gen_g4         , 
+		     @sequence::su2020.gen_g4_pbi     , 
 		     @sequence::CommonMC.DigiSim      ,     # time maps + window marker
 		     @sequence::su2020.digis          ,
+#		     compressDigiMCs                  ,
 		     @sequence::su2020.trk_hit_reco   ,
 		     @sequence::su2020.calo_reco      ,
 		     @sequence::su2020.trk_reco_de    ,
@@ -132,9 +110,11 @@ Stntuple.paths : {
 		     @sequence::Stntuple.post_reco_de , 
 		     @sequence::Stntuple.stnmaker_De
 		    ]
+
     stntuple_p01 : [ g4run, filterStepPointMomentum   , 
 		     @sequence::CommonMC.DigiSim      ,     #  time maps + window marker
 		     @sequence::su2020.digis          ,
+		     compressDigiMCs                  ,
 		     @sequence::su2020.trk_hit_reco   ,
 		     @sequence::su2020.calo_reco      ,
 		     @sequence::su2020.trk_reco_de    ,
@@ -142,6 +122,18 @@ Stntuple.paths : {
 		     @sequence::Stntuple.post_reco_de , 
 		     @sequence::Stntuple.stnmaker_De
 		    ]
+
+    stntuple_p02_dar : [ @sequence::su2020.gen_g4_pbi       , 
+			 @sequence::CommonMC.DigiSim        ,     # time maps + window marker
+			 @sequence::su2020.digis            ,
+			 @sequence::su2020.trk_hit_reco     ,
+			 @sequence::su2020.calo_reco        ,
+			 @sequence::su2020.trk_reco_de_dar  ,
+			 @sequence::su2020.trk_reco_dmu_dar ,
+			 @sequence::Stntuple.post_reco_de_dar,    # track-calo matching and electron PID
+			 @sequence::Stntuple.post_reco_dmu_dar,    # track-calo matching and muo PID
+			 @sequence::Stntuple.stnmaker_De_Dmu_dar 
+			]
 #------------------------------------------------------------------------------
 # p2  : electron reconstruction and stntuple making
 # p21 : the same as p2, but no CRV reco
@@ -179,9 +171,10 @@ Stntuple.paths : {
 		     @sequence::Stntuple.stnmaker_Dmu       # stntupling
 		    ]
 #------------------------------------------------------------------------------
-# p40 : full downstream (e+mu) reconstruction and stntuple making
-# p41 : the same as p40, but no CRV reco
-# p42 : same as p41, but w/o reco_compression which crashes on muon decays in flight
+# p40     : full downstream (e+mu) reconstruction and stntuple making
+# p41     : same as p40, but no CRV reco
+# p42     : same as p41, but w/o reco_compression which crashes on muon decays in flight
+# p42_dar : same as p42, but only DAR reco for downstream electrons and muons
 #------------------------------------------------------------------------------
     stntuple_p40 : [ @sequence::su2020.trk_hit_reco     ,
 		     @sequence::su2020.calo_reco        ,
@@ -219,6 +212,15 @@ Stntuple.paths : {
 		     @sequence::Stntuple.stnmaker_De_Dmu 
 		   ]
 
+    stntuple_p42_dar : [ @sequence::su2020.trk_hit_reco     ,
+			 @sequence::su2020.calo_reco        ,
+			 @sequence::su2020.trk_reco_de_dar  ,
+			 @sequence::su2020.trk_reco_dmu_dar ,
+			 @sequence::Stntuple.post_reco_de_dar,    # track-calo matching and electron PID
+			 @sequence::Stntuple.post_reco_dmu_dar,    # track-calo matching and muo PID
+			 @sequence::Stntuple.stnmaker_De_Dmu_dar 
+			]
+
     stntuple_p43 : [ @sequence::CrvDAQPackage.CrvDAQSequence, 
 		     @sequence::su2020.trk_hit_reco     ,
 		     @sequence::su2020.calo_reco        ,
@@ -231,7 +233,6 @@ Stntuple.paths : {
 		     @sequence::Stntuple.post_reco_dmu  ,    # track-calo matching and muo PID
 		     @sequence::Stntuple.stnmaker_De_Dmu
 		   ]
-
 #------------------------------------------------------------------------------
 # read, reconstruct
 #------------------------------------------------------------------------------
@@ -271,6 +272,7 @@ Stntuple.paths : {
     stntuple_p7  : [ @sequence::su2020.gen_g4_pbi     ,
 		     @sequence::CommonMC.DigiSim      ,  # TimeMaps, EWMProducer
 		     @sequence::su2020.digis          ,
+		     compressDigMCs                   ,
 		     @sequence::su2020.trk_hit_reco   ,
 		     @sequence::su2020.calo_reco      ,
 		     @sequence::su2020.trk_reco_de    ,
