@@ -494,8 +494,8 @@ int THttpCatalogServer::InitDataset(TStnDataset*     Dataset,
     Dataset->SetMcFlag(mc_flag);
   }
 //-----------------------------------------------------------------------------
-// retrieve MC process code 'PROCESS_CODE' and the number of generated events
-// returned value - integer
+// retrieve MC process code 'PROCESS_CODE', PDF code 'PDG_CODE', and the number 
+// of generated events 'NGENERATED', returned value - integer
 //-----------------------------------------------------------------------------
   buf[0] = 0;
   GetDatasetKey(book,dset,"PROCESS_CODE",buf);
@@ -504,6 +504,15 @@ int THttpCatalogServer::InitDataset(TStnDataset*     Dataset,
     int code;
     sscanf(buf,"%i",&code);
     Dataset->SetMCProcessCode(code);
+  }
+
+  buf[0] = 0;
+  GetDatasetKey(book,dset,"PDG_CODE",buf);
+
+  if (strlen(buf) > 0) {
+    int code;
+    sscanf(buf,"%i",&code);
+    Dataset->SetPDGCode(code);
   }
 
   buf[0] = 0;

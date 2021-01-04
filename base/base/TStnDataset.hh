@@ -28,6 +28,7 @@ protected:
   Int_t       fDoneBadFiles;
   Int_t       fNGenEvents;      // for MC, number of generated events
   Int_t       fMCProcessCode;   // MC: process code
+  Int_t       fPDGCode;         // PDG code of teh signal particle
 //-----------------------------------------------------------------------------
 //  functions
 //-----------------------------------------------------------------------------
@@ -71,6 +72,7 @@ public:
   const char* GetFilesetFormat() { return fFilesetFormat.Data(); }
   int         GetMCProcessCode() { return fMCProcessCode; }
   int         GetNGenEvents   () { return fNGenEvents;    }
+  int         GetPDGCode      () { return fPDGCode; }
 
 				// this is list of TCdf2Files structures
 
@@ -90,6 +92,7 @@ public:
   void  SetMcFlag       (Int_t Flag ) { fMcFlag        = Flag ; }
   void  SetNGenEvents   (int   N    ) { fNGenEvents    = N    ; }
   void  SetMCProcessCode(int   Code ) { fMCProcessCode = Code ; }
+  void  SetPDGCode      (int   Code ) { fPDGCode       = Code ; }
 
   void  SetDoneBadFiles  (Int_t Flag = 1) { fDoneBadFiles = Flag;   }
 //-----------------------------------------------------------------------------
