@@ -1,0 +1,50 @@
+# -*- mode:org -*- 
+
+ *How to debug STNTUPLE jobs with GDB* 
+
+ - Here, I describe only one approach, which seems the most adequate.
+
+ - the following assumes that STNUPLE has been set up correctly, and the Stntuple/scripts/.rootrc 
+   is a base for the .rootrc file 
+
+ - use google GDB manual, get an idea of what it is, read how to use it with GNU emacs
+ - in a shell window, setup Mu2e environment, start emacs
+#+begin_src
+... do your setups...
+emacs & 
+#+end_src
+
+ - start gdb in emacs window ('Alt-X gdb'), read GDB manual, if confused
+ - start ROOT in that same shell window, you will see the process ID to attach to (for this example, 902)
+#+begin_src
+projects/mu2e/app/users/murat/mu2e_dev>root.exe
+   ------------------------------------------------------------
+  | Welcome to ROOT 6.18/04                  https://root.cern |
+  |                               (c) 1995-2019, The ROOT Team |
+  | Built for linuxx8664gcc on Sep 11 2019, 15:38:23           |
+  | From tags/v6-18-04@v6-18-04                                |
+  | Try '.help', '.demo', '.license', '.credits', '.quit'/'.q' |
+   ------------------------------------------------------------
+
+   batch_mode = 0
+ nargs =  1 exec_name = root.exe
+ process ID: 902
+    902 pts/0    00:00:02 root.exe
+at GDB prompt, type
+(gdb) file root.exe
+(gdb) att 902
+#+end_src
+
+ - wait for GDB to read symbols from the shared libraries, during that time , the ROOT prompt is frozen
+ - when the libraries are loaded, set your breakpoints or else you need
+ - type 'continue' , hit return - command prompt of your ROOT session becomes active again
+#+begin_src
+(gdb) continue 
+#+end_src
+
+ - go to the ROOT prompt, run STNTUPLE job as usual -load stnana etc - GDB, attached to the running process, will stop at the breakpoint
+
+* ------------------------------------------------------------------------------
+* back to file:how-tos.org
+* ------------------------------------------------------------------------------
+

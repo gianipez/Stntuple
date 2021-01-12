@@ -1,7 +1,7 @@
 #
 
 
-* how to print sizes of different STNTUPLE branches:                              
+* how to print sizes of different STNTUPLE branches                               
 
 #+begin_src
 root [0] TStnAna x("results/fpos2s51b1/nts.murat.fpos2s51b1.su2020.001000_00000000.stn")
@@ -36,3 +36,4 @@ TriggerBlock                                          50       0        748266  
 ---------------------------------------------------------------------------------------------------
  total event                     310170.555   225078.239   116250.020
 #+end_src
+* [[file:how-to-debug.org][How to debug]]
