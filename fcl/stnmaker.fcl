@@ -19,7 +19,7 @@ BEGIN_PROLOG
   BLIND_TIME          : 500                                  # default
   STN_VDHITS_COLL_TAG : "compressDigiMCs:virtualdetector"
   PDG_ID              : 0                                    # 0: ignore PDG_ID
-  GEN_ID              : "StoppedParticleReactionGun"         # 28
+  GEN_ID              : "unknown"                            # 0: ignore GEN_ID check
 END_PROLOG
 
 #include "fcl/minimalMessageService.fcl"
