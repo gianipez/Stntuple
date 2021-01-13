@@ -131,14 +131,27 @@ public:
     fPlotLabel   = "";
     fXAxisTitle  = "";
     fYAxisTitle  = "";
-    fLegendXMin  = -1;
-    fLegendYMin  = -1;
-    fLegendXMax  = -1;
-    fLegendYMax  = -1;
+    fLegendXMin  = 0.65;
+    fLegendYMin  = 0.15;
+    fLegendXMax  = 0.90;
+    fLegendYMax  = 0.40;
   }
 
-  hist_file_t*  get_hist_file(const char* DsID, const char* JobName);
+//-----------------------------------------------------------------------------
+// get histogram file for a given dataset ID
+//-----------------------------------------------------------------------------
+  hist_file_t*  get_hist_file(const char* DsID, const char* JobName) {
+  printf("hist_data::get_hist_file dsid: %s  job: %s fBook = %p\n",DsID,JobName,fBook);
   
+  hist_file_t* hf = fBook->FindHistFile(DsID,"",JobName);
+  
+  if (hf == nullptr) {
+    printf("hist_data::get_hist_file ERROR: cant find hist file for dsid=%s, job=%s; return NULL\n",
+	   DsID,JobName);
+  }
+  return hf;
+}
+
 };
 
 #endif

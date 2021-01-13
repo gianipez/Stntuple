@@ -154,7 +154,7 @@ class ConcatenationRequest
 
     @format             = format;
     @pid              = `echo $$`.strip();
-    @tmp_fn           = "/tmp/#{$pid}.tmp"
+    @tmp_fn           = "/tmp/#{@pid}.tmp"
     @tmp_file         = File.open(@tmp_fn,"w");
     @output_file_name = `date +%Y_%m_%d.%H_%M_%S`.strip
     @max_size         = max_size
