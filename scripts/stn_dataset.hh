@@ -30,6 +30,7 @@ struct stn_dataset_t {
     fMaxRun      = -1;
   }
   
+  const char* id() { return fID.Data(); }
 };
 
 #endif

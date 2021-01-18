@@ -119,8 +119,8 @@ public:
     fYMax        = -1;
     fStats       =  1;
     fOptStat     = -1;
-    fStatBoxXMin =  0.65;
-    fStatBoxYMin =  0.65;
+    fStatBoxXMin =  0.70;
+    fStatBoxYMin =  0.72;
     fStatBoxXMax =  0.90;
     fStatBoxYMax =  0.90;
     fRebin       = -1;
