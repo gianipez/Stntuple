@@ -194,8 +194,27 @@ void TStnTimeCluster::Clear(Option_t* opt) {
 }
 
 //-----------------------------------------------------------------------------
-void TStnTimeCluster::Print(Option_t* opt) const {
-  Error("Print", "Not implemented yet");
+void TStnTimeCluster::Print(Option_t* Option) const {
+  TString opt(Option);
+
+  opt.ToLower();
+					// "non-const *this" for printing purposes
+  //  TStnTimeCluster* cl = (TStnTimeCluster*) this;
+
+  if ((opt == "") || (opt.Index("banner") >= 0)) {
+//-----------------------------------------------------------------------------
+// print banner
+//-----------------------------------------------------------------------------
+    printf("-------------------------------------------------------\n");
+    printf("  i  nch nsh   T0  T0Err \n");
+    printf("-------------------------------------------------------\n");
+  }
+
+  if ((opt == "") || (opt.Index("data") >= 0)) {
+    printf("%4i %3i %3i %8.3f %8.3f ",
+	   -1,fNComboHits,fNHits,fT0, fT0Err);
+    printf("\n");
+  }
 }
 
 // } // end namespace
