@@ -1878,7 +1878,7 @@ void TStnTrack::Print(Option_t* Option) const {
 	   t->NClusters(),
 	   t->AlgorithmID());
 
-    printf(" 0x%08x %2.0f %8.3f %7.3f %8.3f %6.3f %7.3f %8.3f %7.4f %8.3f %8.2f %8.2e %7.3f",
+    printf(" 0x%08x %2.0f %8.3f %7.3f %8.3f %6.3f %8.3f %8.3f %7.4f %8.3f %8.2f %8.2e %7.3f",
 	   t->fIDWord,
 	   fCharge, 
 	   fP*fCharge, fFitMomErr, fT0, fT0Err, fD0, fZ0, fTanDip, TBack(),
