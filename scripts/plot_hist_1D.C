@@ -75,7 +75,7 @@ void plot_hist_1D(hist_data_t* Hist1, int Print = 0) {
   if (Hist1->fXAxisTitle != ""   ) hpx1->GetXaxis()->SetTitle(Hist1->fXAxisTitle.Data());
 
   if (Hist1->fYMin < Hist1->fYMax) hpx1->GetYaxis()->SetRangeUser(Hist1->fYMin,Hist1->fYMax);
-
+  if (Hist1->fYAxisTitle != ""   ) hpx1->GetYaxis()->SetTitle(Hist1->fYAxisTitle.Data());
   if (Hist1->fStats == 0) hpx1->SetStats(0);
 
   hpx1->Draw(Hist1->fDrawOpt.Data());
@@ -248,7 +248,7 @@ void plot_hist_1D(hist_data_t* Hist1,  hist_data_t*  Hist2, int Print = 0) {
   if (Hist1->fXAxisTitle != ""   ) hpx1->GetXaxis()->SetTitle(Hist1->fXAxisTitle.Data());
 
   if (Hist1->fYMin < Hist1->fYMax) hpx1->GetYaxis()->SetRangeUser(Hist1->fYMin,Hist1->fYMax);
-
+  if (Hist1->fYAxisTitle != ""   ) hpx1->GetYaxis()->SetTitle(Hist1->fYAxisTitle.Data());
   if (Hist1->fStats == 0) hpx1->SetStats(0);
 
   if (Hist1->fDrawOpt == "") hpx1->Draw("ep");
@@ -432,7 +432,7 @@ int plot_hist_1d(hist_data_t* Hist, int NHist, int Print = 0) {
   if (Hist1->fXAxisTitle != ""   ) hpx1->GetXaxis()->SetTitle(Hist1->fXAxisTitle.Data());
 
   if (Hist1->fYMin < Hist1->fYMax) hpx1->GetYaxis()->SetRangeUser(Hist1->fYMin,Hist1->fYMax);
-
+  if (Hist1->fYAxisTitle != ""   ) hpx1->GetYaxis()->SetTitle(Hist1->fYAxisTitle.Data());
   if (Hist1->fStats == 0) hpx1->SetStats(0);
 
   if (Hist1->fDrawOpt == "") hpx1->Draw("ep");
