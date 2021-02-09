@@ -171,6 +171,10 @@ void plot_hist_1D(hist_data_t* Hist1,  hist_data_t*  Hist2, int Print = 0) {
   else      hpx1 = (TH1F*) Hist1->fHist->Clone(h1name);
 
   if (Hist1->fRebin > 0) hpx1->Rebin(Hist1->fRebin);
+//-----------------------------------------------------------------------------
+// scale, if requested
+//-----------------------------------------------------------------------------
+  if (Hist1->fScale > 0) hpx1->Scale(Hist1->fScale);
   
   TH1F* hpx2;
 
@@ -377,6 +381,10 @@ int plot_hist_1d(hist_data_t* Hist, int NHist, int Print = 0) {
   else      hpx1 = (TH1F*) Hist1->fHist->Clone(h1name);
 
   if (Hist1->fRebin > 0) hpx1->Rebin(Hist1->fRebin);
+//-----------------------------------------------------------------------------
+// scale, if requested
+//-----------------------------------------------------------------------------
+  if (Hist1->fScale > 0) hpx1->Scale(Hist1->fScale);
   
   stn_dataset_t* ds1(nullptr);
 
