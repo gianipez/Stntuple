@@ -27,6 +27,8 @@
 
 #include "RecoDataProducts/inc/CrvRecoPulse.hh"
 
+#include "RecoDataProducts/inc/CrvDigi.hh"
+
 #include "RecoDataProducts/inc/CrvCoincidence.hh"
 #include "RecoDataProducts/inc/CrvCoincidenceCollection.hh"
 
@@ -682,11 +684,84 @@ void TAnaDump::printCrvCoincidenceCluster(const mu2e::CrvCoincidenceCluster* CCl
     printf("%-16p %5i %5i %5i %10.3f %10.3f %10.3f %10.3f %10.3f\n",CCl,sector,np,npe,t1,t2,x,y,z);
 
     const mu2e::CrvRecoPulse* pulse(NULL);
+    const mu2e::CrvRecoPulse* otherpulse1(NULL);
     printCrvRecoPulse(pulse, "banner");
     for (int i=0; i<np; i++) {
       pulse = list_of_pulses->at(i).get();
       printCrvRecoPulse(pulse, "data");
     }
+
+
+    std::map<int, float>   side02, side13;
+    std::vector<int>       bars;
+    for (int i=0; i<np; i++) {
+      pulse = list_of_pulses->at(i).get();
+      float t0         = pulse->GetLEtime();
+      int bar0         = pulse->GetScintillatorBarIndex().asInt();
+      int sipm0        = pulse->GetSiPMNumber();
+      if (std::find(bars.begin(), bars.end(), bar0) ==  bars.end()){
+	  bars.push_back(bar0);
+      }
+      bool found = false;
+      for (int j=i; j<np; j++) {
+	otherpulse1 = list_of_pulses->at(j).get();
+	float t1         = otherpulse1->GetLEtime();
+	int bar1         = otherpulse1->GetScintillatorBarIndex().asInt();
+	int sipm1        = otherpulse1->GetSiPMNumber();
+	if (bar0 == bar1) {
+	  if ((sipm0%2 == 0) && (sipm1%2 == 0)) {
+	    float tavg = (t0 + t1)/2.;
+	    side02[bar0] = tavg;
+	    found = true;
+	    break;
+	  }
+	  if ((sipm0%2 == 1) && (sipm1%2 == 1)) {
+	    float tavg = (t0 + t1)/2.;
+	    side13[bar0] = tavg;
+	    found = true;
+	    break;
+	  }
+	}
+      }//end second loop
+      if (found == false) {
+	if (sipm0%2 == 1) {
+	  side13[bar0] = t0;
+	}
+	else {
+	  side02[bar0] = t0;
+	}
+      }
+    }
+
+
+
+    // now print everything
+    printf("--------------------------------------------------\n");
+    printf("BarIndex     Tcorrected(MD)     Xcorrected(MD)    \n");
+    printf("--------------------------------------------------\n");
+    float totaltimeavg = 0;
+    float nbars = 0;
+    for (size_t i=0; i<bars.size(); i++) {
+      int bar = bars.at(i);
+      if ((side02.find(bar) == side02.end()) || (side13.find(bar) == side13.end())) {
+	continue;
+      }
+      // now do the calculations using the above side time averages
+      float topbarlength = 6.; // length of all top CRV bars is 6m
+      float vinvinbar = 6.5; // in CRV bars, light travels 6.5ns/m, so this is v inverse in bar
+      float tcorrected; // will be in ns
+      float xcorrected; // will be in m
+      nbars += 1;
+      
+      tcorrected = .5*(side02[bar] + side13[bar] - (topbarlength*vinvinbar));
+      xcorrected = .5*(topbarlength - ((side13[bar] - side02[bar])/vinvinbar));
+      
+      totaltimeavg += tcorrected;
+      
+      printf("%8i %9f %9f\n",bar,tcorrected,xcorrected);
+    }
+    totaltimeavg /= nbars;
+    printf("total coincidence corrected time average: %8f\n", totaltimeavg);
   }
   
   if (opt.Index("hits") >= 0) {
@@ -796,6 +871,122 @@ void TAnaDump::printCrvRecoPulse(const mu2e::CrvRecoPulse* Pulse,
 
   }
 }
+
+//----------------------------------------------------------------------------
+void TAnaDump::printCrvDigi(const mu2e::CrvDigi* Digi, 
+			    const char* Opt                ) {
+
+  TString opt = Opt;
+
+  if ((opt == "") || (opt.Index("banner") >= 0)) {
+    printf("-------------------------------------------------------------------------------------------------------\n");
+    printf(" ADC0   ADC1   ADC2   ADC3   ADC4   ADC5   ADC6   ADC7   StartTDC  BarIndex  SiPM#\n");
+    printf("-------------------------------------------------------------------------------------------------------\n");
+  }
+ 
+  if ((opt == "") || (opt.Index("data") >= 0)) {
+
+    int adc0        = Digi->GetADCs().at(0);
+    int adc1        = Digi->GetADCs().at(1);
+    int adc2        = Digi->GetADCs().at(2);
+    int adc3        = Digi->GetADCs().at(3);
+    int adc4        = Digi->GetADCs().at(4);
+    int adc5        = Digi->GetADCs().at(5);
+    int adc6        = Digi->GetADCs().at(6);
+    int adc7        = Digi->GetADCs().at(7);
+    float tdc       = Digi->GetStartTDC() * 12.55; //now in ns with digitization factor to convert
+
+    int bar         = Digi->GetScintillatorBarIndex().asInt();
+    int sipm_number = Digi->GetSiPMNumber();
+
+    printf("%5i %6i %6i %6i %6i %6i %6i %6i %9.2f %7i %8i",
+	   adc0,
+	   adc1,
+	   adc2,
+	   adc3,
+	   adc4,
+	   adc5,
+	   adc6,
+	   adc7,
+	   tdc,
+	   bar,
+	   sipm_number);
+
+    printf("\n");
+  }
+  
+  if (opt.Index("hits") >= 0) {
+
+  }
+}
+
+//-----------------------------------------------------------------------------
+// Print reconstructed CRV digi
+//-----------------------------------------------------------------------------
+void TAnaDump::printCrvDigiCollection(const char* ModuleLabel, 
+					   const char* ProductName,
+					   const char* ProcessName) {
+
+  art::Handle<mu2e::CrvDigiCollection> handle;
+  const mu2e::CrvDigiCollection*       crpColl;
+
+  // art::Handle<mu2e::CaloHitMCTruthAssns> caloHitTruthHandle;
+  // const mu2e::CaloHitMCTruthAssns* caloHitTruth(0);
+  
+  if (ProductName[0] != 0) {
+    art::Selector  selector(art::ProductInstanceNameSelector(ProductName) &&
+			    art::ProcessNameSelector(ProcessName)         && 
+			    art::ModuleLabelSelector(ModuleLabel)            );
+    fEvent->get(selector,handle);
+
+    // art::Selector  selectorMC(art::ProductInstanceNameSelector(ProductName) &&
+    // 			      art::ProcessNameSelector(ProcessName)         && 
+    // 			      art::ModuleLabelSelector(MCModuleLabel)            );
+   
+    // fEvent->get(selectorMC,caloHitTruthHandle);
+  }
+  else {
+    art::Selector  selector(art::ProcessNameSelector(ProcessName)         && 
+			    art::ModuleLabelSelector(ModuleLabel)            );
+    fEvent->get(selector,handle);
+    // art::Selector  selectorMC(art::ProcessNameSelector(ProcessName)         && 
+    // 			      art::ModuleLabelSelector(MCModuleLabel)            );
+    // fEvent->get(selectorMC,caloHitTruthHandle);
+  }
+//-----------------------------------------------------------------------------
+// make sure collection exists
+//-----------------------------------------------------------------------------
+  if (! handle.isValid()) {
+    printf("TAnaDump::printCrvDigiCollection: no CrvDigiCollection ");
+    printf("for module %s and ProductName=%s found, BAIL OUT\n",
+	   ModuleLabel,ProductName);
+    return;
+  }
+
+  crpColl = handle.product();
+
+  int npulses = crpColl->size();
+
+  printf(">>>> ModuleLabel = %s N(reco pulses) = %5i\n",ModuleLabel,npulses);
+
+  //  if (caloHitTruthHandle.isValid()) caloHitTruth = caloHitTruthHandle.product();
+
+  const mu2e::CrvDigi* pulse;
+
+
+  int banner_printed = 0;
+  for (int i=0; i<npulses; i++) {
+    pulse = &crpColl->at(i);
+    if (banner_printed == 0) {
+      printCrvDigi(pulse, "banner");
+      banner_printed = 1;
+    }
+
+    printCrvDigi(pulse,"data");
+  }
+ 
+}
+
 
 //-----------------------------------------------------------------------------
 // Print reconstructed CRV pulses (processed waveforms)

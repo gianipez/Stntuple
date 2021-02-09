@@ -45,6 +45,7 @@ namespace mu2e {
   //  class StrawHitMCTruth;
   class CaloCluster;
   class CaloProtoCluster;
+  class CrvDigi;
   class CrvRecoPulse;
   class CrvCoincidence;
   class CrvCoincidenceCluster;
@@ -184,6 +185,13 @@ public:
 				   const char*              Opt = "");
   
   void printCrvRecoPulseCollection (const char* ModuleLabel, 
+				    const char* ProductName= "",
+				    const char* ProcessName= "");
+
+  void printCrvDigi          (const mu2e::CrvDigi* Digi  ,
+				   const char*              Opt = "");
+  
+  void printCrvDigiCollection (const char* ModuleLabel, 
 				    const char* ProductName= "",
 				    const char* ProcessName= "");
 //-----------------------------------------------------------------------------
