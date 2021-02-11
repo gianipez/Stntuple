@@ -17,6 +17,7 @@ public:
     int     fNLayers;
     int     fNBarsPerLayer;
     int     fFirstIndex;
+    float   fBarLength;     //bar length in meters
   };
 
   enum { kNSectors = 22 } ;
@@ -44,6 +45,7 @@ public:
   int         NModules     (int I) { return fSector[I].fNModules;      }
   int         NBarsPerLayer(int I) { return fSector[I].fNBarsPerLayer; }
   int         FirstIndex   (int I) { return fSector[I].fFirstIndex;    }
+  float       BarLength    (int I) { return fSector[I].fBarLength;     }
 
 //-----------------------------------------------------------------------------
 // other methods
