@@ -625,17 +625,23 @@ Stntuple : {
 
 	MuHitDisplay    : { @table::MuHitDisplay }
 
-	MuHitDisplayDem : { @table::MuHitDisplay 
-	    trackCollTag           : MergePatRecDem
-	    trkExtrapol            : TrackCaloIntersectionDem
-	    trkCalMatch            : TrackCaloMatchingDem
+	MuHitDisplayDe : { @table::MuHitDisplay 
+	    trackCollTag           : MergePatRecDe
+	    trkExtrapol            : TrackCaloIntersectionDe
+	    trkCalMatch            : TrackCaloMatchingDe
 	}
-
-	MuHitDisplayDep : { @table::MuHitDisplay 
-	    trackCollTag           : MergePatRecDep
-	    trkExtrapol            : TrackCaloIntersectionDep
-	    trkCalMatch            : TrackCaloMatchingDep
-	}
+	
+# 	MuHitDisplayDem : { @table::MuHitDisplay 
+# 	    trackCollTag           : MergePatRecDem
+# 	    trkExtrapol            : TrackCaloIntersectionDem
+# 	    trkCalMatch            : TrackCaloMatchingDem
+# 	}
+# 
+# 	MuHitDisplayDep : { @table::MuHitDisplay 
+# 	    trackCollTag           : MergePatRecDep
+# 	    trkExtrapol            : TrackCaloIntersectionDep
+# 	    trkCalMatch            : TrackCaloMatchingDep
+# 	}
 
 	MuHitDisplayDpp : { @table::MuHitDisplay 
 	    trackCollTag           : MergePatRecDpp
@@ -668,8 +674,8 @@ Stntuple : {
 #------------------------------------------------------------------------------
 Stntuple.stnmaker         : [ InitStntuple, StntupleMaker   ,                   FillStntuple ]
 Stntuple.stnmaker_cpr     : [ InitStntuple, StntupleMakerCpr,                   FillStntuple ]
-Stntuple.stnmaker_dem     : [ InitStntuple, StntupleMakerDem,                   FillStntuple ]
-Stntuple.stnmaker_dep     : [ InitStntuple, StntupleMakerDep,                   FillStntuple ]
+# Stntuple.stnmaker_dem     : [ InitStntuple, StntupleMakerDem,                   FillStntuple ]
+# Stntuple.stnmaker_dep     : [ InitStntuple, StntupleMakerDep,                   FillStntuple ]
 Stntuple.stnmaker_dmm     : [ InitStntuple, StntupleMakerDmm,                   FillStntuple ]
 Stntuple.stnmaker_ump     : [ InitStntuple, StntupleMakerUmp,                   FillStntuple ]
 Stntuple.stnmaker_dpp     : [ InitStntuple, StntupleMakerDpp,                   FillStntuple ]
