@@ -4,7 +4,7 @@
 
 #include "Stntuple/mod/TModule.hh"
 #include "Stntuple/mod/TAnaRint.hh"
-#include "Stntuple/mod/TAnaDump.hh"
+#include "Stntuple/print/TAnaDump.hh"
 
 
 // Framework includes.

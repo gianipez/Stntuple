@@ -56,7 +56,7 @@
 #include "TApplication.h"
 #include "TDirectory.h"
 
-#include "Stntuple/mod/TAnaDump.hh"
+#include "Stntuple/print/TAnaDump.hh"
 #include "Stntuple/mod/TModule.hh"
 
 using namespace std;
