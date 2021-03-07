@@ -8,7 +8,7 @@
 
 #include "TrackerGeom/inc/Tracker.hh"
 
-#include "Stntuple/mod/TAnaDump.hh"
+#include "Stntuple/print/TAnaDump.hh"
 #include "Stntuple/print/Stntuple_print_functions.hh"
 //--------------------------------------------------------------------------------------------------------------
 void print_combo_hit_coll(const char* ComboHitCollTag, const char* StrawHitCollTag) {
