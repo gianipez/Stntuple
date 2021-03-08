@@ -1,9 +1,10 @@
 //
 
 #include "Stntuple/print/TAnaDump.hh"
+#include "Stntuple/print/Stntuple_print_functions.hh"
+
 #include "TROOT.h"
 #include "TVector2.h"
-
 
 #include "art/Framework/Principal/Handle.h"
 #include "art/Framework/Principal/Run.h"
@@ -1209,27 +1210,8 @@ void TAnaDump::printTrackSeedCollection(const char* TrackSeedCollTag  ,
 // make sure collection exists
 //-----------------------------------------------------------------------------
   if (! ok) {
-    printf("ERROR in TAnaDump::printTrackSeedCollection: no KalSeedCollection tag=%s, available collections are\n",TrackSeedCollTag);
-
-    vector<art::Handle<mu2e::KalSeedCollection>> list;
-    const art::Handle<mu2e::KalSeedCollection>*  handle;
-    const art::Provenance*                       prov;
-
-    fEvent->getManyByType(list);
-
-    for (auto it = list.begin(); it != list.end(); it++) {
-      handle = it.operator -> ();
-      if (handle->isValid()) {
-	prov = handle->provenance();
-	
-	printf("moduleLabel: %-20s, productInstanceName: %-20s, processName: %-30s nHelices: %3li\n" ,
-	       prov->moduleLabel().data(),
-	       prov->productInstanceName().data(),
-	       prov->processName().data(),
-	       handle->product()->size()
-	       );
-      }
-    }
+    printf("ERROR in TAnaDump::printTrackSeedCollection: no KalSeedCollection tag=%s\n",TrackSeedCollTag);
+    print_kalseed_colls();
     return;
   }
 
@@ -1514,26 +1496,7 @@ void TAnaDump::printHelixSeedCollection(const char* HelixSeedCollTag,
   if (hsH.isValid()) list_of_helixSeeds = hsH.product();
   else {
     printf("ERROR: cant find HelixSeedCollection tag=%s, avalable collections are:\n",HelixSeedCollTag);
-
-    vector<art::Handle<mu2e::HelixSeedCollection>> list;
-    const art::Handle<mu2e::HelixSeedCollection>*  handle;
-    const art::Provenance*                         prov;
-
-    fEvent->getManyByType(list);
-
-    for (auto it = list.begin(); it != list.end(); it++) {
-      handle = it.operator -> ();
-      if (handle->isValid()) {
-	prov = handle->provenance();
-	
-	printf("moduleLabel: %-20s, productInstanceName: %-20s, processName: %-30s nHelices: %3li\n" ,
-	       prov->moduleLabel().data(),
-	       prov->productInstanceName().data(),
-	       prov->processName().data(),
-	       handle->product()->size()
-	       );
-      }
-    }
+    print_helix_seed_colls();
     return;
   }
 
@@ -1550,7 +1513,7 @@ void TAnaDump::printHelixSeedCollection(const char* HelixSeedCollTag,
   for (int i=0; i<nhelices; i++) {
     helix = &list_of_helixSeeds->at(i);
     if (banner_printed == 0) {
-      printHelixSeed(helix,StrawHitCollTag,StrawDigiCollTag,"banner");
+      printHelixSeed(helix,StrawHitCollTag,StrawDigiCollTag,"banner"); 
       banner_printed = 1;
     }
 
@@ -1646,36 +1609,29 @@ void TAnaDump::printKalRep(const KalRep* Krep, const char* Opt, const char* Pref
 }
 
 //-----------------------------------------------------------------------------
-void TAnaDump::printKalRepCollection(const char* ModuleLabel, 
-				     const char* ProductName,
-				     const char* ProcessName,
-				     int         hitOpt     ) {
+void TAnaDump::printKalRepCollection(const char* KalRepCollTag     , 
+				     int         hitOpt            ,
+				     const char* StrawDigiMCCollTag) {
 
-  art::Handle<mu2e::KalRepPtrCollection> krepsHandle;
-
-  if (ProductName[0] != 0) {
-    art::Selector  selector(art::ProductInstanceNameSelector(ProductName) &&
-			    art::ProcessNameSelector(ProcessName)         && 
-			    art::ModuleLabelSelector(ModuleLabel)            );
-    fEvent->get(selector,krepsHandle);
-  }
-  else {
-    art::Selector  selector(art::ProcessNameSelector(ProcessName)         && 
-			    art::ModuleLabelSelector(ModuleLabel)            );
-    fEvent->get(selector,krepsHandle);
-  }
+  art::InputTag                          krepCollTag(KalRepCollTag);
+  art::Handle<mu2e::KalRepPtrCollection> krepsHandle; 
 //-----------------------------------------------------------------------------
 // make sure collection exists
 //-----------------------------------------------------------------------------
+  fEvent->getByLabel(krepCollTag,krepsHandle);
   if (! krepsHandle.isValid()) {
-    printf("TAnaDump::printKalRepCollection: no KalRepPtrCollection for module %s, BAIL OUT\n",
-	   ModuleLabel);
+    printf("TAnaDump::printKalRepCollection: no KalRepPtrCollection tag=%s, BAIL OUT\n", KalRepCollTag);
+    printf(" available ones are:\n");
+    print_kalrep_colls();
     return;
   }
 
-  _mcdigis = &fEvent->getByLabel<mu2e::StrawDigiMCCollection>(fStrawDigiMCCollTag.Data());
+  TString sdmc_tag = StrawDigiMCCollTag;
+  if (sdmc_tag == "") sdmc_tag = fStrawDigiMCCollTag;
+
+  _mcdigis = &fEvent->getByLabel<mu2e::StrawDigiMCCollection>(sdmc_tag.Data());
   if (_mcdigis == nullptr) {
-    printf(">>> ERROR in TAnaDump::printKalRepCollection: failed to locate StepPointMCCollection:: by %s\n",fStrawDigiMCCollTag.Data());
+    printf(">>> ERROR in TAnaDump::printKalRepCollection: failed to locate StepPointMCCollection:: by %s\n",sdmc_tag.Data());
   }
 
   int ntrk = krepsHandle->size();
@@ -1697,7 +1653,6 @@ void TAnaDump::printKalRepCollection(const char* ModuleLabel,
     printKalRep(trk,"data",module_type.data());
     if (hitOpt > 0) printKalRep(trk,"hits");
   }
- 
 }
 
 
@@ -2162,12 +2117,16 @@ void TAnaDump::printComboHitCollection(const char* StrawHitCollTag   ,
     return;
   }
 
+  TString sdmc_tag = StrawDigiMCCollTag;
+  if (sdmc_tag == "") sdmc_tag = fStrawDigiMCCollTag;
+
   art::Handle<mu2e::StrawDigiMCCollection> mcdH;
-  fEvent->getByLabel<mu2e::StrawDigiMCCollection>(StrawDigiMCCollTag,mcdH);
+  fEvent->getByLabel<mu2e::StrawDigiMCCollection>(sdmc_tag.Data(),mcdH);
   const mu2e::StrawDigiMCCollection*  mcdigis(nullptr);
   if (mcdH.isValid())   mcdigis = mcdH.product();
   else {
-    printf("ERROR: cant find StrawDigiMCCollection tag=%s, EXIT\n",StrawDigiMCCollTag);
+    printf("ERROR: cant find StrawDigiMCCollection tag=%s, EXIT\n",sdmc_tag.Data());
+    print_sdmc_colls();
     return;
   }
 
@@ -2361,12 +2320,13 @@ void TAnaDump::printStrawGasStep(const mu2e::StrawGasStep* Step, const char* Opt
   opt.ToLower();
 
   if ((opt == "") || (opt.Index("banner") >= 0)) {
-    printf("-----------------------------------------------------------------");
-    printf("------------------------------------------------------------\n");
-    printf("    I   SID    Stype  EIon   PathLen   Width   Time  PDG  PDG(M)  GenID  SimID   Start   End  Mom");
-    printf("    SimpID      p  \n");
-    printf("-----------------------------------------------------------------");
-    printf("------------------------------------------------------------\n");
+    printf("----------------------------------------------------------------------------------------------------------------------");
+    printf("---------------------------------------------------------------------------------------------\n");
+    printf("    I   SID  Plane  Panel   Layer   Straw   Stype     EIon   PathLen    Width");
+    printf("       Time        PDG      PDG(M)       GenID       SimID   X0          Y0          Z0        ");
+    printf("X1         Y1          Z1           Mom\n");
+    printf("----------------------------------------------------------------------------------------------------------------------");
+    printf("---------------------------------------------------------------------------------------------\n");
   }
 
   if (opt == "banner") return;
@@ -2422,7 +2382,7 @@ void TAnaDump::printStrawGasStep(const mu2e::StrawGasStep* Step, const char* Opt
 	   generator_id,
 	   simp_id);
 
-    printf(" %8.3f   %8.3f   %9.6f  %8.3f   %8.3f   %9.6f   %8.3f\n",
+    printf(" %8.3f   %8.3f   %9.3f  %8.3f   %8.3f   %9.3f   %8.3f\n",
 	   Step->startPosition().x(),
 	   Step->startPosition().y(),
 	   Step->startPosition().z(),

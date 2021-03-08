@@ -257,10 +257,9 @@ public:
 
   void printKalRep(const KalRep* Krep, const char* Opt = "", const char* Prefix = "");
 
-  void printKalRepCollection(const char* ModuleLabel     , 
-			     const char* ProductName = "", 
-			     const char* ProcessName = "",
-			     int         hitOpt      = 0); 
+  void printKalRepCollection(const char* KalRepCollTag               , 
+			     int         hitOpt             = 0      , 
+			     const char* StrawDigiMCCollTag = nullptr); 
 //-----------------------------------------------------------------------------
 // time clusters
 //-----------------------------------------------------------------------------
