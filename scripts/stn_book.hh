@@ -46,7 +46,8 @@ public:
   }
 
   stn_dataset_t* NewDataset(const char* DsID, const char* Name,
-			    long int NEvents, long int NGenEvents) {
+			    long int NEvents, long int NGenEvents,
+			    float LumiSF = -1.) {
     
     stn_dataset_t* d = new stn_dataset_t(DsID);
     TString name(Name);
@@ -55,6 +56,7 @@ public:
 
     d->fNEvents    = NEvents;
     d->fNGenEvents = NGenEvents;
+    d->fLumiSF     = LumiSF;
     d->fBook       = this;
     
     fListOfDatasets.push_back(d);

@@ -8,15 +8,16 @@ class stn_book;
 
 struct stn_dataset_t {
 
-  TString   fID        ;			// dataset ID (short name)
-  stn_book* fBook      ;                 // dataset book (not ready to use yet)
-  TString   fName      ;			// full name of the ntupled dataset
-  long int  fNEvents   ;                 // number of events in all files
+  TString   fID        ;		// dataset ID (short name)
+  stn_book* fBook      ;	        // dataset book (not ready to use yet)
+  TString   fName      ;	        // full name of the ntupled dataset
+  long int  fNEvents   ;                // number of events in all files
   long int  fNGenEvents; 		// N generated events (if MC, corresponding to the files, for normalization)
-  float     fEMin      ;			// sometimes, the signal particle energy range is constrained
+  float     fEMin      ;		// sometimes, the signal particle energy range is constrained
   float     fEMax      ;
-  int       fMinRun    ;                 // minimal run number
-  int       fMaxRun    ;			// maximal run number
+  int       fMinRun    ;                // minimal run number
+  int       fMaxRun    ;		// maximal run number
+  float     fLumiSF    ;                // scale factor toget the right luminosity scaling
 
   stn_dataset_t(const char* DsID = "") {
     fID          = DsID;
