@@ -54,7 +54,7 @@ TEvdStrawHit::TEvdStrawHit(const mu2e::ComboHit*    Hit,
   fDir(Wx,Wy),
   fEllipse()
  {
-   printf("TEvdStrawHit::TEvdStrawHit: StrawDidiMC::driftDistance disabled. ask Dave Brown\n");
+   // printf("TEvdStrawHit::TEvdStrawHit: StrawDidiMC::driftDistance disabled. ask Dave Brown\n");
 
   fSigW  = SigW;
   fSigR  = SigR;
