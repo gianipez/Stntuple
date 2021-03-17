@@ -198,7 +198,7 @@ Stntuple.paths : {
 		      @sequence::su2020.reco_compression ,
 		      @sequence::Stntuple.post_reco_de   ,    # track-calo matching and electron PID
 		      @sequence::Stntuple.post_reco_dmu  ,    # track-calo matching and muo PID
-		      MuHitDisplayDe
+		      MuHitDisplayDeMHDar
 		   ]
 
     stntuple_p40_crv : [ # @sequence::su2020.trk_hit_reco     ,
