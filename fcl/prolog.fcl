@@ -140,7 +140,7 @@ MuHitDisplay: { module_type:MuHitDisplay                 # the class name;
     genpCollTag                  : generate
     spmcCollTag                  : "compressDigiMCs" # was g4run
     statuG4Tag                   : "g4run"           # 
-    strawHitCollTag              : makeSH
+    strawHitCollTag              : "makeSH"
     strawDigiMCCollTag           : "compressDigiMCs" #  was "makeSD"
     strawHitFlagCollTag          : "DeltaFinder:StrawHits"
     comboHitCollTag              : makePH
@@ -149,7 +149,7 @@ MuHitDisplay: { module_type:MuHitDisplay                 # the class name;
     caloClusterCollTag           : CaloClusterFromProtoCluster
 
     timeClusterCollTag           : CalTimePeakFinder
-    trackCollTag                 : MergePatRec
+    trackCollTag                 : "KFFDeMHDar"
 
     trkExtrapol                  : TrackCaloIntersection
     trkCalMatch                  : TrackCaloMatching
@@ -626,7 +626,7 @@ Stntuple : {
 	MuHitDisplay    : { @table::MuHitDisplay }
 
 	MuHitDisplayDe : { @table::MuHitDisplay 
-	    trackCollTag           : MergePatRecDe
+	    trackCollTag           : "KFFDmuMHDar"
 	    trkExtrapol            : TrackCaloIntersectionDe
 	    trkCalMatch            : TrackCaloMatchingDe
 	}
