@@ -626,23 +626,11 @@ Stntuple : {
 	MuHitDisplay    : { @table::MuHitDisplay }
 
 	MuHitDisplayDe : { @table::MuHitDisplay 
-	    trackCollTag           : "KFFDmuMHDar"
-	    trkExtrapol            : TrackCaloIntersectionDe
-	    trkCalMatch            : TrackCaloMatchingDe
+	    trackCollTag           : "KFFDeMHDar"
+	    trkExtrapol            : "TciDeMHDar"
+	    trkCalMatch            : "TcmDeMHDar"
 	}
 	
-# 	MuHitDisplayDem : { @table::MuHitDisplay 
-# 	    trackCollTag           : MergePatRecDem
-# 	    trkExtrapol            : TrackCaloIntersectionDem
-# 	    trkCalMatch            : TrackCaloMatchingDem
-# 	}
-# 
-# 	MuHitDisplayDep : { @table::MuHitDisplay 
-# 	    trackCollTag           : MergePatRecDep
-# 	    trkExtrapol            : TrackCaloIntersectionDep
-# 	    trkCalMatch            : TrackCaloMatchingDep
-# 	}
-
 	MuHitDisplayDpp : { @table::MuHitDisplay 
 	    trackCollTag           : MergePatRecDpp
 	    strawHitFlagCollTag    : "FlagBkgHits:StrawHits"    # run TrkPatRec only
@@ -663,9 +651,9 @@ Stntuple : {
 	}
 
 	MuHitDisplayDeMHDar : { @table::MuHitDisplay 
-	    trackCollTag           : KFFDeMHDar
-	    trkExtrapol            : TciDeMHDar
-	    trkCalMatch            : TcmDeMHDar
+	    trackCollTag           : "KFFDeMHDar"
+	    trkExtrapol            : "TciDeMHDar"
+	    trkCalMatch            : "TcmDeMHDar"
 	}
     }
 }
