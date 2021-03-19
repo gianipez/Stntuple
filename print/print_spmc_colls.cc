@@ -1,20 +1,17 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 ///////////////////////////////////////////////////////////////////////////////
-#include "RecoDataProducts/inc/StrawHit.hh"
-#include "GeometryService/inc/GeometryService.hh"
-#include "GeometryService/inc/GeomHandle.hh"
+#include "MCDataProducts/inc/StepPointMC.hh"
 
 #include "Stntuple/print/TAnaDump.hh"
 #include "Stntuple/print/Stntuple_print_functions.hh"
 //-----------------------------------------------------------------------------
-// print all StrawHitCollection's in the event
+// print all StepPointMCCollection's in the event
 //-----------------------------------------------------------------------------
-void print_sh_colls() {
+void print_spmc_colls() {
+  std::vector<art::Handle<mu2e::StepPointMCCollection>> vcoll;
 
-  printf("Available StrawHitCollections: \n");
-
-  std::vector<art::Handle<mu2e::StrawHitCollection>> vcoll;
+  printf("Available StepPointMCCollections: \n");
 
   const art::Event* event = TAnaDump::Instance()->Event();
 

@@ -1370,16 +1370,6 @@ void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix          ,
   }
  
   if ((opt == "") || (opt.Index("data") >= 0)) {
-    const mu2e::StrawDigiMCCollection* mcdigis(0);
-    art::Handle<mu2e::StrawDigiMCCollection> mcdH;
-    fEvent->getByLabel(StrawDigiMCCollTag, mcdH);
-    if (mcdH.isValid()) { 
-      mcdigis = mcdH.product();
-    }
-    else {
-      printf("ERROR in TAnaDump::printHelixSeed : no StrawDigiMCCollection tag=%s, BAIL OUT\n",StrawDigiMCCollTag);
-      return;
-    }
 
     const mu2e::RobustHelix*robustHel = &Helix->helix();
 
@@ -1432,24 +1422,26 @@ void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix          ,
       art::Handle<mu2e::ComboHitCollection> shcHandle;
       const mu2e::ComboHitCollection*       shcol;
 
-      const char* ProductName = "";
-      const char* ProcessName = "";
+      // const char* ProductName = "";
+      // const char* ProcessName = "";
 //-----------------------------------------------------------------------------
 // get ComboHitCollection with single straw hits (makeSH)
 //-----------------------------------------------------------------------------
-      if (ProductName[0] != 0) {
-	art::Selector  selector(art::ProductInstanceNameSelector(ProductName) &&
-				art::ProcessNameSelector(ProcessName)         && 
-				art::ModuleLabelSelector(StrawHitCollTag)        );
-	fEvent->get(selector, shcHandle);
-      }
+      const mu2e::StrawDigiMCCollection* mcdigis(0);
+      art::Handle<mu2e::StrawDigiMCCollection> mcdH;
+      fEvent->getByLabel(StrawDigiMCCollTag, mcdH);
+      if (mcdH.isValid()) mcdigis = mcdH.product();
       else {
-	art::Selector  selector(art::ProcessNameSelector(ProcessName    ) && 
-				art::ModuleLabelSelector(StrawHitCollTag)    );
-	fEvent->get(selector, shcHandle);
+	printf("ERROR in TAnaDump::printHelixSeed : no StrawDigiMCCollection tag=%s, BAIL OUT\n",StrawDigiMCCollTag);
+	return;
       }
-    
-      shcol = shcHandle.product();
+
+      fEvent->getByLabel(StrawHitCollTag,shcHandle);
+      if (shcHandle.isValid()) shcol = shcHandle.product();
+      else {
+	printf("ERROR in TAnaDump::printHelixSeed : no StrawHitCollection tag=%s, BAIL OUT\n",StrawHitCollTag);
+	return;
+      }
 
       int banner_printed(0);
       for (int i=0; i<nsh; ++i){
@@ -1486,7 +1478,7 @@ void TAnaDump::printHelixSeed(const mu2e::HelixSeed* Helix          ,
 void TAnaDump::printHelixSeedCollection(const char* HelixSeedCollTag, 
 					int         PrintHits       ,
 					const char* StrawHitCollTag ,
-					const char* StrawDigiCollTag) {
+					const char* StrawDigiMCCollTag) {
   
   const mu2e::HelixSeedCollection*       list_of_helixSeeds;
   art::Handle<mu2e::HelixSeedCollection> hsH;
@@ -1510,14 +1502,17 @@ void TAnaDump::printHelixSeedCollection(const char* HelixSeedCollTag,
   strcpy(popt,"data");
   if (PrintHits > 0) strcat(popt,"+hits");
 
+  const char* sdmc_coll_tag = StrawDigiMCCollTag;
+  if (sdmc_coll_tag == nullptr) sdmc_coll_tag = fStrawDigiMCCollTag.Data();
+
   for (int i=0; i<nhelices; i++) {
     helix = &list_of_helixSeeds->at(i);
     if (banner_printed == 0) {
-      printHelixSeed(helix,StrawHitCollTag,StrawDigiCollTag,"banner"); 
+      printHelixSeed(helix,StrawHitCollTag,sdmc_coll_tag,"banner"); 
       banner_printed = 1;
     }
 
-    printHelixSeed(helix,StrawHitCollTag,StrawDigiCollTag,popt);
+    printHelixSeed(helix,StrawHitCollTag,sdmc_coll_tag,popt);
   }
 }
 

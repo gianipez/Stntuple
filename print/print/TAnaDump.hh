@@ -215,10 +215,10 @@ public:
 				const char* StrawDigiCollTag = "makeSD",
 				const char* Opt              = ""      );
 
-  void printHelixSeedCollection(const char* HelixSeedCollTag           ,  // always needed
-				int         PrintHits        = 0       ,
-				const char* StrawHitCollTag  = "makeSH",  // usually, "makeSH"
-				const char* StrawDigiCollTag = "makeSD");
+  void printHelixSeedCollection(const char* HelixSeedCollTag             ,  // always needed
+				int         PrintHits          = 0       ,
+				const char* StrawHitCollTag    = "makeSH",  // usually, "makeSH"
+				const char* StrawDigiMCCollTag = nullptr ); // most often, "makeSD" or "compressDigiMCs"
 
   void printStrawHit      (const mu2e::StrawHit*     Hit, 
 			   const mu2e::StrawGasStep* Step,
