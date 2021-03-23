@@ -48,7 +48,8 @@ public:
   TCanvas*      fCanvas;
   TString       fOutputFn;
 
-  plot_data_t() {
+  plot_data_t(int NHist = -1) {
+    nhist = NHist;
     init();
   }
   
