@@ -64,17 +64,18 @@ Stntuple.post_reco_de_dar : [ @sequence::TrackCaloMatching.matching_DeMHDar   ,
 			      TrkQualDeMHDar
 			     ]
 
-Stntuple.post_reco_ue_par : [ @sequence::TrackCaloMatching.matching_UeMHPar ,
-			      TrkQualUeMHPar                                  
+Stntuple.post_reco_de_par : [ @sequence::TrackCaloMatching.matching_DeMHPar   ,
+			      TrkQualDeMHPar
 			     ]
 
 Stntuple.post_reco_ue_dar : [ @sequence::TrackCaloMatching.matching_UeMHDar ,
 			      TrkQualUeMHDar                                  
 			     ]
 
-Stntuple.post_reco_de_dar : [ @sequence::TrackCaloMatching.matching_UeMHDar   ,
-			      TrkQualUeMHDar
+Stntuple.post_reco_ue_par : [ @sequence::TrackCaloMatching.matching_UeMHPar ,
+			      TrkQualUeMHPar                                  
 			     ]
+
 
 Stntuple.post_reco_de    : [ @sequence::Stntuple.post_reco_de_par,
 			     @sequence::Stntuple.post_reco_de_dar
@@ -188,8 +189,8 @@ Stntuple.paths : {
 # p40     : full downstream (e+mu) reconstruction and stntuple making
 # p40_crv : CRV-only reco, stntupling (study beam-induced background in CRV) 
 # p41     : same as p40, but no CRV reco
-# p42     : same as p41, but w/o reco_compression which crashes on muon decays in flight
-# p42_dar : same as p42, but only DAR reco for downstream electrons and muons
+# p42     : (De+Dmu) 
+# p42_dar : (De+Ue) , only DAR reco 
 #------------------------------------------------------------------------------
     stntuple_p40 : [ @sequence::su2020.trk_hit_reco     ,
 		     @sequence::su2020.calo_reco        ,
@@ -239,23 +240,24 @@ Stntuple.paths : {
 
     stntuple_p42 : [ @sequence::su2020.trk_hit_reco     ,
 		     @sequence::su2020.calo_reco        ,
+		     @sequence::su2020.crv_reco         ,
 		     @sequence::su2020.trk_reco_de      ,
 		     @sequence::su2020.trk_reco_dmu     ,
 		     # @sequence::su2020.trk_reco_sep     ,    # Andy
-		     # @sequence::su2020.crv_reco       ,
 		     # @sequence::su2020.reco_compression ,    # Andy
 		     @sequence::Stntuple.post_reco_de   ,    # track-calo matching and electron PID
 		     @sequence::Stntuple.post_reco_dmu  ,    # track-calo matching and muo PID
 		     @sequence::Stntuple.stnmaker_De_Dmu 
 		   ]
 
-    stntuple_p42_dar : [ @sequence::su2020.trk_hit_reco     ,
-			 @sequence::su2020.calo_reco        ,
-			 @sequence::su2020.trk_reco_de_dar  ,
-			 @sequence::su2020.trk_reco_dmu_dar ,
-			 @sequence::Stntuple.post_reco_de_dar,    # track-calo matching and electron PID
-			 @sequence::Stntuple.post_reco_dmu_dar,    # track-calo matching and muo PID
-			 @sequence::Stntuple.stnmaker_De_Dmu_dar 
+    stntuple_p42_dar : [ @sequence::su2020.trk_hit_reco        ,
+			 @sequence::su2020.calo_reco           ,
+			 @sequence::su2020.crv_reco            ,
+			 @sequence::su2020.trk_reco_de_dar     ,
+			 @sequence::su2020.trk_reco_ue_dar     ,
+			 @sequence::Stntuple.post_reco_de_dar  , # track-calo matching and electron PID
+			 @sequence::Stntuple.post_reco_ue_dar  , # track-calo matching and muo PID
+			 @sequence::Stntuple.stnmaker_De_Ue_dar 
 			]
 
     stntuple_p43 : [ @sequence::CrvDAQPackage.CrvDAQSequence, 
