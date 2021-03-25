@@ -59,7 +59,7 @@ public:
   };
 
 protected:
-  int_t      fUseMask;
+  Int_t      fUseMask;
   Int_t      fMinNActive;
   Int_t      fMaxNActive;
   int        fMaxDNa;
