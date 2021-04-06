@@ -3,6 +3,8 @@
 //
 
 #include "Stntuple/obj/TCrvClusterBlock.hh"
+#include "Stntuple/obj/TCrvCoincidenceCluster.hh"
+#include "Stntuple/obj/TCrvRecoPulse.hh"
 
 ClassImp(TCrvClusterBlock)
 
@@ -73,8 +75,10 @@ void TCrvClusterBlock::Clear(Option_t* opt) {
 //______________________________________________________________________________
 void TCrvClusterBlock::Print(Option_t* opt) const {
   // print all hits in the straw tracker
-  printf(" *** reconstructed CRV pulses *** \nNumber: %d\n",fNPulses);
+  printf(" *** N(CRV pulses): %d\n",fNPulses);
   int banner_printed = 0;
+
+  TCrvClusterBlock* crv_block = (TCrvClusterBlock*) this;
 
   for(int i=0; i<fNPulses; i++) {
     if (! banner_printed) {
@@ -84,7 +88,7 @@ void TCrvClusterBlock::Print(Option_t* opt) const {
     fListOfPulses->At(i)->Print("data");
   }
 
-  printf(" *** reconstructed CRV coincidence clusters *** \nNumber: %d\n",fNClusters);
+  printf(" *** N(CRV coincidence clusters): %d\n",fNClusters);
   
   banner_printed = 0;
   for(int i=0; i<fNClusters; i++) {
@@ -92,7 +96,14 @@ void TCrvClusterBlock::Print(Option_t* opt) const {
       fListOfClusters->At(i)->Print("banner");
       banner_printed = 1;
     }
-    fListOfClusters->At(i)->Print("data");
+    const TCrvCoincidenceCluster* crvcc = crv_block->Cluster(i);
+    crvcc->Print("data");
+    int np = crvcc->NPulses();
+    for (int ip=0; ip<np; ip++) {
+      int loc = ClusterPulseIndex(i,ip);
+      const TCrvRecoPulse* p =  crv_block->Pulse(loc);
+      p->Print("data");
+    }
   }
 }
 

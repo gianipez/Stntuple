@@ -369,9 +369,10 @@ $list_of_filesets.each { |fset|
 format="%#{ldir+20}"
 fileset_catalog.puts comment_line
 fileset_catalog.printf("# :NTOTAL:          #{format}i\n",nev_total);
-fileset_catalog.printf("# :PROCESS_CODE:    #{format}s\n","");
 fileset_catalog.printf("# :NGENERATED:      #{format}s\n","");
 fileset_catalog.printf("# :MC_FLAG:         #{format}i\n", 1);
+fileset_catalog.printf("# :PROCESS_CODE:    #{format}s\n","");
+fileset_catalog.printf("# :PDG_CODE:        #{format}s\n","");
 fileset_catalog.printf("# :OFFLINE_VERSION: #{format}s\n",$offline_version);
 fileset_catalog.puts comment_line
 fileset_catalog.puts'</pre>'

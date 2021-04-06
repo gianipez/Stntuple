@@ -694,7 +694,7 @@ int TStnAna::ProcessEvent(int Run, int Subrun, int Event) {
   } while (nb);
 
   if (! found) {
-    printf(" *** run %i event %i not found\n",Run,Event);
+    printf(" *** run:subrun:event  %i:%i:%i not found\n",Run,Subrun,Event);
     return -1;
   }
   else {

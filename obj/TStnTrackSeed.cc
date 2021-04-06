@@ -273,8 +273,33 @@ void TStnTrackSeed::Clear(Option_t* opt) {
 }
 
 //-----------------------------------------------------------------------------
-void TStnTrackSeed::Print(Option_t* opt) const {
-  Error("Print", "Not implemented yet");
+void TStnTrackSeed::Print(Option_t* Option) const {
+
+  TString opt(Option);
+  opt.ToLower();
+					// "non-const *this" for printing purposes
+  TStnTrackSeed* ts = (TStnTrackSeed*) this;
+
+  if ((opt == "") || (opt.Index("banner") >= 0)) {
+//-----------------------------------------------------------------------------
+// print banner
+//-----------------------------------------------------------------------------
+    printf("-------------------------------------------------------------------------");
+    printf("----------------------------------------------------------------\n");
+    printf(" I  NH IH IT   NL       PDG1      PDGM1 NH1       PDG1      PDGM1 NH1      ");
+    printf("P    TanDip     T0    T0Err     D0      Chi2    E(Cl)   T(Cl)\n");
+    printf("-------------------------------------------------------------------------");
+    printf("----------------------------------------------------------------\n");
+  }
+
+  if ((opt == "") || (opt.Index("data") >= 0)) {
+    printf("%2i %3i %2i %2i %4.1f %10i %10i %3i %10i %10i %3i ",
+	   ts->Number(),ts->NHits(),ts->HelixIndex(),ts->TrackIndex(),ts->fNLoops,
+	   ts->PDG1(),ts->PDGMother1(),ts->NHitsFrom1(),
+	   ts->PDG2(),ts->PDGMother2(),ts->NHitsFrom2());
+    printf("%9.3f %6.3f %8.3f %6.3f %8.3f %8.3f %7.3f %8.3f\n",
+	   ts->fP,ts->fTanDip,ts->fT0,ts->fT0Err,ts->fD0,ts->fChi2,ts->fClusterEnergy,ts->fClusterTime);
+  }
 }
 
 // } // end namespace

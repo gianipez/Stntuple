@@ -177,7 +177,7 @@ int TTrkVisNode::InitEvent() {
 
     isFromConversion = false;
 
-    printf("TTrkVisNode::InitEvent: no mcdigi->stepPointMC any more\n");
+    // printf("TTrkVisNode::InitEvent: no mcdigi->stepPointMC any more\n");
 
     const mu2e::StrawGasStep* step(nullptr);
     if (mcdigi->wireEndTime(mu2e::StrawEnd::cal) < mcdigi->wireEndTime(mu2e::StrawEnd::hv)) {

@@ -45,6 +45,7 @@ namespace mu2e {
   //  class StrawHitMCTruth;
   class CaloCluster;
   class CaloProtoCluster;
+  class CrvDigi;
   class CrvRecoPulse;
   class CrvCoincidence;
   class CrvCoincidenceCluster;
@@ -102,6 +103,7 @@ public:
 // accessors
 //-----------------------------------------------------------------------------
   mu2e::SimParticleTimeOffset*   TimeOffsets() { return fTimeOffsets; }
+  const art::Event*              Event      () { return fEvent      ; }
 //-----------------------------------------------------------------------------
 // other methods
 //-----------------------------------------------------------------------------
@@ -186,6 +188,13 @@ public:
   void printCrvRecoPulseCollection (const char* ModuleLabel, 
 				    const char* ProductName= "",
 				    const char* ProcessName= "");
+
+  void printCrvDigi          (const mu2e::CrvDigi* Digi  ,
+				   const char*              Opt = "");
+  
+  void printCrvDigiCollection (const char* ModuleLabel, 
+				    const char* ProductName= "",
+				    const char* ProcessName= "");
 //-----------------------------------------------------------------------------
 // tracking
 //-----------------------------------------------------------------------------
@@ -206,10 +215,10 @@ public:
 				const char* StrawDigiCollTag = "makeSD",
 				const char* Opt              = ""      );
 
-  void printHelixSeedCollection(const char* HelixSeedCollTag           ,  // always needed
-				int         PrintHits        = 0       ,
-				const char* StrawHitCollTag  = "makeSH",  // usually, "makeSH"
-				const char* StrawDigiCollTag = "makeSD");
+  void printHelixSeedCollection(const char* HelixSeedCollTag             ,  // always needed
+				int         PrintHits          = 0       ,
+				const char* StrawHitCollTag    = "makeSH",  // usually, "makeSH"
+				const char* StrawDigiMCCollTag = nullptr ); // most often, "makeSD" or "compressDigiMCs"
 
   void printStrawHit      (const mu2e::StrawHit*     Hit, 
 			   const mu2e::StrawGasStep* Step,
@@ -248,10 +257,9 @@ public:
 
   void printKalRep(const KalRep* Krep, const char* Opt = "", const char* Prefix = "");
 
-  void printKalRepCollection(const char* ModuleLabel     , 
-			     const char* ProductName = "", 
-			     const char* ProcessName = "",
-			     int         hitOpt      = 0); 
+  void printKalRepCollection(const char* KalRepCollTag               , 
+			     int         hitOpt             = 0      , 
+			     const char* StrawDigiMCCollTag = nullptr); 
 //-----------------------------------------------------------------------------
 // time clusters
 //-----------------------------------------------------------------------------

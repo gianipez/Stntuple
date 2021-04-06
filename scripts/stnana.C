@@ -228,6 +228,9 @@ void stnana (TString     Book   ,
   TString task  = g.Task(0,ind);
   TObjString* s = (TObjString*) g.ListOfTasks->FindObject(task.Data());
   if (s) {
+//-----------------------------------------------------------------------------
+// configure the job
+//-----------------------------------------------------------------------------
     sprintf(cmd,"%s;",g.Task.Data());
     printf("cmd=%s\n",cmd);
     gInterpreter->ProcessLine(cmd,&rc);

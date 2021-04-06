@@ -51,6 +51,7 @@ TStnTrackID::TStnTrackID(const char* Name): TNamed(Name,Name) {
   fUseMask         = 0xffffffff;
   fMinFitCons      = 2.e-3;
   fMinT0           = 700.;		// ns
+  fMaxT0           = 10000.;		// ns
   fMinNActive      = 25;
   fMaxNActive      = 200;
   fMaxT0Err        = 0.9;  		// in ns
@@ -107,6 +108,7 @@ int TStnTrackID::IDWord(TStnTrack* Track) {
   if (fcons            <  fMinFitCons  ) id_word |= kFitConsBit ;
   if (chi2dof          >  fMaxChi2Dof  ) id_word |= kChi2DofBit ;
   if (t0               <  fMinT0       ) id_word |= kT0Bit      ;
+  if (t0               >  fMaxT0       ) id_word |= kT0Bit      ;
   if (nactive          <  fMinNActive  ) id_word |= kNActiveBit ;
   if (nactive          >= fMaxNActive  ) id_word |= kNActiveBit ;
   if (dna              >= fMaxDNa      ) id_word |= kDNaBit     ;
@@ -288,7 +290,7 @@ void TStnTrackID::Print(const char* Opt) const {
   printf("      track ID cuts                                  \n");
   printf("-----------------------------------------------------\n");
   printf(" bit  0: fMinFitCons   = %12.4f\n",fMinFitCons   );
-  printf(" bit  1: fMinT0        = %12.4f\n",fMinT0        );
+  printf(" bit  1: fT0           = %12.4f < T0         < %12.4f\n",fMinT0, fMaxT0      );
   printf(" bit  2: fNMinActive   = %12i  fNMaxNActive = %12i\n",fMinNActive,fMaxNActive);
   printf(" bit  3: fMaxT0Err     = %12.4f\n",fMaxT0Err     );
   printf(" bit  4: fMaxMomErr    = %12.4f\n",fMaxMomErr );
@@ -296,5 +298,3 @@ void TStnTrackID::Print(const char* Opt) const {
   printf(" bit  6: fD0           = %12.4f < D0         < %12.4f\n",fMinD0    ,fMaxD0    );
   printf(" bit  7: fRMax         = %12.4f < D0+2/omega < %12.4f\n",fMinRMax  ,fMaxRMax  );
 }
-
-

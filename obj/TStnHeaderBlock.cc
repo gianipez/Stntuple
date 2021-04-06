@@ -147,7 +147,7 @@ void TStnHeaderBlock::Print(Option_t* opt) const {
   block->fLastRunNumber = fRunNumber;
   strncpy(f_last_opt,opt,1000-1);
 
-  printf("*** Run,Subrun,Event: %6i,%7i,%-9i Rs: : %s\n", 
+  printf("*** Run,Subrun,Event: %6i,%7i,%-9i: %s\n", 
 	 fRunNumber,fSectionNumber,fEventNumber,opt);
 }
 

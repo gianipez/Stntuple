@@ -115,7 +115,7 @@
 
 #include "Stntuple/alg/TStnTrackID.hh"
 
-#include "Stntuple/mod/TAnaDump.hh"
+#include "Stntuple/print/TAnaDump.hh"
 #include "Stntuple/mod/THistModule.hh"
 
 #include "Stntuple/obj/TStnHeaderBlock.hh"
@@ -407,7 +407,8 @@ namespace mu2e {
   // TStnVisManager is responsible for deleting all nodes created here
   //-----------------------------------------------------------------------------
   void MuHitDisplay::InitVisManager() {
-    const char oname [] = "MuHitDisplay::InitVisManager";
+    char oname [100];
+    sprintf(oname,"%s:%s",moduleDescription().moduleLabel().data(),"InitVisManager");
 
     fVisManager->SetTitleNode(new THeaderVisNode("HeaderVisNode", fHeaderBlock));
 
@@ -500,7 +501,9 @@ namespace mu2e {
 // get data from the event record
 //-----------------------------------------------------------------------------
   int MuHitDisplay::getData(const art::Event* Evt) {
-    const char* oname = "MuHitDisplay::getData";
+    char oname[100];
+    sprintf(oname,"%s::%s",moduleDescription().moduleLabel().data(),"getData");
+
 //-----------------------------------------------------------------------------
 //  CRV pulse information
 //-----------------------------------------------------------------------------
@@ -561,7 +564,7 @@ namespace mu2e {
     }
     else {
       printf(">>> [%s] WARNING: CrvRecoPulsesCollection by %s is missing. CONTINUE.\n",
-	     oname, _crvRecoPulseCollTag.data());
+	     __func__, _crvRecoPulseCollTag.data());
     }
     
     if (_showCRVOnly) { //If only displaying the CRV, skip everything else

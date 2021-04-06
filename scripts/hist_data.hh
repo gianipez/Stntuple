@@ -43,10 +43,12 @@ public:
   int           fYLogScale;
   TString       fDrawOpt;
   float         fScale;			// 1:normalize to NGenEvents, 2:normalize to integral
+  float         fLumiSF;                // alternative to scale: just scale by this number
   TString       fPlotName;
   TString       fPlotLabel;
   TString       fXAxisTitle;
   TString       fYAxisTitle;
+  TString       fYTitFormat;		// if "", Y axis title is not printed
   float         fLegendXMin;
   float         fLegendYMin;
   float         fLegendXMax;
@@ -119,18 +121,20 @@ public:
     fYMax        = -1;
     fStats       =  1;
     fOptStat     = -1;
-    fStatBoxXMin =  0.65;
-    fStatBoxYMin =  0.65;
+    fStatBoxXMin =  0.70;
+    fStatBoxYMin =  0.72;
     fStatBoxXMax =  0.90;
     fStatBoxYMax =  0.90;
     fRebin       = -1;
     fYLogScale   =  0;
     fDrawOpt     = "";
     fScale       = -1;
+    fLumiSF      = -1; // alternative to fScale
     fPlotName    = "";
     fPlotLabel   = "";
     fXAxisTitle  = "";
     fYAxisTitle  = "";
+    fYTitFormat  = "N / %10.3f";
     fLegendXMin  = 0.65;
     fLegendYMin  = 0.15;
     fLegendXMax  = 0.90;
@@ -141,16 +145,40 @@ public:
 // get histogram file for a given dataset ID
 //-----------------------------------------------------------------------------
   hist_file_t*  get_hist_file(const char* DsID, const char* JobName) {
-  printf("hist_data::get_hist_file dsid: %s  job: %s fBook = %p\n",DsID,JobName,fBook);
+    printf("hist_data::get_hist_file dsid: %s  job: %s fBook = %p\n",DsID,JobName,fBook);
   
-  hist_file_t* hf = fBook->FindHistFile(DsID,"",JobName);
+    hist_file_t* hf = fBook->FindHistFile(DsID,"",JobName);
   
-  if (hf == nullptr) {
-    printf("hist_data::get_hist_file ERROR: cant find hist file for dsid=%s, job=%s; return NULL\n",
-	   DsID,JobName);
+    if (hf == nullptr) {
+      printf("hist_data::get_hist_file ERROR: cant find hist file for dsid=%s, job=%s; return NULL\n",
+	     DsID,JobName);
+    }
+    return hf;
   }
-  return hf;
-}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+  int  print(const char* Fn = "") {
+    TString fn = Fn;
+    if (fn == "") fn = fOutputFn;
+
+    if (fn == "") {
+      printf(" hist_data::print ERROR: canvas is not defined. BAIL OUT\n");
+      return -1;
+    }
+    
+    if (fCanvas == nullptr) {
+      printf(" hist_data::print ERROR: canvas is not defined. BAIL OUT\n");
+      return -1;
+    }
+    
+    fCanvas->Modified();
+    fCanvas->Update();
+    
+    fCanvas->Print(fn.Data());
+    return 0;
+  }
 
 };
 
