@@ -115,7 +115,7 @@
 
 #include "Stntuple/alg/TStnTrackID.hh"
 
-#include "Stntuple/print/TAnaDump.hh"
+#include "Stntuple/print/print/TAnaDump.hh"
 #include "Stntuple/mod/THistModule.hh"
 
 #include "Stntuple/obj/TStnHeaderBlock.hh"

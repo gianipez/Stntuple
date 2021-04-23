@@ -1,7 +1,8 @@
 //
 
-#include "Stntuple/print/TAnaDump.hh"
-#include "Stntuple/print/Stntuple_print_functions.hh"
+#include "Stntuple/print/print/TAnaDump.hh"
+#include "Stntuple/print/print/Stntuple_print_functions.hh"
+#include "Stntuple/geom/TCrvNumerology.hh"
 
 #include "TROOT.h"
 #include "TVector2.h"
@@ -695,16 +696,26 @@ void TAnaDump::printCrvCoincidenceCluster(const mu2e::CrvCoincidenceCluster* CCl
 
     std::map<int, float>   side02, side13;
     std::vector<int>       bars;
+    std::vector<int>       sectors;
+    float vinvinbar        = 6.5;  // in CRV bars, light travels 6.5ns/m, so this is v inverse in bar
+
+    TCrvNumerology* crvn = TCrvNumerology::Instance();
+
     for (int i=0; i<np; i++) {
       pulse = list_of_pulses->at(i).get();
       float t0         = pulse->GetLEtime();
       int bar0         = pulse->GetScintillatorBarIndex().asInt();
       int sipm0        = pulse->GetSiPMNumber();
+
+      int   imm, ill, ibb, this_sector;         //module, layer, and bar integers required for GetBarInfo function
+      int   sector = crvn->GetBarInfo(bar0,this_sector,imm,ill,ibb);
+
       if (std::find(bars.begin(), bars.end(), bar0) ==  bars.end()){
-	  bars.push_back(bar0);
+	bars.push_back(bar0);
+	sectors.push_back(sector); 
       }
       bool found = false;
-      for (int j=i; j<np; j++) {
+      for (int j=i+1; j<np; j++) {
 	otherpulse1 = list_of_pulses->at(j).get();
 	float t1         = otherpulse1->GetLEtime();
 	int bar1         = otherpulse1->GetScintillatorBarIndex().asInt();
@@ -734,34 +745,88 @@ void TAnaDump::printCrvCoincidenceCluster(const mu2e::CrvCoincidenceCluster* CCl
       }
     }
 
-
-
     // now print everything
-    printf("--------------------------------------------------\n");
-    printf("BarIndex     Tcorrected(MD)     Xcorrected(MD)    \n");
-    printf("--------------------------------------------------\n");
-    float totaltimeavg = 0;
+    printf("---------------------------------------------------------------------\n");
+    printf("BarIndex       bar_length       Tcorrected(MD)     Xcorrected(MD)    \n");
+    printf("---------------------------------------------------------------------\n");
+    float totaltimeavg(0),totalxavg(0);
     float nbars = 0;
+    int   twoendbars   = 0;
     for (size_t i=0; i<bars.size(); i++) {
-      int bar = bars.at(i);
-      if ((side02.find(bar) == side02.end()) || (side13.find(bar) == side13.end())) {
-	continue;
-      }
-      // now do the calculations using the above side time averages
-      float topbarlength = 6.; // length of all top CRV bars is 6m
-      float vinvinbar = 6.5; // in CRV bars, light travels 6.5ns/m, so this is v inverse in bar
-      float tcorrected; // will be in ns
-      float xcorrected; // will be in m
-      nbars += 1;
+	int bar    = bars.at(i);
+	int sector = sectors.at(i);
+//-----------------------------------------------------------------------------
+// only do calculation if you have measured times on both ends for a given bar
+//-----------------------------------------------------------------------------
+	float bar_length = crvn->BarLength(sector);   // get bar length from array in CrvStubPar_t
+	float tcorrected;                                // will be in ns
+	float xcorrected;	                         // will be in m
+
+	// printf(" bar, sector, len:  %5i %2i %10.3f\n",bar,sector,bar_length);
+
+	if ((side02.find(bar) != side02.end()) and (side13.find(bar) != side13.end())) {
+     
+	  tcorrected = .5*(side02[bar] +  side13[bar]  - (bar_length*vinvinbar));
+	  xcorrected = .5*(bar_length  - ((side13[bar] - side02[bar])/vinvinbar ));
+	  twoendbars += 1;
+	  // printf(" case1: time02, time13: %10.3f %10.3f tcorr, xcorr: %10.3f %10.3f 2end_bars: %3i\n",
+	  // 	 time02[bar],time13[bar],tcorrected,xcorrected,twoendbars);
+	}
+	else if (side02.find(bar) != side02.end()) {
+//-----------------------------------------------------------------------------
+// for simplicity, assume that the hit is in the middle of the bar 
+// a more likely assumption would be need to assign the coordinate corresponding to 
+// the end on which we have the signal, but at this point I just don't now which 
+// end is which, this is to be added
+//-----------------------------------------------------------------------------
+	  tcorrected = side02[bar];
+	  xcorrected = bar_length/2;
+	  // printf(" case2: time02: %10.3f tcorr, xcorr: %10.3f %10.3f \n",
+	  // 	 time02[bar],tcorrected,xcorrected);
+	}
+	else {
+	  tcorrected = side13[bar];
+	  xcorrected = bar_length/2;
+	  // printf(" case3: time13: %10.3f tcorr, xcorr: %10.3f %10.3f \n",
+	  // 	 time13[bar],tcorrected,xcorrected);
+	}
       
-      tcorrected = .5*(side02[bar] + side13[bar] - (topbarlength*vinvinbar));
-      xcorrected = .5*(topbarlength - ((side13[bar] - side02[bar])/vinvinbar));
-      
-      totaltimeavg += tcorrected;
-      
-      printf("%8i %9f %9f\n",bar,tcorrected,xcorrected);
+	totaltimeavg += tcorrected;
+	totalxavg    += xcorrected;
+	nbars        += 1;
+
+	printf("%8i %14.2f %16.2f %14.3f\n",bar,bar_length, tcorrected,xcorrected);
+
+	// printf("totaltimeavg, totalxavg, nbars: %10.3f %10.3f %2i\n",totaltimeavg, totalxavg,nbars);
     }
-    totaltimeavg /= nbars;
+    if (nbars > 0) {
+      totaltimeavg /= nbars;
+      totalxavg    /= nbars;
+    }
+    if (twoendbars == 0) {
+      totalxavg = -10.;
+    }
+
+    //   for (size_t i=0; i<bars.size(); i++) {
+    //   int bar = bars.at(i);
+    //   if ((side02.find(bar) == side02.end()) || (side13.find(bar) == side13.end())) {
+    // 	continue;
+    //   }
+    //   // now do the calculations using the above side time averages
+    //   float topbarlength = 6.; // length of all top CRV bars is 6m
+    //   float vinvinbar = 6.5; // in CRV bars, light travels 6.5ns/m, so this is v inverse in bar
+    //   float tcorrected; // will be in ns
+    //   float xcorrected; // will be in m
+    //   nbars += 1;
+      
+    //   tcorrected = .5*(side02[bar] + side13[bar] - (topbarlength*vinvinbar));
+    //   xcorrected = .5*(topbarlength - ((side13[bar] - side02[bar])/vinvinbar));
+      
+    //   totaltimeavg += tcorrected;
+      
+    //   printf("%8i %9f %9f\n",bar,tcorrected,xcorrected);
+    // }
+    // totaltimeavg /= nbars;
     printf("total coincidence corrected time average: %8f\n", totaltimeavg);
   }
   
@@ -2024,9 +2089,9 @@ void TAnaDump::printComboHit(const mu2e::ComboHit* Hit, const mu2e::StrawGasStep
     if ((opt == "") || (opt.Index("banner") >= 0)) {
       printf("--------------------------------------------------------------------------------------------");
       printf("------------------------------------------------------------------------------------------------\n");
-      printf("    I nsh   SID    Flags  Pln:Pnl:Lay:Str      X        Y        Z        Time         eDep ");
-      printf("   End  DrTime    TRes   WDist     WRes         PDG       PDG(M)   Generator          ID       p  \n");
-      printf("--------------------------------------------------------------------------------------------");
+      printf("    I nsh SID    Flags Pln:Pnl:Lay:Str      X        Y        Z        Time         eDep ");
+      printf("   End  DrTime    TRes   WDist     WRes         PDG       PDG(M)   Generator          ID       p        pz  \n");
+      printf("--------------------------------------------------------------------------------------------------------");
       printf("------------------------------------------------------------------------------------------------\n");
     }
 
@@ -2036,6 +2101,7 @@ void TAnaDump::printComboHit(const mu2e::ComboHit* Hit, const mu2e::StrawGasStep
     
     int      pdg_id(-1), mother_pdg_id(-1), generator_id(-1), sim_id(-1);
     double   mc_mom(-1.);
+    double   mc_mom_z(-1.);
 
     mu2e::GenId gen_id;
 
@@ -2055,6 +2121,7 @@ void TAnaDump::printComboHit(const mu2e::ComboHit* Hit, const mu2e::StrawGasStep
 
       sim_id        = simptr->id().asInt();
       mc_mom        = Step->momvec().mag();
+      mc_mom_z      = Step->momvec().z();
     }
     
     if ((opt == "") || (opt == "data")) {
@@ -2068,7 +2135,7 @@ void TAnaDump::printComboHit(const mu2e::ComboHit* Hit, const mu2e::StrawGasStep
       if (Flags >= 0) printf(" %08x",Flags);
       else            printf("        ");
 
-      printf("  %3i %3i %3i %3i  %8.3f %8.3f %9.3f  %8.3f    %9.6f  %3i %7.2f %7.2f %8.3f %8.3f %10i   %10i  %10i  %10i %8.3f\n",
+      printf("  %3i %3i %3i %3i  %8.3f %8.3f %9.3f  %8.3f    %9.6f  %3i %7.2f %7.2f %8.3f %8.3f %10i   %10i  %10i  %10i %8.3f %8.3f\n",
 	     Hit->strawId().plane(),
 	     Hit->strawId().panel(),
 	     Hit->strawId().layer(),
@@ -2087,7 +2154,8 @@ void TAnaDump::printComboHit(const mu2e::ComboHit* Hit, const mu2e::StrawGasStep
 	     mother_pdg_id,
 	     generator_id,
 	     sim_id,
-	     mc_mom);
+	     mc_mom,
+	     mc_mom_z);
     }
   }
 
@@ -2367,11 +2435,21 @@ void TAnaDump::printStrawGasStep(const mu2e::StrawGasStep* Step, const char* Opt
 	   straw->id().getStraw(),
 	   (int) Step->stepType()._stype);
 
+    float stepTime;
+
+    if (fTimeOffsets) {
+      fTimeOffsets->updateMap(*fEvent);
+      stepTime = fTimeOffsets->timeWithOffsetsApplied(*Step);
+    }
+    else {
+      stepTime = Step->time();
+    }
+
     printf(" %8.3f  %8.3f %8.3f  %9.3f %10i  %10i  %10i  %10i",
 	   Step->ionizingEdep(),
 	   Step->stepLength(),
 	   Step->width(),
-	   Step->time(),
+	   stepTime,
 	   pdg_id,
 	   mother_pdg_id,
 	   generator_id,

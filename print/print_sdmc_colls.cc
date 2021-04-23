@@ -3,8 +3,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "MCDataProducts/inc/StrawDigiMC.hh"
 
-#include "Stntuple/print/TAnaDump.hh"
-#include "Stntuple/print/Stntuple_print_functions.hh"
+#include "Stntuple/print/print/TAnaDump.hh"
+#include "Stntuple/print/print/Stntuple_print_functions.hh"
 //-----------------------------------------------------------------------------
 // print all StrawDigiCollection's in the event
 //-----------------------------------------------------------------------------

@@ -24,7 +24,7 @@ def local_build():
     list_of_cc_files =  Glob('*.cc', strings=True);
     skip_list        = []
     libs             = ['Stntuple_base', 
-                    
+                        'Stntuple_geom',
                             'mu2e_CalPatRec',
                         'mu2e_CaloCluster',
                         'mu2e_TrkDiag',
