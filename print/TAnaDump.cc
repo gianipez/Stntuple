@@ -2087,12 +2087,12 @@ void TAnaDump::printComboHit(const mu2e::ComboHit* Hit, const mu2e::StrawGasStep
     opt.ToLower();
 
     if ((opt == "") || (opt.Index("banner") >= 0)) {
-      printf("--------------------------------------------------------------------------------------------");
-      printf("------------------------------------------------------------------------------------------------\n");
-      printf("    I nsh SID    Flags Pln:Pnl:Lay:Str      X        Y        Z        Time         eDep ");
-      printf("   End  DrTime    TRes   WDist     WRes         PDG       PDG(M)   Generator          ID       p        pz  \n");
-      printf("--------------------------------------------------------------------------------------------------------");
-      printf("------------------------------------------------------------------------------------------------\n");
+      printf("#-------------------------------------------------------------------------------------------------------");
+      printf("------------------------------------------------------------------------------------------------------\n");
+      printf("#   I nsh SID    Flags    Pln:Pnl:Lay:Str      X        Y        Z        Time         eDep ");
+      printf("   End  DrTime  PrTime    TRes   WDist     WRes         PDG       PDG(M)   Generator          ID       p        pz  \n");
+      printf("#-------------------------------------------------------------------------------------------------------");
+      printf("------------------------------------------------------------------------------------------------------\n");
     }
 
     if (opt == "banner") return;
@@ -2135,7 +2135,7 @@ void TAnaDump::printComboHit(const mu2e::ComboHit* Hit, const mu2e::StrawGasStep
       if (Flags >= 0) printf(" %08x",Flags);
       else            printf("        ");
 
-      printf("  %3i %3i %3i %3i  %8.3f %8.3f %9.3f  %8.3f    %9.6f  %3i %7.2f %7.2f %8.3f %8.3f %10i   %10i  %10i  %10i %8.3f %8.3f\n",
+      printf("  %3i %3i %3i %3i  %8.3f %8.3f %9.3f  %8.3f    %9.6f  %3i %7.2f %7.2f %7.2f %8.3f %8.3f %10i   %10i  %10i  %10i %8.3f %8.3f\n",
 	     Hit->strawId().plane(),
 	     Hit->strawId().panel(),
 	     Hit->strawId().layer(),
@@ -2146,6 +2146,7 @@ void TAnaDump::printComboHit(const mu2e::ComboHit* Hit, const mu2e::StrawGasStep
 
 	     (int) Hit->driftEnd(),
 	     Hit->driftTime(),
+	     Hit->propTime(),
 	     Hit->transRes(),
 	     Hit->wireDist(),
 	     Hit->wireRes(),
@@ -2237,11 +2238,11 @@ void TAnaDump::printStrawHit(const mu2e::StrawHit* Hit, const mu2e::StrawGasStep
   opt.ToLower();
 
   if ((opt == "") || (opt.Index("banner") >= 0)) {
-    printf("-----------------------------------------------------------------------------------");
+    printf("#----------------------------------------------------------------------------------");
     printf("------------------------------------------------------------\n");
-    printf("    I   SID    Flags  Plane   Panel  Layer   Straw     Time          dt       eDep ");
+    printf("#   I   SID    Flags  Plane   Panel  Layer   Straw     Time          dt       eDep ");
     printf("           PDG       PDG(M)   Generator      SimpID      p  \n");
-    printf("-----------------------------------------------------------------------------------");
+    printf("#----------------------------------------------------------------------------------");
     printf("------------------------------------------------------------\n");
   }
 
