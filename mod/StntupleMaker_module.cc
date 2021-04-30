@@ -45,7 +45,7 @@
 //-----------------------------------------------------------------------------
 // nothing new: link-wise, TModule depends on TAnaDump
 //-----------------------------------------------------------------------------
-#include "Stntuple/print/print/TAnaDump.hh"
+#include "Stntuple/print/TAnaDump.hh"
 #include "Stntuple/mod/StntupleModule.hh"
 #include "Stntuple/mod/StntupleGlobals.hh"
 

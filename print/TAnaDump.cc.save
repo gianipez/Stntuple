@@ -2,7 +2,6 @@
 
 #include "Stntuple/print/TAnaDump.hh"
 #include "Stntuple/print/Stntuple_print_functions.hh"
-#include "Stntuple/geom/TCrvNumerology.hh"
 
 #include "TROOT.h"
 #include "TVector2.h"
@@ -2238,11 +2237,11 @@ void TAnaDump::printStrawHit(const mu2e::StrawHit* Hit, const mu2e::StrawGasStep
   opt.ToLower();
 
   if ((opt == "") || (opt.Index("banner") >= 0)) {
-    printf("#--------------------------------------------------------------------------");
+    printf("#----------------------------------------------------------------------------------");
     printf("------------------------------------------------------------\n");
-    printf("#   I   SID    Flags  Pln   Pnl  Lay   Str     Time          dt       eDep ");
+    printf("#   I   SID    Flags  Plane   Panel  Layer   Straw     Time          dt       eDep ");
     printf("           PDG       PDG(M)   Generator      SimpID      p  \n");
-    printf("#--------------------------------------------------------------------------");
+    printf("#----------------------------------------------------------------------------------");
     printf("------------------------------------------------------------\n");
   }
 

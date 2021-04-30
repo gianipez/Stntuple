@@ -215,6 +215,16 @@ Stntuple.paths : {
 		      MuHitDisplayDe
 		   ]
 
+    stntuple_p401_dar : [ @sequence::su2020.trk_hit_reco     ,
+			  @sequence::su2020.calo_reco        ,
+			  @sequence::su2020.trk_reco_de_dar      ,
+			  @sequence::su2020.trk_reco_ue_dar      ,
+			  @sequence::su2020.crv_reco         ,
+			  @sequence::Stntuple.post_reco_de_dar   ,    # track-calo matching and ele PID
+			  @sequence::Stntuple.post_reco_ue_dar   ,    # track-calo matching and muo PID
+			  MuHitDisplayDe
+		   ]
+
     stntuple_p40_crv : [ # @sequence::su2020.trk_hit_reco     ,
 			 # @sequence::su2020.calo_reco        ,
 			 # @sequence::su2020.trk_reco_de      ,

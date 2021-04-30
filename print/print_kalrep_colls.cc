@@ -3,8 +3,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "RecoDataProducts/inc/KalRepPtrCollection.hh"
 
-#include "Stntuple/print/print/TAnaDump.hh"
-#include "Stntuple/print/print/Stntuple_print_functions.hh"
+#include "Stntuple/print/TAnaDump.hh"
+#include "Stntuple/print/Stntuple_print_functions.hh"
 //--------------------------------------------------------------------------------------------------------------
 void print_kalrep_colls() {
   printf("Available KalRepPtrCollections: \n");
