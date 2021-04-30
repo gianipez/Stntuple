@@ -73,6 +73,7 @@ void TStnEventDisplayModule::MakeNavPanel() {
 
   TGHorizontalFrame* navFrame = new TGHorizontalFrame(frmMain);
   TGVerticalFrame* evtidFrame = new TGVerticalFrame(frmMain);
+
   {
     TString icondir(TString::Format("%s/icons/", gSystem->Getenv("ROOTSYS")) );
     TGPictureButton* b = 0;
@@ -408,19 +409,26 @@ int TStnEventDisplayModule::Event(int IEntry) {
     int np = fGenpBlock->NParticles();
     for (int i=0; i<np; i++) {
       TGenParticle* genp = fGenpBlock->Particle(i);
-
       TParticle mcpart(*genp);
 //-----------------------------------------------------------------------------
 // convert particle momentum from MeV to GeV and coordinates - from mm to cm
 //-----------------------------------------------------------------------------
-      mcpart.SetMomentum        (genp->Px()*1e-3,genp->Py()*1e-3,genp->Pz()*1e-3,genp->Energy()*1.e-3);
-      mcpart.SetProductionVertex(genp->Vx()*0.1,genp->Vy()*0.1,genp->Vz()*0.1,genp->T());
+      double px = genp->Px()*1e-3;
+      double py = genp->Py()*1e-3;
+      double pz = genp->Pz()*1e-3;
+      double e  = genp->Energy()*1e-3;
+
+      double vx = genp->Vx()*0.1;
+      double vy = genp->Vy()*0.1;
+      double vz = genp->Vz()*0.1;
+      double t  = genp->T();
+
+      mcpart.SetMomentum (px,py,pz,e);
+      mcpart.SetProductionVertex(vx,vy,vz,t);
 
       TEveTrack* track = new TEveTrack(&mcpart,i,fTrackPropagator);
 
-      if (i == 0) {
-	fBeamPropagator->SetMaxZ(genp->Vz()*0.1);
-      }
+      if (i == 0) fBeamPropagator->SetMaxZ(vz); // don't trace the beam particles beyond VZ
 
       track->SetIndex(0);
       track->SetStdTitle();
