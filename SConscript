@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 
 import os, re, string, subprocess
-
 Import('env')
-# Import('mu2e_helper')
 #------------------------------------------------------------------------------
 # last two components of the path. Ex: /not/this/but/THIS/AND_THIS
 #                                      "AND_THIS" is usually "src"
@@ -16,6 +14,7 @@ stntuple_env['CXXFLAGS'].append('-I'+os.environ['BUILD_BASE']+'/include');
 #------------------------------------------------------------------------------
 # done
 #------------------------------------------------------------------------------
+# Import('mu2e_helper')
 from stntuple_helper import *
 
 stntuple_env.Append(BUILDERS = {'StntupleCodegen'  : stntuple_codegen })

@@ -90,8 +90,8 @@ TStnFrame::TStnFrame(const char* Name,
 //-----------------------------------------------------------------------------
 //  create menu bar
 //-----------------------------------------------------------------------------
-  fMenuBarLayout = new TGLayoutHints(kLHintsTop | kLHintsLeft | kLHintsExpandX,
-				     0, 0, 1, 1);
+  fMenuBarLayout     = new TGLayoutHints(kLHintsTop | kLHintsLeft | kLHintsExpandX,
+					 0, 0, 1, 1);
   fMenuBarItemLayout = new TGLayoutHints(kLHintsTop | kLHintsLeft, 0, 4, 0, 0);
   fMenuBarHelpLayout = new TGLayoutHints(kLHintsTop | kLHintsRight);
 
