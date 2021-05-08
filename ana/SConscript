@@ -20,17 +20,14 @@ stn_helper = stntuple_helper(env,debug);
 
 dict_skip_list = []
 if (os.getenv("STNTUPLE_MC_GEN") == None): 
-    dict_skip_list.append("TStnPhotosAnaModule_linkdef.h");
+    dict_skip_list.append("TPhotosAnaModule_linkdef.h");
 
 stn_helper.handle_dictionaries(".hh",dict_skip_list);
 
 list_of_cc_files =  Glob('*.cc', strings=True);
 skip_list        = []
 if (os.getenv("STNTUPLE_MC_GEN") == None): 
-    skip_list.append("TStnPhotosAnaModule.cc");
-
-
-
+    skip_list.append("TPhotosAnaModule.cc");
 
 stntuple_libs    = ['Stntuple_alg', 'Stntuple_obj', 'Stntuple_loop',
                     'Stntuple_gui', 'Stntuple_geom', 'Stntuple_base'];

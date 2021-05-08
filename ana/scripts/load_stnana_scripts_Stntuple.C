@@ -1,6 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// classes in Stntuple/ana murat/ana have the same names, don't load 
-// libmurat_ana.so and libStntuple_ana.so simultaneously
+// hide STNTUPLE module classes in a namespace
 ///////////////////////////////////////////////////////////////////////////////
 #include "TInterpreter.h"
 #include "modules.hh"
@@ -15,15 +14,17 @@ int load_stnana_scripts_Stntuple() {
   char        macro[200];
 
   const char* script[] = { 
-    "calorimeter.C", "PWD",
+    "calorimeter.C", "PWD",		     // calorimeter, calorimeter clusters
     "catalog.C"    , "PWD",
-    "crv.C"        , "PWD",
+    "crv.C"        , "PWD",		     // CRV
     "debug.C"      , "PWD",
     "genp.C"       , "PWD",
+    "evd.C"        , "PWD",
     "helix.C"      , "PWD",
     "lumi.C"       , "PWD",
-    "photos.C"     , "STNTUPLE_MC_GEN",
-    "trk.C"        , "PWD",
+    "photos.C"     , "STNTUPLE_MC_GEN",      // analyze output of the PHOTOS MC
+    "spmc.C"       , "PWD",                  // analyze StepPointMC's
+    "trk.C"        , "PWD",		     // tracks
     "trs.C"        , "PWD",                  // sample track seed analysis module
     "trigger.C"    , "PWD",
     "validation.C" , "PWD",
