@@ -2,8 +2,8 @@
 // include inside the class declaration to make this type internal
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef __stntuple_ana_HistBase_t_hh__
-#define __stntuple_ana_HistBase_t_hh__
+#ifndef __Stntuple_ana_HistBase_t_hh__
+#define __Stntuple_ana_HistBase_t_hh__
 
 namespace stntuple {
 

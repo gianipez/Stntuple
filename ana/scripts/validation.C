@@ -4,9 +4,9 @@
 #include "Stntuple/scripts/global_vars.h"
 #include "Stntuple/ana/scripts/modules.hh"
 
-def_name validation_005("val_stn");
+def_name stn_validation_005("stn_val");
 
-void val_stn(int PdgCode = 11, int GeneratorCode = 2) {
+void stn_val(int PdgCode = 11, int GeneratorCode = 2) {
 //-----------------------------------------------------------------------------
 // configure validation module
 //-----------------------------------------------------------------------------
@@ -14,4 +14,3 @@ void val_stn(int PdgCode = 11, int GeneratorCode = 2) {
   stntuple::m_val->SetPdgCode      (PdgCode);
   stntuple::m_val->SetGeneratorCode(GeneratorCode);
 }
-

@@ -10,19 +10,16 @@ Import('env')
 #------------------------------------------------------------------------------
 x = subprocess.call('scripts/build_config',shell=True)
 
-if (os.environ.get("MU2E_SATELLITE_RELEASE")) :
-    env['CPPPATH' ].append('-I'+os.environ['MU2E_SATELLITE_RELEASE']+'/include');
-    env['CXXFLAGS'].append('-I'+os.environ['MU2E_SATELLITE_RELEASE']+'/include');
-else :
-    env['CPPPATH' ].append('-I'+os.environ['MU2E_BASE_RELEASE']+'/include');
-    env['CXXFLAGS'].append('-I'+os.environ['MU2E_BASE_RELEASE']+'/include');
-    
+stntuple_env = env.Clone()
+stntuple_env['CPPPATH' ].append('-I'+os.environ['BUILD_BASE']+'/include');
+stntuple_env['CXXFLAGS'].append('-I'+os.environ['BUILD_BASE']+'/include');
 #------------------------------------------------------------------------------
 # done
 #------------------------------------------------------------------------------
 from stntuple_helper import *
 
-env.Append(BUILDERS = {'StntupleCodegen'  : stntuple_codegen })
-env.Append(BUILDERS = {'StntupleRootCint' : stntuple_rootcint})
+stntuple_env.Append(BUILDERS = {'StntupleCodegen'  : stntuple_codegen })
+stntuple_env.Append(BUILDERS = {'StntupleRootCint' : stntuple_rootcint})
 
+Export('stntuple_env')
 Export('stntuple_helper')

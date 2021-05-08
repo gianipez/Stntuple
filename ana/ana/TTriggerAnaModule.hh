@@ -176,7 +176,7 @@ public:
 //-----------------------------------------------------------------------------
   void    Test001();
 
-  ClassDef(TTriggerAnaModule,0)
+  ClassDef(stntuple::TTriggerAnaModule,0)
 };
 }
 #endif

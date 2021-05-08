@@ -42,8 +42,8 @@
 #include <TEveTrack.h>
 #include <TEveTrackPropagator.h>
 
-#include "Stntuple/ana/TEventDisplayUtils.hh"
-#include "Stntuple/ana/TMu2eBField.hh"
+#include "Stntuple/gui/TEventDisplayUtils.hh"
+#include "Stntuple/gui/TMu2eBField.hh"
 
 #include "Stntuple/loop/TStnModule.hh"
 #include "Stntuple/obj/TStnTrackBlock.hh"

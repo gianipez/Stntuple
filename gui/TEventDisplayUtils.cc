@@ -6,7 +6,7 @@
 
 #include "TROOT.h"
 
-#include "Stntuple/ana/TEventDisplayUtils.hh"
+#include "Stntuple/gui/TEventDisplayUtils.hh"
 #include <string>
 
 ClassImp(stntuple::TEventDisplayUtils)
