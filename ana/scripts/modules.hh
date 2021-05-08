@@ -7,9 +7,10 @@ class TStnDebugModule;
 class TStnGeneratorModule;		// event generator base class 
 class TStnLumiMonModule;
 
+#include "Stntuple/ana/TClusterAnaModule.hh"
+
 namespace stntuple {
 
-  class TClusterAnaModule;
   class TCrvAnaModule;
   class TEventDisplayModule;
   class TGenAnaModule;

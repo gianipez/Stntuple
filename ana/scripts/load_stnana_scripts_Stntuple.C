@@ -14,20 +14,20 @@ int load_stnana_scripts_Stntuple() {
   char        macro[200];
 
   const char* script[] = { 
-    "calorimeter.C", "PWD",		     // calorimeter, calorimeter clusters
-    "catalog.C"    , "PWD",
-    "crv.C"        , "PWD",		     // CRV
-    "debug.C"      , "PWD",
-    "genp.C"       , "PWD",
-    "evd.C"        , "PWD",
-    "helix.C"      , "PWD",
-    "lumi.C"       , "PWD",
-    "photos.C"     , "STNTUPLE_MC_GEN",      // analyze output of the PHOTOS MC
-    "spmc.C"       , "PWD",                  // analyze StepPointMC's
-    "trk.C"        , "PWD",		     // tracks
-    "trs.C"        , "PWD",                  // sample track seed analysis module
-    "trigger.C"    , "PWD",
-    "validation.C" , "PWD",
+    "calorimeter.C"  , "PWD",		     // calorimeter, calorimeter clusters
+    "catalog.C"      , "PWD",
+    "crv.C"          , "PWD",		     // CRV
+    "debug.C"        , "PWD",
+    "genp.C"         , "PWD",
+    "event_display.C", "PWD",
+    "helix.C"        , "PWD",
+    "lumi.C"         , "PWD",
+    "photos.C"       , "STNTUPLE_MC_GEN",    // analyze output of the PHOTOS MC
+    "spmc.C"         , "PWD",                // analyze StepPointMC's
+    "trk.C"          , "PWD",		     // tracks
+    "trs.C"          , "PWD",                // sample track seed analysis module
+    "trigger.C"      , "PWD",
+    "validation.C"   , "PWD",
     0 
   };
 
