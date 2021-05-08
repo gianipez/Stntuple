@@ -31,7 +31,8 @@ def stntuple_gen_rootcint(source, target, env, for_signature):
 #    print "[stntuple_gen_rootcint] class_include = %s"%class_include
 #    print "[stntuple_gen_rootcint] linkdef       = %s"%linkdef
     
-    includes =   "-Iinclude -I"+os.environ['MU2E_BASE_RELEASE'];
+    includes = "-I"+os.environ['MU2E_BASE_RELEASE']+'/include';
+    includes = includes + " -I"+os.environ['MU2E_BASE_RELEASE'];
     includes = includes + " -I"+os.environ['ART_INC'     ];
     includes = includes + " -I"+os.environ['ART_ROOT_IO_INC'];
     includes = includes + " -I"+os.environ['BTRK_INC'    ];
