@@ -127,27 +127,31 @@ public:
   // ****** accessors
 
   //Interface Handlers
-  void HandleButtons();
-  void HandleSlider();
-  void HandleText(); //char * text);
+
+  virtual int    InitGui  (const char* Title);
+  virtual int    InitViews();
+
+  void           HandleButtons();
+  void           HandleSlider();
+  void           HandleText(); //char * text);
 
   TSubdetector*  GetClosestSubdetector() { return fClosestSubdetector; }
   TExtrapolator* GetExtrapolator() { return fExtrapolator; }
 
   TObjArray*     GetListOfDetectors() { return fListOfDetectors; }
 
-  void          AddDetector(TObject* det) { fListOfDetectors->Add(det); }
+  void           AddDetector(TObject* det) { fListOfDetectors->Add(det); }
 
   const art::Event* Event() { return fEvent; }
 
-  int    DisplayStrawDigiMC() { return fDisplayStrawDigiMC; }
+  int            DisplayStrawDigiMC() { return fDisplayStrawDigiMC; }
   
-  int    MinStation() { return fMinStation; }
-  int    MaxStation() { return fMaxStation; }
-  int    TimeCluster() { return fTimeCluster; }
+  int            MinStation() { return fMinStation; }
+  int            MaxStation() { return fMaxStation; }
+  int            TimeCluster() { return fTimeCluster; }
 
-  double TMin() { return fTMin; }
-  double TMax() { return fTMax; }
+  double         TMin() { return fTMin; }
+  double         TMax() { return fTMax; }
 
   void   GetTimeWindow(float& TMin, float& TMax) {
     TMin = fTMin;

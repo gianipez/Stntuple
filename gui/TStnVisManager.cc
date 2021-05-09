@@ -35,6 +35,68 @@ ClassImp(TStnVisManager)
 TStnVisManager::TStnVisManager(const char* Name, const char* Title): TVisManager(Name, Title) {
   if (gROOT->IsBatch()) return;
 
+  InitGui(Title);
+//-----------------------------------------------------------------------------
+// views
+//-----------------------------------------------------------------------------
+  InitViews();
+
+  fListOfDetectors = new TObjArray(10);
+
+  fMinStation  =  0;
+  fMaxStation  = 50;
+					// by default, no timing constraints
+  fTMin        = 0;
+  fTMax        = 1.e5;
+  fTimeCluster = -1;
+}
+
+//_____________________________________________________________________________
+TStnVisManager::~TStnVisManager() {
+
+  if (!gROOT->IsBatch()) {
+
+//-----------------------------------------------------------------------------
+// delete views
+//-----------------------------------------------------------------------------
+    delete fTrkXYView;
+    delete fTrkRZView;
+					// only two views for disk calorimeter
+    delete fCalView[0];
+    delete fCalView[1];
+					// delete CRV views
+    delete fCrvView[0];
+    delete fCrvView[1];
+    delete fCrvView[2];
+    delete fCrvView[3];
+    delete fCrvView[4];
+    delete fCrvView[5];
+					// cleanup gui
+    delete fMenuBarHelpLayout;
+    delete fMenuBarItemLayout;
+    delete fMenu;
+    delete fMenuBarLayout;
+    delete fMenuBar;
+    delete fMain;
+
+    delete fListOfDetectors;
+  }
+}
+
+//_____________________________________________________________________________
+TStnVisManager* TStnVisManager::Instance() {
+  if (TVisManager::fgInstance != NULL) {
+    return (TStnVisManager*) TVisManager::fgInstance;
+  }
+  else {
+    return new TStnVisManager();
+  }
+}
+
+//-----------------------------------------------------------------------------
+// this function also opens windows, so better to have it virtual
+//-----------------------------------------------------------------------------
+int TStnVisManager::InitGui(const char* Title) {
   fMain = new  TEvdMainFrame(gClient->GetRoot(),200,100,kMainFrame | kVerticalFrame);
 //-----------------------------------------------------------------------------
 //  create menu bar
@@ -123,8 +185,20 @@ TStnVisManager::TStnVisManager(const char* Name, const char* Title): TVisManager
   updaterBtn->SetWrapLength(-1);
   updaterBtn->MoveResize(220, 120, 60, 20);
 //-----------------------------------------------------------------------------
-// views
+// final actions
 //-----------------------------------------------------------------------------
+  fMain->MapSubwindows();
+  fMain->Resize(fMain->GetDefaultSize());
+  fMain->Resize(400, 150);
+  fMain->SetWindowName(Title);
+  fMain->MapWindow();
+
+  return 0;
+}
+
+//-----------------------------------------------------------------------------
+int TStnVisManager::InitViews() {
+
   fTrkXYView = new TTrkXYView();
   fTrkRZView = new TTrkRZView();
 
@@ -143,69 +217,7 @@ TStnVisManager::TStnVisManager(const char* Name, const char* Title): TVisManager
   fCrvView[4]->SetTimeWindow(0, 1695);
   fCrvView[5] = new TCrvView(8);            // topts
   fCrvView[5]->SetTimeWindow(0, 1695);
-	
-  fListOfDetectors = new TObjArray(10);
-//-----------------------------------------------------------------------------
-// final actions
-//-----------------------------------------------------------------------------
-  fMain->MapSubwindows();
-  fMain->Resize(fMain->GetDefaultSize());
-  fMain->Resize(400, 150);
-
-  fMain->SetWindowName(Title);
-
-  fMain->MapWindow();
-
-  fMinStation =  0;
-  fMaxStation = 50;
-					// by default, no timing constraints
-  fTMin = 0;
-  fTMax = 1.e5;
-
-  fTimeCluster = -1;
-}
-
-//_____________________________________________________________________________
-TStnVisManager::~TStnVisManager() {
-
-  if (!gROOT->IsBatch()) {
-
-    // delete tracking views
-    delete fTrkXYView;
-    delete fTrkRZView;
-    // only two views for disk calorimeter
-    delete fCalView[0];
-    delete fCalView[1];
-
-    delete fCrvView[0];
-    delete fCrvView[1];
-    delete fCrvView[2];
-    delete fCrvView[3];
-    delete fCrvView[4];
-    delete fCrvView[5];
-
-    delete fMenuBarHelpLayout;
-
-    delete fMenuBarItemLayout;
-    delete fMenu;
-
-    delete fMenuBarLayout;
-    delete fMenuBar;
-
-    delete fMain;
-
-    delete fListOfDetectors;
-  }
-}
-
-//_____________________________________________________________________________
-TStnVisManager* TStnVisManager::Instance() {
-  if (TVisManager::fgInstance != NULL) {
-    return (TStnVisManager*) TVisManager::fgInstance;
-  }
-  else {
-    return new TStnVisManager();
-  }
+  return 0;
 }
 
 //_____________________________________________________________________________
