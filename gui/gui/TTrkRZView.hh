@@ -5,17 +5,10 @@
 #include "TMarker.h"
 #include "TNamed.h"
 
-class TTrkRZView: public TNamed {
+#include "Stntuple/gui/TStnView.hh"
+
+class TTrkRZView: public TStnView {
 protected:
-  Int_t               fPx1;
-  Int_t               fPy1;
-  Int_t               fPx2;
-  Int_t               fPy2;
-
-  TMarker*            fCenter;
-
-  int                 fCursorX;
-  int                 fCursorY;
 
 public:
   TTrkRZView();
@@ -29,8 +22,8 @@ public:
 
   virtual char* GetObjectInfo(Int_t Px, Int_t Py) const ;
 
-  void    SetStations(int I1, int I2);   // *MENU* 
-  void    SetTimeCluster(int I);            // *MENU* 
+  void          SetStations(int I1, int I2);      // *MENU* 
+  void          SetTimeCluster(int I);            // *MENU* 
 
   ClassDef(TTrkRZView,0)
 };

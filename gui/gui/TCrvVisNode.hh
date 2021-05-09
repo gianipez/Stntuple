@@ -1,5 +1,8 @@
-#ifndef TCrvVisNode_hh
-#define TCrvVisNode_hh
+///////////////////////////////////////////////////////////////////////////////
+//
+///////////////////////////////////////////////////////////////////////////////
+#ifndef Stntuple_gui_TCrvVisNode_hh
+#define Stntuple_gui_TCrvVisNode_hh
 
 #include "Gtypes.h"
 #include "TClonesArray.h"
@@ -23,17 +26,16 @@
 
 #else
 
-namespace mu2e
-{
-	class CosmicRayShield;
-	class CRSScintillatorBar;
-	class CRSScintillatorLayer;
-	class CRSScintillatorModule;
-	class CRSScintillatorShield;
-	class CrvRecoPulseCollection;
-	class CRSScintillatorBarIndex;
-	class CrvRecoPulse;
-	struct CrvRecoPulse::CrvSingleRecoPulse;
+namespace mu2e {
+  class CosmicRayShield;
+  class CRSScintillatorBar;
+  class CRSScintillatorLayer;
+  class CRSScintillatorModule;
+  class CRSScintillatorShield;
+  class CrvRecoPulseCollection;
+  class CRSScintillatorBarIndex;
+  class CrvRecoPulse;
+  struct CrvRecoPulse::CrvSingleRecoPulse;
 };
 
 #endif
@@ -41,69 +43,68 @@ namespace mu2e
 class TCrvVisNode : public TVisNode
 {
 public:
-	//-----------------------------------------------------------------------------
-	// Constructors and Destructor
-	//-----------------------------------------------------------------------------
-	TCrvVisNode() {}
-	TCrvVisNode(const char* Name, /*const mu2e::CosmicRayShield* CRV,*/ int SectionID);
+//-----------------------------------------------------------------------------
+// Constructors and Destructor
+ //-----------------------------------------------------------------------------
+  TCrvVisNode() {}
+  TCrvVisNode(const char* Name, /*const mu2e::CosmicRayShield* CRV,*/ int SectionID);
 
-	virtual ~TCrvVisNode();
+  virtual ~TCrvVisNode();
 
-	//-----------------------------------------------------------------------------
-	// Accessors
-	//-----------------------------------------------------------------------------
-  //	TObjArray* GetListOfTracks();
+//-----------------------------------------------------------------------------
+// Accessors
+//-----------------------------------------------------------------------------
+ //	TObjArray* GetListOfTracks();
 
-	int		SectionID() { return fSectionID; }
-	TEvdCrvBar*  EvdCrvBar(int barIndex);
+  int		SectionID() { return fSectionID; }
+  TEvdCrvBar*  EvdCrvBar(int barIndex);
 
-	//-----------------------------------------------------------------------------
-	// Modifiers
-	//-----------------------------------------------------------------------------
-	void	SetRecoPulsesCollection(mu2e::CrvRecoPulseCollection** List) { fCrvRecoPulsesCollection = List; }
+//-----------------------------------------------------------------------------
+// Modifiers
+//-----------------------------------------------------------------------------
+  void	SetRecoPulsesCollection(mu2e::CrvRecoPulseCollection** List) { fCrvRecoPulsesCollection = List; }
 
-	//void	SetMinPulseHeight(float PulseHeight) { fMinPulseHeight = PulseHeight; }
-	void	SetMinPulsePEs(float minPulsePEs){ fMinPulsePEs = minPulsePEs; }
-	void	SetTimeWindow(float timeLow, float timeHigh);
+  //void	SetMinPulseHeight(float PulseHeight) { fMinPulseHeight = PulseHeight; }
+  void	SetMinPulsePEs(float minPulsePEs){ fMinPulsePEs = minPulsePEs; }
+  void	SetTimeWindow(float timeLow, float timeHigh);
 
-	//-----------------------------------------------------------------------------
-	// Overloaded methods of TVisNode
-	//-----------------------------------------------------------------------------
-	virtual int		InitEvent();
-	void			UpdateEvent();
-	virtual void	PaintXY(Option_t* option = "");
-	virtual void	PaintCrv(Option_t* option = "");
-	virtual void	PaintRZ(Option_t* option = "");
+//-----------------------------------------------------------------------------
+// Overloaded methods of TVisNode
+//-----------------------------------------------------------------------------
+  virtual int		InitEvent();
+  void			UpdateEvent();
+  virtual void	PaintXY(Option_t* option = "");
+  virtual void	PaintCrv(Option_t* option = "");
+  virtual void	PaintRZ(Option_t* option = "");
 
-	//-----------------------------------------------------------------------------
-	// Overloaded methods of TObject
-	//-----------------------------------------------------------------------------
-	virtual void	Paint(Option_t* option = "");
-	virtual void	Clear(Option_t* Opt = "");
-	virtual void	Print(Option_t* Opt = "") const; // **MENU**
+//-----------------------------------------------------------------------------
+// Overloaded methods of TObject
+//-----------------------------------------------------------------------------
+  virtual void	Paint(Option_t* option = "");
+  virtual void	Clear(Option_t* Opt = "");
+  virtual void	Print(Option_t* Opt = "") const; // **MENU**
 
-	virtual Int_t	DistancetoPrimitive(Int_t px, Int_t py);
-	virtual Int_t	DistancetoPrimitiveXY(Int_t px, Int_t py);
-	virtual Int_t	DistancetoPrimitiveRZ(Int_t px, Int_t py);
+  virtual Int_t	DistancetoPrimitive(Int_t px, Int_t py);
+  virtual Int_t	DistancetoPrimitiveXY(Int_t px, Int_t py);
+  virtual Int_t	DistancetoPrimitiveRZ(Int_t px, Int_t py);
 
 protected:
-	mu2e::CrvRecoPulseCollection**	fCrvRecoPulsesCollection;
+  mu2e::CrvRecoPulseCollection**	fCrvRecoPulsesCollection;
 
-	int				fSectionID;
-	
-	TObjArray*		fListOfEvdCrvBars;
+  int				fSectionID;
+  
+  TObjArray*		fListOfEvdCrvBars;
 
-	//double	fMinPulseHeight;
-	float		fMinPulsePEs;
-	float		ftimeLow;
-	float		ftimeHigh;
+  //double	fMinPulseHeight;
+  float		fMinPulsePEs;
+  float		ftimeLow;
+  float		ftimeHigh;
+  
+  Int_t colorPalette[1000];
+  
+  int getCRVSection(int shieldNumber);
 
-	Int_t colorPalette[1000];
-
-	int getCRVSection(int shieldNumber);
-
-
-	ClassDef(TCrvVisNode, 0)
+  ClassDef(TCrvVisNode, 0)
 };
 
 

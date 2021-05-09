@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "TObjArray.h"
 
-#include "Stntuple/base/TVisNode.hh"
+#include "Stntuple/gui/TStnVisNode.hh"
 
 #include "Stntuple/gui/TTrkXYView.hh"
 #include "Stntuple/gui/TStnVisManager.hh"
@@ -11,33 +11,22 @@
 ClassImp(TTrkXYView)
 
 //_____________________________________________________________________________
-TTrkXYView::TTrkXYView() {
-  fCenter = new TMarker(0.,0,kPlus);
-  fCenter->SetMarkerColor(kBlue);
-  fCenter->SetMarkerSize(3.);
+TTrkXYView::TTrkXYView() : TStnView() {
 }
 
 //_____________________________________________________________________________
 TTrkXYView::~TTrkXYView() {
   delete fCenter;
+  
+  fListOfNodes->Delete();
+  delete fListOfNodes;
 }
 
 
 //_____________________________________________________________________________
 void TTrkXYView::Paint(Option_t* Option) {
-  //
-  TStnVisManager* vm = TStnVisManager::Instance();
-
-  vm->SetCurrentView("trkxy");
-
-  fCenter->Paint(Option);
-
-  Int_t n = vm->GetNNodes();
-  for (int i=0; i<n; i++) {
-    TVisNode* node =  vm->GetNode(i);
-    node->PaintXY(Option);
-  }
-  gPad->Modified();
+  TStnVisManager::Instance()->SetCurrentView("trkxy");
+  TStnView::Paint(Option);
 }
 
 //_____________________________________________________________________________
@@ -58,7 +47,7 @@ Int_t TTrkXYView::DistancetoPrimitive(Int_t px, Int_t py) {
 
   Int_t n = vm->GetNNodes();
   for (int i=0; i<n; i++) {
-    TVisNode* node = vm->GetNode(i);
+    TStnVisNode* node = (TStnVisNode*) vm->GetNode(i);
     dist = node->DistancetoPrimitiveXY(px,py);
     if (dist < min_dist) {
       min_dist = dist;
@@ -183,18 +172,3 @@ void TTrkXYView::ExecuteEvent(Int_t event, Int_t px, Int_t py) {
     break;
   }
 }
-
-//-----------------------------------------------------------------------------
-void    TTrkXYView::SetStations(int I1, int I2) {
-  TStnVisManager* vm = TStnVisManager::Instance();
-
-  vm->SetStations(I1, I2);
-}
-
-//-----------------------------------------------------------------------------
-void    TTrkXYView::SetTimeCluster(int I) {
-  TStnVisManager* vm = TStnVisManager::Instance();
-
-  vm->SetTimeCluster(I);
-}
-

@@ -1,16 +1,14 @@
-#ifndef TCalView_hh
-#define TCalView_hh
+#ifndef Stntuple_gui_TCalView_hh
+#define Stntuple_gui_TCalView_hh
 
 
 #include "TNamed.h"
 #include "TPad.h"
+#include "Stntuple/gui/TStnView.hh"
 
-class TCalView: public TNamed {
+
+class TCalView: public TStnView {
 protected:
-  Int_t               fPx1;
-  Int_t               fPy1;
-  Int_t               fPx2;
-  Int_t               fPy2;
   Int_t               fSectionToDisplay;	// a disk or vane number
   TVirtualPad*        fPad;
 public:
@@ -32,8 +30,8 @@ public:
 //-----------------------------------------------------------------------------
 // overloaded virtual functions of TObject
 //-----------------------------------------------------------------------------
-  virtual void  Paint(Option_t* Option = "");
-  virtual void  ExecuteEvent(Int_t event, Int_t px, Int_t py);
+  virtual void  Paint              (Option_t* Option = "");
+  virtual void  ExecuteEvent       (Int_t event, Int_t px, Int_t py);
   virtual Int_t DistancetoPrimitive(Int_t px, Int_t py);
 
   ClassDef(TCalView,0)

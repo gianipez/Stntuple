@@ -1,71 +1,62 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 ///////////////////////////////////////////////////////////////////////////////
-
 #include "TObjArray.h"
 
-#include "Stntuple/base/TVisNode.hh"
-//#include "TGeant/TSubdetector.hh"
-
-#include "Stntuple/gui/TCalView.hh"
+#include "Stntuple/gui/TStnView.hh"
+#include "Stntuple/gui/TStnVisNode.hh"
 #include "Stntuple/gui/TStnVisManager.hh"
-#include "Stntuple/gui/TCalVisNode.hh"
 
-ClassImp(TCalView)
+ClassImp(TStnView)
 
-//_____________________________________________________________________________
-TCalView::TCalView(int Section): TStnView("CalView","CalView") {
-  fSectionToDisplay = Section;
-  fPad              = 0;
+//-----------------------------------------------------------------------------
+TStnView::TStnView(): TNamed("","") {
+  fCenter      = nullptr;
+  fListOfNodes = nullptr;
+}
+
+//-----------------------------------------------------------------------------
+TStnView::TStnView(const char* Name, const char* Title): TNamed(Name,Title) {
+  fCenter = new TMarker(0.,0,kPlus);
+  fCenter->SetMarkerColor(kBlue);
+  fCenter->SetMarkerSize(3.);
+  fListOfNodes = new TObjArray();
 }
 
 //_____________________________________________________________________________
-TCalView::~TCalView() {
+TStnView::~TStnView() {
+  delete fCenter;
+  
+  fListOfNodes->Delete();
+  delete fListOfNodes;
 }
 
 
 //_____________________________________________________________________________
-void TCalView::Paint(Option_t* Option) {
-// cal view has two pads how does it know about it?
-
-  TString view("cal");
-
-  TString opt = Option;
-
+void TStnView::Paint(Option_t* Option) {
+  //
   TStnVisManager* vm = TStnVisManager::Instance();
 
-  view += Form(",%i",fSectionToDisplay);
+  vm->SetCurrentView("trkxy");
 
-  vm->SetCurrentView(view);
+  fCenter->Paint(Option);
 
   Int_t n = vm->GetNNodes();
   for (int i=0; i<n; i++) {
-    TVisNode* node =  vm->GetNode(i);
-    node->Paint(opt);
+    TStnVisNode* node =  (TStnVisNode*) vm->GetNode(i);
+    node->PaintXY(Option);
   }
-
-  int np = gPad->GetListOfPrimitives()->GetEntries();
-  for (int i=0; i<np; i++) {
-    TObject* o = gPad->GetListOfPrimitives()->At(i);
-    if (o->InheritsFrom("TPad")) {
-      ((TPad*) o)->Modified();
-    }
-  }
-
   gPad->Modified();
-  gPad->Update();
 }
 
 //_____________________________________________________________________________
-Int_t TCalView::DistancetoPrimitive(Int_t px, Int_t py) {
+Int_t TStnView::DistancetoPrimitive(Int_t px, Int_t py) {
   //
 
   Int_t min_dist = 9999;
   Int_t dist;
 
   TStnVisManager* vm = TStnVisManager::Instance();
-
-  vm->SetCurrentView(Form("cal,%i",fSectionToDisplay));
 
   vm->SetClosestObject(NULL,9999);
   vm->SetClosestDetElement(NULL,9999);
@@ -76,8 +67,8 @@ Int_t TCalView::DistancetoPrimitive(Int_t px, Int_t py) {
 
   Int_t n = vm->GetNNodes();
   for (int i=0; i<n; i++) {
-    TVisNode* node = vm->GetNode(i);
-    dist = node->DistancetoPrimitive(px,py);
+    TStnVisNode* node = (TStnVisNode*) vm->GetNode(i);
+    dist = node->DistancetoPrimitiveXY(px,py);
     if (dist < min_dist) {
       min_dist = dist;
 				// closest object may be one of the managed by
@@ -89,10 +80,10 @@ Int_t TCalView::DistancetoPrimitive(Int_t px, Int_t py) {
 //-----------------------------------------------------------------------------
 // find closest detector element (not sure if I really need this)
 //-----------------------------------------------------------------------------
-//   if (TDetectorElement::GetMinDist() < vm->GetMinDistDetElement()) {
+//  if (TDetectorElement::GetMinDist() < vm->GetMinDistDetElement()) {
 //     vm->SetClosestDetElement(TDetectorElement::GetClosest(),
 // 			     TDetectorElement::GetMinDist());
-//   }
+//  }
 
   if (vm->GetMinDist() > 5) vm->SetClosestObject(this,0);
 //-----------------------------------------------------------------------------
@@ -102,9 +93,25 @@ Int_t TCalView::DistancetoPrimitive(Int_t px, Int_t py) {
   return vm->GetMinDist();
 }
 
+char* TStnView::GetObjectInfo(Int_t Px, Int_t Py) const {
+  // need to find the active frame:
 
-//_____________________________________________________________________________
-void TCalView::ExecuteEvent(Int_t event, Int_t px, Int_t py) {
+  double xx, yy;
+
+  static char info[200];
+
+  xx = gPad->AbsPixeltoX(Px);
+  yy = gPad->AbsPixeltoY(Py);
+  
+  sprintf(info,"Z=%9.3f R=%8.3f",xx,yy);
+
+  return info;
+  
+}
+
+
+//-----------------------------------------------------------------------------
+void TStnView::ExecuteEvent(Int_t event, Int_t px, Int_t py) {
   //
 
   TStnVisManager* vm = TStnVisManager::Instance();
@@ -118,13 +125,14 @@ void TCalView::ExecuteEvent(Int_t event, Int_t px, Int_t py) {
 //-----------------------------------------------------------------------------
 // view...
 //-----------------------------------------------------------------------------
+
   Axis_t x, y, x1, x2, y1, y2;
 
   switch (event) {
 
   case kButton1Down:
 
-    printf(" TCalView::ExecuteEvent  kButton1Down\n");
+    printf(" TStnView::ExecuteEvent  kButton1Down\n");
 
     fPx1 = px;
     fPy1 = py;
@@ -146,25 +154,23 @@ void TCalView::ExecuteEvent(Int_t event, Int_t px, Int_t py) {
 
     break;
   case kButton2Up:
-    printf(" kButton2Up\n");
+    printf(" TStnView::ExecuteEvent kButton2Up\n");
     break;
   case kButton2Down:
-    printf("kButton2Down\n");
+    printf("TStnView::ExecuteEvent  kButton2Down\n");
     break;
   case kButton3Up:
-    printf(" kButton3Up\n");
+    printf(" TStnView::ExecuteEvent kButton3Up\n");
     break;
   case kButton3Down:
-    printf(" kButton3Down\n");
+    printf(" TStnView::ExecuteEvent kButton3Down\n");
     break;
   case kButton1Up:
-    printf(" TCalView::ExecuteEvent kButton1Up\n");
-
-				        // open new window only if something
-					// has really been selected (it is a 
-					// rectangle, but not a occasional 
-					// click)
-
+    printf(" TStnView::ExecuteEvent kButton1Up\n");
+//-----------------------------------------------------------------------------
+// open new window only if something has really been selected (it is a 
+// rectangle, but not a occasional click)
+//-----------------------------------------------------------------------------
     if ( (fPx1 != fPx2) && (fPy1 != fPy2) ) {
       x1 = gPad->AbsPixeltoX(fPx1);
       y1 = gPad->AbsPixeltoY(fPy1);
@@ -182,7 +188,7 @@ void TCalView::ExecuteEvent(Int_t event, Int_t px, Int_t py) {
 	y1 = y2;
 	y2 = y;
       }
-      vm->OpenCalView(this, (int)x1, (int)y1, (int)x2, (int)y2);
+      vm->OpenTrkXYView(this,x1,y1,x2,y2);
     }
     break;
   case 26:
@@ -201,57 +207,22 @@ void TCalView::ExecuteEvent(Int_t event, Int_t px, Int_t py) {
   }
 }
 
-
-//_____________________________________________________________________________
-void TCalView::SetMinClusterEnergy(float MinEnergy) {
-  //
-
+//-----------------------------------------------------------------------------
+void    TStnView::SetStations(int I1, int I2) {
   TStnVisManager* vm = TStnVisManager::Instance();
 
-  Int_t n = vm->GetNNodes();
-  for (int i=0; i<n; i++) {
-    TVisNode* node = vm->GetNode(i);
-
-    if (node->InheritsFrom("TCalVisNode")) {
-      TCalVisNode* cvn = (TCalVisNode*) node;
-      cvn->SetMinClusterEnergy(MinEnergy);
-      cvn->InitEvent();
-    }
-  }
+  vm->SetStations(I1, I2);
 }
 
-//_____________________________________________________________________________
-void TCalView::SetMinCrystalEnergy(float MinEnergy) {
-  //
-
+//-----------------------------------------------------------------------------
+void    TStnView::SetTimeCluster(int I) {
   TStnVisManager* vm = TStnVisManager::Instance();
 
-  Int_t n = vm->GetNNodes();
-  for (int i=0; i<n; i++) {
-    TVisNode* node = vm->GetNode(i);
-
-    if (node->InheritsFrom("TCalVisNode")) {
-      TCalVisNode* cvn = (TCalVisNode*) node;
-      cvn->SetMinCrystalEnergy(MinEnergy);
-      cvn->InitEvent();
-    }
-  }
+  vm->SetTimeCluster(I);
 }
 
-
-//_____________________________________________________________________________
-void TCalView::PrintClosestCrystal() {
-  //
-
-  TStnVisManager* vm = TStnVisManager::Instance();
-
-  TObject* clo = vm->GetClosestObject();
-
-  if (clo && clo->InheritsFrom("TEvdCrystal")) {
-    clo->Print();
-  }
-  else {
-    printf("TCalView::PrintClosestCrystal ERROR: closest object is not a crystal\n");
-  }
-
+//-----------------------------------------------------------------------------
+void    TStnView::SetTimeWindow(float TMin, float TMax) {
+  fTMin = TMin;
+  fTMax = TMax;
 }

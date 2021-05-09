@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "TObjArray.h"
 
-#include "Stntuple/base/TVisNode.hh"
+#include "Stntuple/gui/TStnVisNode.hh"
 
 #include "Stntuple/gui/TStnFrame.hh"
 #include "Stntuple/gui/TTrkRZView.hh"
@@ -12,19 +12,18 @@
 ClassImp(TTrkRZView)
 
 //_____________________________________________________________________________
-TTrkRZView::TTrkRZView() {
+TTrkRZView::TTrkRZView() : TStnView("TrkRZView","TrkRZView") {
   fCenter = new TMarker(0.,0,kPlus);
   fCenter->SetMarkerColor(kBlue);
   fCenter->SetMarkerSize(3.);
 }
 
-//_____________________________________________________________________________
+//-----------------------------------------------------------------------------
 TTrkRZView::~TTrkRZView() {
   delete fCenter;
 }
 
-
-//_____________________________________________________________________________
+//-----------------------------------------------------------------------------
 void TTrkRZView::Paint(Option_t* Option) {
   //
   TStnVisManager* vm = TStnVisManager::Instance();
@@ -41,7 +40,7 @@ void TTrkRZView::Paint(Option_t* Option) {
   gPad->Modified();
 }
 
-//_____________________________________________________________________________
+//-----------------------------------------------------------------------------
 Int_t TTrkRZView::DistancetoPrimitive(Int_t px, Int_t py) {
   //
 
@@ -59,7 +58,7 @@ Int_t TTrkRZView::DistancetoPrimitive(Int_t px, Int_t py) {
 
   Int_t n = vm->GetNNodes();
   for (int i=0; i<n; i++) {
-    TVisNode* node = vm->GetNode(i);
+    TStnVisNode* node = (TStnVisNode*) vm->GetNode(i);
     dist = node->DistancetoPrimitiveXY(px,py);
     if (dist < min_dist) {
       min_dist = dist;
@@ -224,7 +223,7 @@ void TTrkRZView::ExecuteEvent(Int_t event, Int_t px, Int_t py) {
 	y1 = y2;
 	y2 = y;
       }
-      vm->OpenTrkRZView(this,x1,y1,x2,y2);
+      vm->OpenTrkRZView(this,(int)x1,(int)y1,(int)x2,(int)y2);
     }
     break;
   case kArrowKeyPress: // 25

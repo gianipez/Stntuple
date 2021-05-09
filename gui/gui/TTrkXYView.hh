@@ -5,7 +5,9 @@
 #include "TMarker.h"
 #include "TNamed.h"
 
-class TTrkXYView: public TNamed {
+#include "Stntuple/gui/TStnView.hh"
+
+class TTrkXYView: public TStnView {
 protected:
   Int_t               fPx1;
   Int_t               fPy1;
@@ -18,12 +20,10 @@ public:
   TTrkXYView();
   virtual ~TTrkXYView();
 
-  virtual void  Paint              (Option_t* option = "");
+  virtual void Paint(Option_t* Option);
+
   virtual void  ExecuteEvent       (Int_t event, Int_t px, Int_t py);
   virtual Int_t DistancetoPrimitive(Int_t px, Int_t py);
-
-  void    SetStations(int I1, int I2);   // *MENU* 
-  void    SetTimeCluster(int I);            // *MENU* 
 
   ClassDef(TTrkXYView,0)
 };

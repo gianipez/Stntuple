@@ -131,17 +131,17 @@ TStnVisManager::TStnVisManager(const char* Name, const char* Title): TVisManager
   fCalView[0] = new TCalView(0);
   fCalView[1] = new TCalView(1);
 
-  fCrvView[0] = new TCrvView(0); //right
+  fCrvView[0] = new TCrvView(0);            // right
   fCrvView[0]->SetTimeWindow(0, 1695);
-  fCrvView[1] = new TCrvView(1); //left
+  fCrvView[1] = new TCrvView(1);            // left
   fCrvView[1]->SetTimeWindow(0, 1695);
-  fCrvView[2] = new TCrvView(2); //topds
+  fCrvView[2] = new TCrvView(2);            // topds
   fCrvView[2]->SetTimeWindow(0, 1695);
-  fCrvView[3] = new TCrvView(3); //downstream
+  fCrvView[3] = new TCrvView(3);            // downstream
   fCrvView[3]->SetTimeWindow(0, 1695);
-  fCrvView[4] = new TCrvView(4); //upstream
+  fCrvView[4] = new TCrvView(4);            // upstream
   fCrvView[4]->SetTimeWindow(0, 1695);
-  fCrvView[5] = new TCrvView(8); //topts
+  fCrvView[5] = new TCrvView(8);            // topts
   fCrvView[5]->SetTimeWindow(0, 1695);
 	
   fListOfDetectors = new TObjArray(10);
@@ -251,7 +251,7 @@ Int_t TStnVisManager::OpenTrkXYView() {
 }
 
 //_____________________________________________________________________________
-Int_t TStnVisManager::OpenTrkXYView(TTrkXYView* mother, Axis_t x1, Axis_t y1, Axis_t x2, Axis_t y2) {
+Int_t TStnVisManager::OpenTrkXYView(TStnView* Mother, Axis_t x1, Axis_t y1, Axis_t x2, Axis_t y2) {
 	// open new XY view of the detector with the default options
 
   int n = fListOfCanvases->GetSize();
@@ -276,7 +276,7 @@ Int_t TStnVisManager::OpenTrkXYView(TTrkXYView* mother, Axis_t x1, Axis_t y1, Ax
   TPad* p1 = (TPad*) c->FindObject(name1);
   p1->Range(x1, y1, x2, y2);
   p1->cd();
-  mother->Draw();
+  Mother->Draw();
 
   TString name_title(name);
   name1 += "_title";
@@ -327,7 +327,7 @@ Int_t TStnVisManager::OpenTrkRZView() {
 //-----------------------------------------------------------------------------
 // open new RZ view of the detector with the default options
 //-----------------------------------------------------------------------------
-Int_t TStnVisManager::OpenTrkRZView(TTrkRZView* mother,	Axis_t x1, Axis_t y1, Axis_t x2, Axis_t y2) {
+Int_t TStnVisManager::OpenTrkRZView(TStnView* Mother,	Axis_t x1, Axis_t y1, Axis_t x2, Axis_t y2) {
 
   int n = fListOfCanvases->GetSize();
 
@@ -352,7 +352,7 @@ Int_t TStnVisManager::OpenTrkRZView(TTrkRZView* mother,	Axis_t x1, Axis_t y1, Ax
   TPad* p1 = (TPad*) c->FindObject(name1);
   p1->Range(x1, y1, x2, y2);
   p1->cd();
-  mother->Draw();
+  Mother->Draw();
 
   TString name_title(name);
   name1 += "_title";
@@ -416,7 +416,7 @@ Int_t TStnVisManager::OpenCalView() {
 }
 
 //_____________________________________________________________________________
-Int_t TStnVisManager::OpenCalView(TObject* Mother, Axis_t x1, Axis_t y1, Axis_t x2, Axis_t y2) {
+Int_t TStnVisManager::OpenCalView(TStnView* Mother, Axis_t x1, Axis_t y1, Axis_t x2, Axis_t y2) {
   // open new calorimeter view of the detector with the default options
 
   //   int n = fListOfCanvases->GetSize();
@@ -611,13 +611,13 @@ Int_t TStnVisManager::OpenCrvView() {
 }
 
 //_____________________________________________________________________________
-Int_t TStnVisManager::OpenCrvView(TCrvView* mother, Axis_t x1, Axis_t y1, Axis_t x2, Axis_t y2) {
+Int_t TStnVisManager::OpenCrvView(TStnView* Mother, Axis_t x1, Axis_t y1, Axis_t x2, Axis_t y2) {
 
   int n = fListOfCanvases->GetSize();
   
   char name[100], title[100];
   
-  sprintf(name, "crv_view_%i", n);
+  sprintf(name , "crv_view_%i", n);
   sprintf(title, "CRV view number %i", n);
 
   // try to preserve the aspect ration
@@ -635,7 +635,7 @@ Int_t TStnVisManager::OpenCrvView(TCrvView* mother, Axis_t x1, Axis_t y1, Axis_t
   TPad* p1 = (TPad*) c->FindObject(name1);
   p1->Range(x1, y1, x2, y2);
   p1->cd();
-  mother->Draw();
+  Mother->Draw();
 
   TString name_title(name);
   name1 += "_title";
