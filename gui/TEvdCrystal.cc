@@ -37,7 +37,7 @@
 ClassImp(TEvdCrystal)
 
 //-----------------------------------------------------------------------------
-  TEvdCrystal::TEvdCrystal(const mu2e::Crystal* Cr, int NEdges, double Size, TDisk* Disk): TObject() {
+TEvdCrystal::TEvdCrystal(const mu2e::Crystal* Cr, int NEdges, double Size, const mu2e::Disk* Disk): TObject() {
   fCrystal = Cr;
 
   const CLHEP::Hep3Vector  *pos;

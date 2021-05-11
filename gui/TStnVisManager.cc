@@ -20,8 +20,8 @@
 
 #include "Stntuple/gui/TEvdMainFrame.hh"
 
-#include "Stntuple/gui/TTrkXYView.hh"
-#include "Stntuple/gui/TTrkRZView.hh"
+// #include "Stntuple/gui/TTrkXYView.hh"
+// #include "Stntuple/gui/TTrkRZView.hh"
 #include "Stntuple/gui/TCalView.hh"
 #include "Stntuple/gui/TCrvView.hh"
 
@@ -55,23 +55,10 @@ TStnVisManager::TStnVisManager(const char* Name, const char* Title): TVisManager
 TStnVisManager::~TStnVisManager() {
 
   if (!gROOT->IsBatch()) {
-
 //-----------------------------------------------------------------------------
-// delete views
+// views are deleted by TVisManager
+// cleanup gui
 //-----------------------------------------------------------------------------
-    // delete fTrkXYView;
-    // delete fTrkRZView;
-					// only two views for disk calorimeter
-    // delete fCalView[0];
-    // delete fCalView[1];
-					// delete CRV views
-    // delete fCrvView[0];
-    // delete fCrvView[1];
-    // delete fCrvView[2];
-    // delete fCrvView[3];
-    // delete fCrvView[4];
-    // delete fCrvView[5];
-					// cleanup gui
     delete fMenuBarHelpLayout;
     delete fMenuBarItemLayout;
     delete fMenu;
@@ -413,7 +400,7 @@ Int_t TStnVisManager::OpenCalView() {
     gPad->Range(-800., -800., 800., 800.);
     TCalView* v = (TCalView*) FindView(TStnView::kCal,i);
     if (v) {
-      v->SetPad(gPad);
+      //      v->SetPad(gPad);
       v->Draw();
       gPad->Modified();
     }

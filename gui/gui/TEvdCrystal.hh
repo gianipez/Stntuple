@@ -56,7 +56,7 @@ public:
 // constructors and destructor
 //-----------------------------------------------------------------------------
   TEvdCrystal() {}
-  TEvdCrystal(const mu2e::Crystal* Cr, int NEdges, double Size, TDisk* Disk); 
+  TEvdCrystal(const mu2e::Crystal* Cr, int NEdges, double Size, const mu2e::Disk* Disk); 
 
   virtual ~TEvdCrystal();
 //-----------------------------------------------------------------------------

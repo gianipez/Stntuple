@@ -66,11 +66,9 @@ TCalVisNode::TCalVisNode(const char* Name, const mu2e::Disk* Disk, int SectionID
 					// assuming disks are the same
   fFirst     = SectionID*fNCrystals;
 
-  TDisk* disk(0);
-  
   for (int i=0; i<fNCrystals; i++) {
     cr     = &Disk->crystal(i);
-    evd_cr = new TEvdCrystal(cr,nedges,crystal_size,disk);
+    evd_cr = new TEvdCrystal(cr,nedges,crystal_size,Disk);
     fListOfEvdCrystals->Add(evd_cr);
   }
 
