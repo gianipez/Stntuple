@@ -10,9 +10,8 @@
 #include "TPad.h"
 #include "TBox.h"
 
-#include "Stntuple/base/TVisNode.hh"
+#include "Stntuple/gui/TStnVisNode.hh"
 #include "Stntuple/gui/TEvdCrvBar.hh"
-
 
 #ifndef __CINT__
 
@@ -40,8 +39,19 @@ namespace mu2e {
 
 #endif
 
-class TCrvVisNode : public TVisNode
-{
+class TCrvVisNode : public TStnVisNode {
+protected:
+  mu2e::CrvRecoPulseCollection** fCrvRecoPulsesCollection;
+
+  int		fSectionID;
+  TObjArray*	fListOfBars;
+
+  float		fMinPulsePEs;
+  float		ftimeLow;
+  float		ftimeHigh;
+  
+  Int_t         colorPalette[1000];
+  
 public:
 //-----------------------------------------------------------------------------
 // Constructors and Destructor
@@ -50,37 +60,30 @@ public:
   TCrvVisNode(const char* Name, /*const mu2e::CosmicRayShield* CRV,*/ int SectionID);
 
   virtual ~TCrvVisNode();
-
 //-----------------------------------------------------------------------------
 // Accessors
 //-----------------------------------------------------------------------------
- //	TObjArray* GetListOfTracks();
-
   int		SectionID() { return fSectionID; }
-  TEvdCrvBar*  EvdCrvBar(int barIndex);
-
+  
+  int           NBars()    const { return fListOfBars->GetEntriesFast(); }
+  TEvdCrvBar*   EvdBar(int I) { return (TEvdCrvBar*) fListOfBars->UncheckedAt(I); }
+  TEvdCrvBar*   EvdBarWithIndex(int BarIndex);
 //-----------------------------------------------------------------------------
 // Modifiers
 //-----------------------------------------------------------------------------
   void	SetRecoPulsesCollection(mu2e::CrvRecoPulseCollection** List) { fCrvRecoPulsesCollection = List; }
 
-  //void	SetMinPulseHeight(float PulseHeight) { fMinPulseHeight = PulseHeight; }
   void	SetMinPulsePEs(float minPulsePEs){ fMinPulsePEs = minPulsePEs; }
   void	SetTimeWindow(float timeLow, float timeHigh);
-
 //-----------------------------------------------------------------------------
 // Overloaded methods of TVisNode
 //-----------------------------------------------------------------------------
-  virtual int		InitEvent();
-  void			UpdateEvent();
-  virtual void	PaintXY(Option_t* option = "");
-  virtual void	PaintCrv(Option_t* option = "");
-  virtual void	PaintRZ(Option_t* option = "");
-
+  virtual int   InitEvent();
+  void	        UpdateEvent();
+  virtual void  PaintCrv(Option_t* option = "");
 //-----------------------------------------------------------------------------
 // Overloaded methods of TObject
 //-----------------------------------------------------------------------------
-  virtual void	Paint(Option_t* option = "");
   virtual void	Clear(Option_t* Opt = "");
   virtual void	Print(Option_t* Opt = "") const; // **MENU**
 
@@ -88,20 +91,6 @@ public:
   virtual Int_t	DistancetoPrimitiveXY(Int_t px, Int_t py);
   virtual Int_t	DistancetoPrimitiveRZ(Int_t px, Int_t py);
 
-protected:
-  mu2e::CrvRecoPulseCollection**	fCrvRecoPulsesCollection;
-
-  int				fSectionID;
-  
-  TObjArray*		fListOfEvdCrvBars;
-
-  //double	fMinPulseHeight;
-  float		fMinPulsePEs;
-  float		ftimeLow;
-  float		ftimeHigh;
-  
-  Int_t colorPalette[1000];
-  
   int getCRVSection(int shieldNumber);
 
   ClassDef(TCrvVisNode, 0)

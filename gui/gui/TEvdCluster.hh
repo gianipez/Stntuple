@@ -15,9 +15,11 @@
 
 #ifndef __CINT__
 #include "RecoDataProducts/inc/CaloCluster.hh"
+#include "CalorimeterGeom/inc/Disk.hh"
 #else
 namespace mu2e {
   class CaloCluster;
+  class Disk;
 };
 #endif
 
@@ -32,7 +34,7 @@ protected:
   const mu2e::CaloCluster* fCluster;
 
   TObjArray*               fListOfCrystals;
-
+  const mu2e::Disk*        fDisk;
 public:
 //-----------------------------------------------------------------------------
 // constructors and destructor

@@ -31,10 +31,10 @@ TVisManager::TVisManager(const char* name, const char* title):
 {
   fListOfCanvases = new TList();
   fListOfNodes    = new TObjArray();
+  fListOfViews    = new TObjArray();
   fgInstance      = this;
   fDebugLevel     = gEnv->GetValue("TVisManager.DebugLevel",0);
-
-  
+  fTitleNode      = nullptr;
 }
 
 
@@ -43,11 +43,32 @@ TVisManager::~TVisManager() {
   fListOfNodes->Delete();
   delete fListOfNodes;
 
+  fListOfViews->Delete();
+  delete fListOfViews;
+
   fListOfCanvases->Delete();
   delete fListOfCanvases;
 
+  if (fTitleNode) delete fTitleNode;
+
   fgInstance  = 0;
 }
+
+//-----------------------------------------------------------------------------
+// AddNode checks for the presence of the node being present
+//-----------------------------------------------------------------------------
+void TVisManager::AddView(TStnView* View) { 
+  if (fListOfViews->FindObject(View) == 0) {
+    fListOfViews->Add(View); 
+    
+    int n = View->GetNNodes();
+    for (int i=0; i<n; i++) {
+      TVisNode* node = View->GetNode(i);
+      AddNode(node);
+    }
+  }
+}
+
 
 //-----------------------------------------------------------------------------
 // dist - in points
@@ -62,14 +83,26 @@ void TVisManager::SetClosestDetElement(TDetectorElement* Det, Int_t Dist) {
 }
 
 
-//_____________________________________________________________________________
+//-----------------------------------------------------------------------------
 void TVisManager::DeclareCanvas(TCanvas* c) { 
-  // add new canvas to the list of canvases and populate its list of 
-  // primitives
+  // add new canvas to the list of canvases and populate its list of primitives
 
   fListOfCanvases->Add(c);
 }
 
+//-----------------------------------------------------------------------------
+TStnView* TVisManager::FindView(int Type, int Index) { 
+  TStnView* v(nullptr);
+  int nv = GetNViews();
+  for (int i=0; i<nv; i++) {
+    TStnView* vi = (TStnView*) GetView(i);
+    if ((vi->Type() == Type) and ((Index < 0) or (vi->Index() == Index))) {
+      v = vi;
+      break;
+    }
+  }
+  return v;
+}
 
 //-----------------------------------------------------------------------------
 void TVisManager::MarkModified(TPad* Pad) {
@@ -91,13 +124,29 @@ void TVisManager::MarkModified(TPad* Pad) {
 }
 
 //-----------------------------------------------------------------------------
+void TVisManager::OpenView(TStnView* Mother, int Px1, int Py1, int Px2, int Py2) {
+}
+
+//-----------------------------------------------------------------------------
+void TVisManager::SetStations(int IMin, int IMax) {
+}
+
+//-----------------------------------------------------------------------------
+void TVisManager::SetTimeCluster(int I) {
+}
+
+//-----------------------------------------------------------------------------
+void TVisManager::SetTimeWindow(float TMin, float TMax) {
+}
+
+//-----------------------------------------------------------------------------
 // redraw all open windows
 //-----------------------------------------------------------------------------
 void TVisManager::DisplayEvent() { 
 //-----------------------------------------------------------------------------
 // reinitialize graphics objects in the event
 //-----------------------------------------------------------------------------
-  fTitleNode->InitEvent();
+  if (fTitleNode) fTitleNode->InitEvent();
 
   int nn = fListOfNodes->GetEntries();
   for (int i=0; i<nn; i++) {

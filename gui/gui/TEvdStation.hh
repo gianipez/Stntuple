@@ -18,7 +18,8 @@ namespace mu2e {
 };
 #endif
 
-class TEvdStation;
+namespace stntuple {
+
 class TEvdPlane;
 
 class TEvdStation: public TObject {
@@ -66,8 +67,8 @@ public:
 
   //  virtual void   Print(const char* Opt = "") const ; // **MENU**
 
-  ClassDef(TEvdStation,0)
+  ClassDef(stntuple::TEvdStation,0)
 };
 
-
+}
 #endif

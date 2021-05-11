@@ -8,21 +8,18 @@
 
 class TStnVisNode: public TVisNode {
 protected:
-  TString    fName;
-  TObject*   fClosestObject;
-  int        fSectionToDisplay;
-  int        fDiskID;                   // calorimenter disk ID 
-  int        fDebugLevel;
+  // int        fSectionToDisplay;
+  // int        fDiskID;                   // calorimenter disk ID 
 public:
 					// ****** constructors and destructor
-  TStnVisNode(const char* name = "");
+  TStnVisNode(const char* name = "TStnVisNode");
   virtual ~TStnVisNode();
 //-----------------------------------------------------------------------------
 // accessors
 //-----------------------------------------------------------------------------
-  int   SectionToDisplay() { return fSectionToDisplay; }
+//  int   SectionToDisplay() { return fSectionToDisplay; }
 
-  int   DebugLevel      () { return fDebugLevel;       }
+//  int   DebugLevel      () { return fDebugLevel;       }
 
 					// called by TEvdManager::DisplayEvent
   virtual int   InitEvent();
@@ -35,14 +32,16 @@ public:
   virtual void  PaintRZ (Option_t* option = "");
   virtual void  PaintTZ (Option_t* option = "");
   virtual void  PaintCal(Option_t* option = "");
+  virtual void  PaintCrv(Option_t* option = "");
 
-  virtual Int_t DistancetoPrimitive   (Int_t px, Int_t py);
-  virtual Int_t DistancetoPrimitiveXY (Int_t px, Int_t py);
-  virtual Int_t DistancetoPrimitiveRZ (Int_t px, Int_t py);
-  virtual Int_t DistancetoPrimitiveTZ (Int_t px, Int_t py);
-  virtual Int_t DistancetoPrimitiveCal(Int_t px, Int_t py);
+  virtual int   DistancetoPrimitive   (Int_t px, Int_t py);
+  virtual int   DistancetoPrimitiveXY (Int_t px, Int_t py);
+  virtual int   DistancetoPrimitiveRZ (Int_t px, Int_t py);
+  virtual int   DistancetoPrimitiveTZ (Int_t px, Int_t py);
+  virtual int   DistancetoPrimitiveCal(Int_t px, Int_t py);
+  virtual int   DistancetoPrimitiveCrv(Int_t px, Int_t py);
 
-  void SetSectionToDisplay(int Section) { fSectionToDisplay= Section; }
+  // void SetSectionToDisplay(int Section) { fSectionToDisplay= Section; }
 
   void SetDebugLevel(int Level) { fDebugLevel = Level; }
 

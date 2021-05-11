@@ -46,9 +46,7 @@ ClassImp(TCalVisNode)
 //-----------------------------------------------------------------------------
 // nedges = 4: square crystal, 6: hex
 //-----------------------------------------------------------------------------
-  TCalVisNode::TCalVisNode(const char* Name, const mu2e::Disk* Disk, int SectionID)
-    :TVisNode(Name) 
-{
+TCalVisNode::TCalVisNode(const char* Name, const mu2e::Disk* Disk, int SectionID): TStnVisNode(Name) {
   TEvdCrystal                             *evd_cr;
   const mu2e::Crystal                     *cr;
   mu2e::GeomHandle<mu2e::DiskCalorimeter>  dc;
@@ -201,32 +199,23 @@ int TCalVisNode::InitEvent() {
   return 0;
 }
 
+// //_____________________________________________________________________________
+// void TCalVisNode::Paint(Option_t* Option) {
+//   // paints one disk (.. or vane, in the past), i.e. section
 
+//   //  int   iv;
+// 				// parse option list
+//   int view = TVisManager::Instance()->GetCurrentView()->Type();
 
-//_____________________________________________________________________________
-void TCalVisNode::Paint(Option_t* Option) {
-  // paints one disk (.. or vane, in the past), i.e. section
+//   if      (view == TStnView::kXY ) PaintXY (Option);
+//   else if (view == TStnView::kCal) PaintCal(Option);
+//   else {
+//     // what is the default?
+//     //    Warning("Paint",Form("Unknown option %s",option));
+//   }
 
-  int   iv;
-				// parse option list
-  const char* view = TVisManager::Instance()->GetCurrentView();
-
-  if      (strstr(view,"trkxy" ) != 0) {
-    PaintXY (Option);
-  }
-  if      (strstr(view,"cal"   ) != 0) {
-    sscanf(view,"cal,%i",&iv);
-    if (iv == fSectionID) {
-      PaintCal(Option);
-    }
-  }
-  else {
-    // what is the default?
-    //    Warning("Paint",Form("Unknown option %s",option));
-  }
-
-  gPad->Modified();
-}
+//   gPad->Modified();
+// }
 
 
 //-----------------------------------------------------------------------------
@@ -332,74 +321,77 @@ void TCalVisNode::PaintCal(Option_t* Option) {
 }
 
 
-//_____________________________________________________________________________
+//-----------------------------------------------------------------------------
 void TCalVisNode::PaintRZ(Option_t* option) {
   // draw calorimeter
 }
 
-//_____________________________________________________________________________
-Int_t TCalVisNode::DistancetoPrimitive(Int_t px, Int_t py) {
-  int              min_dist(9999), iv;
-  static TVector3  global;
+// //_____________________________________________________________________________
+// Int_t TCalVisNode::DistancetoPrimitive(Int_t px, Int_t py) {
+//   int              min_dist(9999);
+//   static TVector3  global;
 
-  TVisManager* vm = TVisManager::Instance();
-  const char* view = vm->GetCurrentView();
+//   TVisManager* vm = TVisManager::Instance();
 
-  if      (strstr(view,"trkxy" ) != 0) return min_dist;
+//   int view = vm->GetCurrentView()->Type();
+
+//   if      (view != TStnView::kCal) return min_dist;
   
-  sscanf(view,"cal,%i",&iv);
-  if (iv != fSectionID)                return min_dist;
+//   int index = vm->GetCurrentView()->Index();
+//   if (index != fSectionID)                return min_dist;
 
-  global.SetXYZ(gPad->AbsPixeltoX(px),gPad->AbsPixeltoY(py),0);
+//   global.SetXYZ(gPad->AbsPixeltoX(px),gPad->AbsPixeltoY(py),0);
 
-  //  printf("px,py,X,Y = %5i %5i %10.3f %10.3f\n",px,py,global.X(),global.Y());
+//   //  printf("px,py,X,Y = %5i %5i %10.3f %10.3f\n",px,py,global.X(),global.Y());
 
-  min_dist = DistancetoPrimitiveXY(px,py);
+//   min_dist = DistancetoPrimitiveXY(px,py);
 
-  return min_dist;
-}
+//   return min_dist;
+// }
 
-//_____________________________________________________________________________
+//-----------------------------------------------------------------------------
 Int_t TCalVisNode::DistancetoPrimitiveXY(Int_t px, Int_t py) {
-
-  Int_t min_dist = 9999;
 
   static TVector3 global;
   static TVector3 local;
-  int             px0, py0;
-  double          dist;
 
-  fClosestObject = NULL;
+  int             px0, py0;
+  int             dist, min_dist(9999);
+
+  TObject* closest(nullptr);
 
   global.SetXYZ(gPad->AbsPixeltoX(px),gPad->AbsPixeltoY(py),0);
 
-  int          ncr;
-  TEvdCrystal  *cr;
-
-  ncr = fListOfEvdCrystals->GetEntries();
-//   x   = global.X();
-//   y   = global.Y();
+  int ncr = fListOfEvdCrystals->GetEntries();
 
   for (int icr=0; icr<ncr; icr++) {
-    cr   = EvdCrystal(icr);
+    TEvdCrystal* cr = EvdCrystal(icr);
     
     px0 = gPad->XtoAbsPixel(cr->X0());
     py0 = gPad->YtoAbsPixel(cr->Y0());
+
     dist = sqrt((px0-px)*(px0-px) + (py0-py)*(py0-py));
+
     if (dist < min_dist) {
-      min_dist       = dist;
-      fClosestObject = cr;
+      min_dist = dist;
+      closest  = cr;
     }
   }
+
+  SetClosestObject(closest,min_dist);
 
   return min_dist;
 }
 
-//_____________________________________________________________________________
-Int_t TCalVisNode::DistancetoPrimitiveRZ(Int_t px, Int_t py) {
-  return 9999;
+//-----------------------------------------------------------------------------
+int TCalVisNode::DistancetoPrimitiveCal(Int_t px, Int_t py) {
+  return DistancetoPrimitiveXY(px,py);
 }
 
+//_____________________________________________________________________________
+int TCalVisNode::DistancetoPrimitiveRZ(Int_t px, Int_t py) {
+  return 9999;
+}
 
 //-----------------------------------------------------------------------------
 void TCalVisNode::Clear(Option_t* Opt) {

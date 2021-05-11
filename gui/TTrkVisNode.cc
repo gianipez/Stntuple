@@ -42,14 +42,14 @@
 
 ClassImp(TTrkVisNode)
 
-//_____________________________________________________________________________
-TTrkVisNode::TTrkVisNode() : TVisNode("") {
+//-----------------------------------------------------------------------------
+TTrkVisNode::TTrkVisNode() : TStnVisNode("") {
 }
 
 //_____________________________________________________________________________
 TTrkVisNode::TTrkVisNode(const char* name, const mu2e::Tracker* Tracker, TStnTrackBlock* TrackBlock): 
-  TVisNode(name) {
-  fTracker    = new TEvdStrawTracker(Tracker);
+  TStnVisNode(name) {
+  fTracker    = new stntuple::TEvdStrawTracker(Tracker);
   fTrackBlock = TrackBlock;
 
   fArc        = new TArc;
@@ -63,7 +63,7 @@ TTrkVisNode::TTrkVisNode(const char* name, const mu2e::Tracker* Tracker, TStnTra
   fListOfTracks    = new TObjArray();
 }
 
-//_____________________________________________________________________________
+//-----------------------------------------------------------------------------
 TTrkVisNode::~TTrkVisNode() {
   delete fArc;
   
@@ -71,24 +71,6 @@ TTrkVisNode::~TTrkVisNode() {
 
   fListOfTracks->Delete();
   delete fListOfTracks;
-}
-
-
-//_____________________________________________________________________________
-void TTrkVisNode::Paint(Option_t* Option) {
-  //
-
-  TStnVisManager* vm = TStnVisManager::Instance();
-
-  const char* view = vm->GetCurrentView();
-
-  if      (strstr(view,"trkxy") != 0) PaintXY  (Option);
-  else if (strstr(view,"trkrz") != 0) PaintRZ  (Option);
-  else if (strstr(view,"cal"  ) != 0) PaintCal (Option);
-  else {
-				// what is the default?
-    printf(Form("[TTrkVisNode::Paint] >>> ERROR: Unknown option %s",Option));
-  }
 }
 
 //-----------------------------------------------------------------------------
@@ -109,7 +91,7 @@ int TTrkVisNode::InitEvent() {
   const mu2e::ComboHit              *hit;
   const mu2e::StrawDigiMC           *hit_digi_mc;
 
-  TEvdStrawHit                      *evd_straw_hit; 
+  stntuple::TEvdStrawHit                      *evd_straw_hit; 
   const CLHEP::Hep3Vector           /**mid,*/ *w; 
   const mu2e::Straw                 *straw; 
 
@@ -120,9 +102,9 @@ int TTrkVisNode::InitEvent() {
 //-----------------------------------------------------------------------------
 // first, clear the cached hit information from the previous event
 //-----------------------------------------------------------------------------
-  TEvdStation*   station;
-  TEvdPlane*     plane;
-  TEvdPanel*     panel;
+  stntuple::TEvdStation*   station;
+  stntuple::TEvdPlane*     plane;
+  stntuple::TEvdPanel*     panel;
   //  TEvdFace*      face;
 
   int            nst, nplanes, npanels/*, isec*/; 
@@ -152,7 +134,7 @@ int TTrkVisNode::InitEvent() {
 // display hits corresponding to a given time peak, or all hits, 
 // if the time peak is not found
 //-----------------------------------------------------------------------------
-  TEvdStraw* evd_straw;
+  stntuple::TEvdStraw* evd_straw;
   n_straw_hits = (*fComboHitColl)->size();
 
   for (int ihit=0; ihit<n_straw_hits; ihit++ ) {
@@ -223,8 +205,8 @@ int TTrkVisNode::InitEvent() {
 // add a pointer to the hit to the straw 
 //-----------------------------------------------------------------------------
     int mask = 0;
-    if (intime          ) mask |= TEvdStrawHit::kInTimeBit;
-    if (isFromConversion) mask |= TEvdStrawHit::kConversionBit;
+    if (intime          ) mask |= stntuple::TEvdStrawHit::kInTimeBit;
+    if (isFromConversion) mask |= stntuple::TEvdStrawHit::kConversionBit;
     
     int ist, ipl, ippl, /*ifc,*/ ipn, il, is;
 
@@ -240,15 +222,15 @@ int TTrkVisNode::InitEvent() {
 
     evd_straw     = fTracker->Station(ist)->Plane(ippl)->Panel(ipn)->Straw(il,is/2);
 
-    evd_straw_hit = new TEvdStrawHit(hit,
-				     evd_straw,
-				     hit_digi_mc,
-				     hit->pos().x(),
-				     hit->pos().y(),
-				     hit->pos().z(),
-				     w->x(),w->y(),
-				     sigw,sigr,
-				     mask,color);
+    evd_straw_hit = new stntuple::TEvdStrawHit(hit,
+					       evd_straw,
+					       hit_digi_mc,
+					       hit->pos().x(),
+					       hit->pos().y(),
+					       hit->pos().z(),
+					       w->x(),w->y(),
+					       sigw,sigr,
+					       mask,color);
 
     evd_straw->AddHit(evd_straw_hit);
 
@@ -261,7 +243,7 @@ int TTrkVisNode::InitEvent() {
 //-----------------------------------------------------------------------------
 // now initialize tracks
 //-----------------------------------------------------------------------------
-  TEvdTrack                *trk;
+  stntuple::TEvdTrack                *trk;
   const KalRep             *krep;  
   const mu2e::TrkStrawHit  *track_hit;
 
@@ -271,7 +253,7 @@ int TTrkVisNode::InitEvent() {
   
   for (int i=0; i<ntrk; i++) {
     krep = (*fKalRepPtrColl)->at(i).get();
-    trk  = new TEvdTrack(i,krep);
+    trk  = new stntuple::TEvdTrack(i,krep);
 //-----------------------------------------------------------------------------
 // add hits, skip calorimeter clusters (TrkCaloHit's)
 //-----------------------------------------------------------------------------
@@ -279,7 +261,7 @@ int TTrkVisNode::InitEvent() {
     for (auto it=hits->begin(); it!=hits->end(); it++) {
       track_hit = dynamic_cast<mu2e::TrkStrawHit*> (*it);
       if (track_hit == nullptr) continue;
-      TEvdTrkStrawHit* h = new TEvdTrkStrawHit(track_hit);
+      stntuple::TEvdTrkStrawHit* h = new stntuple::TEvdTrkStrawHit(track_hit);
       trk->AddHit(h);
     }
 
@@ -296,7 +278,7 @@ void TTrkVisNode::PaintXY(Option_t* Option) {
 
   double        time;
   int           station, ntrk(0);
-  TEvdStrawHit  *hit;
+  stntuple::TEvdStrawHit  *hit;
 
   const mu2e::ComboHit   *straw_hit;
   const mu2e::Straw      *straw; 
@@ -327,7 +309,7 @@ void TTrkVisNode::PaintXY(Option_t* Option) {
   
   int nhits = fListOfStrawHits->GetEntries();
   for (int i=0; i<nhits; i++) {
-    hit       = (TEvdStrawHit*) fListOfStrawHits->At(i);
+    hit       = (stntuple::TEvdStrawHit*) fListOfStrawHits->At(i);
     straw_hit = hit->StrawHit();
     straw     = &tracker->getStraw(straw_hit->strawId());//strawIndex());
     station   = straw->id().getStation();
@@ -343,13 +325,13 @@ void TTrkVisNode::PaintXY(Option_t* Option) {
 //-----------------------------------------------------------------------------
 // now - tracks
 //-----------------------------------------------------------------------------
-  TEvdTrack* evd_trk;
+  stntuple::TEvdTrack* evd_trk;
   //  TAnaDump::Instance()->printKalRep(0,"banner");
 
   if ( (fListOfTracks) != 0 )  ntrk = fListOfTracks->GetEntriesFast();
 
   for (int i=0; i<ntrk; i++ ) {
-    evd_trk = (TEvdTrack*) fListOfTracks->At(i);
+    evd_trk = (stntuple::TEvdTrack*) fListOfTracks->At(i);
     evd_trk->Paint(Option);
   }
 
@@ -370,7 +352,7 @@ void TTrkVisNode::PaintXY(Option_t* Option) {
 //-----------------------------------------------------------------------------
 void TTrkVisNode::PaintRZ(Option_t* Option) {
   int             ntrk(0), nhits;
-  TEvdTrack*      evd_trk;
+  stntuple::TEvdTrack*      evd_trk;
 
   //  TStnVisManager* vm = TStnVisManager::Instance();
 
@@ -393,12 +375,12 @@ void TTrkVisNode::PaintRZ(Option_t* Option) {
   if (fListOfTracks != 0)  ntrk = fListOfTracks->GetEntriesFast();
 
   for (int i=0; i<ntrk; i++ ) {
-    evd_trk = (TEvdTrack*) fListOfTracks->At(i);
+    evd_trk = (stntuple::TEvdTrack*) fListOfTracks->At(i);
     evd_trk->Paint(Option);
 
     nhits = evd_trk->NHits();
     for (int ih=0; ih<nhits; ih++) {
-      TEvdTrkStrawHit* hit = evd_trk->Hit(ih);
+      stntuple::TEvdTrkStrawHit* hit = evd_trk->Hit(ih);
       hit->PaintRZ(Option);
     }
   }
@@ -406,33 +388,52 @@ void TTrkVisNode::PaintRZ(Option_t* Option) {
   gPad->Modified();
 }
 
-//_____________________________________________________________________________
-void TTrkVisNode::PaintCal(Option_t* option) {
-  // so far do nothing
- 
-}
 
-//_____________________________________________________________________________
-Int_t TTrkVisNode::DistancetoPrimitive(Int_t px, Int_t py) {
-  return 9999;
-}
-
-//_____________________________________________________________________________
-Int_t TTrkVisNode::DistancetoPrimitiveXY(Int_t px, Int_t py) {
-
-  Int_t dist = 9999;
-
+//-----------------------------------------------------------------------------
+int TTrkVisNode::DistancetoPrimitiveXY(Int_t px, Int_t py) {
   static TVector3 global;
-  //  static TVector3 local;
-
-  //  Double_t    dx1, dx2, dy1, dy2, dx_min, dy_min, dr;
-
   global.SetXYZ(gPad->AbsPixeltoX(px),gPad->AbsPixeltoY(py),0);
 
-  return dist;
+  TObject* closest(nullptr);
+
+  int  x1, y1, dx1, dy1, min_dist(9999), dist;
+
+  int nhits = fListOfStrawHits->GetEntries();
+  for (int i=0; i<nhits; i++) {
+    stntuple::TEvdStrawHit* hit = (stntuple::TEvdStrawHit*) fListOfStrawHits->At(i);
+
+    x1  = gPad->XtoAbsPixel(hit->Pos()->X());
+    y1  = gPad->YtoAbsPixel(hit->Pos()->Y());
+    dx1 = px-x1;
+    dy1 = py-y1;
+
+    dist  = (int) sqrt(dx1*dx1+dy1*dy1);
+    if (dist < min_dist) {
+      min_dist = dist;
+      closest  = hit;
+    }
+  }
+//-----------------------------------------------------------------------------
+// tracks are represented by ellipses
+//-----------------------------------------------------------------------------
+  int ntracks = fListOfTracks->GetEntries();
+  for (int i=0; i<ntracks; i++) {
+    stntuple::TEvdTrack* trk = GetTrack(i);
+
+    dist = trk->DistancetoPrimitiveXY(px,py);
+
+    if (dist < min_dist) {
+      min_dist = dist;
+      closest  = trk;
+    }
+  }
+
+  SetClosestObject(closest,min_dist);
+
+  return min_dist;
 }
 
-//_____________________________________________________________________________
+//-----------------------------------------------------------------------------
 Int_t TTrkVisNode::DistancetoPrimitiveRZ(Int_t px, Int_t py) {
   return 9999;
 }

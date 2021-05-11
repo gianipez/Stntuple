@@ -7,11 +7,12 @@
 class TVisNode: public TObject {
 protected:
   TString    fName;
-  TObject*   fClosestObject;
   int        fDebugLevel;
+  TObject*   fClosestObject;
+  int        fDist;
 public:
 					// ****** constructors and destructor
-  TVisNode(const char* name = "");
+  TVisNode(const char* name = "TVisNode");
   virtual ~TVisNode();
 //-----------------------------------------------------------------------------
 // accessors
@@ -26,6 +27,11 @@ public:
   virtual int         InitEvent() = 0;
 
   void                SetDebugLevel(int Level) { fDebugLevel = Level; }
+
+  void                SetClosestObject(TObject* Obj, int Dist) {
+    fClosestObject = Obj;
+    fDist          = Dist;
+  }
 
   ClassDef(TVisNode,0)
 };

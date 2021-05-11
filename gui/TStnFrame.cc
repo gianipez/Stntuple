@@ -72,9 +72,7 @@ const char *filetypes[] = { "All files",     "*",
                             "ROOT macros",   "*.C",
                             0,               0 };
 
-
-
-//_____________________________________________________________________________
+//-----------------------------------------------------------------------------
 TStnFrame::TStnFrame(const char* Name,
 		     const char* Title, 
 		     Int_t       View,
@@ -85,8 +83,6 @@ TStnFrame::TStnFrame(const char* Name,
   TGMainFrame(gClient->GetRoot(),w, h, Options),
   fView(View)
 {
-  // create a TGeant event display window
-
 //-----------------------------------------------------------------------------
 //  create menu bar
 //-----------------------------------------------------------------------------
@@ -221,8 +217,7 @@ TStnFrame::TStnFrame(const char* Name,
   MapWindow();
 }
 
-
-//_____________________________________________________________________________
+//-----------------------------------------------------------------------------
 TStnFrame::~TStnFrame() {
   // Delete window, as TStnFrame's do not exist by themselves, but they are
   // always managed by TVisManager, we need to erase this frame from the
@@ -251,7 +246,7 @@ TStnFrame::~TStnFrame() {
 
 }
 
-//______________________________________________________________________________
+//-----------------------------------------------------------------------------
 void TStnFrame::EditorBar() {
   // Create the Editor Controlbar
 
@@ -276,15 +271,15 @@ void TStnFrame::EditorBar() {
    fEditorBar = ed;
 }
 
-//_____________________________________________________________________________
+//-----------------------------------------------------------------------------
 Bool_t TStnFrame::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2) {
-   // Handle menu items.
+  // Handle menu items.
 
   TCanvas* c;
   int message = GET_MSG(msg);
-//   double     x,y;
-//   int        px, py;
-
+  //   double     x,y;
+  //   int        px, py;
+  
   TVisManager* vm = TVisManager::Instance();
 
   c = GetCanvas();
@@ -382,59 +377,53 @@ Bool_t TStnFrame::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2) {
   return true;
 }
 
-
-
-//_____________________________________________________________________________
+//-----------------------------------------------------------------------------
 void TStnFrame::CloseWindow() {
-   // Called when window is closed via the window manager.
-
-   TVirtualPad *savepad = gPad;
-   gPad = 0;        // hide gPad from CINT
-   gInterpreter->DeleteGlobal(fEmbeddedCanvas->GetCanvas());
-   gPad = savepad;  // restore gPad for ROOT
-
-   delete this;
+  // Called when window is closed via the window manager.
+  
+  TVirtualPad *savepad = gPad;
+  gPad = 0;        // hide gPad from CINT
+  gInterpreter->DeleteGlobal(fEmbeddedCanvas->GetCanvas());
+  gPad = savepad;  // restore gPad for ROOT
+  
+  delete this;
 }
 
+//-----------------------------------------------------------------------------
+void TStnFrame::ShowStatusBar(Bool_t show) {
+  // Show or hide statusbar.
 
-//______________________________________________________________________________
-void TStnFrame::ShowStatusBar(Bool_t show)
-{
-   // Show or hide statusbar.
-
-   if (show) {
-      ShowFrame(fStatusBar);
-      fMenuOption->CheckEntry(M_OPTION_EVENT_STATUS);
-   } else {
-      HideFrame(fStatusBar);
-      fMenuOption->UnCheckEntry(M_OPTION_EVENT_STATUS);
-   }
+  if (show) {
+    ShowFrame(fStatusBar);
+    fMenuOption->CheckEntry(M_OPTION_EVENT_STATUS);
+  } else {
+    HideFrame(fStatusBar);
+    fMenuOption->UnCheckEntry(M_OPTION_EVENT_STATUS);
+  }
 }
 
-//______________________________________________________________________________
-void TStnFrame::SetStatusText(const char *txt, Int_t partidx)
-{
-   // Set text in status bar.
+//-----------------------------------------------------------------------------
+void TStnFrame::SetStatusText(const char *txt, Int_t partidx) {
+  // Set text in status bar.
 
-   fStatusBar->SetText(txt, partidx);
+  fStatusBar->SetText(txt, partidx);
 }
 
-//_____________________________________________________________________________
-void TStnFrame::DoOK()
-{
-   printf("\nTerminating dialog: OK pressed\n");
+//-----------------------------------------------------------------------------
+void TStnFrame::DoOK() {
+  printf("\nTerminating dialog: OK pressed\n");
 
-   // Send a close message to the main frame. This will trigger the
-   // emission of a CloseWindow() signal, which will then call
-   // TStnFrame::CloseWindow(). Calling directly CloseWindow() will cause
-   // a segv since the OK button is still accessed after the DoOK() method.
-   // This works since the close message is handled synchronous (via
-   // message going to/from X server).
-
-   SendCloseMessage();
-
-   // The same effect can be obtained by using a singleshot timer:
-   //TTimer::SingleShot(50, "TStnFrame", this, "CloseWindow()");
+  // Send a close message to the main frame. This will trigger the
+  // emission of a CloseWindow() signal, which will then call
+  // TStnFrame::CloseWindow(). Calling directly CloseWindow() will cause
+  // a segv since the OK button is still accessed after the DoOK() method.
+  // This works since the close message is handled synchronous (via
+  // message going to/from X server).
+  
+  SendCloseMessage();
+  
+  // The same effect can be obtained by using a singleshot timer:
+  //TTimer::SingleShot(50, "TStnFrame", this, "CloseWindow()");
 }
 
 //_____________________________________________________________________________
@@ -448,7 +437,7 @@ void TStnFrame::HandleButtons(Int_t id) {
   // Handle different buttons.
 }
 
-//_____________________________________________________________________________
+//-----------------------------------------------------------------------------
 void TStnFrame::DoTab(Int_t id) {
    printf("*** TStnFrame::DoTab : Tab item %d activated\n", id);
 }

@@ -3,14 +3,15 @@
 //  THis class also provides low-level graphics routines to resolve
 //  references from FORTRAN part of GEANT visualization package
 //-----------------------------------------------------------------------------
-#ifndef TVisManager_hh
-#define TVisManager_hh
+#ifndef Stntuple_base_TVisManager_hh
+#define Stntuple_base_TVisManager_hh
 
 #include "TList.h"
 #include "TCanvas.h"
 #include "TObjArray.h"
 
-#include "TVisNode.hh"
+#include "Stntuple/base/TVisNode.hh"
+#include "Stntuple/base/TStnView.hh"
 
 class TGeometryManager;
 class TDetectorElement;
@@ -29,13 +30,14 @@ protected:
   TList*            fListOfCanvases;	// ! list of canvases
   TCanvas*          fActiveCanvas;	// ! pointer to the active canvas
 
+  TObjArray*        fListOfViews;       // ! list of views
   TObjArray*        fListOfNodes;       // ! list of vis nodes
   TObject*          fClosestObject;	// ! object closest to the cursor
   Int_t             fMinDist;		// ! distance to the closest object
   TDetectorElement* fClosestDetElement;	// !
   Int_t             fMinDistDetElement;	// !
   TVisNode*         fTitleNode;         // !
-  TString           fCurrentView;       // !
+  TStnView*        fCurrentView;       // ! 
   int               fDebugLevel; 	// !
 //-----------------------------------------------------------------------------
 // methods
@@ -65,29 +67,11 @@ public:
   Int_t              GetMinDist          () { return fMinDist; }
   Int_t              GetMinDistDetElement() { return fMinDistDetElement; }
   TDetectorElement*  GetClosestDetElement() { return fClosestDetElement; }
-  const char*        GetCurrentView      () { return fCurrentView.Data(); }
+  TStnView*          GetCurrentView      () { return fCurrentView;       }
 
   Int_t              GetNNodes           () { 
     return fListOfNodes->GetEntriesFast(); 
   }
-
-  TVisNode*          GetNode      (Int_t i) { 
-    return (TVisNode*) fListOfNodes->UncheckedAt(i);
-  }
-
-  int  DebugLevel() { return fDebugLevel; }
-//-----------------------------------------------------------------------------
-// modifiers
-//-----------------------------------------------------------------------------
-  void  SetGeometryManager(TGeometryManager* gm) { fGeometryManager = gm; }
-
-  void  SetCurrentView(const char* View) { fCurrentView = View; }
-
-  void  SetClosestObject    (TObject* o, Int_t Dist) { 
-    fClosestObject = o; fMinDist = Dist;
-  }
-
-  void  SetClosestDetElement(TDetectorElement* det, Int_t Dist) ;
 
   void  AddNode(TVisNode* node) { 
 				        // make sure we're not adding the same node twice
@@ -95,22 +79,54 @@ public:
       fListOfNodes->Add(node); 
     }
   }
+
+  TVisNode*          GetNode      (Int_t i) { return (TVisNode*) fListOfNodes->UncheckedAt(i); }
+
+  int                GetNViews()    { return fListOfViews->GetEntriesFast(); }
+  TStnView*          GetView(int I) { return (TStnView*) fListOfViews->UncheckedAt(I); } 
+
+  void               AddView(TStnView* View);
+
+  TStnView*          FindView(int Type, int Index);
+
+  int                DebugLevel() { return fDebugLevel; }
+//-----------------------------------------------------------------------------
+// modifiers
+//-----------------------------------------------------------------------------
+  void  SetGeometryManager(TGeometryManager* gm) { fGeometryManager = gm; }
+
+  void  SetCurrentView(TStnView* View) { fCurrentView = View; }
+
+  void  SetClosestObject    (TObject* o, Int_t Dist) { 
+    fClosestObject = o; fMinDist = Dist;
+  }
+
+  void  SetClosestDetElement(TDetectorElement* det, Int_t Dist) ;
+
   void  SetTitleNode (TVisNode* node) { fTitleNode = node; }
   void  SetDebugLevel(int      Level) { fDebugLevel = Level; }
+
+  virtual void SetStations   (int IMin, int IMax);
+  virtual void SetTimeCluster(int I);
+  virtual void SetTimeWindow (float TMin, float TMax);
 //-----------------------------------------------------------------------------
 // drawing functions
 //-----------------------------------------------------------------------------
+  virtual void DisplayEvent();
+
+  virtual void DefaultRange();
+  virtual void DrawOneSpec(const char* name);
+
   virtual TCanvas*       NewCanvas(const char* Name, 
 				   const char* Title, 
 				   Int_t       SizeX, 
 				   Int_t       SizeY) { 
     return NULL;
   }
-					// update all the open windows
-  virtual void DisplayEvent();
 
-  virtual void DefaultRange();
-  virtual void DrawOneSpec(const char* name);
+  virtual void OpenView(TStnView* Mother, int Px1, int Py1, int Px2, int Py2);
+
+					// update all the open windows
 
   virtual void MarkModified(TPad* Pad);
 

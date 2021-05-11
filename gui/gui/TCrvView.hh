@@ -5,7 +5,7 @@
 #include "TNamed.h"
 #include "TPad.h"
 
-#include "Stntuple/gui/TStnView.hh"
+#include "Stntuple/base/TStnView.hh"
 
 //-----------------------------------------------------------------------------
 class TCrvView : public TStnView {

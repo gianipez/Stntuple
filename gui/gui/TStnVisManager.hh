@@ -37,18 +37,12 @@ class TTrkRZView;
 class TSubdetector;
 class TExtrapolator;
 
+//-----------------------------------------------------------------------------
 class TStnVisManager : public TVisManager {
 public:
-
-  enum {
-    kXYView  = 1,
-    kRZView  = 2,
-    kCalView = 3,
-    kCrvView = 4
-  };
-  //-----------------------------------------------------------------------------
-  // command codes
-  //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// command codes
+//-----------------------------------------------------------------------------
   enum CommandIdentifiers {
     M_TRACKER_XY,
     M_TRACKER_RZ,
@@ -93,11 +87,6 @@ protected:
 //-----------------------------------------------------------------------------
   TObjArray*          fListOfDetectors;
   TSubdetector*       fClosestSubdetector;
-
-  TTrkXYView*         fTrkXYView;
-  TTrkRZView*         fTrkRZView;
-  TCalView*           fCalView[4];	// 4: provides for the now obsolete vane-based geometry
-  TCrvView*	      fCrvView[6];
 
   TExtrapolator*      fExtrapolator;
 
@@ -153,7 +142,7 @@ public:
   double         TMin() { return fTMin; }
   double         TMax() { return fTMax; }
 
-  void   GetTimeWindow(float& TMin, float& TMax) {
+  void           GetTimeWindow(float& TMin, float& TMax) {
     TMin = fTMin;
     TMax = fTMax;
   }
@@ -161,9 +150,6 @@ public:
   // modifiers
   //-----------------------------------------------------------------------------
   void SetEvent(art::Event& Evt) { fEvent = &Evt; }
-
-  void SetClosestSubdetector(TSubdetector* det) { fClosestSubdetector = det; }
-  void SetExtrapolator(TExtrapolator*  x) { fExtrapolator = x; }
 
   void SetDisplayStrawDigiMC(int Display) {
     fDisplayStrawDigiMC = Display;
@@ -183,6 +169,8 @@ public:
 			      const char* Title,
 			      Int_t       SizeX,
 			      Int_t       SizeY);
+
+  virtual void OpenView(TStnView* Mother, int Px1, int Py, int Px2, int Py2);
 
   Int_t   OpenTrkXYView();
   Int_t   OpenTrkXYView(TStnView* Mother, Axis_t x1, Axis_t y1, Axis_t x2, Axis_t y2);

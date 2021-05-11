@@ -106,11 +106,15 @@
 #include "TDatabasePDG.h"
 
 #include "Stntuple/base/TNamedHandle.hh"
-#include "Stntuple/gui/gui/TStnVisManager.hh"
+#include "Stntuple/gui/TStnVisManager.hh"
 #include "Stntuple/gui/THeaderVisNode.hh"
 #include "Stntuple/gui/TCalVisNode.hh"
 #include "Stntuple/gui/TCrvVisNode.hh"
 #include "Stntuple/gui/TTrkVisNode.hh"
+
+// #include "Stntuple/gui/TTrkXYView.hh"
+// #include "Stntuple/gui/TTrkRZView.hh"
+
 #include "Stntuple/gui/TMcTruthVisNode.hh"
 
 #include "Stntuple/alg/TStnTrackID.hh"
@@ -130,372 +134,396 @@ using CLHEP::Hep3Vector;
 
 namespace mu2e {
 
-  class MuHitDisplay : public THistModule {
-  private:
+class MuHitDisplay : public THistModule {
+private:
 //-----------------------------------------------------------------------------
 // Input parameters: Module labels 
 //-----------------------------------------------------------------------------
-    string        _moduleLabel;	             // this module label
-    string        _processName;
-    string        _genpCollTag;
-    string        _spmcCollTag;
-    string        _caloClusterCollTag;
-    string        _crvRecoPulseCollTag;
+  string        _moduleLabel;	             // this module label
+  string        _processName;
+  string        _genpCollTag;
+  string        _spmcCollTag;
+  string        _caloClusterCollTag;
+  string        _crvRecoPulseCollTag;
 
-    string        _strawHitCollTag;
-    string        _comboHitCollTag;
-    string        _strawDigiMCCollTag;
-    string        _strawHitFlagCollTag;
+  string        _strawHitCollTag;
+  string        _comboHitCollTag;
+  string        _strawDigiMCCollTag;
+  string        _strawHitFlagCollTag;
+  
+  string        fTrackCollTag;
+  string        fTimeClusterModuleLabel;
+  string        fCrystalHitMaker;
+  string        fTrkExtrapol;
+  string        fTrkCalMatch;
+  string        fPidCollTag;
+  
+  GenId         _generatorID;
+  string        _trackerStepPoints;
 
-    string        fTrackCollTag;
-    string        fTimeClusterModuleLabel;
-    string        fCrystalHitMaker;
-    string        fTrkExtrapol;
-    string        fTrkCalMatch;
-    string        fPidCollTag;
+  double        _minEnergyDep;
+  double        _timeWindow;
 
-    GenId         _generatorID;
-    string        _trackerStepPoints;
+  StrawHitFlag  fGoodHitMask;
+  StrawHitFlag  fBadHitMask;
+  size_t        _minHits;
 
-    double        _minEnergyDep;
-    double        _timeWindow;
-
-    StrawHitFlag  fGoodHitMask;
-    StrawHitFlag  fBadHitMask;
-    size_t        _minHits;
-
-    bool          fDisplayBackgroundHits;
-    bool          fPrintHits;
+  bool          fDisplayBackgroundHits;
+  bool          fPrintHits;
 //-----------------------------------------------------------------------------
 // Control for CRV-specific viewing
 //-----------------------------------------------------------------------------
-    bool				_showCRVOnly;
-    bool				_showTracks;
-    bool				foundCRV;
-    bool				foundTrkr;
-    bool				foundTrkr_StrawHitColl;
-    bool				foundTrkr_StrawDigiMCColl;
-    bool				foundTrkr_StrawHitPosColl;
-    bool				foundTrkr_StrawHitFlagColl;
-    bool				foundCalo_CrystalHitColl;
-    bool				foundCalo_ClusterColl;
-    bool				foundCalo;
+  bool				_showCRVOnly;
+  bool				_showTracks;
+  bool				foundCRV;
+  bool				foundTrkr;
+  bool				foundTrkr_StrawHitColl;
+  bool				foundTrkr_StrawDigiMCColl;
+  bool				foundTrkr_StrawHitPosColl;
+  bool				foundTrkr_StrawHitFlagColl;
+  bool				foundCalo_CrystalHitColl;
+  bool				foundCalo_ClusterColl;
+  bool				foundCalo;
 
-    fhicl::ParameterSet                 _vmConfig;
+  fhicl::ParameterSet                 _vmConfig;
 //-----------------------------------------------------------------------------
 // end of input parameters
 // Options to control the display
 // hit flag bits which should be ON and OFF
 //-----------------------------------------------------------------------------
-    TApplication*                               fApplication;
-    TCanvas*                                    fCanvas;
+  TApplication*                               fApplication;
+  TCanvas*                                    fCanvas;
 
-    const mu2e::Calorimeter*                    fCal;              //
+  const mu2e::Calorimeter*                    fCal;              //
 
-    const mu2e::GenParticleCollection*          _genParticleColl;         // 
+  const mu2e::GenParticleCollection*          _genParticleColl;         // 
 
-    const mu2e::ComboHitCollection*             fShComboHitColl;     // 
-    const mu2e::ComboHitCollection*             fComboHitColl;     // 
+  const mu2e::ComboHitCollection*             fShComboHitColl;     // 
+  const mu2e::ComboHitCollection*             fComboHitColl;     // 
 
-    const mu2e::StrawHitFlagCollection*         fStrawHitFlagColl; //
-    const mu2e::StrawDigiMCCollection*         _strawDigiMCColl; //
+  const mu2e::StrawHitFlagCollection*         fStrawHitFlagColl; //
+  const mu2e::StrawDigiMCCollection*         _strawDigiMCColl; //
+  
+  const mu2e::CaloCrystalHitCollection*       fListOfCrystalHits;//
+  const mu2e::CaloClusterCollection*          fListOfClusters;   //
+  
+  const mu2e::StepPointMCCollection*          _stepPointMCColl;  //
 
-    const mu2e::CaloCrystalHitCollection*       fListOfCrystalHits;//
-    const mu2e::CaloClusterCollection*          fListOfClusters;   //
+  const mu2e::TimeClusterCollection*          fTimeClusterColl;  //
 
-    const mu2e::StepPointMCCollection*          _stepPointMCColl;  //
+  mu2e::CrvRecoPulseCollection*		fCrvPulseColl_Right;
+  mu2e::CrvRecoPulseCollection*		fCrvPulseColl_Left;
+  mu2e::CrvRecoPulseCollection*		fCrvPulseColl_TopDS;
+  mu2e::CrvRecoPulseCollection*		fCrvPulseColl_TopTS;
+  mu2e::CrvRecoPulseCollection*		fCrvPulseColl_Dwnstrm;
+  mu2e::CrvRecoPulseCollection*		fCrvPulseColl_Upstrm;
+  
+  const mu2e::KalRepPtrCollection*            _kalRepPtrColl;
 
-    const mu2e::TimeClusterCollection*          fTimeClusterColl;  //
-
-    mu2e::CrvRecoPulseCollection*		fCrvPulseColl_Right;
-    mu2e::CrvRecoPulseCollection*		fCrvPulseColl_Left;
-    mu2e::CrvRecoPulseCollection*		fCrvPulseColl_TopDS;
-    mu2e::CrvRecoPulseCollection*		fCrvPulseColl_TopTS;
-    mu2e::CrvRecoPulseCollection*		fCrvPulseColl_Dwnstrm;
-    mu2e::CrvRecoPulseCollection*		fCrvPulseColl_Upstrm;
-		
-    const mu2e::KalRepPtrCollection*            _kalRepPtrColl;
-
-    std::unique_ptr<McUtilsToolBase>            _mcUtils;
+  std::unique_ptr<McUtilsToolBase>            _mcUtils;
 
 
-    int                    fNClusters;
+  int                    fNClusters;
     // 4 hypotheses: dem, uep, dmm, ump
-    int                    fNTracks[4];
+  int                    fNTracks[4];
 		
-    TMarker*               fMarker;
+  TMarker*               fMarker;
 
-    TStnVisManager*        fVisManager;
-    TStnTrackBlock*        fTrackBlock;
-    TStnClusterBlock*      fClusterBlock;
-    TStnHeaderBlock*       fHeaderBlock;
+  TStnVisManager*        fVisManager;
+  TStnTrackBlock*        fTrackBlock;
+  TStnClusterBlock*      fClusterBlock;
+  TStnHeaderBlock*       fHeaderBlock;
 
-    TStnTrackID*           fTrackID;
+  TStnTrackID*           fTrackID;
 
-    double                 fTrackerP;   	// CE momentum on entrance to the straw tracker
-    double                 fTrackerPt;	// CE Pt on entrance to the straw tracker
+  double                 fTrackerP;   	// CE momentum on entrance to the straw tracker
+  double                 fTrackerPt;	// CE Pt on entrance to the straw tracker
 
-    const TimeCluster*     fTimeCluster;
+  const TimeCluster*     fTimeCluster;
 
-    const Tracker*         fTracker;    // straw tracker geometry
+  const Tracker*         fTracker;    // straw tracker geometry
 
-    TNamedHandle*          fDarHandle;
-    TNamedHandle*          fKalDiagHandle;
+  TNamedHandle*          fDarHandle;
+  TNamedHandle*          fKalDiagHandle;
 
-    DoubletAmbigResolver*  fDar;
-    KalDiag*               fKalDiag;
+  DoubletAmbigResolver*  fDar;
+  KalDiag*               fKalDiag;
 
-  public:
-    explicit MuHitDisplay(fhicl::ParameterSet const& pset);
-    virtual ~MuHitDisplay();
+public:
+  explicit MuHitDisplay(fhicl::ParameterSet const& pset);
+  virtual ~MuHitDisplay();
 
-    int      getData(const art::Event* Evt);
-    void     Init(art::Event* Evt);
-    void     InitVisManager();
-    int		 getCRVSection(int shieldNumber);
+  int      getData(const art::Event* Evt);
+  void     Init(art::Event* Evt);
+  void     InitVisManager();
+  int		 getCRVSection(int shieldNumber);
 
-    void     printCaloCluster(const CaloCluster* Cl, const char* Opt);
-    //-----------------------------------------------------------------------------
-    // overloaded virtual methods of the base class
-    //-----------------------------------------------------------------------------
-    virtual void     beginJob();
-    virtual bool     beginRun(art::Run& aRun);
-    virtual bool     filter(art::Event& Evt);
-  };
+  void     printCaloCluster(const CaloCluster* Cl, const char* Opt);
+//-----------------------------------------------------------------------------
+// overloaded virtual methods of the base class
+//-----------------------------------------------------------------------------
+  virtual void     beginJob();
+  virtual bool     beginRun(art::Run& aRun);
+  virtual bool     filter(art::Event& Evt);
+};
 
 
-  //-----------------------------------------------------------------------------
-  MuHitDisplay::MuHitDisplay(fhicl::ParameterSet const& pset) :
-    THistModule              (pset,            "MuHitDisplay"),
+//-----------------------------------------------------------------------------
+MuHitDisplay::MuHitDisplay(fhicl::ParameterSet const& pset) :
+  THistModule              (pset,            "MuHitDisplay"),
 
-    _moduleLabel             (pset.get<string>("module_label")),
-    _processName             (pset.get<string>("processName", "")),
-    _genpCollTag             (pset.get<string>("genpCollTag")),
-    _spmcCollTag             (pset.get<string>("spmcCollTag")),
-    _caloClusterCollTag  (pset.get<string>("caloClusterCollTag"  )),
-    _crvRecoPulseCollTag(pset.get<string>("crvRecoPulsesCollTag")),
-				
-    _strawHitCollTag (pset.get<string>("strawHitCollTag")),
-    _comboHitCollTag (pset.get<string>("comboHitCollTag")),
-    _strawDigiMCCollTag(pset.get<string>("strawDigiMCCollTag")),
-    _strawHitFlagCollTag     (pset.get<string>("strawHitFlagCollTag")),
+  _moduleLabel             (pset.get<string>("module_label")),
+  _processName             (pset.get<string>("processName", "")),
+  _genpCollTag             (pset.get<string>("genpCollTag")),
+  _spmcCollTag             (pset.get<string>("spmcCollTag")),
+  _caloClusterCollTag      (pset.get<string>("caloClusterCollTag"  )),
+  _crvRecoPulseCollTag     (pset.get<string>("crvRecoPulsesCollTag")),
+  
+  _strawHitCollTag         (pset.get<string>("strawHitCollTag")),
+  _comboHitCollTag         (pset.get<string>("comboHitCollTag")),
+  _strawDigiMCCollTag      (pset.get<string>("strawDigiMCCollTag")),
+  _strawHitFlagCollTag     (pset.get<string>("strawHitFlagCollTag")),
+  
+  fTrackCollTag            (pset.get<string>("trackCollTag")),
+  fTimeClusterModuleLabel  (pset.get<string>("timeClusterCollTag")),
+  fCrystalHitMaker         (pset.get<string>("caloCrystalHitsCollTag")),
+  fTrkExtrapol             (pset.get<string>("trkExtrapol")),
+  fTrkCalMatch             (pset.get<string>("trkCalMatch")),
+  fPidCollTag              (pset.get<string>("pidCollTag")),
 
-    fTrackCollTag            (pset.get<string>("trackCollTag")),
-    fTimeClusterModuleLabel  (pset.get<string>("timeClusterCollTag")),
-    fCrystalHitMaker         (pset.get<string>("caloCrystalHitsCollTag")),
-    fTrkExtrapol             (pset.get<string>("trkExtrapol")),
-    fTrkCalMatch             (pset.get<string>("trkCalMatch")),
-    fPidCollTag              (pset.get<string>("pidCollTag")),
+  _generatorID             (pset.get<mu2e::GenId>   ("generatorID", mu2e::GenId::CeEndpoint)),
+  _trackerStepPoints       (pset.get<string>        ("trackerStepPoints")),
+  _minEnergyDep            (pset.get<double>        ("minEnergyDep", 0)),
+  _timeWindow              (pset.get<double>        ("timeWindow", 1.e6)),
+  fGoodHitMask             (pset.get<vector<string>>("goodHitMask")),
+  fBadHitMask              (pset.get<vector<string>>("badHitMask")),
+  _minHits                 (pset.get<unsigned>      ("minHits")),
 
-    _generatorID             (pset.get<mu2e::GenId>   ("generatorID", mu2e::GenId::CeEndpoint)),
-    _trackerStepPoints       (pset.get<string>        ("trackerStepPoints")),
-    _minEnergyDep            (pset.get<double>        ("minEnergyDep", 0)),
-    _timeWindow              (pset.get<double>        ("timeWindow", 1.e6)),
-    fGoodHitMask             (pset.get<vector<string>>("goodHitMask")),
-    fBadHitMask              (pset.get<vector<string>>("badHitMask")),
-    _minHits                 (pset.get<unsigned>      ("minHits")),
+  fDisplayBackgroundHits   (pset.get<bool>("displayBackgroundHits", false)),
+  fPrintHits               (pset.get<bool>("printHits", false)),
+  _showCRVOnly             (pset.get<bool>("showCRVOnly", false)),
+  _showTracks              (pset.get<bool>("showTracks")),
 
-    fDisplayBackgroundHits   (pset.get<bool>("displayBackgroundHits", false)),
-    fPrintHits               (pset.get<bool>("printHits", false)),
-    _showCRVOnly             (pset.get<bool>("showCRVOnly", false)),
-    _showTracks              (pset.get<bool>("showTracks")),
+  _vmConfig                (pset.get<fhicl::ParameterSet>("visManager", fhicl::ParameterSet()))
+{
 
-    _vmConfig                (pset.get<fhicl::ParameterSet>("visManager", fhicl::ParameterSet()))
-  {
+  fApplication = 0;
+  fCanvas = 0;
+  fCal = 0;
+  
+  fTrackBlock = new TStnTrackBlock();
+  fClusterBlock = new TStnClusterBlock();
+  fHeaderBlock = new TStnHeaderBlock();
 
-    fApplication = 0;
-    fCanvas = 0;
-    fCal = 0;
+  fVisManager = TStnVisManager::Instance();
 
-    fTrackBlock = new TStnTrackBlock();
-    fClusterBlock = new TStnClusterBlock();
-    fHeaderBlock = new TStnHeaderBlock();
-
-    fVisManager = TStnVisManager::Instance();
-
-    _mcUtils = std::make_unique<McUtilsToolBase>();
+  _mcUtils = std::make_unique<McUtilsToolBase>();
     
-    fTrackID = new TStnTrackID();
+  fTrackID = new TStnTrackID();
+  
+  foundCRV  = false;
+  foundTrkr = false;
+  foundCalo = false;
+  
+  fCrvPulseColl_Right   = new CrvRecoPulseCollection();
+  fCrvPulseColl_Left    = new CrvRecoPulseCollection();
+  fCrvPulseColl_TopDS   = new CrvRecoPulseCollection();
+  fCrvPulseColl_TopTS   = new CrvRecoPulseCollection();
+  fCrvPulseColl_Dwnstrm = new CrvRecoPulseCollection();
+  fCrvPulseColl_Upstrm  = new CrvRecoPulseCollection();
 
-    foundCRV  = false;
-    foundTrkr = false;
-    foundCalo = false;
+  fDar           = new DoubletAmbigResolver (pset.get<fhicl::ParameterSet>("DoubletAmbigResolver"),0.,0,0);
+  fDarHandle     = new TNamedHandle("DarHandle",fDar);
 
-    fCrvPulseColl_Right   = new CrvRecoPulseCollection();
-    fCrvPulseColl_Left    = new CrvRecoPulseCollection();
-    fCrvPulseColl_TopDS   = new CrvRecoPulseCollection();
-    fCrvPulseColl_TopTS   = new CrvRecoPulseCollection();
-    fCrvPulseColl_Dwnstrm = new CrvRecoPulseCollection();
-    fCrvPulseColl_Upstrm  = new CrvRecoPulseCollection();
+  fKalDiag       = new KalDiag(pset.get<fhicl::ParameterSet>("KalDiag",fhicl::ParameterSet()));
+  fKalDiagHandle = new TNamedHandle("KalDiagHandle",fKalDiag);
 
-    fDar           = new DoubletAmbigResolver (pset.get<fhicl::ParameterSet>("DoubletAmbigResolver"),0.,0,0);
-    fDarHandle     = new TNamedHandle("DarHandle",fDar);
+  fFolder->Add(fDarHandle);
+  fFolder->Add(fKalDiagHandle);
+}
 
-    fKalDiag       = new KalDiag(pset.get<fhicl::ParameterSet>("KalDiag",fhicl::ParameterSet()));
-    fKalDiagHandle = new TNamedHandle("KalDiagHandle",fKalDiag);
+//-----------------------------------------------------------------------------
+MuHitDisplay::~MuHitDisplay() {
 
-    fFolder->Add(fDarHandle);
-    fFolder->Add(fKalDiagHandle);
+  if (fApplication) delete fApplication;
+
+  delete fCrvPulseColl_Right;
+  delete fCrvPulseColl_Left;
+  delete fCrvPulseColl_TopDS;
+  delete fCrvPulseColl_TopTS;
+  delete fCrvPulseColl_Dwnstrm;
+  delete fCrvPulseColl_Upstrm;
+
+  delete fKalDiag;
+  delete fDar;
+}
+
+
+//-----------------------------------------------------------------------------
+void MuHitDisplay::beginJob() {
+
+  //     const char oname[] = "MuHitDisplay::beginJob";
+  int    tmp_argc(0);
+  char** tmp_argv(0);
+
+  if (!gApplication) {
+    fApplication = new TApplication("MuHitDisplay_module", &tmp_argc, tmp_argv);
   }
 
-  //-----------------------------------------------------------------------------
-  MuHitDisplay::~MuHitDisplay() {
-
-    if (fApplication) delete fApplication;
-
-    delete fCrvPulseColl_Right;
-    delete fCrvPulseColl_Left;
-    delete fCrvPulseColl_TopDS;
-    delete fCrvPulseColl_TopTS;
-    delete fCrvPulseColl_Dwnstrm;
-    delete fCrvPulseColl_Upstrm;
-
-    delete fKalDiag;
-    delete fDar;
-  }
-
-
-  //-----------------------------------------------------------------------------
-  void MuHitDisplay::beginJob() {
-
-    //     const char oname[] = "MuHitDisplay::beginJob";
-    int    tmp_argc(0);
-    char** tmp_argv(0);
-
-    if (!gApplication) {
-      fApplication = new TApplication("MuHitDisplay_module", &tmp_argc, tmp_argv);
-    }
-
-    // Create a canvas with a guaranteed unique name; the module label is unique within a job.
-    TString name  = "canvas_"     + _moduleLabel;
-    TString title = "Canvas for " + _moduleLabel;
-
-    fCanvas = new TCanvas(name, title, 800, 800);
-    fMarker = new TMarker(0, 0, 20);
-    fMarker->SetMarkerSize(0.3);
+  // Create a canvas with a guaranteed unique name; the module label is unique within a job.
+  TString name  = "canvas_"     + _moduleLabel;
+  TString title = "Canvas for " + _moduleLabel;
+  
+  fCanvas = new TCanvas(name, title, 800, 800);
+  fMarker = new TMarker(0, 0, 20);
+  fMarker->SetMarkerSize(0.3);
 //-----------------------------------------------------------------------------
 // define collection names to be used for initialization
 //-----------------------------------------------------------------------------
-    fClusterBlock->AddCollName("mu2e::CaloClusterCollection"      , _caloClusterCollTag.data()  ,"");
+  fClusterBlock->AddCollName("mu2e::CaloClusterCollection"      , _caloClusterCollTag.data()  ,"");
+  
+  fTrackBlock->AddCollName  ("mu2e::KalRepCollection"           , fTrackCollTag.data()      ,"");
+  fTrackBlock->AddCollName  ("mu2e::ComboHitCollection"         , _strawHitCollTag.data() ,"");
+  fTrackBlock->AddCollName  ("mu2e::StrawDigiMCCollection"      , _strawDigiMCCollTag.data(),"");
+  fTrackBlock->AddCollName  ("mu2e::TrkCaloIntersectCollection" , fTrkExtrapol.data()             ,"");
+  fTrackBlock->AddCollName  ("mu2e::CaloClusterCollection"      , _caloClusterCollTag.data()  ,"");
+  fTrackBlock->AddCollName  ("mu2e::TrackClusterMatchCollection", fTrkCalMatch.data()             ,"");
+  fTrackBlock->AddCollName  ("mu2e::PIDProductCollection"       , fPidCollTag.data()              ,"");
+  fTrackBlock->AddCollName  ("mu2e::StepPointMCCollection"      , _spmcCollTag.data()             ,"");
+  fTrackBlock->AddCollName  ("DarHandle"                        , GetName()                       ,"DarHandle");
+  fTrackBlock->AddCollName  ("KalDiagHandle"                    , GetName()                       ,"KalDiagHandle");
+  
+  TModule::fDump->AddObject("MuHitDisplay::TrackBlock"  , fTrackBlock);
+  TModule::fDump->AddObject("MuHitDisplay::ClusterBlock", fClusterBlock);
+  TModule::fDump->SetStrawDigiMCCollTag(_strawDigiMCCollTag.data());
+}
 
-    fTrackBlock->AddCollName  ("mu2e::KalRepCollection"           , fTrackCollTag.data()      ,"");
-    fTrackBlock->AddCollName  ("mu2e::ComboHitCollection"         , _strawHitCollTag.data() ,"");
-    fTrackBlock->AddCollName  ("mu2e::StrawDigiMCCollection"      , _strawDigiMCCollTag.data(),"");
-    fTrackBlock->AddCollName  ("mu2e::TrkCaloIntersectCollection" , fTrkExtrapol.data()             ,"");
-    fTrackBlock->AddCollName  ("mu2e::CaloClusterCollection"      , _caloClusterCollTag.data()  ,"");
-    fTrackBlock->AddCollName  ("mu2e::TrackClusterMatchCollection", fTrkCalMatch.data()             ,"");
-    fTrackBlock->AddCollName  ("mu2e::PIDProductCollection"       , fPidCollTag.data()              ,"");
-    fTrackBlock->AddCollName  ("mu2e::StepPointMCCollection"      , _spmcCollTag.data()             ,"");
-    fTrackBlock->AddCollName  ("DarHandle"                        , GetName()                       ,"DarHandle");
-    fTrackBlock->AddCollName  ("KalDiagHandle"                    , GetName()                       ,"KalDiagHandle");
-
-    TModule::fDump->AddObject("MuHitDisplay::TrackBlock"  , fTrackBlock);
-    TModule::fDump->AddObject("MuHitDisplay::ClusterBlock", fClusterBlock);
-    TModule::fDump->SetStrawDigiMCCollTag(_strawDigiMCCollTag.data());
-  }
-
-  //-----------------------------------------------------------------------------
-  bool MuHitDisplay::beginRun(art::Run& Run) {
-    mu2e::GeomHandle<mu2e::Tracker> handle;
-    fTracker = handle.get();
-    return true;
-  }
+//-----------------------------------------------------------------------------
+bool MuHitDisplay::beginRun(art::Run& Run) {
+  mu2e::GeomHandle<mu2e::Tracker> handle;
+  fTracker = handle.get();
+  return true;
+}
 
 
-  //-----------------------------------------------------------------------------
-  // initialize the visualization manager
-  // TStnVisManager is responsible for deleting all nodes created here
-  //-----------------------------------------------------------------------------
-  void MuHitDisplay::InitVisManager() {
-    char oname [100];
-    sprintf(oname,"%s:%s",moduleDescription().moduleLabel().data(),"InitVisManager");
+//-----------------------------------------------------------------------------
+// initialize the visualization manager
+// TStnVisManager is responsible for deleting all nodes created here
+//-----------------------------------------------------------------------------
+void MuHitDisplay::InitVisManager() {
+  char oname [100];
+  sprintf(oname,"%s:%s",moduleDescription().moduleLabel().data(),"InitVisManager");
 
-    fVisManager->SetTitleNode(new THeaderVisNode("HeaderVisNode", fHeaderBlock));
+  TStnVisManager* vm = TStnVisManager::Instance();
 
-    if (_showCRVOnly) {
-      TCrvVisNode      *crv_node[6];
-      
-      crv_node[0] = new TCrvVisNode("CrvVisNode#0", 0);
-      crv_node[0]->SetRecoPulsesCollection(&fCrvPulseColl_Right);
-      fVisManager->AddNode(crv_node[0]);
-      crv_node[1] = new TCrvVisNode("CrvVisNode#1", 1);
-      crv_node[1]->SetRecoPulsesCollection(&fCrvPulseColl_Left);
-      fVisManager->AddNode(crv_node[1]);
-      crv_node[2] = new TCrvVisNode("CrvVisNode#2", 2);
-      crv_node[2]->SetRecoPulsesCollection(&fCrvPulseColl_TopDS);
-      fVisManager->AddNode(crv_node[2]);
-      crv_node[3] = new TCrvVisNode("CrvVisNode#3", 3);
-      crv_node[3]->SetRecoPulsesCollection(&fCrvPulseColl_Dwnstrm);
-      fVisManager->AddNode(crv_node[3]);
-      crv_node[4] = new TCrvVisNode("CrvVisNode#4", 4);
-      crv_node[4]->SetRecoPulsesCollection(&fCrvPulseColl_Upstrm);
-      fVisManager->AddNode(crv_node[4]);
-      crv_node[5] = new TCrvVisNode("CrvVisNode#5", 8);
-      crv_node[5]->SetRecoPulsesCollection(&fCrvPulseColl_TopTS);
-      fVisManager->AddNode(crv_node[5]);
+  vm->SetTitleNode(new THeaderVisNode("HeaderVisNode", fHeaderBlock));
+
+  if (_showCRVOnly) {
+    TCrvView*    view[6];
+    TCrvVisNode* node;
+
+    for (int i=0; i<6; i++) {
+      view[i] = new TCrvView(i);
+      view[i]->SetTimeWindow(0, 1695);
     }
-    else {
-      TCalVisNode      *cal_node[2];
-      TTrkVisNode      *trk_node;
 
-      const mu2e::DiskCalorimeter  *dc;
+    node  = new TCrvVisNode("CrvVisNode#0", 0);
+    node->SetRecoPulsesCollection(&fCrvPulseColl_Right);
+    view[0]->AddNode(node);
+    
+    node = new TCrvVisNode("CrvVisNode#1", 1);
+    node->SetRecoPulsesCollection(&fCrvPulseColl_Left);
+    view[1]->AddNode(node);
+
+    node = new TCrvVisNode("CrvVisNode#2", 2);
+    node->SetRecoPulsesCollection(&fCrvPulseColl_TopDS);
+    view[2]->AddNode(node);
+
+    node = new TCrvVisNode("CrvVisNode#3", 3);
+    node->SetRecoPulsesCollection(&fCrvPulseColl_Dwnstrm);
+    view[3]->AddNode(node);
+
+    node = new TCrvVisNode("CrvVisNode#4", 4);
+    node->SetRecoPulsesCollection(&fCrvPulseColl_Upstrm);
+    view[4]->AddNode(node);
+
+    // '8' is not a typo...
+    node = new TCrvVisNode("CrvVisNode#5", 8);
+    node->SetRecoPulsesCollection(&fCrvPulseColl_TopTS);
+    view[5]->AddNode(node);
+
+    for (int i=0; i<6; i++) {
+      vm->AddView(view[i]);
+    }
+  }
+  else {
 //-----------------------------------------------------------------------------
 // parse the configuration module parameters
 //-----------------------------------------------------------------------------
-      int debug_level = _vmConfig.get<int>("debugLevel");
-      fVisManager->SetDebugLevel(debug_level);
-
-      int display_straw_digi_mc = _vmConfig.get<int>("displayStrawDigiMC");
-      fVisManager->SetDisplayStrawDigiMC(display_straw_digi_mc);
+    int debug_level = _vmConfig.get<int>("debugLevel");
+    vm->SetDebugLevel(debug_level);
+    
+    int display_straw_digi_mc = _vmConfig.get<int>("displayStrawDigiMC");
+    vm->SetDisplayStrawDigiMC(display_straw_digi_mc);
 //-----------------------------------------------------------------------------
 // do the geometry
 //-----------------------------------------------------------------------------
-      art::ServiceHandle<mu2e::GeometryService> geom;
+    art::ServiceHandle<mu2e::GeometryService> geom;
 
-      if (geom->hasElement<mu2e::DiskCalorimeter>()) {
-	mu2e::GeomHandle<mu2e::DiskCalorimeter> dc_handle;
-	dc = dc_handle.get();
+    mu2e::GeomHandle<mu2e::DiskCalorimeter> dc_handle;
+    const mu2e::DiskCalorimeter* dc = dc_handle.get();
 //-----------------------------------------------------------------------------
 // TCalVisNode: calorimeter, CaloCrystalHits and CaloCrystals
+// cal_node[0] : first  disk
+// cal_node[1] : second disk
 //-----------------------------------------------------------------------------
-	cal_node[0] = new TCalVisNode("CalVisNode#0", &dc->disk(0), 0);
-	cal_node[0]->SetListOfClusters(&fListOfClusters);
-	cal_node[0]->SetListOfCrystalHits(&fListOfCrystalHits);
-	cal_node[0]->SetTimeClusterColl(&fTimeClusterColl);
-	fVisManager->AddNode(cal_node[0]);
+    TCalView*         cal_view;
+    TCalVisNode*      cal_node[2];
 
-	cal_node[1] = new TCalVisNode("CalVisNode#1", &dc->disk(1), 1);
-	cal_node[1]->SetListOfClusters(&fListOfClusters);
-	cal_node[1]->SetListOfCrystalHits(&fListOfCrystalHits);
-	cal_node[1]->SetTimeClusterColl(&fTimeClusterColl);
-	fVisManager->AddNode(cal_node[1]);
-      }
-      else {
-	printf("[%s] >>> ERROR : DiskCalorimeter is not defined\n", oname);
-	dc = 0;
-      }
+    cal_view = new TCalView(0);
+    cal_node[0] = new TCalVisNode("CalVisNode#0", &dc->disk(0), 0);
+    cal_node[0]->SetListOfClusters(&fListOfClusters);
+    cal_node[0]->SetListOfCrystalHits(&fListOfCrystalHits);
+    cal_node[0]->SetTimeClusterColl(&fTimeClusterColl);
+    cal_view->AddNode(cal_node[0]);
+    vm->AddView(cal_view);
+      
+    cal_view = new TCalView(1);
+    cal_node[1] = new TCalVisNode("CalVisNode#1", &dc->disk(1), 1);
+    cal_node[1]->SetListOfClusters(&fListOfClusters);
+    cal_node[1]->SetListOfCrystalHits(&fListOfCrystalHits);
+    cal_node[1]->SetTimeClusterColl(&fTimeClusterColl);
+    cal_view->AddNode(cal_node[1]);
+    vm->AddView(cal_view);
 //-----------------------------------------------------------------------------
 // TrkVisNode: tracker, tracks and straw hits
+// add tracker node to two views - RZ and XY
 //-----------------------------------------------------------------------------
-      trk_node = new TTrkVisNode("TrkVisNode", fTracker, NULL);
-      trk_node->SetComboHitColl(&fShComboHitColl);
-      trk_node->SetStrawHitFlagColl(&fStrawHitFlagColl);
-      trk_node->SetTimeClusterColl(&fTimeClusterColl);
-      trk_node->SetKalRepPtrColl(&_kalRepPtrColl);
-      trk_node->SetStrawDigiMCColl(&_strawDigiMCColl);
-      fVisManager->AddNode(trk_node);
+    TTrkVisNode      *tnode;
+
+    tnode = new TTrkVisNode ("TrkVisNode", fTracker, NULL);
+
+    tnode->SetComboHitColl    (&fShComboHitColl  );
+    tnode->SetStrawHitFlagColl(&fStrawHitFlagColl);
+    tnode->SetTimeClusterColl (&fTimeClusterColl );
+    tnode->SetKalRepPtrColl   (&_kalRepPtrColl   );
+    tnode->SetStrawDigiMCColl (&_strawDigiMCColl );
 //-----------------------------------------------------------------------------
-// MC truth: StepPointMC's and something else - not entirely sure
+// XY view : tracker + calorimeter
 //-----------------------------------------------------------------------------
-      // TMcTruthVisNode  *mctr_node;
-      // mctr_node = new TMcTruthVisNode("McTruthVisNode");
-      // //      mctr_node->SetListOfHitsMcPtr(&_hits_mcptr);
-      // mctr_node->SetStepPointMCCollection(&_stepPointMCColl);
-      // mctr_node->SetSimParticlesWithHits(&_simParticlesWithHits);
-      // mctr_node->SetGenpColl(&_genParticleColl);
-      // fVisManager->AddNode(mctr_node);
-    }
+    TStnView* vxy = new TStnView(TStnView::kXY,-1,"XYView","XY View");
+    vxy->AddNode(tnode);
+    vxy->AddNode(cal_node[0]);
+    vxy->AddNode(cal_node[1]);
+    vm->AddView(vxy);
+//-----------------------------------------------------------------------------
+// RZ view : tracker only, so far
+//-----------------------------------------------------------------------------
+    TStnView* vrz = new TStnView(TStnView::kRZ,-1,"RZView","RZ View");
+    vrz->AddNode(tnode);
+    vm->AddView(vrz);
   }
+}
 
 //-----------------------------------------------------------------------------
 // get data from the event record
@@ -533,31 +561,30 @@ namespace mu2e {
 	mu2e::CrvRecoPulse                   icprc       = fCrvPulseColl->at(ic);
 	const mu2e::CRSScintillatorBarIndex &CRVBarIndex = icprc.GetScintillatorBarIndex();
 	
-	switch (getCRVSection(CRS->getBar(CRVBarIndex).id().getShieldNumber()))
-	  {
-	  case 0:
-	    fCrvPulseColl_Right->  push_back(icprc);
-	    break;
-	  case 1:
-	    fCrvPulseColl_Left->   push_back(icprc);
-	    break;
-	  case 2:
-	    fCrvPulseColl_TopDS->  push_back(icprc);
-	    break;
-	  case 3:
-	    fCrvPulseColl_Dwnstrm->push_back(icprc);
-	    break;
-	  case 4:
-	    fCrvPulseColl_Upstrm-> push_back(icprc);
-	    break;
-	  case 5:
-	  case 6:
-	  case 7:
-	    break;
-	  case 8:
-	    fCrvPulseColl_TopTS->push_back(icprc);
-	    break;
-	  }
+	switch (getCRVSection(CRS->getBar(CRVBarIndex).id().getShieldNumber())) {
+	case 0:
+	  fCrvPulseColl_Right->  push_back(icprc);
+	  break;
+	case 1:
+	  fCrvPulseColl_Left->   push_back(icprc);
+	  break;
+	case 2:
+	  fCrvPulseColl_TopDS->  push_back(icprc);
+	  break;
+	case 3:
+	  fCrvPulseColl_Dwnstrm->push_back(icprc);
+	  break;
+	case 4:
+	  fCrvPulseColl_Upstrm-> push_back(icprc);
+	  break;
+	case 5:
+	case 6:
+	case 7:
+	  break;
+	case 8:
+	  fCrvPulseColl_TopTS->push_back(icprc);
+	  break;
+	}
       }
 								
       printf(">>> Section-collections filled\n");
@@ -828,40 +855,40 @@ namespace mu2e {
     Hep3Vector          pos1, mom1, pos2, mom2;
 
     printf("[%s] RUN: %10i EVENT: %10i\n", oname, Evt.run(), Evt.event());
+//-----------------------------------------------------------------------------
+// init VisManager - failed to do it in beginJob - what is the right place for doing it?
+// get event data and initialize data blocks
+//-----------------------------------------------------------------------------
+    if (firstCall == 1) {
+      firstCall = 0;
+      InitVisManager();
+    }
+
+    TModule::fDump->SetEvent(Evt);
+    rc = getData(&Evt);
 
     if (_showCRVOnly) {
-	if (firstCall == 1) {
-	  firstCall = 0;
-	  InitVisManager();
-	}
-	TModule::fDump->SetEvent(Evt);
-
-	rc = getData(&Evt);
-
-	printf("Line 856 \n");
-
-	fCanvas->cd(0);
-	fCanvas->Clear();
+      fCanvas->cd(0);
+      fCanvas->Clear();
 //-----------------------------------------------------------------------------
 // Draw the frame
 //-----------------------------------------------------------------------------
-	double plotLimits(850.);
-	fCanvas->DrawFrame(-plotLimits, -plotLimits, plotLimits, plotLimits);
+      double plotLimits(850.);
+      fCanvas->DrawFrame(-plotLimits, -plotLimits, plotLimits, plotLimits);
 
-	fCanvas->Modified();
-	fCanvas->Update();
-	fVisManager->SetEvent(Evt);
-	printf("Line 869: Passed SetEvent \n");
-	fVisManager->DisplayEvent();
-	// go into interactive mode, till '.q'
-	TModule::filter(Evt);
+      fCanvas->Modified();
+      fCanvas->Update();
+      fVisManager->SetEvent(Evt);
+      printf("Line 869: Passed SetEvent \n");
+      fVisManager->DisplayEvent();
+      // go into interactive mode, till '.q'
+      TModule::filter(Evt);
 //-----------------------------------------------------------------------------
 // memory cleanup
 //-----------------------------------------------------------------------------
-	if (graph) delete graph;
-
-	return true;
-      }
+      if (graph) delete graph;
+      return true;
+    }
 //-----------------------------------------------------------------------------
 // Geometry of the tracker envelope.
 //-----------------------------------------------------------------------------
@@ -869,33 +896,18 @@ namespace mu2e {
 
     // Tracker calibration object.
     //    mu2e::ConditionsHandle<mu2e::StrawResponse> srep("ignored");
-//-----------------------------------------------------------------------------
-// init VisManager - failed to do it in beginJob - what is the right place for doing it?
-//-----------------------------------------------------------------------------
-    if (firstCall == 1) {
-      firstCall = 0;
-      InitVisManager();
-    }
-    TModule::fDump->SetEvent(Evt);
-//-----------------------------------------------------------------------------
-// get event data and initialize data blocks
-//-----------------------------------------------------------------------------
-    rc = getData(&Evt);
 
     if (rc < 0) {
       printf(">>> [%s] ERROR: not all data products present, BAIL OUT\n", oname);
       return true;
     }
-
+    
     Init(&Evt);
 //-----------------------------------------------------------------------------
 // Construct an object that ties together all of the simulated particle and hit info.
-//-----------------------------------------------------------------------------
-    art::ServiceHandle<mu2e::GeometryService> geom;
-
-//-----------------------------------------------------------------------------
 // is he finding the first particle?
 //-----------------------------------------------------------------------------
+    art::ServiceHandle<mu2e::GeometryService> geom;
     SimParticleCollection::key_type key(1);
 
     const StepPointMC*    firstStep(0);

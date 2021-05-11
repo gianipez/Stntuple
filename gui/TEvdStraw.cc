@@ -29,8 +29,9 @@
 #include "Stntuple/gui/TEvdStrawHit.hh"
 #include "Stntuple/gui/TStnVisManager.hh"
 
-ClassImp(TEvdStraw)
+ClassImp(stntuple::TEvdStraw)
 
+namespace stntuple {
 //_____________________________________________________________________________
 TEvdStraw::TEvdStraw(): TObject() {
   fListOfHits = new TObjArray();
@@ -74,11 +75,10 @@ TEvdStraw::~TEvdStraw() {
 void TEvdStraw::Paint(Option_t* option) {
   // paints one disk (.. or vane, in the past), i.e. section
 
-  TVisManager* vm = TVisManager::Instance();
-  const char* view = vm->GetCurrentView();
+  int view = TVisManager::Instance()->GetCurrentView()->Type();
 
-  if      (strstr(view,"trkxy" ) != 0) PaintXY (option);
-  else if (strstr(view,"trkrz" ) != 0) PaintRZ (option);
+  if      (view == TStnView::kXY) PaintXY (option);
+  else if (view == TStnView::kRZ) PaintRZ (option);
   else {
     // what is the default?
     //    Warning("Paint",Form("Unknown option %s",option));
@@ -169,4 +169,6 @@ void TEvdStraw::Clear(const char* Opt) {
 //-----------------------------------------------------------------------------
 void TEvdStraw::Print(const char* Opt) const {
   printf("[TEvdStraw::Print] ID:%5i NHits: 2i\n",fNHits);
+}
+
 }

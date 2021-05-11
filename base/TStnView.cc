@@ -3,63 +3,73 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "TObjArray.h"
 
-#include "Stntuple/gui/TStnVisNode.hh"
+#include "Stntuple/base/TStnView.hh"
+#include "Stntuple/base/TVisNode.hh"
+#include "Stntuple/base/TVisManager.hh"
 
-#include "Stntuple/gui/TStnFrame.hh"
-#include "Stntuple/gui/TTrkRZView.hh"
-#include "Stntuple/gui/TStnVisManager.hh"
+ClassImp(TStnView)
 
-ClassImp(TTrkRZView)
+//-----------------------------------------------------------------------------
+TStnView::TStnView(int Type, int Index): TNamed("","") {
+  fType        = Type;
+  fIndex       = Index;
+  fCenter      = nullptr;
+  fListOfNodes = nullptr;
+  fDebugLevel  = 0;
 
-//_____________________________________________________________________________
-TTrkRZView::TTrkRZView() : TStnView("TrkRZView","TrkRZView") {
-  fCenter = new TMarker(0.,0,kPlus);
+  fXAxis       = nullptr;
+  fYAxis       = nullptr;
+}
+
+//-----------------------------------------------------------------------------
+TStnView::TStnView(int Type, int Index, const char* Name, const char* Title): TNamed(Name,Title) {
+  fType        = Type;
+  fIndex       = Index;
+
+  fCenter      = new TMarker(0.,0,kPlus);
   fCenter->SetMarkerColor(kBlue);
   fCenter->SetMarkerSize(3.);
+
+  fXAxis = new TGaxis(0.05,0.05,0.95,0.05,0.,1,512,"+");
+  fYAxis = new TGaxis(0.05,0.05,0.05,0.95,0.,1,512,"+");
+
+  fXAxis->SetLabelFont(52);
+  fXAxis->SetLabelSize(0.02);
+
+  fYAxis->SetLabelFont(52);
+  fYAxis->SetLabelSize(0.02);
+
+  fListOfNodes = new TObjArray();
 }
 
-//-----------------------------------------------------------------------------
-TTrkRZView::~TTrkRZView() {
+//_____________________________________________________________________________
+TStnView::~TStnView() {
   delete fCenter;
+  
+  fListOfNodes->Delete();
+  delete fListOfNodes;
+
+  delete fXAxis;
+  delete fYAxis;
 }
 
 //-----------------------------------------------------------------------------
-void TTrkRZView::Paint(Option_t* Option) {
-  //
-  TStnVisManager* vm = TStnVisManager::Instance();
-
-  vm->SetCurrentView("trkrz");
-
-  fCenter->Paint(Option);
-
-  Int_t n = vm->GetNNodes();
-  for (int i=0; i<n; i++) {
-    TVisNode* node =  vm->GetNode(i);
-    node->Paint(Option);
-  }
-  gPad->Modified();
-}
-
-//-----------------------------------------------------------------------------
-Int_t TTrkRZView::DistancetoPrimitive(Int_t px, Int_t py) {
+Int_t TStnView::DistancetoPrimitive(Int_t px, Int_t py) {
   //
 
-  Int_t min_dist = 9999;
-  Int_t dist;
+  int dist, min_dist(9999);
 
-  TStnVisManager* vm = TStnVisManager::Instance();
+  TVisManager* vm = TVisManager::Instance();
 
-  vm->SetClosestObject(NULL,9999);
-  vm->SetClosestDetElement(NULL,9999);
+  vm->SetClosestObject    (nullptr,9999);
+  vm->SetClosestDetElement(nullptr,9999);
 //-----------------------------------------------------------------------------
 // find closest object and the corresponding distance
 //-----------------------------------------------------------------------------
-//  TDetectorElement::SetClosest(NULL,9999);
-
-  Int_t n = vm->GetNNodes();
+  Int_t n = GetNNodes();
   for (int i=0; i<n; i++) {
-    TStnVisNode* node = (TStnVisNode*) vm->GetNode(i);
-    dist = node->DistancetoPrimitiveXY(px,py);
+    TVisNode* node =  GetNode(i);
+    dist = node->DistancetoPrimitive(px,py);
     if (dist < min_dist) {
       min_dist = dist;
 				// closest object may be one of the managed by
@@ -84,22 +94,25 @@ Int_t TTrkRZView::DistancetoPrimitive(Int_t px, Int_t py) {
   return vm->GetMinDist();
 }
 
-
-//_____________________________________________________________________________
-void TTrkRZView::ExecuteEvent(Int_t event, Int_t px, Int_t py) {
+//-----------------------------------------------------------------------------
+void TStnView::ExecuteEvent(Int_t event, Int_t px, Int_t py) {
   //
 
-  TStnVisManager* vm = TStnVisManager::Instance();
-  
-  if (vm->DebugLevel() > 0) printf(" >>>>>>  TTrkRZView::ExecuteEvent event = %i px:%4i py:%4i\n",
-				   event,px,py);
+  TVisManager* vm = TVisManager::Instance();
+
+  if (vm->DebugLevel() > 0) {
+    printf(" >>>>>>  TStnView::ExecuteEvent event = %i px:%4i py:%4i\n",event,px,py);
+  }
+//-----------------------------------------------------------------------------
+// if closest object has been identified, execute its action and leave
+//-----------------------------------------------------------------------------
   TObject* o = vm->GetClosestObject();
   if (o && (o != this) && (vm->GetMinDist() < 5) ) {
     o->ExecuteEvent(event,px,py);
     return;
   }
 //-----------------------------------------------------------------------------
-// view...
+// no closest object, continue hovering over the view
 //-----------------------------------------------------------------------------
   Axis_t x, y, x1, x2, y1, y2, dx, dy;
   Axis_t  x1new(0), x2new(0), y1new(0), y2new(0);
@@ -121,7 +134,7 @@ void TTrkRZView::ExecuteEvent(Int_t event, Int_t px, Int_t py) {
 
   case kButton1Down:
 
-    if (vm->DebugLevel() > 0) printf(" TTrkRZView::ExecuteEvent  kButton1Down\n");
+    if (vm->DebugLevel() > 0) printf(" TStnView::ExecuteEvent  kButton1Down\n");
 
     fPx1 = px;
     fPy1 = py;
@@ -165,7 +178,7 @@ void TTrkRZView::ExecuteEvent(Int_t event, Int_t px, Int_t py) {
     gPad->Update();
     break;
   case kKeyPress:
-    if (vm->DebugLevel() > 0) printf(" TTrkRZView::ExecuteEvent kKeyPress: px=%3i py:%i\n",px,py);
+    if (vm->DebugLevel() > 0) printf(" TStnView::ExecuteEvent kKeyPress: px=%3i py:%i\n",px,py);
 
     if (px == py) {
       gPad->GetRange(x1,y1,x2,y2);
@@ -189,19 +202,19 @@ void TTrkRZView::ExecuteEvent(Int_t event, Int_t px, Int_t py) {
     }
     break;
   case kButton2Up:
-    if (vm->DebugLevel() > 0) printf(" TTrkRZView::ExecuteEvent kButton2Up\n");
+    if (vm->DebugLevel() > 0) printf(" TStnView::ExecuteEvent kButton2Up\n");
     break;
   case kButton2Down:
-    if (vm->DebugLevel() > 0) printf("TTrkRZView::ExecuteEvent  kButton2Down\n");
+    if (vm->DebugLevel() > 0) printf("TStnView::ExecuteEvent  kButton2Down\n");
     break;
   case kButton3Up:
-    if (vm->DebugLevel() > 0) printf(" TTrkRZView::ExecuteEvent kButton3Up\n");
+    if (vm->DebugLevel() > 0) printf(" TStnView::ExecuteEvent kButton3Up\n");
     break;
   case kButton3Down:
-    if (vm->DebugLevel() > 0) printf(" TTrkRZView::ExecuteEvent kButton3Down\n");
+    if (vm->DebugLevel() > 0) printf(" TStnView::ExecuteEvent kButton3Down\n");
     break;
   case kButton1Up:
-    printf(" TTrkRZView::ExecuteEvent kButton1Up\n");
+    printf(" TStnView::ExecuteEvent kButton1Up\n");
 //-----------------------------------------------------------------------------
 // open new window only if something has really been selected (it is a 
 // rectangle, but not a occasional click)
@@ -223,14 +236,14 @@ void TTrkRZView::ExecuteEvent(Int_t event, Int_t px, Int_t py) {
 	y1 = y2;
 	y2 = y;
       }
-      vm->OpenTrkRZView(this,(int)x1,(int)y1,(int)x2,(int)y2);
+      vm->OpenView(this,(int)x1,(int)y1,(int)x2,(int)y2);
     }
     break;
   case kArrowKeyPress: // 25
 //-----------------------------------------------------------------------------
-// arrow key released
+// arrow key pressed 
 //-----------------------------------------------------------------------------
-    if (vm->DebugLevel() > 0) printf(" ARROW key pressed  = %3i  py = %3i\n",px,py);
+    if (vm->DebugLevel() > 0) printf("TStnView: ARROW key pressed  = %3i  py = %3i\n",px,py);
     fCursorX = px;
     fCursorY = py;
 //     gPad->GetRange(x1,y1,x2,y2);
@@ -241,7 +254,7 @@ void TTrkRZView::ExecuteEvent(Int_t event, Int_t px, Int_t py) {
 //-----------------------------------------------------------------------------
 // arrow key released
 //-----------------------------------------------------------------------------
-    if (vm->DebugLevel() > 0) printf(" ARROW key  releasedx = %3i  py = %3i\n",px,py);
+    if (vm->DebugLevel() > 0) printf("TStnView: ARROW key released px = %3i  py = %3i\n",px,py);
 
     gPad->GetRange(x1,y1,x2,y2);
 
@@ -276,50 +289,13 @@ void TTrkRZView::ExecuteEvent(Int_t event, Int_t px, Int_t py) {
     break;
   }
 
-//   if (event != kMouseLeave) {                  // signal was already emitted for this event
-//     DrawEventStatus(event, px, py);
-//   }
-}
-
-
-//-----------------------------------------------------------------------------
-//
-//-----------------------------------------------------------------------------
-// void TTrkRZView::DrawEventStatus(event,px,py) {
-
-//   if (!TestBit(kShowEventStatus) || !selected) return;
- 
-//   TVirtualPad* savepad;
-//   savepad = gPad;
-
-//   gPad = GetSelectedPad();
- 
-//   fCanvasImp->SetStatusText(selected->GetTitle(),0);
-//   fCanvasImp->SetStatusText(selected->GetName(),1);
-
-//   snprintf(atext, kTMAX, "%d,%d", px, py);
-
-//   fCanvasImp->SetStatusText(atext,2);
-//   fCanvasImp->SetStatusText(selected->GetObjectInfo(px,py),3);
-//}
-
-//-----------------------------------------------------------------------------
-void    TTrkRZView::SetStations(int I1, int I2) {
-  TStnVisManager* vm = TStnVisManager::Instance();
-
-  vm->SetStations(I1, I2);
+  //   if (event != kMouseLeave) {                  // signal was already emitted for this event
+  //     DrawEventStatus(event, px, py);
+  //   }
 }
 
 //-----------------------------------------------------------------------------
-void    TTrkRZView::SetTimeCluster(int I) {
-  TStnVisManager* vm = TStnVisManager::Instance();
-
-  vm->SetTimeCluster(I);
-}
-
-
-//-----------------------------------------------------------------------------
-char* TTrkRZView::GetObjectInfo(Int_t Px, Int_t Py) const {
+char* TStnView::GetObjectInfo(Int_t Px, Int_t Py) const {
   // need to find the active frame:
 
   double xx, yy;
@@ -332,5 +308,103 @@ char* TTrkRZView::GetObjectInfo(Int_t Px, Int_t Py) const {
   sprintf(info,"Z=%9.3f R=%8.3f",xx,yy);
 
   return info;
-  
 }
+
+//-----------------------------------------------------------------------------
+void TStnView::Paint(Option_t* Option) {
+  //
+  TVisManager* vm = TVisManager::Instance();
+
+  vm->SetCurrentView(this);
+
+  fCenter->Paint(Option);
+//-----------------------------------------------------------------------------
+// draw nodes
+//-----------------------------------------------------------------------------
+  
+  Int_t n = GetNNodes();
+  for (int i=0; i<n; i++) {
+    TVisNode* node = GetNode(i);
+    node->Paint(Option);
+  }
+//-----------------------------------------------------------------------------
+// pad dimensions in real world coordinates - draw axes
+//-----------------------------------------------------------------------------
+  double x1 = gPad->GetX1();
+  double x2 = gPad->GetX2();
+  double y1 = gPad->GetY1();
+  double y2 = gPad->GetY2();
+
+  double xmin = x1+(x2-x1)*0.05;
+  double xmax = x1+(x2-x1)*0.95;
+  double ymin = y1+(y2-y1)*0.05;
+  double ymax = y1+(y2-y1)*0.95;
+
+  fXAxis->SetX1(xmin);
+  fXAxis->SetX2(xmax);
+  fXAxis->SetY1(ymin);
+  fXAxis->SetY2(ymin);
+
+  fXAxis->SetWmin(xmin);
+  fXAxis->SetWmax(xmax);
+  fXAxis->Paint(Option);
+
+  fYAxis->SetX1(xmin);
+  fYAxis->SetX2(xmin);
+  fYAxis->SetY1(ymin);
+  fYAxis->SetY2(ymax);
+
+  fYAxis->SetWmin(ymin);
+  fYAxis->SetWmax(ymax);
+
+  fXAxis->Paint("");
+  fYAxis->Paint("");
+
+  gPad->Modified();
+}
+
+//-----------------------------------------------------------------------------
+void    TStnView::SetStations(int I1, int I2) {
+  TVisManager* vm = TVisManager::Instance();
+
+  vm->SetStations(I1, I2);
+}
+
+//-----------------------------------------------------------------------------
+void    TStnView::SetTimeCluster(int I) {
+  TVisManager* vm = TVisManager::Instance();
+
+  vm->SetTimeCluster(I);
+}
+
+//-----------------------------------------------------------------------------
+void    TStnView::SetTimeWindow(float TMin, float TMax) {
+  fTMin = TMin;
+  fTMax = TMax;
+}
+
+//-----------------------------------------------------------------------------
+void TStnView::SetDebugLevel(int Level) {
+  fDebugLevel = Level;
+}
+
+//-----------------------------------------------------------------------------
+void TStnView::Print(Option_t* Option) const {
+
+  TStnView* v = (TStnView*) this;
+
+  printf("TStnView: %s\n",GetName());
+
+  printf(" fType = %i fIndex = %i\n",fType,fIndex);
+  printf(" fPx1 fPy1 fPx2 fPy2 = %5i %5i %5i %5i\n",fPx1,fPy1,fPx2,fPy2);
+  
+  int n = v->GetNNodes();
+
+  printf("--------------------- nodes\n");
+  for (int i=0; i<n; i++) {
+    TVisNode* n = v->GetNode(i);
+    printf(" i, node: %3i %-10s\n",i,n->GetName());
+    n->Print();
+  }
+}
+

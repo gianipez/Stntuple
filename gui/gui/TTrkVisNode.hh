@@ -28,12 +28,17 @@ namespace mu2e {
 };
 #endif
 
-#include "Stntuple/base/TVisNode.hh"
+#include "Stntuple/gui/TStnVisNode.hh"
 
 class TStnTrackBlock;
-class TEvdStrawTracker;
 
-class TTrkVisNode: public TVisNode {
+namespace stntuple {
+  class TEvdStrawTracker;
+  class TEvdStrawHit;
+  class TEvdTrack;
+}
+
+class TTrkVisNode: public TStnVisNode {
 public:
   enum {
     kPickHits     = 0,
@@ -52,7 +57,7 @@ protected:
   TStnTrackBlock*   fTrackBlock;
   Color_t           fTrackColor;
 
-  TEvdStrawTracker* fTracker;
+  stntuple::TEvdStrawTracker* fTracker;
 
   TArc*                     fArc;
   const mu2e::TimeCluster*  fTimeCluster;
@@ -79,6 +84,12 @@ public:
 //-----------------------------------------------------------------------------
   TObjArray* GetListOfTracks() { return fListOfTracks; }
   Color_t    GetTrackColor  () { return fTrackColor;   }
+
+  int        GetNTracks()      { return fListOfTracks->GetEntriesFast(); }
+  int        GetNHits  ()      { return fListOfStrawHits->GetEntriesFast(); }
+
+  stntuple::TEvdStrawHit* GetHit  (int I) { return (stntuple::TEvdStrawHit*) fListOfStrawHits->At(I); }
+  stntuple::TEvdTrack*    GetTrack(int I) { return (stntuple::TEvdTrack*)    fListOfTracks->At(I); }
 
   const mu2e::ComboHitCollection* GetComboHitColl() { 
     return *fComboHitColl; 
@@ -118,7 +129,6 @@ public:
   void  SetPickMode   (Int_t Mode) { fPickMode    = Mode; }
 
   void  SetDisplayBackgroundHits(Int_t Mode) { fDisplayBackgroundHits = Mode; }
-
 //-----------------------------------------------------------------------------
 // overloaded methods of TVisNode
 //-----------------------------------------------------------------------------
@@ -126,12 +136,9 @@ public:
 //-----------------------------------------------------------------------------
 // overloaded methods of TObject
 //-----------------------------------------------------------------------------
-  virtual void  Paint   (Option_t* option = "");
-          void  PaintXY (Option_t* option = "");
-          void  PaintRZ (Option_t* option = "");
-          void  PaintCal(Option_t* option = "");
+  virtual void  PaintXY (Option_t* option = "");
+  virtual void  PaintRZ (Option_t* option = "");
 
-  virtual Int_t DistancetoPrimitive  (Int_t px, Int_t py);
   virtual Int_t DistancetoPrimitiveXY(Int_t px, Int_t py);
   virtual Int_t DistancetoPrimitiveRZ(Int_t px, Int_t py);
 

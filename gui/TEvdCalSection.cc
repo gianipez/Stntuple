@@ -25,6 +25,7 @@
 #include "Stntuple/gui/TEvdCrystal.hh"
 #include "Stntuple/gui/TEvdCalSection.hh"
 #include "Stntuple/gui/TStnVisManager.hh"
+#include "Stntuple/gui/TCalView.hh"
 
 //#include "CalorimeterGeom/inc/VaneCalorimeter.hh"
 #include "CalorimeterGeom/inc/Crystal.hh"
@@ -37,58 +38,16 @@ ClassImp(TEvdCalSection)
 //_____________________________________________________________________________
 TEvdCalSection::TEvdCalSection(const mu2e::Disk* Disk, int SectionID): TObject() {
 
-  fDisk        = Disk;
-  fSectionID   = SectionID;
+  fDisk           = Disk;
+  fSectionID      = SectionID;
 
   art::ServiceHandle<mu2e::GeometryService> geom;
 //-----------------------------------------------------------------------------
 // draw vanes or disks
 //-----------------------------------------------------------------------------
-//  int nv(0);
-  //  TBox* box;
-
   double rmin, rmax;
-  //  double rmin, rmax, x1,y1,x2,y2;
 
- //  if (geom->hasElement<mu2e::VaneCalorimeter>()) {
-//     //    mu2e::GeomHandle<mu2e::VaneCalorimeter> vc;
-//     //    nv = vc->nVane();
-
-// //     for (int iv=0; iv<nv; iv++) {
-// //       const mu2e::Vane* vane = &vc->vane(iv);
-// //       rmin = vane->innerRadius();
-// //       rmax = vane->outerRadius();
-// //       if(iv == 3) {			// top
-// // 	x1 = -50;
-// // 	y1 = rmin;
-// // 	x2 = 50;
-// // 	y2 = rmax;
-// //       }
-// //       else if (iv == 0) { // left
-// // 	x1 = -rmax;;
-// // 	y1 = -50;
-// // 	x2 = -rmin;
-// // 	y2 = +50;
-// //       }
-// //       else if (iv == 1) {		// bottom
-// // 	x1 = -50;
-// // 	y1 = -rmax;
-// // 	x2 = +50; 
-// // 	y2 = -rmin;
-// //       }
-// //       else if (iv == 2) {		// right
-// // 	x1 = rmin;
-// // 	y1 = -50;
-// // 	x2 = rmax;
-// // 	y2 = +50;
-// //       }
-
-// //       box = new TBox(x1,y1,x2,y2);
-// //       fListOfBoxes->Add(box);
-// //     }
-//   }
-//   else
-    if(geom->hasElement<mu2e::DiskCalorimeter>()) {
+  if (geom->hasElement<mu2e::DiskCalorimeter>()) {
 
     rmin = fDisk->innerRadius();
 
@@ -97,7 +56,7 @@ TEvdCalSection::TEvdCalSection(const mu2e::Disk* Disk, int SectionID): TObject()
     fEllipse[0]->SetFillStyle(0);
 
     rmax = fDisk->outerRadius();
-
+    
     fEllipse[1] = new TEllipse(0.,0.,rmax,rmax,0.,360.,0);
     fEllipse[1]->SetLineColor(kGreen);
     fEllipse[1]->SetFillStyle(0);
@@ -115,14 +74,14 @@ void TEvdCalSection::Paint(Option_t* option) {
   // paints one disk (.. or vane, in the past), i.e. section
 
   //  char  v[100];
-  int   iv;
+  //  int   iv;
 				// parse option list
-  const char* view = TVisManager::Instance()->GetCurrentView();
+  int view = TVisManager::Instance()->GetCurrentView()->Type();
 
-  if      (strstr(view,"trkxy" ) != 0) PaintXY (option);
-  if      (strstr(view,"cal"   ) != 0) {
-    sscanf(view,"cal,%i",&iv);
-    if (iv == fSectionID) {
+  if      (view == TStnView::kXY ) PaintXY (option);
+  else if (view == TStnView::kCal) {
+    int index = TVisManager::Instance()->GetCurrentView()->Index();
+    if (index == fSectionID) {
       PaintCal(option);
     }
   }

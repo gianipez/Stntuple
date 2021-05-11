@@ -14,6 +14,8 @@ namespace mu2e {
   class Panel;
 };
 
+namespace stntuple {
+
 class TEvdPlane;
 class TEvdStraw;
 
@@ -64,8 +66,8 @@ public:
 
   //  virtual void   Print(const char* Opt = "") const ; // **MENU**
 
-  ClassDef(TEvdPanel,0)
+  ClassDef(stntuple::TEvdPanel,0)
 };
 
-
+}
 #endif

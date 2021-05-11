@@ -52,8 +52,9 @@
 
 #include "CLHEP/Vector/ThreeVector.h"
 
-ClassImp(TEvdTrack)
+ClassImp(stntuple::TEvdTrack)
 
+namespace stntuple {
 TEllipse* TEvdTrack::fgEllipse(0);
 
 //-----------------------------------------------------------------------------
@@ -94,19 +95,17 @@ TEvdTrack::~TEvdTrack() {
 void TEvdTrack::Paint(Option_t* Option) {
   const char oname[] = "TEvdTrack::Paint";
 
-  TVisManager* vm = TVisManager::Instance();
+  int view = TVisManager::Instance()->GetCurrentView()->Type();
 
-  const char* view = vm->GetCurrentView();
-
-  if      (strstr(view,"trkxy" ) != 0) PaintXY(Option);
-  else if (strstr(view,"trkrz" ) != 0) PaintRZ(Option);
-  else if (strstr(view,"cal"   ) != 0) {
+  if      (view == TStnView::kXY ) PaintXY (Option);
+  else if (view == TStnView::kRZ ) PaintRZ (Option);
+  else if (view == TStnView::kCal) {
 //-----------------------------------------------------------------------------
 // calorimeter-specific view: do not draw tracks
 //-----------------------------------------------------------------------------
   }
   else {
-    printf("[%s] >>> ERROR: unknown view: %s, DO NOTHING\n",oname,view);
+    printf("[%s] >>> ERROR: unknown view: %i, DO NOTHING\n",oname,view);
   }
 
   gPad->Modified();
@@ -321,4 +320,5 @@ void TEvdTrack::Print(Option_t* Opt) const {
 // 	   hit->energyDepTotal(),
 // 	   hit->numberOfROIdsUsed());
 //   }
+}
 }

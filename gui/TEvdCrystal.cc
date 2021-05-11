@@ -68,21 +68,16 @@ void TEvdCrystal::Paint(Option_t* Option) {
 
   //  int   iv;
 
-  const char* view = TVisManager::Instance()->GetCurrentView();
+  int view = TVisManager::Instance()->GetCurrentView()->Type();
 
-  if      (strstr(view,"trkxy" ) != 0) {
-    PaintXY(Option);
-  }
-  if      (strstr(view,"cal"   ) != 0) {
-//     sscanf(view,"cal,%i",&iv);
-//     if (iv == fSectionNumber) {
+  if      (view == TStnView::kXY ) PaintXY(Option);
+  else if (view == TStnView::kCal) {
     PaintCal(Option);
-    //    }
   }
   else {
-    printf("[%s] >>> ERROR: unknown view: %s, DO NOTHING\n",oname,view);
+    printf("[%s] >>> ERROR: unknown view: %i, DO NOTHING\n",oname,view);
   }
-
+  
   gPad->Modified();
 }
 

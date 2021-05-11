@@ -137,12 +137,12 @@ TEvdCrvBar::~TEvdCrvBar() {
 //-----------------------------------------------------------------------------
 void TEvdCrvBar::Paint(Option_t* Option) {
 
-	const char* view = TVisManager::Instance()->GetCurrentView();
+  int type = TVisManager::Instance()->GetCurrentView()->Type();
 
-	if (strstr(view, "crv") != 0)
-		PaintCrv(Option);
-	
-	gPad->Modified();
+  if (type == TStnView::kCrv) {
+    PaintCrv(Option);
+    gPad->Modified();
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -151,124 +151,117 @@ void TEvdCrvBar::PaintXY(Option_t* Option) {
 
 //-----------------------------------------------------------------------------
 void TEvdCrvBar::PaintCrv(Option_t* Option) {
-	//mu2e::GeomHandle< mu2e::CosmicRayShield > CRS;
-	//const mu2e::CRSScintillatorBar bar = CRS->getBar(barIndex);
-	//const CLHEP::Hep3Vector *pos;
-	//pos = &bar.getPosition();
-
-	//double x1, x2, y1, y2;
-	//
-	//gPad->GetRange(x1, y1, x2, y2);
-
-	////Draw bars only within the visible range of the window
-	//if ((pos->x() > x1) && (pos->x() < x2) && (pos->y() > y1) && (pos->y() > y2))
-	//{
-		sipm[0]->Paint(); //Draw SiPMs
-		sipm[1]->Paint();
-		sipm[2]->Paint();
-		sipm[3]->Paint();
-
-		fBox->Paint("L"); //Draw CrvBar with outline
-	//}
+  //mu2e::GeomHandle< mu2e::CosmicRayShield > CRS;
+  //const mu2e::CRSScintillatorBar bar = CRS->getBar(barIndex);
+  //const CLHEP::Hep3Vector *pos;
+  //pos = &bar.getPosition();
+  
+  //double x1, x2, y1, y2;
+  //
+  //gPad->GetRange(x1, y1, x2, y2);
+  
+  ////Draw bars only within the visible range of the window
+  //if ((pos->x() > x1) && (pos->x() < x2) && (pos->y() > y1) && (pos->y() > y2))
+  //{
+  sipm[0]->Paint(); //Draw SiPMs
+  sipm[1]->Paint();
+  sipm[2]->Paint();
+  sipm[3]->Paint();
+  
+  fBox->Paint("L"); //Draw CrvBar with outline
 }
 
 
 //_____________________________________________________________________________
 Int_t TEvdCrvBar::DistancetoPrimitive(Int_t px, Int_t py) {
-	Int_t dist = 9999;
+  Int_t dist = 9999;
 
-	static TVector3 global;
+  static TVector3 global;
 	//   static TVector3 local;
 
 	//   Double_t    dx1, dx2, dy1, dy2, dx_min, dy_min, dr;
-
-	global.SetXYZ(gPad->AbsPixeltoX(px), gPad->AbsPixeltoY(py), 0);
-
-	return dist;
+  
+  global.SetXYZ(gPad->AbsPixeltoX(px), gPad->AbsPixeltoY(py), 0);
+  
+  return dist;
 }
 
 //_____________________________________________________________________________
 Int_t TEvdCrvBar::DistancetoPrimitiveXY(Int_t px, Int_t py) {
 
-	Int_t dist = 9999;
+  Int_t dist = 9999;
 
-	static TVector3 global;
-	//   static TVector3 local;
-
-	//   Double_t    dx1, dx2, dy1, dy2, dx_min, dy_min, dr;
-
-	global.SetXYZ(gPad->AbsPixeltoX(px), gPad->AbsPixeltoY(py), 0);
-
-	return dist;
+  static TVector3 global;
+  //   static TVector3 local;
+  
+  //   Double_t    dx1, dx2, dy1, dy2, dx_min, dy_min, dr;
+  
+  global.SetXYZ(gPad->AbsPixeltoX(px), gPad->AbsPixeltoY(py), 0);
+  
+  return dist;
 }
 
 //_____________________________________________________________________________
 Int_t TEvdCrvBar::DistancetoPrimitiveRZ(Int_t px, Int_t py) {
-	return 9999;
+  return 9999;
 }
 
 //_____________________________________________________________________________
 void TEvdCrvBar::AddPulse(const mu2e::CrvRecoPulse &BarPulse, int SiPM) {
-        const mu2e::CrvRecoPulse *barPulsePtr;
-	barPulsePtr = &BarPulse;
-	
-	sipmPulses[SiPM].push_back(barPulsePtr);
+  const mu2e::CrvRecoPulse *barPulsePtr;
+  barPulsePtr = &BarPulse;
+  
+  sipmPulses[SiPM].push_back(barPulsePtr);
 }
 
-//_____________________________________________________________________________
+//-----------------------------------------------------------------------------
 void TEvdCrvBar::Clear(Option_t* Opt) {
 	
-	for (int i = 0; i < 4; i++)
-	{
-		sipm[i]->SetFillColor(kWhite); //Return to white
-		sipmPulses[i].clear(); //Remove associated pulses
-	}
-	//fNHits = 0;
-	//fEnergy = 0.;
+  for (int i = 0; i < 4; i++) {
+    sipm[i]->SetFillColor(kWhite); //Return to white
+    sipmPulses[i].clear(); //Remove associated pulses
+  }
 }
 
-const mu2e::CrvRecoPulse* TEvdCrvBar::lastPulseInWindow(int SiPM) const 
-{
-	const mu2e::CrvRecoPulse* tempPulse = 0; //Create a pointer to a 'null' pulse
 
-	for (unsigned int i = 0; i < sipmPulses[SiPM].size(); i++)
-	{
-		// !!!!! THIS ASSUMES THE PULSES ARE ORGANIZED BY TIME !!!!!
-		//					And they are...
+//-----------------------------------------------------------------------------
+const mu2e::CrvRecoPulse* TEvdCrvBar::lastPulseInWindow(int SiPM) const {
+  const mu2e::CrvRecoPulse* tempPulse = 0; //Create a pointer to a 'null' pulse
+  
+  for (unsigned int i = 0; i < sipmPulses[SiPM].size(); i++) {
+    // !!!!! THIS ASSUMES THE PULSES ARE ORGANIZED BY TIME !!!!!
+    //					And they are...
+    
+    //Skip until we get to a pulse in the time window
+    if (sipmPulses[SiPM][i]->GetPulseTime() < ftimeLow || sipmPulses[SiPM][i]->GetPEs() < fthreshold)
+      continue;
+    //if the pulse occurs beyond the time window then break and return the previous pulse, if not then set the buffer (lastpulse)
+    if (sipmPulses[SiPM][i]->GetPulseTime() > ftimeHigh)
+      break;
+    
+    tempPulse = sipmPulses[SiPM][i];		
+  }
 
-		//Skip until we get to a pulse in the time window
-	        if (sipmPulses[SiPM][i]->GetPulseTime() < ftimeLow || sipmPulses[SiPM][i]->GetPEs() < fthreshold)
-			continue;
-		//if the pulse occurs beyond the time window then break and return the previous pulse, if not then set the buffer (lastpulse)
-		if (sipmPulses[SiPM][i]->GetPulseTime() > ftimeHigh)
-			break;
-
-		tempPulse = sipmPulses[SiPM][i];		
-	}
-
-	return tempPulse;
+  return tempPulse;
 }
 
 
 //_____________________________________________________________________________
 void TEvdCrvBar::Print(Option_t* Opt) const {
-	const mu2e::CrvRecoPulse* tempPulse = 0;
+  const mu2e::CrvRecoPulse* tempPulse = 0;
 
-	printf("----------------------------------------------------------------\n");
-	printf("Bar	SiPM	Section	Time	PEs	\n");
-	printf("----------------------------------------------------------------\n");
-	
-	for (int SiPM = 0; SiPM < 4; SiPM++)
-	{
-		if (fSectionID == 4 && (SiPM == 1 || SiPM == 3)) // Or if it is Top TS, but I will need to figure out how to determine this
-			continue;
-
-		tempPulse = lastPulseInWindow(SiPM);
-		if (tempPulse)
-		{
-			printf("thresh %f , tL %f , tH %f , %p \n", fthreshold, ftimeLow, ftimeHigh, tempPulse);
-			printf("%i	%i	%i	%f	%i \n", barIndex.asInt(), SiPM, fSectionID, tempPulse->GetPulseTime(), tempPulse->GetPEs());
-		}
-	}
-
+  printf("----------------------------------------------------------------\n");
+  printf("Bar	SiPM	Section	Time	PEs	\n");
+  printf("----------------------------------------------------------------\n");
+  
+  for (int SiPM = 0; SiPM < 4; SiPM++) {
+    if (fSectionID == 4 && (SiPM == 1 || SiPM == 3)) // Or if it is Top TS, but I will need to figure out how to determine this
+      continue;
+    
+    tempPulse = lastPulseInWindow(SiPM);
+    if (tempPulse) {
+      printf("thresh %f , tL %f , tH %f , %p \n", fthreshold, ftimeLow, ftimeHigh, tempPulse);
+      printf("%i	%i	%i	%f	%i \n", barIndex.asInt(), SiPM, fSectionID, tempPulse->GetPulseTime(), tempPulse->GetPEs());
+    }
+  }
 }

@@ -9,24 +9,22 @@
 
 ClassImp(TCrvView)
 
-TCrvView::TCrvView(int Section) : TStnView("CrvView", "CrvView") {
-  fSectionToDisplay =  Section;
-  fPad              = 0;
+TCrvView::TCrvView(int Section) : TStnView(TStnView::kCrv,Section,"CrvView", "CrvView") {
 }
 
+//-----------------------------------------------------------------------------
 TCrvView::~TCrvView() {
 }
 
+
+//-----------------------------------------------------------------------------
 void TCrvView::Paint(Option_t* Option) {
-  TString view("crv");
 
   TString opt = Option;
   
   TStnVisManager* vm = TStnVisManager::Instance();
 	
-  view += Form(",%i", fSectionToDisplay);
-	
-  vm->SetCurrentView(view);
+  vm->SetCurrentView(this);
 	
   Int_t n = vm->GetNNodes();
   for (int i = 0; i < n; i++) {
@@ -46,13 +44,13 @@ void TCrvView::Paint(Option_t* Option) {
   gPad->Update();
 }
 
+//-----------------------------------------------------------------------------
 Int_t TCrvView::DistancetoPrimitive(Int_t px, Int_t py) {
-  Int_t min_dist = 9999;
-  Int_t dist;
+  int dist, min_dist(9999);
   
   TStnVisManager* vm = TStnVisManager::Instance();
 
-  vm->SetCurrentView(Form("crv,%i", fSectionToDisplay));
+  vm->SetCurrentView(this);
   
   vm->SetClosestObject(NULL, 9999);
   vm->SetClosestDetElement(NULL, 9999);
@@ -62,14 +60,13 @@ Int_t TCrvView::DistancetoPrimitive(Int_t px, Int_t py) {
 //-----------------------------------------------------------------------------
 //  TDetectorElement::SetClosest(NULL,9999);
 
-  Int_t n = vm->GetNNodes();
+  Int_t n = GetNNodes();
   for (int i = 0; i < n; i++) {
-    TVisNode* node = vm->GetNode(i);
+    TVisNode* node = GetNode(i);
     dist = node->DistancetoPrimitive(px, py);
     if (dist < min_dist) {
       min_dist = dist;	
-      // closest object may be managed by
-      // the node
+      // closest object may be managed by the node
       vm->SetClosestObject(node->GetClosestObject(), dist);
     }
   }
@@ -82,7 +79,6 @@ Int_t TCrvView::DistancetoPrimitive(Int_t px, Int_t py) {
 //  }
 	
 	
-// (vm->GetMinDist() > 5)
   if (vm->GetMinDist() > 5) vm->SetClosestObject(this, 0);
 //-----------------------------------------------------------------------------
 // prepare output
@@ -91,6 +87,7 @@ Int_t TCrvView::DistancetoPrimitive(Int_t px, Int_t py) {
   return vm->GetMinDist();
 }
 
+//-----------------------------------------------------------------------------
 void TCrvView::ExecuteEvent(Int_t event, Int_t px, Int_t py) {
   TStnVisManager* vm = TStnVisManager::Instance();
 
@@ -184,33 +181,15 @@ void TCrvView::ExecuteEvent(Int_t event, Int_t px, Int_t py) {
   }
 }
 
-//_____________________________________________________________________________
-//void TCrvView::SetMinPulseHeight(float MinHeight)
-//{
-//	TStnVisManager* vm = TStnVisManager::Instance();
-//
-//	Int_t n = vm->GetNNodes();
-//	for (int i = 0; i < n; i++)
-//	{
-//		TVisNode* node = vm->GetNode(i);
-//
-//		if (node->InheritsFrom("TCrvVisNode"))
-//		{
-//			TCrvVisNode* cvn = (TCrvVisNode*) node;
-//			cvn->SetMinPulseHeight(MinHeight);
-//			cvn->InitEvent();
-//		}
-//	}
-//}
-
+//-----------------------------------------------------------------------------
 void TCrvView::SetMinPulsePEs(float MinPEs) {
   //
 
   TStnVisManager* vm = TStnVisManager::Instance();
   
-  Int_t n = vm->GetNNodes();
+  Int_t n = GetNNodes();
   for (int i = 0; i < n; i++) {
-    TVisNode* node = vm->GetNode(i);
+    TVisNode* node = GetNode(i);
     
     if (node->InheritsFrom("TCrvVisNode")) {
       TCrvVisNode* cvn = (TCrvVisNode*) node;
@@ -239,8 +218,9 @@ void TCrvView::SetMinPulsePEs(float MinPEs) {
 //   }
 // }
 
+
+//-----------------------------------------------------------------------------
 void TCrvView::PrintClosestBar() {
-	//
 
   TStnVisManager* vm = TStnVisManager::Instance();
 
