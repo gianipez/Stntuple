@@ -60,11 +60,11 @@ int TComboHitVisNode::InitEvent() {
   //  const mu2e::StrawDigiMC           *hit_digi_mc;
 
   const CLHEP::Hep3Vector           /**mid,*/ *w; 
-  const mu2e::Straw                 *straw; 
+  const mu2e::Straw                 *straw(nullptr); 
 
-  int                               color; // display_hit, nl, ns; // , ipeak, ihit;
+  int                               color(0); // display_hit, nl, ns; // , ipeak, ihit;
   //  bool                              isFromConversion; // , intime;
-  double                            sigw, /*vnorm, v,*/ sigr; 
+  double                            sigw(0), /*vnorm, v,*/ sigr(0); 
   CLHEP::Hep3Vector                 vx0, vx1, vx2;
 //-----------------------------------------------------------------------------
 // display hits corresponding to a given time peak, or all hits, 
@@ -79,7 +79,7 @@ int TComboHitVisNode::InitEvent() {
 //-----------------------------------------------------------------------------
 // deal with MC information - later
 //-----------------------------------------------------------------------------
-    w     = &straw->getDirection();
+    w     = &straw->getDirection(); // let it crash
 
     // isFromConversion = false;
 //-----------------------------------------------------------------------------
