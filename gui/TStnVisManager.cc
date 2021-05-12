@@ -35,7 +35,7 @@ ClassImp(TStnVisManager)
 TStnVisManager::TStnVisManager(const char* Name, const char* Title): TVisManager(Name, Title) {
   if (gROOT->IsBatch()) return;
 
-  InitGui(Title);
+  //  InitGui(Title);
 //-----------------------------------------------------------------------------
 // views
 //-----------------------------------------------------------------------------
@@ -49,6 +49,7 @@ TStnVisManager::TStnVisManager(const char* Name, const char* Title): TVisManager
   fTMin        = 0;
   fTMax        = 1.e5;
   fTimeCluster = -1;
+  fEvent       = nullptr;
 }
 
 //_____________________________________________________________________________
@@ -59,12 +60,12 @@ TStnVisManager::~TStnVisManager() {
 // views are deleted by TVisManager
 // cleanup gui
 //-----------------------------------------------------------------------------
-    delete fMenuBarHelpLayout;
-    delete fMenuBarItemLayout;
-    delete fMenu;
-    delete fMenuBarLayout;
-    delete fMenuBar;
-    delete fMain;
+    // delete fMenuBarHelpLayout;
+    // delete fMenuBarItemLayout;
+    // delete fMenu;
+    // delete fMenuBarLayout;
+    // delete fMenuBar;
+    // delete fMain;
 
     delete fListOfDetectors;
   }
@@ -204,7 +205,7 @@ void TStnVisManager::OpenView(TStnView* Mother, int Px1, int Py1, int Px2, int P
 
   if      (vtype == TStnView::kXY ) OpenTrkXYView(Mother,Px1,Py1,Px2,Py2);
   else if (vtype == TStnView::kRZ ) OpenTrkRZView(Mother,Px1,Py1,Px2,Py2);
-  //  else if (vtype == TStnView::kTZ ) OpenTrkTZView(Mother,Px1,Py1,Px2,Py2);
+  else if (vtype == TStnView::kTZ ) OpenTrkTZView(Mother,Px1,Py1,Px2,Py2);
   else if (vtype == TStnView::kCal) OpenCalView  (Mother,Px1,Py1,Px2,Py2);
   else if (vtype == TStnView::kCrv) OpenCrvView  (Mother,Px1,Py1,Px2,Py2);
   else {
@@ -223,7 +224,7 @@ Int_t TStnVisManager::OpenTrkXYView() {
   sprintf(name, "xy_view_%i", n);
   sprintf(title, "XY view number %i", n);
 
-  TStnFrame* win = new TStnFrame(name, title, TStnView::kXY, 740, 760);
+  TStnFrame* win = new TStnFrame(name, title, TStnView::kXY, 840, 760);
   TCanvas* c = win->GetCanvas();
   fListOfCanvases->Add(c);
 
@@ -261,7 +262,7 @@ Int_t TStnVisManager::OpenTrkXYView(TStnView* Mother, Axis_t x1, Axis_t y1, Axis
   // try to preserve the aspect ratio
   Int_t   xsize, ysize;
 
-  xsize = 540;
+  xsize = 840;
   ysize = (Int_t) (xsize*TMath::Abs((y2 - y1) / (x2 - x1)) + 20);
 
   TStnFrame* win = new TStnFrame(name, title, TStnView::kXY, xsize, ysize);
@@ -368,6 +369,17 @@ Int_t TStnVisManager::OpenTrkRZView(TStnView* Mother, Axis_t x1, Axis_t y1, Axis
   return 0;
 }
 
+//-----------------------------------------------------------------------------
+// open new RZ view of the detector with the default options
+//-----------------------------------------------------------------------------
+int TStnVisManager::OpenTrkTZView() {
+  return -1;
+}
+
+//-----------------------------------------------------------------------------
+int TStnVisManager::OpenTrkTZView(TStnView* Mother, Axis_t x1, Axis_t y1, Axis_t x2, Axis_t y2) {
+  return -1;
+}
 
 //_____________________________________________________________________________
 Int_t TStnVisManager::OpenCalView() {
@@ -381,7 +393,7 @@ Int_t TStnVisManager::OpenCalView() {
   sprintf(name, "cal_view_%i", n);
   sprintf(title, "CAL view number %i", n);
 
-  TStnFrame* win = new TStnFrame(name, title, TStnView::kCal, 1200, 600);
+  TStnFrame* win = new TStnFrame(name, title, TStnView::kCal, 1300, 600);
   TCanvas*   c = win->GetCanvas();
   fListOfCanvases->Add(c);
 
@@ -477,7 +489,7 @@ Int_t TStnVisManager::OpenCrvView() {
   sprintf(name, "crv_view_%i", n);
   sprintf(title, "CRV view number %i", n);
 
-  TStnFrame* win = new TStnFrame(name, title, TStnView::kCrv, 2000, 600);
+  TStnFrame* win = new TStnFrame(name, title, TStnView::kCrv, 1800, 600);
   TCanvas*   c = win->GetCanvas();
   c->SetFixedAspectRatio(kTRUE);
   fListOfCanvases->Add(c);
@@ -635,7 +647,7 @@ int TStnVisManager::OpenCrvView(TStnView* Mother, Axis_t x1, Axis_t y1, Axis_t x
   // try to preserve the aspect ration
   Int_t   xsize, ysize;
 
-  xsize = 540;
+  xsize = 840;
   ysize = (Int_t) (xsize*TMath::Abs((y2 - y1) / (x2 - x1)) + 20);
 
   TStnFrame* win = new TStnFrame(name, title, TStnView::kCrv, xsize, ysize);

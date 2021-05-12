@@ -27,7 +27,7 @@ protected:
 
   TObjArray*         fListOfHits;
 
-  static TEllipse*   fgEllipse;
+  TEllipse*          fEllipse;
 public:
 //-----------------------------------------------------------------------------
 // constructors and destructor

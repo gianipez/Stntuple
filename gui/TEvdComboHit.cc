@@ -26,43 +26,39 @@
 //#include "TrackerConditions/inc/Types.hh"
 
 #include "Stntuple/gui/TEvdStraw.hh"
-#include "Stntuple/gui/TEvdStrawHit.hh"
+#include "Stntuple/gui/TEvdComboHit.hh"
 #include "Stntuple/gui/TStnVisManager.hh"
 
-ClassImp(stntuple::TEvdStrawHit)
+ClassImp(stntuple::TEvdComboHit)
 
 namespace stntuple {
 //-----------------------------------------------------------------------------
-TEvdStrawHit::TEvdStrawHit() {
+TEvdComboHit::TEvdComboHit() {
 }
 
 //-----------------------------------------------------------------------------
-TEvdStrawHit::TEvdStrawHit(const mu2e::ComboHit*    Hit,
-			   TEvdStraw*               Straw,
-			   const mu2e::StrawDigiMC* StrawDigiMC,
+TEvdComboHit::TEvdComboHit(const mu2e::ComboHit*      Hit,
 			   double X, double Y, double Z, 
-			   double                Wx,
-			   double                Wy,
-			   double                SigW,
-			   double                SigR,
-			   int                   Mask, 
-			   int                   Color): 
+			   double                     Wx,
+			   double                     Wy,
+			   double                     SigW,
+			   double                     SigR,
+			   int                        Mask, 
+			   int                        Color): 
   TObject(),
   fHit(Hit),
-  fStrawDigiMC(StrawDigiMC),
-  fStraw(Straw),
   fPos(X,Y,Z),
-  fDir(Wx,Wy),
-  fEllipse()
+  fDir(Wx,Wy) // ,
+  //   fEllipse()
  {
-   // printf("TEvdStrawHit::TEvdStrawHit: StrawDidiMC::driftDistance disabled. ask Dave Brown\n");
+   // printf("TEvdComboHit::TEvdComboHit: StrawDidiMC::driftDistance disabled. ask Dave Brown\n");
 
   fSigW  = SigW;
   fSigR  = SigR;
   fMask  = Mask;
   fColor = Color;
 //-----------------------------------------------------------------------------
-// define lines
+// define lines for XY view
 //-----------------------------------------------------------------------------
   fLineW.SetX1(fPos.X()-fDir.X()*fSigW);
   fLineW.SetY1(fPos.Y()-fDir.Y()*fSigW);
@@ -76,41 +72,49 @@ TEvdStrawHit::TEvdStrawHit(const mu2e::ComboHit*    Hit,
   fLineR.SetY2(fPos.Y()+fDir.X()*fSigR);
   fLineR.SetLineColor(Color);
 
-  const CLHEP::Hep3Vector* mid_point = &fStraw->GetStraw()->getMidPoint();
+  //  const CLHEP::Hep3Vector* mid_point = &fStraw->GetStraw()->getMidPoint();
   
-  double rdrift(0.);
-  if (fStrawDigiMC) {
-    if (fStrawDigiMC->wireEndTime(mu2e::StrawEnd::cal) < fStrawDigiMC->wireEndTime(mu2e::StrawEnd::hv)) {
-      rdrift = 5.; // fStrawDigiMC->driftDistance(mu2e::StrawEnd::cal);
-    }
-    else {
-      rdrift = 5.; // fStrawDigiMC->driftDistance(mu2e::StrawEnd::hv);
-    }
-  }
-      
-  fEllipse.SetX1(mid_point->z());
-  fEllipse.SetY1(mid_point->perp());
-  fEllipse.SetR1(rdrift);
-  fEllipse.SetR2(rdrift);
-  fEllipse.SetFillStyle(3003);
-  fEllipse.SetFillColor(kBlue+2);
-  fEllipse.SetLineColor(kBlue+2);
+  // double rdrift(2.);
+//-----------------------------------------------------------------------------
+// RZ view - for straw hits
+//-----------------------------------------------------------------------------
+  // fEllipse.SetX1(mid_point->z());
+  // fEllipse.SetY1(mid_point->perp());
+  // fEllipse.SetR1(rdrift);
+  // fEllipse.SetR2(rdrift);
+  // fEllipse.SetFillStyle(3003);
+  // fEllipse.SetFillColor(kBlue+2);
+  // fEllipse.SetLineColor(kBlue+2);
+
+  // fXYMarker.SetX(fX);
+  // fXYMarker.SetY(fY);
+  // fXYMarker.SetMarkerStyle(style);
+  // fXYMarker.SetMarkerSize (size );
+  // fXYMarker.SetMarkerColor(color);
+//-----------------------------------------------------------------------------
+// TZ view
+//-----------------------------------------------------------------------------
+  fTZMarker.SetX(Z);
+  fTZMarker.SetY(Hit->time());
+  fTZMarker.SetMarkerStyle(20);
+  fTZMarker.SetMarkerSize (1 );
+  fTZMarker.SetMarkerColor(Color);
 }
 
 //-----------------------------------------------------------------------------
-TEvdStrawHit::~TEvdStrawHit() {
+TEvdComboHit::~TEvdComboHit() {
 }
 
 //-----------------------------------------------------------------------------
-void TEvdStrawHit::Paint(Option_t* Option) {
-  const char oname[] = "TEvdStrawHit::Paint";
+void TEvdComboHit::Paint(Option_t* Option) {
+  const char oname[] = "TEvdComboHit::Paint";
 
   //  int   iv;
 
   int view = TVisManager::Instance()->GetCurrentView()->Type();
 
   if      (view == TStnView::kXY ) PaintXY (Option);
-  else if (view == TStnView::kRZ ) PaintRZ (Option);
+  else if (view == TStnView::kTZ ) PaintTZ (Option);
   else if (view == TStnView::kCal) PaintCal(Option);
   else {
     printf("[%s] >>> ERROR: unknown view: %i, DO NOTHING\n",oname,view);
@@ -120,31 +124,36 @@ void TEvdStrawHit::Paint(Option_t* Option) {
 }
 
 //_____________________________________________________________________________
-void TEvdStrawHit::PaintXY(Option_t* Option) {
+void TEvdComboHit::PaintXY(Option_t* Option) {
   fLineW.Paint(Option);
   fLineR.Paint(Option);
 }
 
 //_____________________________________________________________________________
-void TEvdStrawHit::PaintRZ(Option_t* Option) {
-  fEllipse.SetFillColor(kBlue+2);
-  fEllipse.SetFillStyle(3001);
-  fEllipse.Paint(Option);
+void TEvdComboHit::PaintTZ(Option_t* Option) {
+  fTZMarker.Paint(Option);
 }
 
-//_____________________________________________________________________________
-void TEvdStrawHit::PaintCal(Option_t* option) {
+// //-----------------------------------------------------------------------------
+// void TEvdComboHit::PaintRZ(Option_t* Option) {
+//   fEllipse.SetFillColor(kBlue+2);
+//   fEllipse.SetFillStyle(3001);
+//   fEllipse.Paint(Option);
+// }
+
+//-----------------------------------------------------------------------------
+void TEvdComboHit::PaintCal(Option_t* option) {
   // nothing to draw...
 }
 
 
 // //_____________________________________________________________________________
-// Int_t TEvdStrawHit::DistancetoPrimitive(Int_t px, Int_t py) {
+// Int_t TEvdComboHit::DistancetoPrimitive(Int_t px, Int_t py) {
 //   return 9999;
 // }
 
 //_____________________________________________________________________________
-Int_t TEvdStrawHit::DistancetoPrimitiveXY(Int_t px, Int_t py) {
+Int_t TEvdComboHit::DistancetoPrimitiveXY(Int_t px, Int_t py) {
 
   Int_t dist = 9999;
 
@@ -159,12 +168,8 @@ Int_t TEvdStrawHit::DistancetoPrimitiveXY(Int_t px, Int_t py) {
 }
 
 //_____________________________________________________________________________
-Int_t TEvdStrawHit::DistancetoPrimitiveRZ(Int_t px, Int_t py) {
+Int_t TEvdComboHit::DistancetoPrimitiveRZ(Int_t px, Int_t py) {
   return 9999;
-}
-
-//-----------------------------------------------------------------------------
-void TEvdStrawHit::Print(Option_t* Option) const {
 }
 
 }

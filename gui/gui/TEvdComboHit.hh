@@ -1,8 +1,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 // vis node displays one wedge
 ///////////////////////////////////////////////////////////////////////////////
-#ifndef TEvdStrawHit_hh
-#define TEvdStrawHit_hh
+#ifndef TEvdComboHit_hh
+#define TEvdComboHit_hh
 
 #include "Gtypes.h"
 #include "TClonesArray.h"
@@ -13,25 +13,25 @@
 #include "TVector3.h"
 #include "TLine.h"
 #include "TEllipse.h"
+#include "TMarker.h"
 
 #ifndef __CINT__
 
 #include "RecoDataProducts/inc/ComboHit.hh"
 #include "MCDataProducts/inc/StrawDigiMC.hh"
-#include "MCDataProducts/inc/PtrStepPointMCVectorCollection.hh"
 
 #else
 namespace mu2e {
   class ComboHit;
   class StrawDigiMC;
-  class PtrStepPointMCVector;
 };
 #endif
 
 namespace stntuple {
+
 class TEvdStraw;
 
-class TEvdStrawHit: public TObject {
+class TEvdComboHit: public TObject {
 public:
 
   enum { 
@@ -43,10 +43,6 @@ protected:
 					// backward pointers to the reconstruction objects
 
   const mu2e::ComboHit*             fHit;
-  const mu2e::StrawDigiMC*          fStrawDigiMC;
-  const mu2e::PtrStepPointMCVector* fListOfStepPointMCs;
-
-  TEvdStraw*  fStraw;                 // pointer to the straw -  geometry
 
   int         fMask;			// hit mask
   int         fColor;
@@ -56,17 +52,15 @@ protected:
   double      fSigR;      		// error in radial direction
   TLine       fLineW;			// paint on XY view
   TLine       fLineR;
-  TEllipse    fEllipse;
+  TMarker     fTZMarker;                // paint in TZ view
 
 public:
 //-----------------------------------------------------------------------------
 // constructors and destructor
 //-----------------------------------------------------------------------------
-  TEvdStrawHit();
+  TEvdComboHit();
 
-  TEvdStrawHit(const mu2e::ComboHit*        Hit,
-	       TEvdStraw*                   Straw,
-	       const mu2e::StrawDigiMC*     StrawDigiMC,
+  TEvdComboHit(const mu2e::ComboHit*        Hit,
 	       double X, double Y, double Z, 
 	       double                       Wx,
 	       double                       Wy,
@@ -75,14 +69,16 @@ public:
 	       int                          Mask, 
 	       int                          Color);
 
-  virtual ~TEvdStrawHit();
+  virtual ~TEvdComboHit();
 //-----------------------------------------------------------------------------
 // accessors
 //-----------------------------------------------------------------------------
   TVector3*                    Pos()         { return &fPos; }
   TVector2*                    Dir()         { return &fDir; }
-  const mu2e::ComboHit*        StrawHit()    { return fHit;  }
-  const mu2e::StrawDigiMC*     StrawDigiMC() { return fStrawDigiMC; }
+  const mu2e::ComboHit*        ComboHit()    { return fHit;  }
+
+  float                        Z()           { return fPos.Z(); }
+  float                        T()           { return fHit->time(); }
 //-----------------------------------------------------------------------------
 // modifiers
 //-----------------------------------------------------------------------------
@@ -103,18 +99,19 @@ public:
 
   virtual void  Paint      (Option_t* option = "");
   virtual void  PaintXY    (Option_t* option = "");
-  virtual void  PaintRZ    (Option_t* option = "");
+  // virtual void  PaintRZ    (Option_t* option = "");
+  virtual void  PaintTZ    (Option_t* Option = "");
   virtual void  PaintCal   (Option_t* option = "");
 
-  // virtual void  ExecuteEvent(Int_t event, Int_t px, Int_t py);
+  //  virtual void  ExecuteEvent(Int_t event, Int_t px, Int_t py);
   // virtual Int_t DistancetoPrimitive  (Int_t px, Int_t py);
 
   virtual Int_t DistancetoPrimitiveXY(Int_t px, Int_t py);
   virtual Int_t DistancetoPrimitiveRZ(Int_t px, Int_t py);
 
-  virtual void  Print(const char* Opt = "") const ;               // *MENU*
+  //  virtual void   Print(const char* Opt = "") const ; // **MENU**
 
-  ClassDef(stntuple::TEvdStrawHit,0)
+  ClassDef(stntuple::TEvdComboHit,0)
 };
 
 }

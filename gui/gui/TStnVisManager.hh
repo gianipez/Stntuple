@@ -178,6 +178,9 @@ public:
   Int_t   OpenTrkRZView();
   Int_t   OpenTrkRZView(TStnView* Mother, Axis_t x1, Axis_t y1, Axis_t x2, Axis_t y2);
 
+  Int_t   OpenTrkTZView();
+  Int_t   OpenTrkTZView(TStnView* Mother, Axis_t x1, Axis_t y1, Axis_t x2, Axis_t y2);
+
   Int_t   OpenCalView();
   Int_t   OpenCalView  (TStnView* Mother, Axis_t x1, Axis_t y1, Axis_t x2, Axis_t y2);
   

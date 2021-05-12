@@ -16,6 +16,7 @@
 #include "TControlBar.h"
 #include "TInterpreter.h"
 #include "TGStatusBar.h"
+//#include "TGGroupFrame.h"
 #include "TRootEmbeddedCanvas.h"
 #include "TCanvas.h"
 
@@ -56,7 +57,17 @@ enum TGeantCommandIdentifiers {
 
   M_HELP_CONTENTS,
   M_HELP_SEARCH,
-  M_HELP_ABOUT
+  M_HELP_ABOUT,
+
+  M_OPEN_XY,
+  M_OPEN_RZ,
+  M_OPEN_TZ,
+  M_OPEN_CAL,
+  M_OPEN_CRV,
+
+  M_PRINT_STRAW_H,
+  M_PRINT_COMBO_H
+
 };
 
 //-----------------------------------------------------------------------------
@@ -133,26 +144,55 @@ TStnFrame::TStnFrame(const char* Name,
   fMenuOption->AddEntry("Show &Fit Parameters",  M_OPTION_FIT_PARAMS);
   fMenuOption->AddEntry("Can Edit Histograms",   M_OPTION_CAN_EDIT);
 
-					// define menu handlers
-  fMenuFile->Associate(this);
-  fMenuEdit->Associate(this);
+  fMenuOpen = new TGPopupMenu(gClient->GetRoot());
+  fMenuOpen->AddEntry("&XY View",            M_OPEN_XY);
+  fMenuOpen->AddEntry("&RZ View",            M_OPEN_RZ);
+  fMenuOpen->AddEntry("&TZ View",            M_OPEN_TZ);
+  fMenuOpen->AddEntry("&Cal View",           M_OPEN_CAL);
+  fMenuOpen->AddEntry("&CRV View",           M_OPEN_CRV);
+
+  fMenuPrint = new TGPopupMenu(gClient->GetRoot());
+  fMenuPrint->AddEntry("Print &Straw Hits",  M_PRINT_STRAW_H);
+  fMenuPrint->AddEntry("Print &Combo Hits",  M_PRINT_COMBO_H);
+//-----------------------------------------------------------------------------
+// define menu handlers
+//-----------------------------------------------------------------------------
+  fMenuFile  ->Associate(this);
+  fMenuEdit  ->Associate(this);
   fMenuOption->Associate(this);
-  fMenuHelp->Associate(this);
+  fMenuHelp  ->Associate(this);
+  fMenuOpen  ->Associate(this);
 
   fMenuBar = new TGMenuBar(this, 1, 1, kHorizontalFrame);
 
   fMenuBar->AddPopup("&File"  , fMenuFile  , fMenuBarItemLayout);
   fMenuBar->AddPopup("&Edit"  , fMenuEdit  , fMenuBarItemLayout);
   fMenuBar->AddPopup("&Option", fMenuOption, fMenuBarItemLayout);
+  fMenuBar->AddPopup("O&pen"  , fMenuOpen  , fMenuBarItemLayout);
+  fMenuBar->AddPopup("&Print" , fMenuPrint , fMenuBarItemLayout);
   fMenuBar->AddPopup("&Help"  , fMenuHelp  , fMenuBarHelpLayout);
   
   AddFrame(fMenuBar, fMenuBarLayout);
 //-----------------------------------------------------------------------------
+// left group frame for commands, options and such
+//-----------------------------------------------------------------------------
+//  SetLayoutManager(new TGHorizontalLayout(this));
+
+   // horizontal frame
+  fHorizontalFrame = new TGHorizontalFrame(this, GetWidth()+4,GetHeight()+4,kHorizontalFrame);
+  fHorizontalFrame->SetName("HorizontalFrame");
+
+  fGroupFrame = new TGGroupFrame(fHorizontalFrame,"GroupFrame");
+  fGroupFrame->SetLayoutBroken(kTRUE);
+
+  //  fGroupFrame->SetLayoutManager(new TGVerticalLayout(fGroupFrame));
+  fGroupFrame->Resize(100,GetHeight()+4);
+//-----------------------------------------------------------------------------
 // Create canvas and canvas container that will host the ROOT graphics
 //-----------------------------------------------------------------------------
   fEmbeddedCanvas = new TRootEmbeddedCanvas(Name, 
-					    this, 
-					    GetWidth()+4, 
+					    fHorizontalFrame, 
+					    GetWidth ()+4, 
 					    GetHeight()+4,
 					    kSunkenFrame | kDoubleBorder);
 
@@ -190,8 +230,10 @@ TStnFrame::TStnFrame(const char* Name,
 
   title->Modified();
  
+  fHorizontalFrame->AddFrame(fGroupFrame, new TGLayoutHints(kLHintsLeft | kLHintsTop |  kLHintsExpandY,2,2,2,2));
+  fHorizontalFrame->AddFrame(fEmbeddedCanvas, fCanvasLayout);
 
-  AddFrame(fEmbeddedCanvas, fCanvasLayout);
+  AddFrame(fHorizontalFrame, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY,1,1,1,1));
 //-----------------------------------------------------------------------------
 // no editor bar by default
 //-----------------------------------------------------------------------------
@@ -200,7 +242,7 @@ TStnFrame::TStnFrame(const char* Name,
 // status bar (hidden by default)
 //-----------------------------------------------------------------------------
    int parts[] = { 33, 10, 10, 47 };
-   fStatusBar = new TGStatusBar(this, 10, 10);
+   fStatusBar  = new TGStatusBar(this, 10, 10);
    fStatusBar->SetParts(parts, 4);
    fStatusBarLayout = new TGLayoutHints(kLHintsBottom | kLHintsLeft | 
 					kLHintsExpandX, 2, 2, 1, 1);
@@ -234,6 +276,8 @@ TStnFrame::~TStnFrame() {
   delete fMenuFile;
   delete fMenuEdit;
   delete fMenuOption;
+  delete fMenuOpen;
+  delete fMenuPrint;
   delete fMenuHelp;
 
   delete fMenuBarItemLayout;
@@ -343,6 +387,39 @@ Bool_t TStnFrame::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2) {
 	  gROOT->SetEditHistograms(kTRUE);
 	  fMenuOption->CheckEntry(M_OPTION_CAN_EDIT);
 	}
+	break;
+//-----------------------------------------------------------------------------
+//  OPEN menu
+//-----------------------------------------------------------------------------
+      case M_OPEN_XY:
+	
+	printf(" *** TStnFrame::ProcessMessage M_OPEN_XY: msg = %li parm1 = %li parm2 = %li\n", 
+	       msg,parm1,parm2);
+	TStnVisManager::Instance()->OpenTrkXYView();
+	break;
+      case M_OPEN_RZ:
+	
+	printf(" *** TStnFrame::ProcessMessage M_OPEN_RZ: msg = %li parm1 = %li parm2 = %li\n", 
+	       msg,parm1,parm2);
+	TStnVisManager::Instance()->OpenTrkRZView();
+	break;
+      case M_OPEN_TZ:
+	
+	printf(" *** TStnFrame::ProcessMessage M_OPEN_TZ: msg = %li parm1 = %li parm2 = %li\n", 
+	       msg,parm1,parm2);
+	TStnVisManager::Instance()->OpenTrkTZView();
+	break;
+      case M_OPEN_CAL:
+	
+	printf(" *** TStnFrame::ProcessMessage M_OPEN_CAL: msg = %li parm1 = %li parm2 = %li\n", 
+	       msg,parm1,parm2);
+	TStnVisManager::Instance()->OpenCalView();
+	break;
+      case M_OPEN_CRV:
+	
+	printf(" *** TStnFrame::ProcessMessage M_OPEN_CRV: msg = %li parm1 = %li parm2 = %li\n", 
+	       msg,parm1,parm2);
+	TStnVisManager::Instance()->OpenCrvView();
 	break;
 //-----------------------------------------------------------------------------
 //  default

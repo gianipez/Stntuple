@@ -10,6 +10,7 @@ class TGMenuBar;
 class TGPopupMenu;
 class TGLayoutHints;
 class TGStatusBar;
+class TGGroupFrame;
 
 class TStnVisManager;
 
@@ -22,12 +23,16 @@ protected:
   TGPopupMenu         *fMenuFile;	// !
   TGPopupMenu         *fMenuEdit;	// !
   TGPopupMenu         *fMenuOption;	// !
+  TGPopupMenu         *fMenuOpen;	// !
+  TGPopupMenu         *fMenuPrint;	// !
   TGPopupMenu         *fMenuHelp;	// !
 
   TGLayoutHints       *fMenuBarLayout;	// !
   TGLayoutHints       *fMenuBarItemLayout; // !
   TGLayoutHints       *fMenuBarHelpLayout; // !
 
+  TGHorizontalFrame   *fHorizontalFrame;   // !
+  TGGroupFrame        *fGroupFrame;       // !
 
   TControlBar         *fEditorBar;       //! Editor control bar
 
