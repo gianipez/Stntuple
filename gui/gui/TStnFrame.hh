@@ -16,6 +16,9 @@ class TStnVisManager;
 
 //_____________________________________________________________________________
 class TStnFrame: public TGMainFrame, public TCanvasImp {
+public:
+
+  enum { fGroupFrameWidth = 150 };
 
 protected:
 

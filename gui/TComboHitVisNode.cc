@@ -20,6 +20,8 @@
 #include "ConditionsService/inc/ConditionsHandle.hh"
 #include "TrackerConditions/inc/StrawResponse.hh"
 
+#include "RecoDataProducts/inc/StrawHitIndex.hh"
+
 #include "Stntuple/gui/TComboHitVisNode.hh"
 #include "Stntuple/gui/TEvdComboHit.hh"
 
@@ -28,13 +30,21 @@
 ClassImp(TComboHitVisNode)
 
 //-----------------------------------------------------------------------------
-TComboHitVisNode::TComboHitVisNode() : TVisNode("TComboHitVisNode") {
+TComboHitVisNode::TComboHitVisNode() : TStnVisNode("TComboHitVisNode") {
+  fListOfHits = new TObjArray();
+  fListOfHits->SetOwner(1);
+
+  fHitColl    = nullptr;
+  fSdmcColl   = nullptr;
 }
 
 //_____________________________________________________________________________
-TComboHitVisNode::TComboHitVisNode(const char* Name): TVisNode(Name) {
+TComboHitVisNode::TComboHitVisNode(const char* Name): TStnVisNode(Name) {
   fListOfHits = new TObjArray();
   fListOfHits->SetOwner(1);
+
+  fHitColl    = nullptr;
+  fSdmcColl   = nullptr;
 }
 
 //-----------------------------------------------------------------------------
@@ -46,52 +56,53 @@ TComboHitVisNode::~TComboHitVisNode() {
 //-----------------------------------------------------------------------------
 int TComboHitVisNode::InitEvent() {
 
-  //  const char* oname = "TComboHitVisNode::InitEvent";
-
-  // mu2e::GeomHandle<mu2e::Tracker> ttHandle;
-  // const mu2e::Tracker* tracker = ttHandle.get();
-
-  // Tracker calibration object.
-  //  mu2e::ConditionsHandle<mu2e::StrawResponse> srep = mu2e::ConditionsHandle<mu2e::StrawResponse>("ignored");
-
   fListOfHits->Delete();
-
-  const mu2e::ComboHit              *hit;
-  //  const mu2e::StrawDigiMC           *hit_digi_mc;
-
-  const CLHEP::Hep3Vector           /**mid,*/ *w; 
-  const mu2e::Straw                 *straw(nullptr); 
-
-  int                               color(0); // display_hit, nl, ns; // , ipeak, ihit;
-  //  bool                              isFromConversion; // , intime;
-  double                            sigw(0), /*vnorm, v,*/ sigr(0); 
-  CLHEP::Hep3Vector                 vx0, vx1, vx2;
 //-----------------------------------------------------------------------------
 // display hits corresponding to a given time peak, or all hits, 
 // if the time peak is not found
 //-----------------------------------------------------------------------------
-  // stntuple::TEvdStraw* evd_straw;
+  TStnVisManager* vm = TStnVisManager::Instance();
+
+  const art::Event* event = vm->Event();
+
+  const mu2e::ComboHit* hit0 = &(*fHitColl)->at(0);
 
   int nhits = (*fHitColl)->size();
   for (int ihit=0; ihit<nhits; ihit++ ) {
+    const mu2e::ComboHit* hit = &(*fHitColl)->at(ihit);
+    size_t ish  = hit-hit0;
+    std::vector<StrawDigiIndex> shids;
+    (*fHitColl)->fillStrawDigiIndices(*event,ish,shids);
 
-    hit         = &(*fHitColl)->at(ihit);
-//-----------------------------------------------------------------------------
-// deal with MC information - later
-//-----------------------------------------------------------------------------
-    w     = &straw->getDirection(); // let it crash
+    const mu2e::StrawDigiMC* mcdigi = &(*fSdmcColl)->at(shids[0]);
+    const mu2e::StrawGasStep* step (nullptr);
 
-    // isFromConversion = false;
-//-----------------------------------------------------------------------------
-// add a pointer to the hit to the straw 
-//-----------------------------------------------------------------------------
-    int mask = 0;
-    stntuple::TEvdComboHit* evd_ch;
+    if (mcdigi->wireEndTime(mu2e::StrawEnd::cal) < mcdigi->wireEndTime(mu2e::StrawEnd::hv)) {
+      step = mcdigi->strawGasStep(mu2e::StrawEnd::cal).get();
+    }
+    else {
+      step = mcdigi->strawGasStep(mu2e::StrawEnd::hv ).get();
+    }
 
-    evd_ch = new stntuple::TEvdComboHit(hit,
-					hit->pos().x(),hit->pos().y(),hit->pos().z(),
-					w->x(),w->y(),sigw,sigr,mask,color);
-    fListOfHits->Add(evd_ch);
+    const art::Ptr<mu2e::SimParticle>& simptr = step->simParticle(); 
+    const mu2e::SimParticle*           sim    = simptr.operator->();
+
+    art::Ptr<mu2e::SimParticle>        momptr = simptr;
+
+    while(momptr->hasParent()) momptr = momptr->parent();
+    const mu2e::SimParticle* mother   = momptr.operator->();
+
+    int mother_pdg_id = mother->pdgId();
+
+    // if (simptr->fromGenerator()) generator_id = simptr->genParticle()->generatorId().id();
+    // else                         generator_id = -1;
+
+    float mc_mom      = step->momvec().mag();
+    float mc_mom_z    = step->momvec().z();
+//-----------------------------------------------------------------------------
+// store TEvdComboHit
+//-----------------------------------------------------------------------------
+    fListOfHits->Add(new stntuple::TEvdComboHit(hit,sim,mother_pdg_id,mc_mom,mc_mom_z));
   }
 
   return 0;
@@ -137,7 +148,7 @@ void TComboHitVisNode::PaintXY(Option_t* Option) {
 
     // if ((station >= vm->MinStation()) && (station <= vm->MaxStation())) { 
     //   if ((time >= tmin) && (time <= tmax)) {
-    hit->Paint(Option);
+    hit->PaintXY(Option);
     //   }
     // }
   }
@@ -157,7 +168,7 @@ void TComboHitVisNode::PaintTZ(Option_t* Option) {
     // float time  = hit->Time();
 
     //    if ((time >= tmin) && (time <= tmax)) {
-    hit->Paint(Option);
+    hit->PaintTZ(Option);
     // }
   }
 

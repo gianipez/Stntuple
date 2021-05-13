@@ -20,8 +20,6 @@
 
 #include "Stntuple/gui/TEvdMainFrame.hh"
 
-// #include "Stntuple/gui/TTrkXYView.hh"
-// #include "Stntuple/gui/TTrkRZView.hh"
 #include "Stntuple/gui/TCalView.hh"
 #include "Stntuple/gui/TCrvView.hh"
 
@@ -224,7 +222,7 @@ Int_t TStnVisManager::OpenTrkXYView() {
   sprintf(name, "xy_view_%i", n);
   sprintf(title, "XY view number %i", n);
 
-  TStnFrame* win = new TStnFrame(name, title, TStnView::kXY, 840, 760);
+  TStnFrame* win = new TStnFrame(name, title, TStnView::kXY, 750+TStnFrame::fGroupFrameWidth, 750);
   TCanvas* c = win->GetCanvas();
   fListOfCanvases->Add(c);
 
@@ -262,10 +260,10 @@ Int_t TStnVisManager::OpenTrkXYView(TStnView* Mother, Axis_t x1, Axis_t y1, Axis
   // try to preserve the aspect ratio
   Int_t   xsize, ysize;
 
-  xsize = 840;
-  ysize = (Int_t) (xsize*TMath::Abs((y2 - y1) / (x2 - x1)) + 20);
+  xsize = x2-x1;
+  ysize = (int) (xsize*abs((y2 - y1)/(x2 - x1)) + 20);
 
-  TStnFrame* win = new TStnFrame(name, title, TStnView::kXY, xsize, ysize);
+  TStnFrame* win = new TStnFrame(name, title, TStnView::kXY, xsize+TStnFrame::fGroupFrameWidth, ysize);
   TCanvas* c = win->GetCanvas();
   fListOfCanvases->Add(c);
 
@@ -299,7 +297,7 @@ Int_t TStnVisManager::OpenTrkRZView() {
   sprintf(name, "rz_view_%i", n);
   sprintf(title, "RZ view number %i", n);
 
-  TStnFrame* win = new TStnFrame(name, title, TStnView::kRZ, 1500, 500);
+  TStnFrame* win = new TStnFrame(name, title, TStnView::kRZ, 1300+TStnFrame::fGroupFrameWidth, 500);
   TCanvas* c = win->GetCanvas();
   fListOfCanvases->Add(c);
 
@@ -344,10 +342,10 @@ Int_t TStnVisManager::OpenTrkRZView(TStnView* Mother, Axis_t x1, Axis_t y1, Axis
 //-----------------------------------------------------------------------------
   Int_t   xsize, ysize;
 
-  xsize = 540;
+  xsize = x2-x1;
   ysize = (Int_t) (xsize*TMath::Abs((y2 - y1) / (x2 - x1)) + 20);
 
-  TStnFrame* win = new TStnFrame(name, title, TStnView::kRZ, xsize, ysize);
+  TStnFrame* win = new TStnFrame(name, title, TStnView::kRZ, xsize+TStnFrame::fGroupFrameWidth, ysize);
   TCanvas* c = win->GetCanvas();
   fListOfCanvases->Add(c);
 
@@ -373,12 +371,77 @@ Int_t TStnVisManager::OpenTrkRZView(TStnView* Mother, Axis_t x1, Axis_t y1, Axis
 // open new RZ view of the detector with the default options
 //-----------------------------------------------------------------------------
 int TStnVisManager::OpenTrkTZView() {
-  return -1;
+  // open new TZ view of the detector with the default options
+
+  int n = fListOfCanvases->GetSize();
+
+  char name[100], title[100];
+
+  sprintf(name,  "zt_view_%i", n);
+  sprintf(title, "ZT view number %i", n);
+
+  TStnFrame* win = new TStnFrame(name, title, TStnView::kXY, 1100+TStnFrame::fGroupFrameWidth, 760);
+  TCanvas* c = win->GetCanvas();
+  fListOfCanvases->Add(c);
+
+  TString name1(name);
+  name1 += "_1";
+  TPad* p1 = (TPad*) c->FindObject(name1);
+  p1->Range(-1600., 0., 1600., 1800.);
+  p1->cd();
+
+  TStnView* v = FindView(TStnView::kTZ,-1);
+
+  v->Draw();
+
+  TString name_title(name);
+  name1 += "_title";
+  TPad* title_pad = (TPad*) c->FindObject(name_title);
+  title_pad->cd();
+  if (fTitleNode) fTitleNode->Draw();
+
+  c->Modified();
+  c->Update();
+  return 0;
 }
 
 //-----------------------------------------------------------------------------
 int TStnVisManager::OpenTrkTZView(TStnView* Mother, Axis_t x1, Axis_t y1, Axis_t x2, Axis_t y2) {
-  return -1;
+	// open new XY view of the detector with the default options
+
+  int n = fListOfCanvases->GetSize();
+
+  char name[100], title[100];
+
+  sprintf(name,  "zt_view_%i", n);
+  sprintf(title, "ZT view number %i", n);
+
+  // try to preserve the aspect ratio
+  Int_t   xsize, ysize;
+
+  xsize = x2-x1;
+  ysize = (int) (xsize*abs((y2 - y1)/(x2 - x1)) + 20);
+
+  TStnFrame* win = new TStnFrame(name, title, TStnView::kTZ, xsize+TStnFrame::fGroupFrameWidth, ysize);
+  TCanvas* c = win->GetCanvas();
+  fListOfCanvases->Add(c);
+
+  TString name1(name);
+  name1 += "_1";
+  TPad* p1 = (TPad*) c->FindObject(name1);
+  p1->Range(x1, y1, x2, y2);
+  p1->cd();
+  Mother->Draw();
+
+  TString name_title(name);
+  name1 += "_title";
+  TPad* title_pad = (TPad*) c->FindObject(name_title);
+  title_pad->cd();
+  if (fTitleNode) fTitleNode->Draw();
+
+  c->Modified();
+  c->Update();
+  return 0;
 }
 
 //_____________________________________________________________________________
@@ -393,7 +456,7 @@ Int_t TStnVisManager::OpenCalView() {
   sprintf(name, "cal_view_%i", n);
   sprintf(title, "CAL view number %i", n);
 
-  TStnFrame* win = new TStnFrame(name, title, TStnView::kCal, 1300, 600);
+  TStnFrame* win = new TStnFrame(name, title, TStnView::kCal, 1150+TStnFrame::fGroupFrameWidth, 600);
   TCanvas*   c = win->GetCanvas();
   fListOfCanvases->Add(c);
 
@@ -489,7 +552,7 @@ Int_t TStnVisManager::OpenCrvView() {
   sprintf(name, "crv_view_%i", n);
   sprintf(title, "CRV view number %i", n);
 
-  TStnFrame* win = new TStnFrame(name, title, TStnView::kCrv, 1800, 600);
+  TStnFrame* win = new TStnFrame(name, title, TStnView::kCrv, 1700+TStnFrame::fGroupFrameWidth, 600);
   TCanvas*   c = win->GetCanvas();
   c->SetFixedAspectRatio(kTRUE);
   fListOfCanvases->Add(c);
@@ -647,10 +710,10 @@ int TStnVisManager::OpenCrvView(TStnView* Mother, Axis_t x1, Axis_t y1, Axis_t x
   // try to preserve the aspect ration
   Int_t   xsize, ysize;
 
-  xsize = 840;
+  xsize = 700;
   ysize = (Int_t) (xsize*TMath::Abs((y2 - y1) / (x2 - x1)) + 20);
 
-  TStnFrame* win = new TStnFrame(name, title, TStnView::kCrv, xsize, ysize);
+  TStnFrame* win = new TStnFrame(name, title, TStnView::kCrv, xsize+TStnFrame::fGroupFrameWidth, ysize);
   TCanvas* c = win->GetCanvas();
   fListOfCanvases->Add(c);
 

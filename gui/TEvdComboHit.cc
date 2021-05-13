@@ -25,9 +25,11 @@
 #include "TrackerGeom/inc/Straw.hh"
 //#include "TrackerConditions/inc/Types.hh"
 
-#include "Stntuple/gui/TEvdStraw.hh"
+#include "RecoDataProducts/inc/ComboHit.hh"
+
 #include "Stntuple/gui/TEvdComboHit.hh"
 #include "Stntuple/gui/TStnVisManager.hh"
+
 
 ClassImp(stntuple::TEvdComboHit)
 
@@ -38,25 +40,43 @@ TEvdComboHit::TEvdComboHit() {
 
 //-----------------------------------------------------------------------------
 TEvdComboHit::TEvdComboHit(const mu2e::ComboHit*      Hit,
-			   double X, double Y, double Z, 
-			   double                     Wx,
-			   double                     Wy,
-			   double                     SigW,
-			   double                     SigR,
-			   int                        Mask, 
-			   int                        Color): 
+			   const mu2e::SimParticle*   Sim,
+			   int                        MotherPdgID,
+			   float                      P,
+			   float                      Pz):
   TObject(),
   fHit(Hit),
-  fPos(X,Y,Z),
-  fDir(Wx,Wy) // ,
-  //   fEllipse()
- {
+  fPos(Hit->pos().x(),Hit->pos().y(),Hit->pos().z()),
+  fDir(Hit->wdir().x(),Hit->wdir().y())
+{
+  fSim         = Sim;
+  fSimID       = Sim->id().asInt();
+  fPdgID       = Sim->pdgId();
+  fMotherPdgID = MotherPdgID;
+  fP           = P;
+  fPz          = Pz;
+
    // printf("TEvdComboHit::TEvdComboHit: StrawDidiMC::driftDistance disabled. ask Dave Brown\n");
 
-  fSigW  = SigW;
-  fSigR  = SigR;
-  fMask  = Mask;
-  fColor = Color;
+  fSigW  = Hit->wireRes();
+  fSigR  = 2.5 ; // Hit->transRes(); 
+//-----------------------------------------------------------------------------
+// style and color
+//-----------------------------------------------------------------------------
+  int   style(0), color(0);
+  float size(0.);
+  
+  if      (fPdgID == 11) {
+    if    (fP      > 20  ) { style = 20; size = 0.8; color = kRed; }
+    else                   { style = 20; size = 0.4; color = kRed+2; }
+  }
+  else if (fPdgID ==  -11) { style = 24; size = 0.8; color = kBlue;   } 
+  else if (fPdgID ==   13) { style = 20; size = 0.8; color = kGreen+2;} 
+  else if (fPdgID ==  -13) { style = 20; size = 0.8; color = kGreen-2;} 
+  else if (fPdgID == 2212) { style = 20; size = 1.0; color = kBlue+2; } 
+  else                     { style = 20; size = 1.0; color = kMagenta;} 
+
+  fColor = color;
 //-----------------------------------------------------------------------------
 // define lines for XY view
 //-----------------------------------------------------------------------------
@@ -64,13 +84,13 @@ TEvdComboHit::TEvdComboHit(const mu2e::ComboHit*      Hit,
   fLineW.SetY1(fPos.Y()-fDir.Y()*fSigW);
   fLineW.SetX2(fPos.X()+fDir.X()*fSigW);
   fLineW.SetY2(fPos.Y()+fDir.Y()*fSigW);
-  fLineW.SetLineColor(Color);
+  fLineW.SetLineColor(color);
 
   fLineR.SetX1(fPos.X()+fDir.Y()*fSigR);
   fLineR.SetY1(fPos.Y()-fDir.X()*fSigR);
   fLineR.SetX2(fPos.X()-fDir.Y()*fSigR);
   fLineR.SetY2(fPos.Y()+fDir.X()*fSigR);
-  fLineR.SetLineColor(Color);
+  fLineR.SetLineColor(color);
 
   //  const CLHEP::Hep3Vector* mid_point = &fStraw->GetStraw()->getMidPoint();
   
@@ -94,34 +114,34 @@ TEvdComboHit::TEvdComboHit(const mu2e::ComboHit*      Hit,
 //-----------------------------------------------------------------------------
 // TZ view
 //-----------------------------------------------------------------------------
-  fTZMarker.SetX(Z);
+  fTZMarker.SetX(fPos.Z());
   fTZMarker.SetY(Hit->time());
-  fTZMarker.SetMarkerStyle(20);
-  fTZMarker.SetMarkerSize (1 );
-  fTZMarker.SetMarkerColor(Color);
+  fTZMarker.SetMarkerStyle(style);
+  fTZMarker.SetMarkerSize (size );
+  fTZMarker.SetMarkerColor(color);
 }
 
 //-----------------------------------------------------------------------------
 TEvdComboHit::~TEvdComboHit() {
 }
 
-//-----------------------------------------------------------------------------
-void TEvdComboHit::Paint(Option_t* Option) {
-  const char oname[] = "TEvdComboHit::Paint";
+// //-----------------------------------------------------------------------------
+// void TEvdComboHit::Paint(Option_t* Option) {
+//   const char oname[] = "TEvdComboHit::Paint";
 
-  //  int   iv;
+//   //  int   iv;
 
-  int view = TVisManager::Instance()->GetCurrentView()->Type();
+//   int view = TVisManager::Instance()->GetCurrentView()->Type();
 
-  if      (view == TStnView::kXY ) PaintXY (Option);
-  else if (view == TStnView::kTZ ) PaintTZ (Option);
-  else if (view == TStnView::kCal) PaintCal(Option);
-  else {
-    printf("[%s] >>> ERROR: unknown view: %i, DO NOTHING\n",oname,view);
-  }
+//   if      (view == TStnView::kXY ) PaintXY (Option);
+//   else if (view == TStnView::kTZ ) PaintTZ (Option);
+//   else if (view == TStnView::kCal) PaintCal(Option);
+//   else {
+//     printf("[%s] >>> ERROR: unknown view: %i, DO NOTHING\n",oname,view);
+//   }
 
-  gPad->Modified();
-}
+//   gPad->Modified();
+// }
 
 //_____________________________________________________________________________
 void TEvdComboHit::PaintXY(Option_t* Option) {
@@ -134,6 +154,13 @@ void TEvdComboHit::PaintTZ(Option_t* Option) {
   fTZMarker.Paint(Option);
 }
 
+//_____________________________________________________________________________
+void TEvdComboHit::Print(Option_t* Option) const {
+
+  printf("TEvdComboHit::Print simID=%6i pdg=%10i motherPdgID=%10i time=%10.3f Z=%10.3f edep=%10.6f P=%10.3f Pz=%10.3f\n",
+	 fSimID,fPdgID,fMotherPdgID,fHit->time(),fPos.Z(),fHit->energyDep(),fP,fPz);
+}
+
 // //-----------------------------------------------------------------------------
 // void TEvdComboHit::PaintRZ(Option_t* Option) {
 //   fEllipse.SetFillColor(kBlue+2);
@@ -141,10 +168,10 @@ void TEvdComboHit::PaintTZ(Option_t* Option) {
 //   fEllipse.Paint(Option);
 // }
 
-//-----------------------------------------------------------------------------
-void TEvdComboHit::PaintCal(Option_t* option) {
-  // nothing to draw...
-}
+// //-----------------------------------------------------------------------------
+// void TEvdComboHit::PaintCal(Option_t* option) {
+//   // nothing to draw...
+// }
 
 
 // //_____________________________________________________________________________
@@ -152,24 +179,24 @@ void TEvdComboHit::PaintCal(Option_t* option) {
 //   return 9999;
 // }
 
-//_____________________________________________________________________________
-Int_t TEvdComboHit::DistancetoPrimitiveXY(Int_t px, Int_t py) {
+// //-----------------------------------------------------------------------------
+// Int_t TEvdComboHit::DistancetoPrimitiveXY(Int_t px, Int_t py) {
 
-  Int_t dist = 9999;
+//   Int_t dist = 9999;
 
-  static TVector3 global;
-//   static TVector3 local;
+//   static TVector3 global;
+// //   static TVector3 local;
 
-//   Double_t    dx1, dx2, dy1, dy2, dx_min, dy_min, dr;
+// //   Double_t    dx1, dx2, dy1, dy2, dx_min, dy_min, dr;
 
-  global.SetXYZ(gPad->AbsPixeltoX(px),gPad->AbsPixeltoY(py),0);
+//   global.SetXYZ(gPad->AbsPixeltoX(px),gPad->AbsPixeltoY(py),0);
 
-  return dist;
-}
+//   return dist;
+// }
 
-//_____________________________________________________________________________
-Int_t TEvdComboHit::DistancetoPrimitiveRZ(Int_t px, Int_t py) {
-  return 9999;
-}
+// //_____________________________________________________________________________
+// Int_t TEvdComboHit::DistancetoPrimitiveTZ(Int_t px, Int_t py) {
+//   return 9999;
+// }
 
 }

@@ -33,7 +33,6 @@
 #include "Stntuple/gui/TStnVisManager.hh"
 
 #include "RecoDataProducts/inc/StrawHitCollection.hh"
-#include "RecoDataProducts/inc/StrawHitPositionCollection.hh"
 
 #include "DataProducts/inc/StrawId.hh"
 #include "DataProducts/inc/XYZVec.hh"
@@ -95,7 +94,7 @@ int TTrkVisNode::InitEvent() {
   const CLHEP::Hep3Vector           /**mid,*/ *w; 
   const mu2e::Straw                 *straw; 
 
-  int                               n_straw_hits, display_hit, color, nl, ns; // , ipeak, ihit;
+  int                               n_straw_hits, color, nl, ns; // , ipeak, ihit;
   bool                              isFromConversion, intime;
   double                            sigw, /*vnorm, v,*/ sigr; 
   CLHEP::Hep3Vector                 vx0, vx1, vx2;
@@ -105,7 +104,6 @@ int TTrkVisNode::InitEvent() {
   stntuple::TEvdStation*   station;
   stntuple::TEvdPlane*     plane;
   stntuple::TEvdPanel*     panel;
-  //  TEvdFace*      face;
 
   int            nst, nplanes, npanels/*, isec*/; 
 
@@ -145,9 +143,6 @@ int TTrkVisNode::InitEvent() {
     else                                 hit_digi_mc = NULL; // normally, should not be happening, but it does
 
     straw       = &tracker->getStraw(hit->strawId());
-    display_hit = 1;
-
-    if (! display_hit)                                      continue;
 //-----------------------------------------------------------------------------
 // deal with MC information - later
 //-----------------------------------------------------------------------------
@@ -178,21 +173,11 @@ int TTrkVisNode::InitEvent() {
      	isFromConversion = true;
       }
     }
-
-    if (fUseStereoHits) {
-//-----------------------------------------------------------------------------
-// new default, hit position errors come from StrawHitPositionCollection
-//-----------------------------------------------------------------------------
-      sigw  = hit->wireRes(); 
-      sigr  = hit->transRes(); 
-    }
-    else {
 //-----------------------------------------------------------------------------
 // old default, draw semi-random errors
 //-----------------------------------------------------------------------------
-      sigw  = hit->wireRes()/2.; // P.Murat
-      sigr  = 5.; // in mm
-    }
+    sigw  = hit->wireRes()/2.;      // P.Murat
+    sigr  = 2.5;                    // in mm
 	
     intime = fabs(hit->time()-fEventTime) < fTimeWindow;
 	
@@ -210,18 +195,14 @@ int TTrkVisNode::InitEvent() {
     
     int ist, ipl, ippl, /*ifc,*/ ipn, il, is;
 
-    ipl  = straw->id().getPlane(); // plane number here runs from 0 to 2*NStations-1
+    ipl  = straw->id().getPlane();      // plane number here runs from 0 to 2*NStations-1
     ist  = straw->id().getStation();
-
-    ippl = ipl % 2 ; // plane number within the station
-
-    ipn = straw->id().getPanel();
-
+    ippl = ipl % 2 ;                    // plane number within the station
+    ipn  = straw->id().getPanel();
     il   = straw->id().getLayer();
     is   = straw->id().getStraw();
 
     evd_straw     = fTracker->Station(ist)->Plane(ippl)->Panel(ipn)->Straw(il,is/2);
-
     evd_straw_hit = new stntuple::TEvdStrawHit(hit,
 					       evd_straw,
 					       hit_digi_mc,
@@ -231,7 +212,6 @@ int TTrkVisNode::InitEvent() {
 					       w->x(),w->y(),
 					       sigw,sigr,
 					       mask,color);
-
     evd_straw->AddHit(evd_straw_hit);
 
     fListOfStrawHits->Add(evd_straw_hit);
@@ -249,7 +229,7 @@ int TTrkVisNode::InitEvent() {
 
   int ntrk = 0;
 
-  if ( (*fKalRepPtrColl) != 0 )ntrk = (*fKalRepPtrColl)->size();
+  if ((*fKalRepPtrColl) != 0) ntrk = (*fKalRepPtrColl)->size();
   
   for (int i=0; i<ntrk; i++) {
     krep = (*fKalRepPtrColl)->at(i).get();

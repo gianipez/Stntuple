@@ -1,5 +1,5 @@
-#ifndef TTrkVisNode_hh
-#define TTrkVisNode_hh
+#ifndef Stntuple_gui_TTrkVisNode_hh
+#define Stntuple_gui_TTrkVisNode_hh
 
 #include "Gtypes.h"
 #include "TClonesArray.h"
@@ -10,18 +10,16 @@
 #ifndef __CINT__
 #include "RecoDataProducts/inc/KalRepPtrCollection.hh"
 #include "TrackerGeom/inc/Tracker.hh"
-#include "RecoDataProducts/inc/StrawHitCollection.hh"
+#include "RecoDataProducts/inc/ComboHit.hh"
+//#include "RecoDataProducts/inc/StrawHitCollection.hh"
 #include "RecoDataProducts/inc/TimeCluster.hh"
 #include "MCDataProducts/inc/StrawDigiMCCollection.hh"
-#include "RecoDataProducts/inc/StrawHitPositionCollection.hh"
-#include "RecoDataProducts/inc/StrawHitFlagCollection.hh"
+// #include "RecoDataProducts/inc/StrawHitFlagCollection.hh"
 
 #else
 namespace mu2e {
   class ComboHitCollection;
-  class StrawHitPositionCollection;
-  class StrawHitFlagCollection;
-  class PtrStepPointMCVectorCollection;
+  // class StrawHitFlagCollection;
   class StrawDigiMCCollection;
   class KalRepPtrCollection;
   class Tracker;
@@ -49,7 +47,7 @@ public:
 protected:
 
   const mu2e::ComboHitCollection**             fComboHitColl;
-  const mu2e::StrawHitFlagCollection**         fStrawHitFlagColl; //
+  // const mu2e::StrawHitFlagCollection**         fStrawHitFlagColl; //
   const mu2e::TimeClusterCollection**          fTimeClusterColl;  //
   const mu2e::StrawDigiMCCollection**          fStrawDigiMCColl; 
   const mu2e::KalRepPtrCollection**            fKalRepPtrColl;
@@ -95,9 +93,9 @@ public:
     return *fComboHitColl; 
   }
 
-  const mu2e::StrawHitFlagCollection* GetStrawHitFlagColl() { 
-    return *fStrawHitFlagColl;
-  }
+  // const mu2e::StrawHitFlagCollection* GetStrawHitFlagColl() { 
+  //   return *fStrawHitFlagColl;
+  // }
 
   int DisplayBackgroundHits() { return fDisplayBackgroundHits; }
 //-----------------------------------------------------------------------------
@@ -114,9 +112,9 @@ public:
     fComboHitColl = Coll;
   }
 
-  void SetStrawHitFlagColl(const mu2e::StrawHitFlagCollection** Coll) { 
-    fStrawHitFlagColl = Coll;
-  }
+  // void SetStrawHitFlagColl(const mu2e::StrawHitFlagCollection** Coll) { 
+  //   fStrawHitFlagColl = Coll;
+  // }
 
   void SetStrawDigiMCColl(const mu2e::StrawDigiMCCollection** Coll) { 
     fStrawDigiMCColl = Coll;

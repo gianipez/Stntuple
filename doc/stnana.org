@@ -6,7 +6,7 @@ to run an interactive STNTUPLE analysis job, open a ROOT session, load and run [
 
 #+begin_src C
 root [0] .L stnana.C 
-root [1] stnana("file","nts.user.eminus_gun_stnmaker.xxx.000001.stn","","","val_stn(11,28)/save=eminus_gun_stnmaker.hist",100)
+root [1] stnana("file","","","nts.user.eminus_gun_stnmaker.xxx.000001.stn","val_stn(11,28)/save=eminus_gun_stnmaker.hist",100)
 #+end_src
 
 stnana provides an interface to STNTUPLE event loop utility. The call parameters specify

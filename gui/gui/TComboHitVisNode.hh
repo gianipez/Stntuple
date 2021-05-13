@@ -10,28 +10,21 @@
 #include "TPad.h"
 #include "TArc.h"
 
-#include "Stntuple/base/TVisNode.hh"
+#include "Stntuple/gui/TStnVisNode.hh"
 
-#ifndef __CINT__
 #include "RecoDataProducts/inc/ComboHit.hh"
-#include "RecoDataProducts/inc/TimeCluster.hh"
+#include "MCDataProducts/inc/StrawDigiMC.hh"
 
-#else
-namespace mu2e {
-  class ComboHitCollection;
-};
-#endif
-
-class TComboHitVisNode: public TVisNode {
+class TComboHitVisNode: public TStnVisNode {
 public:
   enum {
     kPickHits     = 0
   };
   
 protected:
-  const mu2e::ComboHitCollection** fHitColl;
- 
-  TObjArray*    fListOfHits;
+  const mu2e::ComboHitCollection**    fHitColl ;
+  const mu2e::StrawDigiMCCollection** fSdmcColl;
+  TObjArray*                          fListOfHits;
 
 public:
 //-----------------------------------------------------------------------------
@@ -48,7 +41,8 @@ public:
 //-----------------------------------------------------------------------------
 // modifiers
 //-----------------------------------------------------------------------------
-  void SetHitColl(const mu2e::ComboHitCollection** Coll) { fHitColl = Coll; }
+  void SetComboHitHitColl(const mu2e::ComboHitCollection**    Coll) { fHitColl  = Coll; }
+  void SetStrawDigiMCColl(const mu2e::StrawDigiMCCollection** Coll) { fSdmcColl = Coll; }
 
   //  virtual void  Draw    (Option_t* option = "");
 

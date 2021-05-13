@@ -58,7 +58,6 @@
 #include "TrackerGeom/inc/Tracker.hh"
 #include "CalorimeterGeom/inc/DiskCalorimeter.hh"
 #include "CalorimeterGeom/inc/Calorimeter.hh"
-// #include "Mu2eUtilities/inc/SimParticlesWithHits.hh"
 #include "Mu2eUtilities/inc/SortedStepPoints.hh"
 #include "Mu2eUtilities/inc/TrackTool.hh"
 
@@ -84,7 +83,6 @@
 #include "BTrkData/inc/TrkStrawHit.hh"
 #include "RecoDataProducts/inc/KalRepPtrCollection.hh"
 
-
 #include "TrkReco/inc/DoubletAmbigResolver.hh"
 #include "TrkDiag/inc/KalDiag.hh"
 
@@ -102,18 +100,15 @@
 #include "TMarker.h"
 #include "TEllipse.h"
 #include "TText.h"
-#include "TNtuple.h"
 #include "TDatabasePDG.h"
 
 #include "Stntuple/base/TNamedHandle.hh"
 #include "Stntuple/gui/TStnVisManager.hh"
 #include "Stntuple/gui/THeaderVisNode.hh"
 #include "Stntuple/gui/TCalVisNode.hh"
+#include "Stntuple/gui/TComboHitVisNode.hh"
 #include "Stntuple/gui/TCrvVisNode.hh"
 #include "Stntuple/gui/TTrkVisNode.hh"
-
-// #include "Stntuple/gui/TTrkXYView.hh"
-// #include "Stntuple/gui/TTrkRZView.hh"
 
 #include "Stntuple/gui/TMcTruthVisNode.hh"
 
@@ -123,9 +118,6 @@
 #include "Stntuple/mod/THistModule.hh"
 
 #include "Stntuple/obj/TStnHeaderBlock.hh"
-
-#include "Stntuple/obj/TStnTrackBlock.hh"
-#include "Stntuple/obj/TStnClusterBlock.hh"
 
 #include "Mu2eUtilities/inc/McUtilsToolBase.hh"
 
@@ -175,7 +167,6 @@ private:
 //-----------------------------------------------------------------------------
   bool				_showCRVOnly;
   bool				_showTracks;
-  bool				foundCRV;
   bool				foundTrkr;
   bool				foundTrkr_StrawHitColl;
   bool				foundTrkr_StrawDigiMCColl;
@@ -185,31 +176,28 @@ private:
   bool				foundCalo_ClusterColl;
   bool				foundCalo;
 
-  fhicl::ParameterSet                 _vmConfig;
+  fhicl::ParameterSet          _vmConfig;
 //-----------------------------------------------------------------------------
 // end of input parameters
 // Options to control the display
 // hit flag bits which should be ON and OFF
 //-----------------------------------------------------------------------------
   TApplication*                               fApplication;
-  //  TCanvas*                                    fCanvas;
 
-  const mu2e::Calorimeter*                    fCal;              //
+  const mu2e::GenParticleCollection*    _genParticleColl;         // 
 
-  const mu2e::GenParticleCollection*          _genParticleColl;         // 
+  const mu2e::ComboHitCollection*       fShComboHitColl;     // 
+  const mu2e::ComboHitCollection*       fComboHitColl;     // 
 
-  const mu2e::ComboHitCollection*             fShComboHitColl;     // 
-  const mu2e::ComboHitCollection*             fComboHitColl;     // 
-
-  const mu2e::StrawHitFlagCollection*         fStrawHitFlagColl; //
-  const mu2e::StrawDigiMCCollection*         _strawDigiMCColl; //
+  const mu2e::StrawHitFlagCollection*   fStrawHitFlagColl; //
+  const mu2e::StrawDigiMCCollection*    _strawDigiMCColl; //
   
-  const mu2e::CaloCrystalHitCollection*       fListOfCrystalHits;//
-  const mu2e::CaloClusterCollection*          fListOfClusters;   //
+  const mu2e::CaloCrystalHitCollection* fListOfCrystalHits;//
+  const mu2e::CaloClusterCollection*    fListOfClusters;   //
   
-  const mu2e::StepPointMCCollection*          _stepPointMCColl;  //
+  const mu2e::StepPointMCCollection*    _stepPointMCColl;  //
 
-  const mu2e::TimeClusterCollection*          fTimeClusterColl;  //
+  const mu2e::TimeClusterCollection*    fTimeClusterColl;  //
 
   mu2e::CrvRecoPulseCollection*		fCrvPulseColl_Right;
   mu2e::CrvRecoPulseCollection*		fCrvPulseColl_Left;
@@ -230,8 +218,6 @@ private:
   TMarker*               fMarker;
 
   TStnVisManager*        fVisManager;
-  TStnTrackBlock*        fTrackBlock;
-  TStnClusterBlock*      fClusterBlock;
   TStnHeaderBlock*       fHeaderBlock;
 
   TStnTrackID*           fTrackID;
@@ -308,11 +294,7 @@ MuHitDisplay::MuHitDisplay(fhicl::ParameterSet const& pset) :
 {
 
   fApplication = 0;
-  //  fCanvas = 0;
-  fCal = 0;
   
-  fTrackBlock = new TStnTrackBlock();
-  fClusterBlock = new TStnClusterBlock();
   fHeaderBlock = new TStnHeaderBlock();
 
   fVisManager = TStnVisManager::Instance();
@@ -321,7 +303,6 @@ MuHitDisplay::MuHitDisplay(fhicl::ParameterSet const& pset) :
     
   fTrackID = new TStnTrackID();
   
-  foundCRV  = false;
   foundTrkr = false;
   foundCalo = false;
   
@@ -380,21 +361,6 @@ void MuHitDisplay::beginJob() {
 //-----------------------------------------------------------------------------
 // define collection names to be used for initialization
 //-----------------------------------------------------------------------------
-  fClusterBlock->AddCollName("mu2e::CaloClusterCollection"      , _caloClusterCollTag.data()  ,"");
-  
-  fTrackBlock->AddCollName  ("mu2e::KalRepCollection"           , fTrackCollTag.data()      ,"");
-  fTrackBlock->AddCollName  ("mu2e::ComboHitCollection"         , _strawHitCollTag.data() ,"");
-  fTrackBlock->AddCollName  ("mu2e::StrawDigiMCCollection"      , _strawDigiMCCollTag.data(),"");
-  fTrackBlock->AddCollName  ("mu2e::TrkCaloIntersectCollection" , fTrkExtrapol.data()             ,"");
-  fTrackBlock->AddCollName  ("mu2e::CaloClusterCollection"      , _caloClusterCollTag.data()  ,"");
-  fTrackBlock->AddCollName  ("mu2e::TrackClusterMatchCollection", fTrkCalMatch.data()             ,"");
-  fTrackBlock->AddCollName  ("mu2e::PIDProductCollection"       , fPidCollTag.data()              ,"");
-  fTrackBlock->AddCollName  ("mu2e::StepPointMCCollection"      , _spmcCollTag.data()             ,"");
-  fTrackBlock->AddCollName  ("DarHandle"                        , GetName()                       ,"DarHandle");
-  fTrackBlock->AddCollName  ("KalDiagHandle"                    , GetName()                       ,"KalDiagHandle");
-  
-  TModule::fDump->AddObject("MuHitDisplay::TrackBlock"  , fTrackBlock);
-  TModule::fDump->AddObject("MuHitDisplay::ClusterBlock", fClusterBlock);
   TModule::fDump->SetStrawDigiMCCollTag(_strawDigiMCCollTag.data());
 }
 
@@ -498,12 +464,10 @@ void MuHitDisplay::InitVisManager() {
 // TrkVisNode: tracker, tracks and straw hits
 // add tracker node to two views - RZ and XY
 //-----------------------------------------------------------------------------
-  TTrkVisNode      *tnode;
-
-  tnode = new TTrkVisNode ("TrkVisNode", fTracker, NULL);
+  TTrkVisNode* tnode = new TTrkVisNode ("TrkVisNode", fTracker, NULL);
 
   tnode->SetComboHitColl    (&fShComboHitColl  );
-  tnode->SetStrawHitFlagColl(&fStrawHitFlagColl);
+  //  tnode->SetStrawHitFlagColl(&fStrawHitFlagColl);
   tnode->SetTimeClusterColl (&fTimeClusterColl );
   tnode->SetKalRepPtrColl   (&_kalRepPtrColl   );
   tnode->SetStrawDigiMCColl (&_strawDigiMCColl );
@@ -521,7 +485,19 @@ void MuHitDisplay::InitVisManager() {
   TStnView* vrz = new TStnView(TStnView::kRZ,-1,"RZView","RZ View");
   vrz->AddNode(tnode);
   vm->AddView(vrz);
+//-----------------------------------------------------------------------------
+// TZ view : tracker only, so far
+//-----------------------------------------------------------------------------
+  TComboHitVisNode* chn = new TComboHitVisNode ();
+  chn->SetComboHitHitColl(&fComboHitColl   );
+  chn->SetStrawDigiMCColl(&_strawDigiMCColl);
 
+  TStnView* vtz = new TStnView(TStnView::kTZ,-1,"TZView","TZ View");
+  vtz->AddNode(chn);
+  vm->AddView(vtz);
+//-----------------------------------------------------------------------------
+// upon startup, open a window with XY view
+//-----------------------------------------------------------------------------
   vm->OpenTrkXYView();
 }
 
@@ -539,8 +515,7 @@ int MuHitDisplay::getData(const art::Event* Evt) {
     Evt->getByLabel(_crvRecoPulseCollTag, pulsesHandle);
     
     if (pulsesHandle.isValid()) {
-      foundCRV = true;
-      printf(">>> [%s] MSG: CrvRecoPulsesCollection by %s, found. CONTINUE\n", oname, _crvRecoPulseCollTag.data());
+      // printf(">>> [%s] MSG: CrvRecoPulsesCollection by %s, found. CONTINUE\n", oname, _crvRecoPulseCollTag.data());
       const mu2e::CrvRecoPulseCollection* fCrvPulseColl = (CrvRecoPulseCollection*) pulsesHandle.product();
       
       // Clear the map pointers in preperation to (re)fill them with new information

@@ -186,7 +186,7 @@ TStnFrame::TStnFrame(const char* Name,
   fGroupFrame->SetLayoutBroken(kTRUE);
 
   //  fGroupFrame->SetLayoutManager(new TGVerticalLayout(fGroupFrame));
-  fGroupFrame->Resize(100,GetHeight()+4);
+  fGroupFrame->Resize(fGroupFrameWidth,GetHeight()+4);
 //-----------------------------------------------------------------------------
 // Create canvas and canvas container that will host the ROOT graphics
 //-----------------------------------------------------------------------------
