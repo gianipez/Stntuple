@@ -31,7 +31,8 @@ def stntuple_gen_rootcint(source, target, env, for_signature):
 #    print "[stntuple_gen_rootcint] class_include = %s"%class_include
 #    print "[stntuple_gen_rootcint] linkdef       = %s"%linkdef
     
-    includes =   "-Iinclude -I"+os.environ['MU2E_BASE_RELEASE'];
+    includes = "-I"+os.environ['BUILD_BASE']+'/include';
+    includes = includes + " -I"+os.environ['BUILD_BASE'  ];
     includes = includes + " -I"+os.environ['ART_INC'     ];
     includes = includes + " -I"+os.environ['ART_ROOT_IO_INC'];
     includes = includes + " -I"+os.environ['BTRK_INC'    ];
@@ -50,8 +51,7 @@ def stntuple_gen_rootcint(source, target, env, for_signature):
     pcm_file = dict.replace(".cxx","_rdict.pcm");
 
 #    print "dict:"+dict + "   pcm_file:"+pcm_file;
-    dir = os.environ.get('MU2E_SATELLITE_RELEASE');
-    if (dir == None) : dir = os.environ.get('MU2E_BASE_RELEASE');
+    dir = os.environ.get('BUILD_BASE');
     lib_dir = dir+"/lib";
     cmd = 'if [ ! -d '+tmp_lib_dir+' ] ; then mkdir -p '+tmp_lib_dir+'; fi ;';
 #------------------------------------------------------------------------------

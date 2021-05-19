@@ -26,6 +26,8 @@ namespace mu2e {
 };
 #endif
 
+namespace stntuple {
+
 class TEvdStation;
 
 class TEvdStrawTracker: public TObject {
@@ -71,8 +73,8 @@ public:
 
   //  virtual void   Print(const char* Opt = "") const ; // **MENU**
 
-  ClassDef(TEvdStrawTracker,0)
+  ClassDef(stntuple::TEvdStrawTracker,0)
 };
-
+}
 
 #endif

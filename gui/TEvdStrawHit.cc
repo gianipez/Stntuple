@@ -29,8 +29,9 @@
 #include "Stntuple/gui/TEvdStrawHit.hh"
 #include "Stntuple/gui/TStnVisManager.hh"
 
-ClassImp(TEvdStrawHit)
+ClassImp(stntuple::TEvdStrawHit)
 
+namespace stntuple {
 //-----------------------------------------------------------------------------
 TEvdStrawHit::TEvdStrawHit() {
 }
@@ -106,14 +107,13 @@ void TEvdStrawHit::Paint(Option_t* Option) {
 
   //  int   iv;
 
-  const char* view = TVisManager::Instance()->GetCurrentView();
+  int view = TVisManager::Instance()->GetCurrentView()->Type();
 
-
-  if      (strstr(view,"trkxy" ) != 0) PaintXY(Option);
-  else if (strstr(view,"trkrz" ) != 0) PaintRZ(Option);
-  else if (strstr(view,"cal"   ) != 0) PaintCal(Option);
+  if      (view == TStnView::kXY ) PaintXY (Option);
+  else if (view == TStnView::kRZ ) PaintRZ (Option);
+  else if (view == TStnView::kCal) PaintCal(Option);
   else {
-    printf("[%s] >>> ERROR: unknown view: %s, DO NOTHING\n",oname,view);
+    printf("[%s] >>> ERROR: unknown view: %i, DO NOTHING\n",oname,view);
   }
 
   gPad->Modified();
@@ -138,10 +138,10 @@ void TEvdStrawHit::PaintCal(Option_t* option) {
 }
 
 
-//_____________________________________________________________________________
-Int_t TEvdStrawHit::DistancetoPrimitive(Int_t px, Int_t py) {
-  return 9999;
-}
+// //_____________________________________________________________________________
+// Int_t TEvdStrawHit::DistancetoPrimitive(Int_t px, Int_t py) {
+//   return 9999;
+// }
 
 //_____________________________________________________________________________
 Int_t TEvdStrawHit::DistancetoPrimitiveXY(Int_t px, Int_t py) {
@@ -163,3 +163,8 @@ Int_t TEvdStrawHit::DistancetoPrimitiveRZ(Int_t px, Int_t py) {
   return 9999;
 }
 
+//-----------------------------------------------------------------------------
+void TEvdStrawHit::Print(Option_t* Option) const {
+}
+
+}

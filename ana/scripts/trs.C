@@ -10,7 +10,7 @@ void stn_trs_ana(int DebugBit = -1, int PdgCode = 11, int GeneratorCode = 2) {
 //-----------------------------------------------------------------------------
 // configure validation module
 //-----------------------------------------------------------------------------
-  stntuple::m_trs = (TStnTrackSeedAnaModule*) g.x->AddModule("TStnTrackSeedAnaModule",0);  
+  stntuple::m_trs = (stntuple::TTrackSeedAnaModule*) g.x->AddModule("stntuple::TTrackSeedAnaModule",0);  
   stntuple::m_trs->SetPdgCode      (PdgCode);
   stntuple::m_trs->SetGeneratorCode(GeneratorCode);
 

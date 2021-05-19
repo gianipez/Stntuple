@@ -93,7 +93,7 @@ int StntupleInitSimpBlock::InitDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent
 // figure out how many straw hits each particle has produced
 //-----------------------------------------------------------------------------
   std::vector<int> vid, vin;
-  int np_with_hits(0);   // number of particles with straw hits
+  int np_with_straw_hits(0);   // number of particles with straw hits
 
   if (n_straw_hits > 0) {
 
@@ -128,7 +128,7 @@ int StntupleInitSimpBlock::InitDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent
 	int sim_id = sim->id().asInt();
 
 	int found  = 0;
-	for (int ip=0; ip<np_with_hits; ip++) {
+	for (int ip=0; ip<np_with_straw_hits; ip++) {
 	  if (sim_id == vid[ip]) {
 	    vin[ip] += 1;
 	    found    = 1;
@@ -137,9 +137,9 @@ int StntupleInitSimpBlock::InitDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent
 	}
 
 	if (found == 0) {
-	  vid[np_with_hits] = sim_id;
-	  vin[np_with_hits] = 1;
-	  np_with_hits      = np_with_hits+1;
+	  vid[np_with_straw_hits] = sim_id;
+	  vin[np_with_straw_hits] = 1;
+	  np_with_straw_hits      = np_with_straw_hits+1;
 	}
       }
     }
@@ -154,6 +154,17 @@ int StntupleInitSimpBlock::InitDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent
 
       id        = sim->id().asInt();
       parent_id = -1;
+//------------------------------------------------------------------------------
+// count number of straw hits produced by the particle
+//-----------------------------------------------------------------------------
+      nhits = 0;
+      
+      for (int i=0; i<np_with_straw_hits; i++) {
+	if (vid[i] == id) {
+	  nhits = vin[i];
+	  break;
+	}
+      }
 //-----------------------------------------------------------------------------
 // a semi-kludge: store e+ and e- from an external photon conversion
 //-----------------------------------------------------------------------------
@@ -184,12 +195,14 @@ int StntupleInitSimpBlock::InitDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent
       pz     = sim->startMomentum().z();
       energy = sim->startMomentum().e();
 //-----------------------------------------------------------------------------
-// by default, do not store SimParticles produced in the calorimeter - those are useless
+// by default, do not store low energy SimParticles not making hits in the tracker
 //-----------------------------------------------------------------------------
       const CLHEP::Hep3Vector* sp = &sim->startPosition();
-      if ((sp->z() > fMaxZ) && (pz > -0.1))                 continue;
 
-      if (energy < fMinSimpEnergy)                          continue;
+      if (fMinSimpEnergy >= 0) {
+	if ((nhits == 0) and (energy < fMinSimpEnergy))       continue;
+      }
+
       simp   = simp_block->NewParticle(id, parent_id, pdg_code, 
 				       creation_code, termination_code,
 				       start_vol_id, end_vol_id,
@@ -202,6 +215,7 @@ int StntupleInitSimpBlock::InitDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent
 			sim->endMomentum().e());
       const CLHEP::Hep3Vector* ep = &sim->endPosition();
       simp->SetEndPos(ep->x(),ep->y(),ep->z(),sim->endGlobalTime());
+      simp->SetNStrawHits(nhits);
 //-----------------------------------------------------------------------------
 // particle parameters at virtual detectors
 //-----------------------------------------------------------------------------
@@ -250,18 +264,6 @@ int StntupleInitSimpBlock::InitDataBlock(TStnDataBlock* Block, AbsEvent* AnEvent
 	  }
 	}
       }
-//------------------------------------------------------------------------------
-// count number of straw hits produced by the particle
-//-----------------------------------------------------------------------------
-      nhits = 0;
-      
-      for (int i=0; i<np_with_hits; i++) {
-	if (vid[i] == id) {
-	  nhits = vin[i];
-	  break;
-	}
-      }
-      simp->SetNStrawHits(nhits);
     }
   }
   else {

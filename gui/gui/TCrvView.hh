@@ -1,44 +1,43 @@
-#ifndef TCrvView_hh
-#define TCrvView_hh
+#ifndef Stntuple_gui_TCrvView_hh
+#define Stntuple_gui_TCrvView_hh
 
 
 #include "TNamed.h"
 #include "TPad.h"
 
-class TCrvView : public TNamed {
+#include "Stntuple/base/TStnView.hh"
+
+//-----------------------------------------------------------------------------
+class TCrvView : public TStnView {
 protected:
-	Int_t			fPx1;
-	Int_t			fPy1;
-	Int_t			fPx2;
-	Int_t			fPy2;
-	Int_t			fSectionToDisplay;
-	TVirtualPad*	fPad;		 
+  Int_t		fSectionToDisplay;
+  TVirtualPad*	fPad;		 
+
 public:
-	TCrvView(){ fSectionToDisplay = 0; fPad = 0; };
-	TCrvView(int Section);
-	virtual ~TCrvView();
+  TCrvView(int Section);
+  virtual ~TCrvView();
+  
+  TVirtualPad* GetPad() { return fPad; }
 
-	TVirtualPad* GetPad() { return fPad; }
+  int	       SectionToDisplay() { return fSectionToDisplay; }
 
-	int		SectionToDisplay()					{ return fSectionToDisplay; }
-	void	SetSectionToDisplay(int Section)	{ fSectionToDisplay = Section; }
-	void	SetPad(TVirtualPad* Pad)			{ fPad = Pad; }
-	void	SetTimeWindow(float lowWindow, float highWindow);
+  void	       SetSectionToDisplay(int Section) { fSectionToDisplay = Section; }
 
+  void	       SetPad(TVirtualPad* Pad)			{ fPad = Pad; }
 //-----------------------------------------------------------------------------
 // menu
 //-----------------------------------------------------------------------------
-	//void	SetMinPulseHeight(float MinHeight);	// *MENU*
-	void	SetMinPulsePEs(float MinPEs);		// *MENU*
-	void	PrintClosestBar();					// *MENU*
+  //void	SetMinPulseHeight(float MinHeight);	// *MENU*
+  void	        SetMinPulsePEs(float MinPEs);               // *MENU*
+  void	        PrintClosestBar();			    // *MENU*
 //-----------------------------------------------------------------------------
 // overloaded virtual functions of TObject
 //-----------------------------------------------------------------------------
-	virtual void	Paint(Option_t* Option = "");
-	virtual void	ExecuteEvent(Int_t event, Int_t px, Int_t py);
-	virtual Int_t	DistancetoPrimitive(Int_t px, Int_t py);
-
-	ClassDef(TCrvView, 0)
+  virtual void Paint              (Option_t* Option = "");
+  virtual void ExecuteEvent       (Int_t event, Int_t px, Int_t py);
+  virtual int  DistancetoPrimitive(Int_t px, Int_t py);
+  
+  ClassDef(TCrvView, 0)
 };
 
 #endif

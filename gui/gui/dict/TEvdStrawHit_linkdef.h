@@ -6,7 +6,7 @@
 #pragma link C++ nestedclasses;
 #pragma link C++ nestedtypedefs;
 
-#pragma link C++ class TEvdStrawHit;
+#pragma link C++ class stntuple::TEvdStrawHit;
 
 #endif
 

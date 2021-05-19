@@ -268,3 +268,15 @@ double TStntuple::RPC_PhotonEnergyWeight(double E) {
   if (E < eMax) f = eMax*pow(eMax-E,alpha)*exp(-(eMax-gamma*E)/tau)*(c0+c1*E)/fint;
   return f;
 }
+
+//-----------------------------------------------------------------------------
+// Giant dipole resonance mu- --> e+ weight
+// Normalization does not correct for cutoffs due to requiring physical values
+//-----------------------------------------------------------------------------
+double TStntuple::MumEp_GDR_Weight(double energy, double emax) {
+  if(energy > emax || energy < 0.) return 0.;
+  double gamma(6.1), m0(21.1), eloss(emax-energy);
+  double mdiff_2 = (eloss - m0) * (eloss - m0);
+  double weight = 1./M_PI * (gamma/2.) / (mdiff_2 + (gamma/2.)*(gamma/2.));
+  return weight;
+}

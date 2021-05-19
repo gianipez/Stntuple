@@ -64,6 +64,13 @@ public:
   static double RMC_ClosureAppxWeight (double K, double KMax);
   static double RPC_PhotonEnergyWeight(double E);
 
+
+//-----------------------------------------------------------------------------
+// parameterization of the LO giant dipole resonance (GDR) for mu- --> e+ on Al
+// from mu2e-21887 based on Phys Lett B746(2017)157
+//-----------------------------------------------------------------------------
+  static double MumEp_GDR_Weight(double energy, double emax);
+
 //-----------------------------------------------------------------------------
 // parameterization of inclusive antiproton production cross-section by S.Striganov (mu2e-1776)
 // PBeam - proton beam momentum

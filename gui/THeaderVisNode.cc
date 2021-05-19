@@ -28,11 +28,6 @@ THeaderVisNode::~THeaderVisNode() {
 //_____________________________________________________________________________
 int THeaderVisNode::InitEvent() {
   //
-  TStnVisManager* vm = TStnVisManager::Instance();
-
-  fHeader->fEventNumber = vm->Event()->event();
-  fHeader->fRunNumber   = vm->Event()->run();
-
   return 0;
 }
 
@@ -48,13 +43,16 @@ void THeaderVisNode::Paint(Option_t* option) {
 void THeaderVisNode::PaintXY(Option_t* option) {
   // draw event/run
 
-  char  text[100];
-  sprintf(text,"Run = %7i  Event = %7i",
-	  fHeader->RunNumber(), 
-	  fHeader->EventNumber());
+  TStnVisManager* vm = TStnVisManager::Instance();
 
-  fText->SetTextSize(0.4);
-  fText->SetText(0.1,0.3,text);
+  const art::Event* ev = vm->Event();
+  char  text[100];
+
+  if (ev != nullptr) sprintf(text,"Event: %7i:%06i:%7i",ev->run(),ev->subRun(),ev->event());
+  else               sprintf(text,"Event: %7i:%06i:%7i",0,0,0);
+
+  fText->SetTextSize(0.5);
+  fText->SetText(0.3,0.3,text);
 
   fText->Paint(option);
   gPad->Modified();

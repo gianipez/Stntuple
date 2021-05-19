@@ -1,5 +1,5 @@
-#ifndef TTrkVisNode_hh
-#define TTrkVisNode_hh
+#ifndef Stntuple_gui_TTrkVisNode_hh
+#define Stntuple_gui_TTrkVisNode_hh
 
 #include "Gtypes.h"
 #include "TClonesArray.h"
@@ -10,30 +10,33 @@
 #ifndef __CINT__
 #include "RecoDataProducts/inc/KalRepPtrCollection.hh"
 #include "TrackerGeom/inc/Tracker.hh"
-#include "RecoDataProducts/inc/StrawHitCollection.hh"
+#include "RecoDataProducts/inc/ComboHit.hh"
+//#include "RecoDataProducts/inc/StrawHitCollection.hh"
 #include "RecoDataProducts/inc/TimeCluster.hh"
 #include "MCDataProducts/inc/StrawDigiMCCollection.hh"
-#include "RecoDataProducts/inc/StrawHitPositionCollection.hh"
-#include "RecoDataProducts/inc/StrawHitFlagCollection.hh"
+// #include "RecoDataProducts/inc/StrawHitFlagCollection.hh"
 
 #else
 namespace mu2e {
   class ComboHitCollection;
-  class StrawHitPositionCollection;
-  class StrawHitFlagCollection;
-  class PtrStepPointMCVectorCollection;
+  // class StrawHitFlagCollection;
   class StrawDigiMCCollection;
   class KalRepPtrCollection;
   class Tracker;
 };
 #endif
 
-#include "Stntuple/base/TVisNode.hh"
+#include "Stntuple/gui/TStnVisNode.hh"
 
 class TStnTrackBlock;
-class TEvdStrawTracker;
 
-class TTrkVisNode: public TVisNode {
+namespace stntuple {
+  class TEvdStrawTracker;
+  class TEvdStrawHit;
+  class TEvdTrack;
+}
+
+class TTrkVisNode: public TStnVisNode {
 public:
   enum {
     kPickHits     = 0,
@@ -44,7 +47,7 @@ public:
 protected:
 
   const mu2e::ComboHitCollection**             fComboHitColl;
-  const mu2e::StrawHitFlagCollection**         fStrawHitFlagColl; //
+  // const mu2e::StrawHitFlagCollection**         fStrawHitFlagColl; //
   const mu2e::TimeClusterCollection**          fTimeClusterColl;  //
   const mu2e::StrawDigiMCCollection**          fStrawDigiMCColl; 
   const mu2e::KalRepPtrCollection**            fKalRepPtrColl;
@@ -52,7 +55,7 @@ protected:
   TStnTrackBlock*   fTrackBlock;
   Color_t           fTrackColor;
 
-  TEvdStrawTracker* fTracker;
+  stntuple::TEvdStrawTracker* fTracker;
 
   TArc*                     fArc;
   const mu2e::TimeCluster*  fTimeCluster;
@@ -80,13 +83,19 @@ public:
   TObjArray* GetListOfTracks() { return fListOfTracks; }
   Color_t    GetTrackColor  () { return fTrackColor;   }
 
+  int        GetNTracks()      { return fListOfTracks->GetEntriesFast(); }
+  int        GetNHits  ()      { return fListOfStrawHits->GetEntriesFast(); }
+
+  stntuple::TEvdStrawHit* GetHit  (int I) { return (stntuple::TEvdStrawHit*) fListOfStrawHits->At(I); }
+  stntuple::TEvdTrack*    GetTrack(int I) { return (stntuple::TEvdTrack*)    fListOfTracks->At(I); }
+
   const mu2e::ComboHitCollection* GetComboHitColl() { 
     return *fComboHitColl; 
   }
 
-  const mu2e::StrawHitFlagCollection* GetStrawHitFlagColl() { 
-    return *fStrawHitFlagColl;
-  }
+  // const mu2e::StrawHitFlagCollection* GetStrawHitFlagColl() { 
+  //   return *fStrawHitFlagColl;
+  // }
 
   int DisplayBackgroundHits() { return fDisplayBackgroundHits; }
 //-----------------------------------------------------------------------------
@@ -103,9 +112,9 @@ public:
     fComboHitColl = Coll;
   }
 
-  void SetStrawHitFlagColl(const mu2e::StrawHitFlagCollection** Coll) { 
-    fStrawHitFlagColl = Coll;
-  }
+  // void SetStrawHitFlagColl(const mu2e::StrawHitFlagCollection** Coll) { 
+  //   fStrawHitFlagColl = Coll;
+  // }
 
   void SetStrawDigiMCColl(const mu2e::StrawDigiMCCollection** Coll) { 
     fStrawDigiMCColl = Coll;
@@ -118,7 +127,6 @@ public:
   void  SetPickMode   (Int_t Mode) { fPickMode    = Mode; }
 
   void  SetDisplayBackgroundHits(Int_t Mode) { fDisplayBackgroundHits = Mode; }
-
 //-----------------------------------------------------------------------------
 // overloaded methods of TVisNode
 //-----------------------------------------------------------------------------
@@ -126,12 +134,9 @@ public:
 //-----------------------------------------------------------------------------
 // overloaded methods of TObject
 //-----------------------------------------------------------------------------
-  virtual void  Paint   (Option_t* option = "");
-          void  PaintXY (Option_t* option = "");
-          void  PaintRZ (Option_t* option = "");
-          void  PaintCal(Option_t* option = "");
+  virtual void  PaintXY (Option_t* option = "");
+  virtual void  PaintRZ (Option_t* option = "");
 
-  virtual Int_t DistancetoPrimitive  (Int_t px, Int_t py);
   virtual Int_t DistancetoPrimitiveXY(Int_t px, Int_t py);
   virtual Int_t DistancetoPrimitiveRZ(Int_t px, Int_t py);
 

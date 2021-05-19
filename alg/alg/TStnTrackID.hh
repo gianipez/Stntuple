@@ -67,6 +67,7 @@ protected:
 
   Float_t    fMinFitCons;		// 
   Float_t    fMinT0;
+  Float_t    fMaxT0;
   Float_t    fMaxT0Err;
 
   Float_t    fMaxMomErr;
@@ -100,6 +101,7 @@ public:
 //-----------------------------------------------------------------------------
   Float_t MinFitCons   () const { return fMinFitCons;   }
   Float_t MinT0        () const { return fMinT0;        }
+  Float_t MaxT0        () const { return fMaxT0;        }
   Int_t   MinNActive   () const { return fMinNActive;   }
   Int_t   MaxNActive   () const { return fMaxNActive;   }
   Float_t MaxT0Err     () const { return fMaxT0Err;     }
@@ -121,18 +123,19 @@ public:
   void    SetMaxChi2Dof  (Float_t Chi2Dof) { fMaxChi2Dof    = Chi2Dof; }
   void    SetMaxDNa      (int     DNa    ) { fMaxDNa        = DNa    ; }
   void    SetMinFNa      (int     FNa    ) { fMinFNa        = FNa    ; }
-  void    SetMinT0       (Float_t T0     ) { fMinT0         = T0;      }
-  void    SetMinNActive  (Int_t   N      ) { fMinNActive    = N;       }
-  void    SetMaxNActive  (Int_t   N      ) { fMaxNActive    = N;       }
-  void    SetMaxT0Err    (Float_t T0Err  ) { fMaxT0Err      = T0Err;   }
-  void    SetMaxMomErr   (Float_t MomErr ) { fMaxMomErr     = MomErr;  }
-  void    SetMinD0       (float   D0     ) { fMinD0         = D0    ;  }
-  void    SetMaxD0       (float   D0     ) { fMaxD0         = D0    ;  }
-  void    SetMinRMax     (float   R      ) { fMinRMax       = R     ;  }
-  void    SetMaxRMax     (float   R      ) { fMaxRMax       = R     ;  }
+  void    SetMinT0       (Float_t T0     ) { fMinT0         = T0     ; }
+  void    SetMaxT0       (Float_t T0     ) { fMaxT0         = T0     ; }
+  void    SetMinNActive  (Int_t   N      ) { fMinNActive    = N      ; }
+  void    SetMaxNActive  (Int_t   N      ) { fMaxNActive    = N      ; }
+  void    SetMaxT0Err    (Float_t T0Err  ) { fMaxT0Err      = T0Err  ; }
+  void    SetMaxMomErr   (Float_t MomErr ) { fMaxMomErr     = MomErr ; }
+  void    SetMinD0       (float   D0     ) { fMinD0         = D0     ; }
+  void    SetMaxD0       (float   D0     ) { fMaxD0         = D0     ; }
+  void    SetMinRMax     (float   R      ) { fMinRMax       = R      ; }
+  void    SetMaxRMax     (float   R      ) { fMaxRMax       = R      ; }
 
-  void    SetMinTanDip   (Float_t TanDip ) { fMinTanDip     = TanDip;  }
-  void    SetMaxTanDip   (Float_t TanDip ) { fMaxTanDip     = TanDip;  }
+  void    SetMinTanDip   (Float_t TanDip ) { fMinTanDip     = TanDip ; }
+  void    SetMaxTanDip   (Float_t TanDip ) { fMaxTanDip     = TanDip ; }
 
   void    SetMinTrkQual  (Float_t TrkQual) { fMinTrkQual    = TrkQual; }
   void    SetUseMask     (int     Mask   ) { fUseMask       = Mask   ; }
@@ -145,9 +148,7 @@ public:
   virtual Int_t  TightIDWord(TStnTrack* Track);
   virtual Int_t  LooseIDWord(TStnTrack* Track);
 
-                                        // Mode=1: tight ID, =2: loose ID
-
-  void FillHistograms(Hist_t* Hist, TStnTrack* Track, Int_t Mode=1);
+  void FillHistograms(Hist_t* Hist, TStnTrack* Track, double Weight = 1.);
 //-----------------------------------------------------------------------------
 //  overloaded methods of TObject
 //-----------------------------------------------------------------------------

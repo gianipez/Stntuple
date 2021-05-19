@@ -10,7 +10,7 @@ void stn_trk_ana(int PdgCode = 11, int GeneratorCode = 2) {
 //-----------------------------------------------------------------------------
 // configure validation module
 //-----------------------------------------------------------------------------
-  stntuple::m_trk = (TStnTrackAnaModule*) g.x->AddModule("TStnTrackAnaModule",0);  
+  stntuple::m_trk = (stntuple::TTrackAnaModule*) g.x->AddModule("stntuple::TTrackAnaModule",0);  
   stntuple::m_trk->SetPdgCode      (PdgCode);
   stntuple::m_trk->SetGeneratorCode(GeneratorCode);
 }

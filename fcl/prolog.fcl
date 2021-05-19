@@ -80,8 +80,8 @@ StntupleMakerTemplate : { module_type:StntupleMaker
     simpCollTag          : "compressDigiMCs"                     # was "g4run" before
     triggerResultsTag    : "TriggerResults"                      # assume TriggerResults produced at digi step
     vdHitsCollTag        : @local::STN_VDHITS_COLL_TAG           # was "g4run" before
-    simpMinEnergy        : 0.0                                   # MeV , by default, store all
-    simpMaxZ             : 11800.0                               # mm  , by default, do no store calorimeter SimParticles
+    simpMinEnergy        : 5.0                                   # MeV , simpMinEnergy < 0: store all
+    simpMaxZ             : 11800.0                               # not used
 
     genpCollTag          : "compressDigiMCs"                     # save signal-only: "generate" 
     genId                : @local::GEN_ID                        # defined in Stntuple/fcl/stnmaker.fcl, by default, store all simparticles
@@ -552,7 +552,42 @@ Stntuple : {
 	    spmcCollTag                : [ @local::STN_VDHITS_COLL_TAG ]
 	    statusG4Tag                : [ "g4run"                     ]
 	}
+#------------------------------------------------------------------------------
+# explicit muon reco is not very useful, run De and Ue instead, use only DAR fits
+# for cosmics, add all TimeCluster collections
+#------------------------------------------------------------------------------
+	StntupleMakerDeUeDar : { @table::StntupleMakerTemplate 
+	    makePid                    : 0
+	    makeTrackSeeds             : 1
+	    makeTimeClusters           : 1
+	    makeHelices                : 1
+	    makeStepPointMC            : 1
+	    makeTrigger                : 0  # so far, can't use
 
+	    timeClusterBlockName       : [ "TimeClusterBlockDe", "TimeClusterBlockUe", "TCFinderBlockDe"    , "TCFinderBlockUe"    , "CTPFinderBlock"    ]
+  	    timeClusterCollTag         : [ "MHFinderDe"        , "MHFinderUe"        , "TimeClusterFinderDe", "TimeClusterFinderUe", "CalTimePeakFinder" ]
+	    helixBlockName             : [ "HelixBlockDe"      , "HelixBlockUe"        ]
+	    helixCollTag               : [ "MHFinderDe"        , "MHFinderUe"          ]
+
+	    trackSeedBlockName         : [ "TrackSeedBlockDe"  , "TrackSeedBlockUe"    ]
+	    trackSeedCollTag           : [ "KSFDeMH"           , "KSFUeMH"             ]
+
+	    trackBlockName             : [ "TrackBlockDarDe"   , "TrackBlockDarUe"     ]
+	    trackCollTag               : [ "KFFDeMHDar"        , "KFFUeMHDar"          ]
+	    trackTsBlockName           : [ "TrackSeedBlockDe"  , "TrackSeedBlockUe"    ]
+	    trackTsCollTag             : [ "KSFDeMH"           , "KSFUeMH"             ]
+
+	    tciCollTag                 : [ "TciDeMHDar"        , "TciUeMHDar"          ]
+	    tcmCollTag                 : [ "TcmDeMHDar"        , "TcmUeMHDar"          ]
+	    trkQualCollTag             : [ "TrkQualDeMHDar"    , "TrkQualUeMHDar"      ]
+	    trackSHBlockName           : [ "TrackHitBlockDarDe", "TrackHitBlockDarUe"  ]
+	    pidBlockName               : [ "PidBlockDe"        , "PidBlockUe"          ] # just need for code not to crash *FIXME*
+	    pidCollTag                 : [ "AvikPIDNew"        , "AvikPIDNewUe"        ] # just need for code not to crash *FIXME*
+
+	    spmcBlockName              : [ "SpmcBlockVDet"             ]
+	    spmcCollTag                : [ @local::STN_VDHITS_COLL_TAG ]
+	    statusG4Tag                : [ "g4run"                     ]
+	}
 #------------------------------------------------------------------------------
 # trigger studies
 #------------------------------------------------------------------------------
@@ -626,23 +661,17 @@ Stntuple : {
 	MuHitDisplay    : { @table::MuHitDisplay }
 
 	MuHitDisplayDe : { @table::MuHitDisplay 
-	    trackCollTag           : "KFFDmuMHDar"
-	    trkExtrapol            : TrackCaloIntersectionDe
-	    trkCalMatch            : TrackCaloMatchingDe
+	    trackCollTag           : "KFFDeMHDar"
+	    trkExtrapol            : "TciDeMHDar"
+	    trkCalMatch            : "TcmDeMHDar"
 	}
 	
-# 	MuHitDisplayDem : { @table::MuHitDisplay 
-# 	    trackCollTag           : MergePatRecDem
-# 	    trkExtrapol            : TrackCaloIntersectionDem
-# 	    trkCalMatch            : TrackCaloMatchingDem
-# 	}
-# 
-# 	MuHitDisplayDep : { @table::MuHitDisplay 
-# 	    trackCollTag           : MergePatRecDep
-# 	    trkExtrapol            : TrackCaloIntersectionDep
-# 	    trkCalMatch            : TrackCaloMatchingDep
-# 	}
-
+	MuHitDisplayDeDar : { @table::MuHitDisplay 
+	    trackCollTag           : "KFFDeMHDar"
+	    trkExtrapol            : "TciDeMHDar"
+	    trkCalMatch            : "TcmDeMHDar"
+	}
+	
 	MuHitDisplayDpp : { @table::MuHitDisplay 
 	    trackCollTag           : MergePatRecDpp
 	    strawHitFlagCollTag    : "FlagBkgHits:StrawHits"    # run TrkPatRec only
@@ -663,9 +692,9 @@ Stntuple : {
 	}
 
 	MuHitDisplayDeMHDar : { @table::MuHitDisplay 
-	    trackCollTag           : KFFDeMHDar
-	    trkExtrapol            : TciDeMHDar
-	    trkCalMatch            : TcmDeMHDar
+	    trackCollTag           : "KFFDeMHDar"
+	    trkExtrapol            : "TciDeMHDar"
+	    trkCalMatch            : "TcmDeMHDar"
 	}
     }
 }
@@ -695,5 +724,6 @@ Stntuple.stnmaker_Dmu     : [ InitStntuple, StntupleMakerDmu ,                  
 Stntuple.stnmaker_De_Dmu  : [ InitStntuple, StntupleMakerDeDmu,                 FillStntuple ]
 
 Stntuple.stnmaker_De_Dmu_dar : [ InitStntuple, StntupleMakerDeDmuDar,           FillStntuple ]
+Stntuple.stnmaker_De_Ue_dar  : [ InitStntuple, StntupleMakerDeUeDar,            FillStntuple ]
 
 END_PROLOG

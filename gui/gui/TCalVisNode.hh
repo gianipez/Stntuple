@@ -9,7 +9,7 @@
 #include "TPad.h"
 #include "TArc.h"
 
-#include "Stntuple/base/TVisNode.hh"
+#include "Stntuple/gui/TStnVisNode.hh"
 #include "Stntuple/gui/TEvdCluster.hh"
 
 #ifndef __CINT__
@@ -39,7 +39,7 @@ class TEvdCalSection;
 class TEvdCrystal;
 
 
-class TCalVisNode: public TVisNode {
+class TCalVisNode: public TStnVisNode {
 public:
   enum {
     kPickClusters = 0,
@@ -136,15 +136,16 @@ public:
   int   InitEvent();
 
   //  virtual void  Draw    (Option_t* option = "");
-  virtual void  Paint   (Option_t* option = "");
+  // virtual void  Paint   (Option_t* option = "");
   virtual void  PaintXY (Option_t* option = "");
   virtual void  PaintRZ (Option_t* option = "");
   virtual void  PaintCal(Option_t* option = "");
   //  virtual void  ExecuteEvent(Int_t event, Int_t px, Int_t py);
 
-  virtual Int_t DistancetoPrimitive  (Int_t px, Int_t py);
-  virtual Int_t DistancetoPrimitiveXY(Int_t px, Int_t py);
-  virtual Int_t DistancetoPrimitiveRZ(Int_t px, Int_t py);
+  //  virtual Int_t DistancetoPrimitive  (Int_t px, Int_t py);
+  virtual Int_t DistancetoPrimitiveXY (Int_t px, Int_t py);
+  virtual Int_t DistancetoPrimitiveRZ (Int_t px, Int_t py);
+  virtual Int_t DistancetoPrimitiveCal(Int_t px, Int_t py);
 //-----------------------------------------------------------------------------
 // overloaded functions of TObject
 //-----------------------------------------------------------------------------

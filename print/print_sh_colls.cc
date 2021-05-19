@@ -12,7 +12,7 @@
 //-----------------------------------------------------------------------------
 void print_sh_colls() {
 
-  printf("Available ComboHitCollections: \n");
+  printf("Available StrawHitCollections: \n");
 
   std::vector<art::Handle<mu2e::StrawHitCollection>> vcoll;
 

@@ -12,6 +12,10 @@
 #include "TEllipse.h"
 
 class KalRep;
+
+namespace stntuple {
+
+class TEvdStrawHit;
 class TEvdTrkStrawHit;
 
 class TEvdTrack: public TObject {
@@ -23,7 +27,7 @@ protected:
 
   TObjArray*         fListOfHits;
 
-  static TEllipse*   fgEllipse;
+  TEllipse*          fEllipse;
 public:
 //-----------------------------------------------------------------------------
 // constructors and destructor
@@ -65,8 +69,8 @@ public:
   virtual void  Clear(Option_t* Opt = "");
   virtual void  Print(Option_t* Opt = "") const ; // **MENU**
 
-  ClassDef(TEvdTrack,0)
+  ClassDef(stntuple::TEvdTrack,0)
 };
 
-
+}
 #endif

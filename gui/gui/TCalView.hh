@@ -1,28 +1,27 @@
-#ifndef TCalView_hh
-#define TCalView_hh
+#ifndef Stntuple_gui_TCalView_hh
+#define Stntuple_gui_TCalView_hh
 
 
 #include "TNamed.h"
 #include "TPad.h"
+#include "Stntuple/base/TStnView.hh"
 
-class TCalView: public TNamed {
+
+class TCalView: public TStnView {
 protected:
-  Int_t               fPx1;
-  Int_t               fPy1;
-  Int_t               fPx2;
-  Int_t               fPy2;
-  Int_t               fSectionToDisplay;	// a disk or vane number
-  TVirtualPad*        fPad;
+  //  Int_t               fSectionToDisplay;	// a disk or vane number
+  //  TVirtualPad*        fPad;
 public:
 
   TCalView(int Section = 0);
   virtual ~TCalView();
 
-  TVirtualPad*  GetPad() { return fPad; }
+  //  TVirtualPad*  GetPad() { return fPad; }
 
-  int    SectionToDisplay() { return fSectionToDisplay; }
-  void   SetSectionToDisplay(int Section) { fSectionToDisplay = Section; }
-  void   SetPad (TVirtualPad* Pad) { fPad = Pad; }
+  // int    SectionToDisplay() { return fSectionToDisplay; }
+  // void   SetSectionToDisplay(int Section) { fSectionToDisplay = Section; }
+
+  //  void   SetPad (TVirtualPad* Pad) { fPad = Pad; }
 //-----------------------------------------------------------------------------
 // menu
 //-----------------------------------------------------------------------------
@@ -32,9 +31,9 @@ public:
 //-----------------------------------------------------------------------------
 // overloaded virtual functions of TObject
 //-----------------------------------------------------------------------------
-  virtual void  Paint(Option_t* Option = "");
-  virtual void  ExecuteEvent(Int_t event, Int_t px, Int_t py);
-  virtual Int_t DistancetoPrimitive(Int_t px, Int_t py);
+  // virtual void  Paint              (Option_t* Option = "");
+  // virtual void  ExecuteEvent       (Int_t event, Int_t px, Int_t py);
+  //  virtual Int_t DistancetoPrimitive(Int_t px, Int_t py);
 
   ClassDef(TCalView,0)
 };

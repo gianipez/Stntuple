@@ -3,36 +3,40 @@
 # Script to build the files found in this directory.
 #------------------------------------------------------------------------------
 import os
-Import('env')
+Import('stntuple_env')
 Import('stntuple_helper')
 #------------------------------------------------------------------------------
 # 2016-10-10: STNTUPLE link: add ROOT 'EG' library after 'Physics' library
 #------------------------------------------------------------------------------
-babarlibs = env['BABARLIBS']
-rootlibs  = env['ROOTLIBS']
-if ( not ("EG" in rootlibs)):
-    rootlibs.insert(rootlibs.index("Physics")+1,"EG");
+def local_build():
+    local_env = stntuple_env.Clone()
 
-stn_helper = stntuple_helper(env);
+    rootlibs = local_env['ROOTLIBS']
+    # if ( not ("EG" in rootlibs)): rootlibs.insert(rootlibs.index("Physics")+1,"EG");
 
-dict_skip_list = []
-if (os.getenv("STNTUPLE_MC_GEN") == None): 
-    dict_skip_list.append("TStnGeneratorModule_linkdef.h");
+    debug     = False; 
+    helper    = stntuple_helper(local_env,debug);
 
-stn_helper.handle_dictionaries(skip_list=dict_skip_list);
+    dict_skip_list = []
+    if (os.getenv("STNTUPLE_MC_GEN") == None): dict_skip_list.append("TStnGeneratorModule_linkdef.h");
 
-list_of_cc_files =  Glob('*.cc', strings=True);
-skip_list        = []
+    helper.handle_dictionaries(skip_list=dict_skip_list);
 
-if (os.getenv("STNTUPLE_MC_GEN") == None): 
-    skip_list.append('TStnGeneratorModule.cc');
-    skip_list.append('StnGenInitGenpBlock.cc');
+    list_of_cc_files =  Glob('*.cc', strings=True);
+    skip_list        = []
 
-stntuple_libs = [ 'Stntuple_obj', 'Stntuple_base'];
+    if (os.getenv("STNTUPLE_MC_GEN") == None): 
+        skip_list.append('TStnGeneratorModule.cc');
+        skip_list.append('StnGenInitGenpBlock.cc');
 
-if (os.getenv("STNTUPLE_MC_GEN") != None): stntuple_libs.append('mc_base');
+    stntuple_libs = [ 'Stntuple_obj', 'Stntuple_base'];
 
-libs =  stntuple_libs + rootlibs
+    if (os.getenv("STNTUPLE_MC_GEN") != None): stntuple_libs.append('mc_base');
 
-stn_helper.build_libs(list_of_cc_files, skip_list,libs);
+    libs =  stntuple_libs + rootlibs
+
+    helper.build_libs(list_of_cc_files, skip_list,libs);
+#------------------------------------------------------------------------------
+local_build();
+
 # print "tmpdir:"+env['TMP_LIB_DIR']

@@ -16,6 +16,7 @@
 #include "TControlBar.h"
 #include "TInterpreter.h"
 #include "TGStatusBar.h"
+//#include "TGGroupFrame.h"
 #include "TRootEmbeddedCanvas.h"
 #include "TCanvas.h"
 
@@ -56,7 +57,17 @@ enum TGeantCommandIdentifiers {
 
   M_HELP_CONTENTS,
   M_HELP_SEARCH,
-  M_HELP_ABOUT
+  M_HELP_ABOUT,
+
+  M_OPEN_XY,
+  M_OPEN_RZ,
+  M_OPEN_TZ,
+  M_OPEN_CAL,
+  M_OPEN_CRV,
+
+  M_PRINT_STRAW_H,
+  M_PRINT_COMBO_H
+
 };
 
 //-----------------------------------------------------------------------------
@@ -72,9 +83,7 @@ const char *filetypes[] = { "All files",     "*",
                             "ROOT macros",   "*.C",
                             0,               0 };
 
-
-
-//_____________________________________________________________________________
+//-----------------------------------------------------------------------------
 TStnFrame::TStnFrame(const char* Name,
 		     const char* Title, 
 		     Int_t       View,
@@ -85,13 +94,11 @@ TStnFrame::TStnFrame(const char* Name,
   TGMainFrame(gClient->GetRoot(),w, h, Options),
   fView(View)
 {
-  // create a TGeant event display window
-
 //-----------------------------------------------------------------------------
 //  create menu bar
 //-----------------------------------------------------------------------------
-  fMenuBarLayout = new TGLayoutHints(kLHintsTop | kLHintsLeft | kLHintsExpandX,
-				     0, 0, 1, 1);
+  fMenuBarLayout     = new TGLayoutHints(kLHintsTop | kLHintsLeft | kLHintsExpandX,
+					 0, 0, 1, 1);
   fMenuBarItemLayout = new TGLayoutHints(kLHintsTop | kLHintsLeft, 0, 4, 0, 0);
   fMenuBarHelpLayout = new TGLayoutHints(kLHintsTop | kLHintsRight);
 
@@ -137,26 +144,55 @@ TStnFrame::TStnFrame(const char* Name,
   fMenuOption->AddEntry("Show &Fit Parameters",  M_OPTION_FIT_PARAMS);
   fMenuOption->AddEntry("Can Edit Histograms",   M_OPTION_CAN_EDIT);
 
-					// define menu handlers
-  fMenuFile->Associate(this);
-  fMenuEdit->Associate(this);
+  fMenuOpen = new TGPopupMenu(gClient->GetRoot());
+  fMenuOpen->AddEntry("&XY View",            M_OPEN_XY);
+  fMenuOpen->AddEntry("&RZ View",            M_OPEN_RZ);
+  fMenuOpen->AddEntry("&TZ View",            M_OPEN_TZ);
+  fMenuOpen->AddEntry("&Cal View",           M_OPEN_CAL);
+  fMenuOpen->AddEntry("&CRV View",           M_OPEN_CRV);
+
+  fMenuPrint = new TGPopupMenu(gClient->GetRoot());
+  fMenuPrint->AddEntry("Print &Straw Hits",  M_PRINT_STRAW_H);
+  fMenuPrint->AddEntry("Print &Combo Hits",  M_PRINT_COMBO_H);
+//-----------------------------------------------------------------------------
+// define menu handlers
+//-----------------------------------------------------------------------------
+  fMenuFile  ->Associate(this);
+  fMenuEdit  ->Associate(this);
   fMenuOption->Associate(this);
-  fMenuHelp->Associate(this);
+  fMenuHelp  ->Associate(this);
+  fMenuOpen  ->Associate(this);
 
   fMenuBar = new TGMenuBar(this, 1, 1, kHorizontalFrame);
 
   fMenuBar->AddPopup("&File"  , fMenuFile  , fMenuBarItemLayout);
   fMenuBar->AddPopup("&Edit"  , fMenuEdit  , fMenuBarItemLayout);
   fMenuBar->AddPopup("&Option", fMenuOption, fMenuBarItemLayout);
+  fMenuBar->AddPopup("O&pen"  , fMenuOpen  , fMenuBarItemLayout);
+  fMenuBar->AddPopup("&Print" , fMenuPrint , fMenuBarItemLayout);
   fMenuBar->AddPopup("&Help"  , fMenuHelp  , fMenuBarHelpLayout);
   
   AddFrame(fMenuBar, fMenuBarLayout);
 //-----------------------------------------------------------------------------
+// left group frame for commands, options and such
+//-----------------------------------------------------------------------------
+//  SetLayoutManager(new TGHorizontalLayout(this));
+
+   // horizontal frame
+  fHorizontalFrame = new TGHorizontalFrame(this, GetWidth()+4,GetHeight()+4,kHorizontalFrame);
+  fHorizontalFrame->SetName("HorizontalFrame");
+
+  fGroupFrame = new TGGroupFrame(fHorizontalFrame,"GroupFrame");
+  fGroupFrame->SetLayoutBroken(kTRUE);
+
+  //  fGroupFrame->SetLayoutManager(new TGVerticalLayout(fGroupFrame));
+  fGroupFrame->Resize(fGroupFrameWidth,GetHeight()+4);
+//-----------------------------------------------------------------------------
 // Create canvas and canvas container that will host the ROOT graphics
 //-----------------------------------------------------------------------------
   fEmbeddedCanvas = new TRootEmbeddedCanvas(Name, 
-					    this, 
-					    GetWidth()+4, 
+					    fHorizontalFrame, 
+					    GetWidth ()+4, 
 					    GetHeight()+4,
 					    kSunkenFrame | kDoubleBorder);
 
@@ -194,8 +230,10 @@ TStnFrame::TStnFrame(const char* Name,
 
   title->Modified();
  
+  fHorizontalFrame->AddFrame(fGroupFrame, new TGLayoutHints(kLHintsLeft | kLHintsTop |  kLHintsExpandY,2,2,2,2));
+  fHorizontalFrame->AddFrame(fEmbeddedCanvas, fCanvasLayout);
 
-  AddFrame(fEmbeddedCanvas, fCanvasLayout);
+  AddFrame(fHorizontalFrame, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY,1,1,1,1));
 //-----------------------------------------------------------------------------
 // no editor bar by default
 //-----------------------------------------------------------------------------
@@ -204,7 +242,7 @@ TStnFrame::TStnFrame(const char* Name,
 // status bar (hidden by default)
 //-----------------------------------------------------------------------------
    int parts[] = { 33, 10, 10, 47 };
-   fStatusBar = new TGStatusBar(this, 10, 10);
+   fStatusBar  = new TGStatusBar(this, 10, 10);
    fStatusBar->SetParts(parts, 4);
    fStatusBarLayout = new TGLayoutHints(kLHintsBottom | kLHintsLeft | 
 					kLHintsExpandX, 2, 2, 1, 1);
@@ -221,8 +259,7 @@ TStnFrame::TStnFrame(const char* Name,
   MapWindow();
 }
 
-
-//_____________________________________________________________________________
+//-----------------------------------------------------------------------------
 TStnFrame::~TStnFrame() {
   // Delete window, as TStnFrame's do not exist by themselves, but they are
   // always managed by TVisManager, we need to erase this frame from the
@@ -239,6 +276,8 @@ TStnFrame::~TStnFrame() {
   delete fMenuFile;
   delete fMenuEdit;
   delete fMenuOption;
+  delete fMenuOpen;
+  delete fMenuPrint;
   delete fMenuHelp;
 
   delete fMenuBarItemLayout;
@@ -251,7 +290,7 @@ TStnFrame::~TStnFrame() {
 
 }
 
-//______________________________________________________________________________
+//-----------------------------------------------------------------------------
 void TStnFrame::EditorBar() {
   // Create the Editor Controlbar
 
@@ -276,15 +315,15 @@ void TStnFrame::EditorBar() {
    fEditorBar = ed;
 }
 
-//_____________________________________________________________________________
+//-----------------------------------------------------------------------------
 Bool_t TStnFrame::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2) {
-   // Handle menu items.
+  // Handle menu items.
 
   TCanvas* c;
   int message = GET_MSG(msg);
-//   double     x,y;
-//   int        px, py;
-
+  //   double     x,y;
+  //   int        px, py;
+  
   TVisManager* vm = TVisManager::Instance();
 
   c = GetCanvas();
@@ -350,6 +389,39 @@ Bool_t TStnFrame::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2) {
 	}
 	break;
 //-----------------------------------------------------------------------------
+//  OPEN menu
+//-----------------------------------------------------------------------------
+      case M_OPEN_XY:
+	
+	printf(" *** TStnFrame::ProcessMessage M_OPEN_XY: msg = %li parm1 = %li parm2 = %li\n", 
+	       msg,parm1,parm2);
+	TStnVisManager::Instance()->OpenTrkXYView();
+	break;
+      case M_OPEN_RZ:
+	
+	printf(" *** TStnFrame::ProcessMessage M_OPEN_RZ: msg = %li parm1 = %li parm2 = %li\n", 
+	       msg,parm1,parm2);
+	TStnVisManager::Instance()->OpenTrkRZView();
+	break;
+      case M_OPEN_TZ:
+	
+	printf(" *** TStnFrame::ProcessMessage M_OPEN_TZ: msg = %li parm1 = %li parm2 = %li\n", 
+	       msg,parm1,parm2);
+	TStnVisManager::Instance()->OpenTrkTZView();
+	break;
+      case M_OPEN_CAL:
+	
+	printf(" *** TStnFrame::ProcessMessage M_OPEN_CAL: msg = %li parm1 = %li parm2 = %li\n", 
+	       msg,parm1,parm2);
+	TStnVisManager::Instance()->OpenCalView();
+	break;
+      case M_OPEN_CRV:
+	
+	printf(" *** TStnFrame::ProcessMessage M_OPEN_CRV: msg = %li parm1 = %li parm2 = %li\n", 
+	       msg,parm1,parm2);
+	TStnVisManager::Instance()->OpenCrvView();
+	break;
+//-----------------------------------------------------------------------------
 //  default
 //-----------------------------------------------------------------------------
       default:
@@ -382,59 +454,53 @@ Bool_t TStnFrame::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2) {
   return true;
 }
 
-
-
-//_____________________________________________________________________________
+//-----------------------------------------------------------------------------
 void TStnFrame::CloseWindow() {
-   // Called when window is closed via the window manager.
-
-   TVirtualPad *savepad = gPad;
-   gPad = 0;        // hide gPad from CINT
-   gInterpreter->DeleteGlobal(fEmbeddedCanvas->GetCanvas());
-   gPad = savepad;  // restore gPad for ROOT
-
-   delete this;
+  // Called when window is closed via the window manager.
+  
+  TVirtualPad *savepad = gPad;
+  gPad = 0;        // hide gPad from CINT
+  gInterpreter->DeleteGlobal(fEmbeddedCanvas->GetCanvas());
+  gPad = savepad;  // restore gPad for ROOT
+  
+  delete this;
 }
 
+//-----------------------------------------------------------------------------
+void TStnFrame::ShowStatusBar(Bool_t show) {
+  // Show or hide statusbar.
 
-//______________________________________________________________________________
-void TStnFrame::ShowStatusBar(Bool_t show)
-{
-   // Show or hide statusbar.
-
-   if (show) {
-      ShowFrame(fStatusBar);
-      fMenuOption->CheckEntry(M_OPTION_EVENT_STATUS);
-   } else {
-      HideFrame(fStatusBar);
-      fMenuOption->UnCheckEntry(M_OPTION_EVENT_STATUS);
-   }
+  if (show) {
+    ShowFrame(fStatusBar);
+    fMenuOption->CheckEntry(M_OPTION_EVENT_STATUS);
+  } else {
+    HideFrame(fStatusBar);
+    fMenuOption->UnCheckEntry(M_OPTION_EVENT_STATUS);
+  }
 }
 
-//______________________________________________________________________________
-void TStnFrame::SetStatusText(const char *txt, Int_t partidx)
-{
-   // Set text in status bar.
+//-----------------------------------------------------------------------------
+void TStnFrame::SetStatusText(const char *txt, Int_t partidx) {
+  // Set text in status bar.
 
-   fStatusBar->SetText(txt, partidx);
+  fStatusBar->SetText(txt, partidx);
 }
 
-//_____________________________________________________________________________
-void TStnFrame::DoOK()
-{
-   printf("\nTerminating dialog: OK pressed\n");
+//-----------------------------------------------------------------------------
+void TStnFrame::DoOK() {
+  printf("\nTerminating dialog: OK pressed\n");
 
-   // Send a close message to the main frame. This will trigger the
-   // emission of a CloseWindow() signal, which will then call
-   // TStnFrame::CloseWindow(). Calling directly CloseWindow() will cause
-   // a segv since the OK button is still accessed after the DoOK() method.
-   // This works since the close message is handled synchronous (via
-   // message going to/from X server).
-
-   SendCloseMessage();
-
-   // The same effect can be obtained by using a singleshot timer:
-   //TTimer::SingleShot(50, "TStnFrame", this, "CloseWindow()");
+  // Send a close message to the main frame. This will trigger the
+  // emission of a CloseWindow() signal, which will then call
+  // TStnFrame::CloseWindow(). Calling directly CloseWindow() will cause
+  // a segv since the OK button is still accessed after the DoOK() method.
+  // This works since the close message is handled synchronous (via
+  // message going to/from X server).
+  
+  SendCloseMessage();
+  
+  // The same effect can be obtained by using a singleshot timer:
+  //TTimer::SingleShot(50, "TStnFrame", this, "CloseWindow()");
 }
 
 //_____________________________________________________________________________
@@ -448,7 +514,7 @@ void TStnFrame::HandleButtons(Int_t id) {
   // Handle different buttons.
 }
 
-//_____________________________________________________________________________
+//-----------------------------------------------------------------------------
 void TStnFrame::DoTab(Int_t id) {
    printf("*** TStnFrame::DoTab : Tab item %d activated\n", id);
 }
