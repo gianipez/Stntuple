@@ -28,10 +28,19 @@ def stntuple_gen_rootcint(source, target, env, for_signature):
     class_include = str(source[1]);
     linkdef       = str(source[0]);
 
-#    print "[stntuple_gen_rootcint] class_include = %s"%class_include
-#    print "[stntuple_gen_rootcint] linkdef       = %s"%linkdef
-    
-    includes = "-I"+os.environ['BUILD_BASE']+'/include';
+    #    print "[stntuple_gen_rootcint] class_include = %s"%class_include
+    #    print "[stntuple_gen_rootcint] linkdef       = %s"%linkdef
+    #------------------------------------------------------------------------------
+    # building in a satellite release requires both env vars 
+    #------------------------------------------------------------------------------
+    base_dir = os.environ.get('BUILD_BASE');
+    dir      = os.environ.get('MU2E_SATELLITE_RELEASE');
+    if (dir):
+        includes = '-I'+dir+'/include';
+        includes = includes+' -I'+base_dir+'/include';
+    else:
+        includes = '-I'+base_dir+'/include';
+
     includes = includes + " -I"+os.environ['BUILD_BASE'  ];
     includes = includes + " -I"+os.environ['ART_INC'     ];
     includes = includes + " -I"+os.environ['ART_ROOT_IO_INC'];
@@ -50,18 +59,24 @@ def stntuple_gen_rootcint(source, target, env, for_signature):
     
     pcm_file = dict.replace(".cxx","_rdict.pcm");
 
-#    print "dict:"+dict + "   pcm_file:"+pcm_file;
-    dir = os.environ.get('BUILD_BASE');
+    #    print "dict:"+dict + "   pcm_file:"+pcm_file;
+    #------------------------------------------------------------------------------
+    # if building a satellite release, BUILD_BASE points to a remote directory
+    # need to use MU2E_SATELLITE_RELEASE
+    #------------------------------------------------------------------------------
+    dir = os.environ.get('MU2E_SATELLITE_RELEASE');
+    if (dir == None): dir = os.environ.get('BUILD_BASE');
+
     lib_dir = dir+"/lib";
-    cmd = 'if [ ! -d '+tmp_lib_dir+' ] ; then mkdir -p '+tmp_lib_dir+'; fi ;';
+    cmd     = 'if [ ! -d '+tmp_lib_dir+' ] ; then mkdir -p '+tmp_lib_dir+'; fi;';
 #------------------------------------------------------------------------------
 # export $HOME is, for an unknown reason, needed to build in a DOCKER container
 # the same is needed to use genreflex - that change goes into SConstruct
 # without that, ROOT doesn't find the home directory.
 # The mechanism of failure is not understood.
 #------------------------------------------------------------------------------
-    cmd = cmd+"export HOME="+os.environ["HOME"]+";";
-    cmd = cmd+"rootcint -f "+dict+" -c  -D_CODEGEN_ -DMU2E "+includes+" "+class_include+" "+linkdef+"; ";
+    cmd = cmd+" export HOME="+os.environ["HOME"]+";";
+    cmd = cmd+" rootcint -f "+dict+" -c  -D_CODEGEN_ -DMU2E "+includes+" "+class_include+" "+linkdef+"; ";
     cmd = cmd+'if [ ! -d '+lib_dir+' ] ; then mkdir '+lib_dir+' ; fi ; ';
     cmd = cmd+"mv "+pcm_file+" "+lib_dir+'/.'; 
 #    print ">>> cmd = %s"%cmd

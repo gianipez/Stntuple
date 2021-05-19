@@ -106,8 +106,11 @@ class stntuple_helper:
                 o = '#/tmp/src/'+self.d1+'/'+cc.split('.')[0]+'.o'
                 self._list_of_object_files.append(o);
                 self._env.SharedObject(o,cc)
-
-        dir = os.environ.get('BUILD_BASE');
+        #------------------------------------------------------------------------------
+        # need to keep MU2E_SATELLITE_RELEASE for a while for building in a satellite release
+        #------------------------------------------------------------------------------
+        dir = os.environ.get('MU2E_SATELLITE_RELEASE');
+        if (dir == None): dir = os.environ.get('BUILD_BASE');
         lib_name = dir+'/lib/'+self.libname+'.so';
 
         if (self._debug):

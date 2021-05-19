@@ -1,6 +1,9 @@
 #!/bin/bash
 #------------------------------------------------------------------------------
-base=$BUILD_BASE
+# BUILD_BASE doesn't replace the SATELLITE_RELEASE, need both
+#------------------------------------------------------------------------------
+base=$MU2E_SATELLITE_RELEASE ; if [ ".$base" == "." ] ; then base=$BUILD_BASE ; fi
+
  pkg=Stntuple
 list_of_subpackages="alg ana base geom gui loop mod obj print val"
 #------------------------------------------------------------------------------
