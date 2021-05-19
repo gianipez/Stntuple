@@ -30,7 +30,7 @@
 ClassImp(TStntuple)
 
 
-TStntuple*        TStntuple::fgInstance       = 0;
+TStntuple*        TStntuple::fgInstance  = 0;
 
 Int_t             TStntuple::fgRunNumber = 0;
 
@@ -200,6 +200,31 @@ double TStntuple::DioWeightAl_LL(double E) {
   if (de < 0) w = 0;
 
   return w;
+}
+//-----------------------------------------------------------------------------
+// parameterization of the Michel spectrum with 1st order radiative corrections
+// from Landau-Lifshitz('71). Weight is calculated as dw/(MeV)
+//-----------------------------------------------------------------------------
+double TStntuple::MichelWeight(double E) {
+
+  double a0(0.036594), a1(0.65631), a2(0.84138);
+  double mmu(105.658), me(0.511),   Emax=52.8302;
+  double alpha(1./137.036) ;  // alpha EM
+  double x; x=E/Emax;
+  double F, h, L; 
+  double PI = 3.14159265359;
+  double dw;
+
+  F  = a0+a1*x+a2*x*x;
+  L  = log(mmu/me);
+  h  = 4*F-(2/3)*(PI*PI)+3*L-4+2*log(x)*(3*log(1-x)-2*log(x)-2*L+1)+2*(2*L-1-1/x)*log(1-x)+6*(1-x)/(3-2*x)*log(x)+(1-x)/(3*x*x*(3-2*x))*((5+17*x-34*x*x)*(L+log(x))-22*x+34*x*x);
+  dw = (1+alpha/(2*PI)*h)*(3-2*x)*x*x/Emax;
+
+  dw=dw/0.49791;
+  if(dw<=0||x>=0.999999999)
+    dw=0;
+ 
+  return dw;
 }
 
 //-----------------------------------------------------------------------------

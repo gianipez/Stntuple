@@ -58,7 +58,7 @@ public:
 //-----------------------------------------------------------------------------
   static double DioWeightAl_LO(double P);
   static double DioWeightAl_LL(double P);
-
+  static double MichelWeight  (double E);
   static double DioWeightTi   (double P);
 
   static double RMC_ClosureAppxWeight (double K, double KMax);
