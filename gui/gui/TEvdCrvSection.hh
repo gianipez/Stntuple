@@ -5,8 +5,9 @@
 #define TEvdCalSection_hh
 
 #include "Rtypes.h" // (?)  - Gtypes is obsolete and contains nothing
-#include "TClonesArray.h"
+#include "TNamed.h"
 #include "TBox.h"
+#include "TGeoBBox.h"
 
 #ifndef __CINT__
 
@@ -14,59 +15,69 @@
 
 #else
 
-namespace mu2e 
-{
-	class  CRSScintillatorShield;
+namespace mu2e {
+  class  CRSScintillatorShield;
 };
 
 #endif
 
-class TEvdCrvSection : public TObject 
-{
+class TEvdCrvSection : public TNamed {
 public:
-	//-----------------------------------------------------------------------------
-	// constructors and destructor
-	//-----------------------------------------------------------------------------
-	TEvdCrvSection() {}
-	TEvdCrvSection(/*const mu2e::CRSScintillatorShield* Shield,*/ int SectionID);
+  //const mu2e::CRSScintillatorShield*  fShield;
+  int       fSectionID;
+  int       fNModules;
+  int       fNLayers;
+  int       fNBars;              // per layer
+  int       fFirstBar;
+  int       fBarIx;	      // orientation of the bar
+  int       fBarIy;
+  int       fBarIz;
+  float     fBarDx;
+  float     fBarDy;
+  float     fBarDz;
+  TBox*	    fBox;
+  TGeoBBox* fBarShape;
+public:
+//-----------------------------------------------------------------------------
+// constructors and destructor
+//-----------------------------------------------------------------------------
+  TEvdCrvSection() {}
+  TEvdCrvSection(int SectionID, const char* Name = "");
 
-	virtual ~TEvdCrvSection();
-	//-----------------------------------------------------------------------------
-	// accessors
-	//-----------------------------------------------------------------------------
-	//const mu2e::CRSScintillatorShield*	Shield()	{ return fShield; }
-	int									SectionID()	{ return fSectionID; }
+  virtual ~TEvdCrvSection();
+//-----------------------------------------------------------------------------
+// accessors
+//-----------------------------------------------------------------------------
+//const mu2e::CRSScintillatorShield*	Shield()	{ return fShield; }
 
-	//int NBars() { return fShield->(); } - No current support for getting the number of bars in a given section easily
-	//-----------------------------------------------------------------------------
-	// modifiers
-	//-----------------------------------------------------------------------------
+  TGeoBBox* BarShape() { return fBarShape; }
+  
+  int SectionID()	{ return fSectionID; }
 
-	//  virtual void  Draw    (Option_t* option = "");
+  //int NBars() { return fShield->(); } - No current support for getting the number of bars in a given section easily
+  //-----------------------------------------------------------------------------
+  // modifiers
+  //-----------------------------------------------------------------------------
 
-	virtual void  Paint(Option_t* option = "");
-	//virtual void  PaintXY(Option_t* Option = "");
-	//virtual void  PaintRZ(Option_t* Option = "");
-	//virtual void  PaintCal(Option_t* Option = "");
-	virtual void  PaintCrv(Option_t* Option = "");
+  //  virtual void  Draw    (Option_t* option = "");
 
-	int   InitEvent() { return 0; }
+  virtual void  Paint(Option_t* option = "");
+  //virtual void  PaintXY(Option_t* Option = "");
+  //virtual void  PaintRZ(Option_t* Option = "");
+  //virtual void  PaintCal(Option_t* Option = "");
+  virtual void  PaintCrv(Option_t* Option = "");
 
-	//  virtual void  ExecuteEvent(Int_t event, Int_t px, Int_t py);
+  int   InitEvent() { return 0; }
 
-	virtual Int_t DistancetoPrimitive(Int_t px, Int_t py);
-	virtual Int_t DistancetoPrimitiveXY(Int_t px, Int_t py);
-	virtual Int_t DistancetoPrimitiveRZ(Int_t px, Int_t py);
+  //  virtual void  ExecuteEvent(Int_t event, Int_t px, Int_t py);
 
-	//  virtual void   Print(const char* Opt = "") const ; // **MENU**
+  virtual Int_t DistancetoPrimitive(Int_t px, Int_t py);
+  virtual Int_t DistancetoPrimitiveXY(Int_t px, Int_t py);
+  virtual Int_t DistancetoPrimitiveRZ(Int_t px, Int_t py);
 
-protected:
-	//const mu2e::CRSScintillatorShield*  fShield;
-	int									fSectionID;
-	TBox*								fBox;
+  //  virtual void   Print(const char* Opt = "") const ; // **MENU**
 
-
-	ClassDef(TEvdCrvSection, 0)
+  ClassDef(TEvdCrvSection, 0)
 };
 
 

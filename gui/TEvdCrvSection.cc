@@ -26,7 +26,7 @@
 ClassImp(TEvdCrvSection)
 
 //_____________________________________________________________________________
-TEvdCrvSection::TEvdCrvSection(/*const mu2e::CRSScintillatorShield* Shield,*/ int SectionID) : TObject() {
+TEvdCrvSection::TEvdCrvSection(int SectionID, const char* Name) : TNamed(Name,Name) {
   //fShield = Shield;
   fSectionID = SectionID;
 

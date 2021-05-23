@@ -3,9 +3,14 @@
 
 #include "TGeoVolume.h"
 #include "TString.h"
+#include "TGeoManager.h"
 
-class TStnGeoManager : public TObject {
+#include "Stntuple/gui/TEvdCrvSection.hh"
+
+class TStnGeoManager : public TNamed {
 public:
+  enum { kNCrvSections = 22 };
+  
   TGeoNode*    fTop; 
   TGeoNode*    fDs2Vacuum; 
   TGeoNode*    fDs3Vacuum; 
@@ -14,11 +19,17 @@ public:
   TGeoNode*    fTrkMother;
   TGeoNode*    fMbsMother;
 
+  TEvdCrvSection* fCrvSection[kNCrvSections];
+
   int          fTransp;
 
-  TStnGeoManager();
-  TStnGeoManager(const char* Fn, int OriginalColors = 0);
+  TStnGeoManager(const char* Name = "");
+  TStnGeoManager(const char* Name, const char* Fn, int OriginalColors = 0);
   ~TStnGeoManager();
+//-----------------------------------------------------------------------------
+// accessors
+//-----------------------------------------------------------------------------
+  TEvdCrvSection* CrvSection(int I) { return fCrvSection[I] ; }
   
   void SetRecursiveVisibility(TGeoVolume* Vol, int OnOff);
   void SetRecursiveVisibility(TGeoNode*   Vol, int OnOff);

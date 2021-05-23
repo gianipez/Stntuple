@@ -13,7 +13,7 @@
 ClassImp(TStnGeoManager)
 
 //-----------------------------------------------------------------------------
-TStnGeoManager::TStnGeoManager() {
+TStnGeoManager::TStnGeoManager(const char* Name): TNamed(Name,Name) {
   fTop       = NULL;
   fDs2Vacuum = NULL;
   fDs3Vacuum = NULL;
@@ -25,7 +25,7 @@ TStnGeoManager::TStnGeoManager() {
 }
 
 //-----------------------------------------------------------------------------
-TStnGeoManager::TStnGeoManager(const char* Fn, int OriginalColors) {
+TStnGeoManager::TStnGeoManager(const char* Name, const char* Fn, int UseOriginalColors) : TNamed(Name,Name){
   TGeoManager::Import(Fn);
 
   fTop       = gGeoManager->GetTopNode();
@@ -41,7 +41,7 @@ TStnGeoManager::TStnGeoManager(const char* Fn, int OriginalColors) {
 
   fTransp = 40;
   
-  HideBuilding(OriginalColors);
+  HideBuilding(UseOriginalColors);
 }
 
 //-----------------------------------------------------------------------------
