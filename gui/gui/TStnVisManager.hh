@@ -16,7 +16,7 @@
 #else
 
 namespace art {
-	class Event;
+  class Event;
 }
 
 #endif
@@ -27,25 +27,22 @@ class TGPopupMenu;
 class TGLayoutHints;
 class TGMainFrame;
 
+class TStnView;
 class TTrkXYView;
 class TTrkRZView;
-class TCalView;
-class TCrvView;
+
+#include "Stntuple/gui/TCalView.hh"
+#include "Stntuple/gui/TCrvView.hh"
+
 class TSubdetector;
 class TExtrapolator;
 
+//-----------------------------------------------------------------------------
 class TStnVisManager : public TVisManager {
 public:
-
-  enum {
-    kXYView = 1,
-    kRZView = 2,
-    kCalView = 3,
-    kCrvView = 4
-  };
-  //-----------------------------------------------------------------------------
-  // command codes
-  //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// command codes
+//-----------------------------------------------------------------------------
   enum CommandIdentifiers {
     M_TRACKER_XY,
     M_TRACKER_RZ,
@@ -91,11 +88,6 @@ protected:
   TObjArray*          fListOfDetectors;
   TSubdetector*       fClosestSubdetector;
 
-  TTrkXYView*         fTrkXYView;
-  TTrkRZView*         fTrkRZView;
-  TCalView*           fCalView[4];	// 4: provides for the now obsolete vane-based geometry
-  TCrvView*	      fCrvView[6];
-
   TExtrapolator*      fExtrapolator;
 
   const art::Event*   fEvent;
@@ -104,95 +96,99 @@ protected:
   int                 fMaxStation;
   int                 fTimeCluster;
   int                 fDebugLevel;
-					// to display all the data in a given time window
-  double              fTMin;
-  double              fTMax;
+					// to display all the data in a given time window 
+					// vis manager would enforces the same time limits on all views,
+					// later those can be redefined individually
+  float               fTMin;
+  float               fTMax;
 
   int                 fDisplayStrawDigiMC;
-
 //-----------------------------------------------------------------------------
 //  functions
 //-----------------------------------------------------------------------------
 public:
 
-	TStnVisManager(const char* name = "TStnVisManager",	const char* title = "TStnVisManager");
+  TStnVisManager(const char* name = "TStnVisManager",	const char* title = "TStnVisManager");
 
-	virtual ~TStnVisManager();
+  virtual ~TStnVisManager();
 
-	static TStnVisManager* Instance();
-	// ****** accessors
+  static TStnVisManager* Instance();
+  // ****** accessors
 
-	//Interface Handlers
-	void HandleButtons();
-	void HandleSlider();
-	void HandleText(); //char * text);
+  //Interface Handlers
 
-	TSubdetector*  GetClosestSubdetector() { return fClosestSubdetector; }
-	TExtrapolator* GetExtrapolator() { return fExtrapolator; }
+  virtual int    InitGui  (const char* Title);
+  virtual int    InitViews();
 
-	TObjArray*     GetListOfDetectors() { return fListOfDetectors; }
+  void           HandleButtons();
+  void           HandleSlider();
+  void           HandleText(); //char * text);
 
-	void          AddDetector(TObject* det) { fListOfDetectors->Add(det); }
+  TSubdetector*  GetClosestSubdetector() { return fClosestSubdetector; }
+  TExtrapolator* GetExtrapolator() { return fExtrapolator; }
 
-	const art::Event* Event() { return fEvent; }
+  TObjArray*     GetListOfDetectors() { return fListOfDetectors; }
 
-	int    DisplayStrawDigiMC() { return fDisplayStrawDigiMC; }
+  void           AddDetector(TObject* det) { fListOfDetectors->Add(det); }
 
-	int    MinStation() { return fMinStation; }
-	int    MaxStation() { return fMaxStation; }
-	int    TimeCluster() { return fTimeCluster; }
+  const art::Event* Event() { return fEvent; }
 
-	double TMin() { return fTMin; }
-	double TMax() { return fTMax; }
+  int            DisplayStrawDigiMC() { return fDisplayStrawDigiMC; }
+  
+  int            MinStation() { return fMinStation; }
+  int            MaxStation() { return fMaxStation; }
+  int            TimeCluster() { return fTimeCluster; }
 
-	void   GetTimeWindow(double& TMin, double& TMax) {
-		TMin = fTMin;
-		TMax = fTMax;
-	}
-	//-----------------------------------------------------------------------------
-	// modifiers
-	//-----------------------------------------------------------------------------
-	void SetEvent(art::Event& Evt) { fEvent = &Evt; }
+  double         TMin() { return fTMin; }
+  double         TMax() { return fTMax; }
 
-	void SetClosestSubdetector(TSubdetector* det) { fClosestSubdetector = det; }
-	void SetExtrapolator(TExtrapolator*  x) { fExtrapolator = x; }
+  void           GetTimeWindow(float& TMin, float& TMax) {
+    TMin = fTMin;
+    TMax = fTMax;
+  }
+  //-----------------------------------------------------------------------------
+  // modifiers
+  //-----------------------------------------------------------------------------
+  void SetEvent(art::Event& Evt) { fEvent = &Evt; }
 
-	void SetDisplayStrawDigiMC(int Display) {
-		fDisplayStrawDigiMC = Display;
-	}
+  void SetDisplayStrawDigiMC(int Display) {
+    fDisplayStrawDigiMC = Display;
+  }
 
-	void SetStations(int IMin, int IMax);
-	void SetTimeCluster(int I);
+  void SetStations(int IMin, int IMax);
+  void SetTimeCluster(int I);
+  
+  void   SetTimeWindow(float TMin, float TMax) {
+    fTMin = TMin;
+    fTMax = TMax;
+  }
 
-	void UpdateViews();
+  void UpdateViews();
 
-	virtual TCanvas*  NewCanvas(const char* Name,
-		const char* Title,
-		Int_t       SizeX,
-		Int_t       SizeY);
+  virtual TCanvas*  NewCanvas(const char* Name,
+			      const char* Title,
+			      Int_t       SizeX,
+			      Int_t       SizeY);
 
-	Int_t   OpenTrkXYView();
-	Int_t   OpenTrkXYView(TTrkXYView* mother,
-		Axis_t x1, Axis_t y1,
-		Axis_t x2, Axis_t y2);
+  virtual void OpenView(TStnView* Mother, int Px1, int Py, int Px2, int Py2);
 
-	Int_t   OpenTrkRZView();
-	Int_t   OpenTrkRZView(TTrkRZView* mother,
-		Axis_t x1, Axis_t y1,
-		Axis_t x2, Axis_t y2);
+  Int_t   OpenTrkXYView();
+  Int_t   OpenTrkXYView(TStnView* Mother, Axis_t x1, Axis_t y1, Axis_t x2, Axis_t y2);
+  
+  Int_t   OpenTrkRZView();
+  Int_t   OpenTrkRZView(TStnView* Mother, Axis_t x1, Axis_t y1, Axis_t x2, Axis_t y2);
 
-	Int_t   OpenCalView();
-	Int_t   OpenCalView(TObject* Mother,
-		Axis_t x1, Axis_t y1,
-		Axis_t x2, Axis_t y2);
+  Int_t   OpenTrkTZView();
+  Int_t   OpenTrkTZView(TStnView* Mother, Axis_t x1, Axis_t y1, Axis_t x2, Axis_t y2);
 
-	Int_t   OpenCrvView();
-	Int_t   OpenCrvView(TCrvView* mother,
-		Axis_t x1, Axis_t y1,
-		Axis_t x2, Axis_t y2);
-
-	void    CloseWindow();
-
-	ClassDef(TStnVisManager, 0)
+  Int_t   OpenCalView();
+  Int_t   OpenCalView  (TStnView* Mother, Axis_t x1, Axis_t y1, Axis_t x2, Axis_t y2);
+  
+  Int_t   OpenCrvView();
+  Int_t   OpenCrvView  (TStnView* Mother, Axis_t x1, Axis_t y1, Axis_t x2, Axis_t y2);
+  
+  void    CloseWindow();
+  
+  ClassDef(TStnVisManager, 0)
 };
 #endif

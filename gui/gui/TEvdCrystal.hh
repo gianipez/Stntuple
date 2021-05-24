@@ -18,12 +18,14 @@
 #include "RecoDataProducts/inc/CaloCluster.hh"
 #include "RecoDataProducts/inc/CaloHit.hh"
 #include "RecoDataProducts/inc/CaloCrystalHit.hh"
+#include "CalorimeterGeom/inc/Disk.hh"
 #else
 namespace mu2e {
   class CaloCluster;
   class CaloCrystalHit;
   class CaloHit;
   class Crystal;
+  class Disk;
 };
 #endif
 
@@ -47,27 +49,27 @@ protected:
   int                   fNHits;		// number of (resolved) crystal hits
 
   float                 fEnergy;  	// total deposited energy
-  TDisk*                fDisk;          // backward pointer to the disk
+  const mu2e::Disk*     fDisk;
 
 public:
 //-----------------------------------------------------------------------------
 // constructors and destructor
 //-----------------------------------------------------------------------------
   TEvdCrystal() {}
-  TEvdCrystal(const mu2e::Crystal* Cr, int NEdges, double Size, TDisk* Disk); 
+  TEvdCrystal(const mu2e::Crystal* Cr, int NEdges, double Size, const mu2e::Disk* Disk); 
 
   virtual ~TEvdCrystal();
 //-----------------------------------------------------------------------------
 // accessors
 //-----------------------------------------------------------------------------
-  TClonesArray*    ListOfHits   () { return fListOfHits; }
-  int              NHits        () const { return fNHits;      }
-  float            Energy       () const { return fEnergy;     }
-  double           Radius       () const { return fShape->Radius(); }
-  TDisk*           Disk         () const { return fDisk; }
-  double           X0           () const { return fShape->X0(); }
-  double           Y0           () const { return fShape->Y0(); }
-  const TStnShape* Shape        () const { return fShape; }
+  TClonesArray*     ListOfHits   () { return fListOfHits; }
+  int               NHits        () const { return fNHits;      }
+  float             Energy       () const { return fEnergy;     }
+  double            Radius       () const { return fShape->Radius(); }
+  const mu2e::Disk* Disk         () const { return fDisk; }
+  double            X0           () const { return fShape->X0(); }
+  double            Y0           () const { return fShape->Y0(); }
+  const TStnShape*  Shape        () const { return fShape; }
 
   const mu2e::Crystal* Crystal() const { return fCrystal;    }
 //-----------------------------------------------------------------------------

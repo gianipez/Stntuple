@@ -131,6 +131,8 @@ int TStnTrackID::IDWord(TStnTrack* Track) {
 }
 
 //_____________________________________________________________________________
+// also no use
+//-----------------------------------------------------------------------------
 int TStnTrackID::TightIDWord(TStnTrack* Track) {
   int  id_word;
   id_word = IDWord(Track);
@@ -147,21 +149,18 @@ int TStnTrackID::LooseIDWord(TStnTrack* Track) {
 
 
 //_____________________________________________________________________________
-void TStnTrackID::FillHistograms(Hist_t* Hist, TStnTrack* Track, Int_t Mode) {
+void TStnTrackID::FillHistograms(Hist_t* Hist, TStnTrack* Track, double Weight) {
 //-----------------------------------------------------------------------------
-// distributions for ID variables (with n-1 ID cuts applied). 
-// Plot 3 sets of histograms:
-// --------------------------
-// set 1: for all the muons
-// set 2: for the parameter given all the rest cuts were successfull
-// set 3&4: for the cuts in sequence they are applied
-// Mode = 1: tight ID (default) 
-//      = 2: loose ID
+// distributions for ID variables - 5 histograms per variable
+// [0] : before all cuts
+// [1] : 'N-1' - with all cuts except the cut on this variable applied
+// [2] : before the cut, in order the cuts are applied 
+// [3] : after  the cut, in order the cuts are applied
+// [4] : all cuts applied
+// booking histograms is left up to the user
+// hist sets [2] and [3] are not very useful...
 //-----------------------------------------------------------------------------
-  int     id_word(0xffffffff);
- 
-  if      (Mode == 1) id_word = IDWord     (Track);
-  else if (Mode == 2) id_word = LooseIDWord(Track);
+  int   id_word = IDWord     (Track);
 
   float nactive = Track->NActive();
   float dna     = Track->NHits()-Track->NActive();
@@ -180,104 +179,104 @@ void TStnTrackID::FillHistograms(Hist_t* Hist, TStnTrack* Track, Int_t Mode) {
 //-----------------------------------------------------------------------------
 //  1. number of points
 //-----------------------------------------------------------------------------
-  Hist->fNActive[0]->Fill(nactive);
-  if ((id_word & ~kNActiveBit) == 0) Hist->fNActive[1]->Fill(nactive);
-  if (id_word == 0) Hist->fNActive[4]->Fill(nactive);
+  Hist->fNActive[0]->Fill(nactive,Weight);
+  if ((id_word & ~kNActiveBit) == 0) Hist->fNActive[1]->Fill(nactive,Weight);
+  if (id_word == 0) Hist->fNActive[4]->Fill(nactive,Weight);
 
   Hist->fFitCons[0]->Fill(fcons);
-  if ((id_word & ~kFitConsBit) == 0) Hist->fFitCons[1]->Fill(fcons);
-  if (id_word == 0) Hist->fFitCons[4]->Fill(fcons);
+  if ((id_word & ~kFitConsBit) == 0) Hist->fFitCons[1]->Fill(fcons,Weight);
+  if (id_word == 0) Hist->fFitCons[4]->Fill(fcons,Weight);
 
-  Hist->fChi2Dof[0]->Fill(chi2dof);
-  if ((id_word & ~kChi2DofBit) == 0) Hist->fChi2Dof[1]->Fill(chi2dof);
-  if (id_word == 0) Hist->fChi2Dof[4]->Fill(chi2dof);
+  Hist->fChi2Dof[0]->Fill(chi2dof,Weight);
+  if ((id_word & ~kChi2DofBit) == 0) Hist->fChi2Dof[1]->Fill(chi2dof,Weight);
+  if (id_word == 0) Hist->fChi2Dof[4]->Fill(chi2dof,Weight);
 
-  Hist->fT0[0]->Fill(t0);
-  if ((id_word & ~kT0Bit) == 0) Hist->fT0[1]->Fill(t0);
-  if (id_word == 0) Hist->fT0[4]->Fill(t0);
+  Hist->fT0[0]->Fill(t0,Weight);
+  if ((id_word & ~kT0Bit) == 0) Hist->fT0[1]->Fill(t0,Weight);
+  if (id_word == 0) Hist->fT0[4]->Fill(t0,Weight);
 
-  Hist->fT0Err[0]->Fill(t0err);
-  if ((id_word & ~kT0ErrBit) == 0) Hist->fT0Err[1]->Fill(t0err);
-  if (id_word == 0) Hist->fT0Err[4]->Fill(t0err);
+  Hist->fT0Err[0]->Fill(t0err,Weight);
+  if ((id_word & ~kT0ErrBit) == 0) Hist->fT0Err[1]->Fill(t0err,Weight);
+  if (id_word == 0) Hist->fT0Err[4]->Fill(t0err,Weight);
 
-  Hist->fMomErr[0]->Fill(momerr);
-  if ((id_word & ~kMomErrBit) == 0) Hist->fMomErr[1]->Fill(momerr);
-  if (id_word == 0) Hist->fMomErr[4]->Fill(momerr);
+  Hist->fMomErr[0]->Fill(momerr,Weight);
+  if ((id_word & ~kMomErrBit) == 0) Hist->fMomErr[1]->Fill(momerr,Weight);
+  if (id_word == 0) Hist->fMomErr[4]->Fill(momerr,Weight);
 
-  Hist->fDNa[0]->Fill(dna);
-  if ((id_word & ~kDNaBit) == 0) Hist->fDNa[1]->Fill(dna);
-  if (id_word == 0) Hist->fDNa[4]->Fill(dna);
+  Hist->fDNa[0]->Fill(dna,Weight);
+  if ((id_word & ~kDNaBit) == 0) Hist->fDNa[1]->Fill(dna,Weight);
+  if (id_word == 0) Hist->fDNa[4]->Fill(dna,Weight);
 
-  Hist->fTanDip[0]->Fill(tandip);
-  if ((id_word & ~kTanDipBit) == 0) Hist->fTanDip[1]->Fill(tandip);
-  if (id_word == 0) Hist->fTanDip[4]->Fill(tandip);
+  Hist->fTanDip[0]->Fill(tandip,Weight);
+  if ((id_word & ~kTanDipBit) == 0) Hist->fTanDip[1]->Fill(tandip,Weight);
+  if (id_word == 0) Hist->fTanDip[4]->Fill(tandip,Weight);
 
-  Hist->fD0[0]->Fill(d0);
-  if ((id_word & ~kD0Bit) == 0) Hist->fD0[1]->Fill(d0);
-  if (id_word == 0) Hist->fD0[4]->Fill(d0);
+  Hist->fD0[0]->Fill(d0,Weight);
+  if ((id_word & ~kD0Bit) == 0) Hist->fD0[1]->Fill(d0,Weight);
+  if (id_word == 0) Hist->fD0[4]->Fill(d0,Weight);
 
-  Hist->fRMax[0]->Fill(rmax);
-  if ((id_word & ~kRMaxBit) == 0) Hist->fRMax[1]->Fill(rmax);
-  if (id_word == 0) Hist->fRMax[4]->Fill(rmax);
+  Hist->fRMax[0]->Fill(rmax,Weight);
+  if ((id_word & ~kRMaxBit) == 0) Hist->fRMax[1]->Fill(rmax,Weight);
+  if (id_word == 0) Hist->fRMax[4]->Fill(rmax,Weight);
 
-  Hist->fTrkQual[0]->Fill(trkqual);
-  if ((id_word & ~kTrkQualBit) == 0) Hist->fTrkQual[1]->Fill(trkqual);
-  if (id_word == 0) Hist->fTrkQual[4]->Fill(trkqual);
+  Hist->fTrkQual[0]->Fill(trkqual,Weight);
+  if ((id_word & ~kTrkQualBit) == 0) Hist->fTrkQual[1]->Fill(trkqual,Weight);
+  if (id_word == 0) Hist->fTrkQual[4]->Fill(trkqual,Weight);
 //-----------------------------------------------------------------------------
 //  single histogram showing how often every particular cut failed
 //-----------------------------------------------------------------------------
   for (int bit=0; bit<32; bit++) {
     if (((id_word >> bit) & 0x1) == 1) {
-      Hist->fFailedBits->Fill(bit);
+      Hist->fFailedBits->Fill(bit,Weight);
     }
   }
-  Hist->fPassed->Fill(id_word == 0);
+  Hist->fPassed->Fill(id_word == 0,Weight);
 //-----------------------------------------------------------------------------
 //  ***** now histogram effect of cuts in the order they are applied
 //-----------------------------------------------------------------------------
-  Hist->fNActive[2]->Fill(nactive);
+  Hist->fNActive[2]->Fill(nactive,Weight);
   if ((id_word & kNActiveBit) != 0)                         goto END;
-  Hist->fNActive[3]->Fill(nactive);
+  Hist->fNActive[3]->Fill(nactive,Weight);
   
-  Hist->fFitCons[2]->Fill(fcons);
+  Hist->fFitCons[2]->Fill(fcons,Weight);
   if ((id_word & kFitConsBit) != 0)                         goto END;
-  Hist->fFitCons[3]->Fill(fcons);
+  Hist->fFitCons[3]->Fill(fcons,Weight);
   
-  Hist->fChi2Dof[2]->Fill(chi2dof);
+  Hist->fChi2Dof[2]->Fill(chi2dof,Weight);
   if ((id_word & kChi2DofBit) != 0)                         goto END;
-  Hist->fChi2Dof[3]->Fill(chi2dof);
+  Hist->fChi2Dof[3]->Fill(chi2dof,Weight);
   
-  Hist->fT0[2]->Fill(t0);
+  Hist->fT0[2]->Fill(t0,Weight);
   if ((id_word & kT0Bit) != 0)                              goto END;
-  Hist->fT0[3]->Fill(t0);
+  Hist->fT0[3]->Fill(t0,Weight);
   
-  Hist->fT0Err[2]->Fill(t0err);
+  Hist->fT0Err[2]->Fill(t0err,Weight);
   if ((id_word & kT0ErrBit) != 0)                           goto END;
-  Hist->fT0Err[3]->Fill(t0err);
+  Hist->fT0Err[3]->Fill(t0err,Weight);
   
-  Hist->fMomErr[2]->Fill(momerr);
+  Hist->fMomErr[2]->Fill(momerr,Weight);
   if ((id_word & kMomErrBit) != 0)                          goto END;
-  Hist->fMomErr[3]->Fill(momerr);
+  Hist->fMomErr[3]->Fill(momerr,Weight);
   
-  Hist->fDNa[2]->Fill(dna);
+  Hist->fDNa[2]->Fill(dna,Weight);
   if ((id_word & kDNaBit) != 0)                             goto END;
-  Hist->fDNa[3]->Fill(dna);
+  Hist->fDNa[3]->Fill(dna,Weight);
   
-  Hist->fTanDip[2]->Fill(tandip);
+  Hist->fTanDip[2]->Fill(tandip,Weight);
   if ((id_word & kTanDipBit) != 0)                          goto END;
-  Hist->fTanDip[3]->Fill(tandip);
+  Hist->fTanDip[3]->Fill(tandip,Weight);
   
-  Hist->fD0[2]->Fill(d0);
+  Hist->fD0[2]->Fill(d0,Weight);
   if ((id_word & kD0Bit) != 0)                             goto END;
-  Hist->fD0[3]->Fill(d0);
+  Hist->fD0[3]->Fill(d0,Weight);
   
-  Hist->fRMax[2]->Fill(rmax);
+  Hist->fRMax[2]->Fill(rmax,Weight);
   if ((id_word & kRMaxBit) != 0)                           goto END;
-  Hist->fRMax[3]->Fill(rmax);
+  Hist->fRMax[3]->Fill(rmax,Weight);
   
-  Hist->fTrkQual[2]->Fill(trkqual);
+  Hist->fTrkQual[2]->Fill(trkqual,Weight);
   if ((id_word & kTrkQualBit) != 0)                        goto END;
-  Hist->fTrkQual[3]->Fill(trkqual);
+  Hist->fTrkQual[3]->Fill(trkqual,Weight);
   
   
  END:;

@@ -1,38 +1,44 @@
-#ifndef stntuple_ana_scripts_modules_hh
-#define stntuple_ana_scripts_modules_hh
+#ifndef Stntuple_ana_scripts_modules_hh
+#define Stntuple_ana_scripts_modules_hh
 
 // #include "Stntuple/ana/TDFCModule.hh"
 
-class TStnCrvAnaModule;
 class TStnDebugModule;
-class TStnEventDisplayModule;
-class TStnGenAnaModule;
 class TStnGeneratorModule;		// event generator base class 
-class TStnHelixAnaModule;
 class TStnLumiMonModule;
-class TStnPhotosAnaModule;
-class TStnSpmcAnaModule;
-class TStnTrackAnaModule;
-class TStnTrackSeedAnaModule;
-class TStnTriggerAnaModule;
-class TStnValidationModule;
+
+#include "Stntuple/ana/TClusterAnaModule.hh"
 
 namespace stntuple {
+
+  class TCrvAnaModule;
+  class TEventDisplayModule;
+  class TGenAnaModule;
+  class THelixAnaModule;
+  class TPhotosAnaModule;
+  class TSpmcAnaModule;
+  class TTrackAnaModule;
+  class TTrackSeedAnaModule;
+  class TTriggerAnaModule;
+  class TValidationModule;
+
+  TClusterAnaModule*          m_cls   = nullptr;
+  TCrvAnaModule*              m_crv   = nullptr;
+  TEventDisplayModule*        m_evd   = nullptr;
+  TGenAnaModule*              m_gen   = nullptr;
+  THelixAnaModule*            m_hel   = nullptr;
+  TPhotosAnaModule*           m_pho   = nullptr;
+  TSpmcAnaModule*             m_spmc  = nullptr;
+  TTrackAnaModule*            m_trk   = nullptr;
+  TTrackSeedAnaModule*        m_trs   = nullptr;
+  TTriggerAnaModule*          m_trig  = nullptr;
+  TValidationModule*          m_val   = nullptr;
+
   TStnDebugModule*            m_dbg   = nullptr;
   TDFCModule*                 m_dfc   = nullptr;
-  TStnClusterAnaModule*       m_cls   = nullptr;
-  TStnCrvAnaModule*           m_crv   = nullptr;
   TStnLumiMonModule*          m_lum   = nullptr;
-  TStnEventDisplayModule*     m_evd   = nullptr;
-  TStnGenAnaModule*           m_gen   = nullptr;
   TStnGeneratorModule*        m_stg   = nullptr;
-  TStnHelixAnaModule*         m_hel   = nullptr;
-  TStnPhotosAnaModule*        m_pho   = nullptr;
-  TStnSpmcAnaModule*          m_spmc  = nullptr;
-  TStnTrackAnaModule*         m_trk   = nullptr;
-  TStnTrackSeedAnaModule*     m_trs   = nullptr;
-  TStnTriggerAnaModule*       m_trig  = nullptr;
-  TStnValidationModule*       m_val   = nullptr;
+
 };
 
 #endif

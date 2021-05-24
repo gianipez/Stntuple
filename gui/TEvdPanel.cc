@@ -32,12 +32,13 @@
 #include "TrackerGeom/inc/Panel.hh"
 //#include "TTrackerGeom/inc/ZLayer.hh"
 
-ClassImp(TEvdPanel)
+ClassImp(stntuple::TEvdPanel)
 
 namespace {
   static int fgLocalDebug = 0;
 };
 
+namespace stntuple {
 //_____________________________________________________________________________
 TEvdPanel::TEvdPanel(): TObject() {
 }
@@ -92,10 +93,10 @@ TEvdPanel::~TEvdPanel() {
 void TEvdPanel::Paint(Option_t* option) {
 
 
-  const char* view = TVisManager::Instance()->GetCurrentView();
+  int view = TVisManager::Instance()->GetCurrentView()->Type();
 
-  if      (strstr(view,"trkxy" ) != 0) PaintXY (option);
-  else if (strstr(view,"trkrz" ) != 0) PaintRZ (option);
+  if      (view == TStnView::kXY) PaintXY (option);
+  else if (view == TStnView::kRZ) PaintRZ (option);
   else {
     // what is the default?
     //    Warning("Paint",Form("Unknown option %s",option));
@@ -141,3 +142,4 @@ Int_t TEvdPanel::DistancetoPrimitiveRZ(Int_t px, Int_t py) {
   return 9999;
 }
 
+}

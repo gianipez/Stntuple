@@ -1,5 +1,5 @@
-#ifndef TVisVode_hh
-#define TVisVode_hh
+#ifndef Stntuple_base_TVisVode_hh
+#define Stntuple_base_TVisVode_hh
 
 #include "TObject.h"
 #include "TString.h"
@@ -7,33 +7,31 @@
 class TVisNode: public TObject {
 protected:
   TString    fName;
-  TObject*   fClosestObject;
-  int        fSectionToDisplay;
   int        fDebugLevel;
+  TObject*   fClosestObject;
+  int        fDist;
 public:
 					// ****** constructors and destructor
-  TVisNode(const char* name = "");
+  TVisNode(const char* name = "TVisNode");
   virtual ~TVisNode();
 //-----------------------------------------------------------------------------
 // accessors
 //-----------------------------------------------------------------------------
-  TObject*  GetClosestObject() { return fClosestObject; }
+  TObject*            GetClosestObject() { return fClosestObject; }
   
-  virtual const char* GetName() const { return fName.Data(); }
+  virtual const char* GetName() const    { return fName.Data(); }
 
-  int   SectionToDisplay() { return fSectionToDisplay; }
-
-  int   DebugLevel() { return fDebugLevel; }
+  int                 DebugLevel()       { return fDebugLevel; }
 
 					// called by TEvdManager::DisplayEvent
-  virtual int   InitEvent() = 0;
+  virtual int         InitEvent() = 0;
 
-  virtual void  PaintXY(Option_t* option = "") = 0;
-  virtual void  PaintRZ(Option_t* option = "") = 0;
-  virtual Int_t DistancetoPrimitiveXY(Int_t px, Int_t py) = 0;
+  void                SetDebugLevel(int Level) { fDebugLevel = Level; }
 
-  void SetSectionToDisplay(int Section) { fSectionToDisplay= Section; }
-  void SetDebugLevel(int Level) { fDebugLevel = Level; }
+  void                SetClosestObject(TObject* Obj, int Dist) {
+    fClosestObject = Obj;
+    fDist          = Dist;
+  }
 
   ClassDef(TVisNode,0)
 };

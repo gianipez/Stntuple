@@ -82,27 +82,21 @@ TEvdCluster::~TEvdCluster() {
 void TEvdCluster::Paint(Option_t* Option) {
   const char oname[] = "TEvdCluster::Paint";
 
-  int   iv;
+  int view = TVisManager::Instance()->GetCurrentView()->Type();
 
-  const char* view = TVisManager::Instance()->GetCurrentView();
-
-  if      (strstr(view,"trkxy" ) != 0) {
-    PaintXY(Option);
-  }
-  else if (strstr(view,"cal"   ) != 0) {
-    sscanf(view,"cal,%i",&iv);
-    if (iv == fCluster->diskId()) {
-      PaintCal(Option);
-    }
+  if      (view == TStnView::kXY ) PaintXY(Option);
+  else if (view == TStnView::kCal) {
+    int index = TVisManager::Instance()->GetCurrentView()->Index();
+    if (index == fCluster->diskId()) PaintCal(Option);
   }
   else {
-    printf("[%s] >>> ERROR: unknown view: %s, DO NOTHING\n",oname,view);
+    printf("[%s] >>> ERROR: unknown view: %i, DO NOTHING\n",oname,view);
   }
 
   gPad->Modified();
 }
 
-//_____________________________________________________________________________
+//-----------------------------------------------------------------------------
 void TEvdCluster::PaintXY(Option_t* Option) {
   fTrkEllipse->Paint(Option);
 }

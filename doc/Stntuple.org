@@ -1,6 +1,6 @@
 # documentation - work in progress
-
-* organization 
+* ------------------------------------------------------------------------------
+* organization                                                               
                                             
   Stntuple includes several subpackages:
 
@@ -21,7 +21,7 @@
 
   each subpackage builds a separate library
 
-* fcl files                                                
+* fcl files                                                                  
   the table below lists status of validation of various FCL files
 
 |-----------------------------------------+----------------------+----------|
@@ -31,79 +31,78 @@
 |-----------------------------------------+----------------------+----------|
 | Stntuple/fcl/primary/flateminus_stn.fcl | <2020-05-31 Sun>     |          |
 
-* [[file:stnana.org][stnana]] - STNTUPLE analysis framework                     
-* [[file:cataloging.org][How to create a cataloged dataset]] 
+* [[file:stnana.org][stnana]] - STNTUPLE analysis framework                                       
+* Stntuple datasets                                                          
+  - Mu2e STNTUPLE dataset are kept on BLUEARC disks and in dCache. The datasets are cataloged and could be accessed 
+  via the catalog. The top level catalog page is here: https://mu2e.fnal.gov/public/hep/computing/Stntuple/cafdfc/
+
+  - Logically, all datasets are split into books (think - cataloged folders), 
+  such that two users using two different books, could have two datasets with the same name. 
+  The books could be public and private. Datasets in public books are centrally maintained by the collaboration,
+  private books are the books maintained by individual users and serve their own needs.
+  The only difference between them is that one can't complain if a dataset, cataloged in the private book 
+  of another user, disappears - public datasets belong to public books. 
+
+  - If you want to create your own book, send email to murat@fnal.gov to use cataloged datasets, 
+  describe the catalog location in your .rootrc file:
+#+begin_quote
+  Stntuple.Catalog   https://mu2e.fnal.gov/public/hep/computing/Stntuple/cafdfc 
+#+end_quote
+** Public books:                                 
+
+   - [[http://mu2e.fnal.gov/public/hep/computing/Stntuple/cafdfc/su2020/index.shtml][su2020]]  : stntuples of SU2020 datasets ￼
+   - [[https://mu2e.fnal.gov/public/hep/computing/Stntuple/cafdfc/mdc2018/index.shtml][mdc2018]]  : stntuples of MDC2018 datasets (by Giani and Pasha)
+   - [[https://mu2e.fnal.gov/public/hep/computing/Stntuple/cafdfc/su2020/index.shtml][bluearc]]  : general purpose STNTUPLE datasets (CD3 era, mostly obsolete)
+
+** Private books                                 
+
+   - murat    : stntuples of MDC2018 datasets with tuned DAR version (*721z datasets, so far, test version)
+   - gianipez : general purpose STNTUPLE datasets by Giani
+   - mhedges  : signal and background datasets for pi+ --> e+ nu studies by Michael H.
+   - mmackenz : general purpose STNTUPLE datasets by Michael M.
+   - rdonghia : general purpose STNTUPLE datasets by Raffaella
+   - ediociat : general purpose STNTUPLE datasets by Eleonora
+
+* [[file:cataloging.org][How to create a cataloged dataset]]                        
 * [[file:concatenation.org][concatenation]]                                            
-* STNTUPLE user analysis packages                          
-
- - User analysis code is organized in packages, similar to Offline packages. 
-   STNTUPLE analysis packages are specified in the .rootrc file , their list 
-   can be extended with '+' lines as shown below
-#+begin_src org
-#------------------------------------------------------------------------------ 
-# stnana packages, this example adds a single package - 'murat' - to the list of analysis packages
-#------------------------------------------------------------------------------ 
- Stnana.Package                Stntuple 
- +Stnana.Package               murat  
- +Stnana.Package               muminus_eplus
- +Stnana.Package               piplusenu
-#+end_src
-
- An analysis package *pkg* (replace *$pkg* with the name of your choice) should have 
- the following subdirectories:
-
- - *$pkg/ana*           : contains analysis code (analysis modules) 
- - *$pkg/ana/scripts*   : contains job configuration scripts 
- - *$pkg/ana/scripts* directory should contain a script named *load_stnana_scripts_$pkg.C*, 
-   which at startup loads in ​​analysis job configuration scripts. See an example 
-   in [[file:../ana/scripts/load_stnana_scripts_Stntuple.C][Stntuple/ana/scripts/load_stnana_scripts_Stntuple.C]], make your own loader script, 
-   following the template
-
- - each loaded script defines one or multiple job configurations - see example in 
-   [[file:../ana/scripts/validation.C][Stntuple/ana/scripts/validation.C]]
-
- - file $pkg/ana/scripts/modules.hh declares user analysis modules - see example in 
-   [[file:../ana/scripts/modules.hh][Stntuple/ana/scripts/modules.hh]] (the namespace there doesn't have to be replicated)
-
- - [[file:../ana/scripts][Stntuple/ana/scripts]] directory contains examples of the analysis job configuration scripts
-
- - [[file:../scripts/.rootrc][Stntuple/scripts/.rootrc]] file shows how to configure Unix.*.Root.MacroPath - path for loading ROOT macros
-
- - Internal structure of a user analysis package
-
-#+begin_src org
-  /mu2e/app/users/murat/mdc2018_prof/MyAna/ana:
-  total used in directory 60 available 1171570368
-  drwxr-xr-x 4 murat mu2e  2048 Jun 22 18:32 .
-  drwxr-xr-x 4 murat mu2e  2048 Jun 22 18:32 ..
-  -rw-r--r-- 1 murat mu2e  2071 Jun 22 18:32 SConscript
-  -rw-r--r-- 1 murat mu2e 37986 Jun 22 18:32 TMyTrackAnaModule.cc
-  drwxr-xr-x 3 murat mu2e  2048 Jun 22 18:32 ana
-  drwxr-xr-x 2 murat mu2e  2048 Jun 22 18:32 scripts
-
-  /mu2e/app/users/murat/mdc2018_prof/MyAna/ana/ana:
-  total used in directory 24 available 1171570368
-  drwxr-xr-x 3 murat mu2e 2048 Jun 22 18:32 .
-  drwxr-xr-x 4 murat mu2e 2048 Jun 22 18:32 ..
-  -rw-r--r-- 1 murat mu2e 9451 Jun 22 18:32 TMyTrackAnaModule.hh
-  drwxr-xr-x 2 murat mu2e 2048 Jun 22 18:32 dict
-
-  /mu2e/app/users/murat/mdc2018_prof/MyAna/ana/ana/dict:
-  total used in directory 12 available 1171570368
-  drwxr-xr-x 2 murat mu2e 2048 Jun 22 18:32 .
-  drwxr-xr-x 3 murat mu2e 2048 Jun 22 18:32 ..
-  -rw-r--r-- 1 murat mu2e  166 Jun 22 18:32 TMyTrackAnaModule_linkdef.h
-
-  /mu2e/app/users/murat/mdc2018_prof/MyAna/ana/scripts:
-  total used in directory 20 available 1171570368
-  drwxr-xr-x 2 murat mu2e 2048 Jun 22 18:32 .
-  drwxr-xr-x 4 murat mu2e 2048 Jun 22 18:32 ..
-  -rw-r--r-- 1 murat mu2e  957 Jun 22 18:32 load_stnana_scripts_MyAna.C
-  -rw-r--r-- 1 murat mu2e  148 Jun 22 18:32 modules.hh
-  -rw-r--r-- 1 murat mu2e  674 Jun 22 18:32 trk.C
-#+end_src
-
 * [[file:data_blocks.org][Stntuple data blocks]]
 * [[file:track_id.org][TStnTrackID]]
-* [[file:how-tos.org][HowTo's]]                            
+* [[file:how-tos.org][HowTo's]]                                                                    
+** how to print sizes of different STNTUPLE branches                         
+
+#+begin_src
+root [0] TStnAna x("results/fpos2s51b1/nts.murat.fpos2s51b1.su2020.001000_00000000.stn")
+(TStnAna &) Name: StnAna Title: STNTUPLE event loop utility
+root [1] x.PrintStat(1000)
+TStnRun2InputModule::BeginJob Warning - no metadata,
+     opening all chained files to count entries...
+TStnRun2InputModule::BeginJob: chained    1 files,     13786 events
+Collection name='TObjArray', class='TObjArray', size=10
+--------------------------------------------------------------------------------------------------------
+........... branch name .....................<event size>  <sigma size>  TotBytes   ZipBytes CompFactor   % of File
+--------------------------------------------------------------------------------------------------------
+HeaderBlock                                          123       0       1754602     240610   7.29        0.0
+ClusterBlock                                        1306     934      18771172    7940830   2.36        0.5
+CrvClusterBlock                                      162       0       2296184      81020  28.34        0.0
+GenpBlock                                          77524   57515    1063723548  315900435   3.37       19.8
+HelixBlock                                           418     186       5782945    1756485   3.29        0.1
+HelixBlockDmu                                        416     184       5785166    1757032   3.29        0.1
+SimpBlock                                         224635  166814    3079467864 1239936478   2.48       77.8
+SpmcBlockVDet                                       2281    1903      30376489   10400517   2.92        0.7
+TimeClusterBlockDe                                   203      62       2841949     457532   6.21        0.0
+TimeClusterBlockDmu                                  202      61       2842686     458596   6.20        0.0
+TrackSeedBlock                                       381     203       5273851    1608125   3.28        0.1
+TrackSeedBlockDmu                                    381     203       5274412    1608568   3.28        0.1
+TrackBlockPar                                        519     319       7132141    3004329   2.37        0.2
+TrackBlockDar                                        528     315       7243527    3050844   2.37        0.2
+TrackBlockParDmu                                     516     320       7103414    2977066   2.39        0.2
+TrackBlockDarDmu                                     526     316       7193999    3009772   2.39        0.2
+TriggerBlock                                          50       0        748266      39511  18.94        0.0
+---------------------------------------------------------------------------------------------------
+........... total .............. <event size> <sigma size> <disk size>
+---------------------------------------------------------------------------------------------------
+ total event                     310170.555   225078.239   116250.020
+#+end_src
+
+** [[file:how-to-debug.org][How to debug]]
 * ------------------------------------------------------------------------------

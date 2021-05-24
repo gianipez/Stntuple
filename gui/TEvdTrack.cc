@@ -52,13 +52,14 @@
 
 #include "CLHEP/Vector/ThreeVector.h"
 
-ClassImp(TEvdTrack)
+ClassImp(stntuple::TEvdTrack)
 
-TEllipse* TEvdTrack::fgEllipse(0);
+namespace stntuple {
 
 //-----------------------------------------------------------------------------
 TEvdTrack::TEvdTrack(): TObject() {
   fListOfHits = NULL;
+  fEllipse = new TEllipse();
 }
 
 //-----------------------------------------------------------------------------
@@ -70,19 +71,16 @@ TEvdTrack::TEvdTrack(int Number, const KalRep* Krep): TObject() {
 
   fListOfHits = new TObjArray();
 
-  if (fgEllipse == 0) fgEllipse = new TEllipse();
+  fEllipse = new TEllipse();
 
-  fgEllipse->SetFillStyle(3001);		// make it transparent
+  // fEllipse->SetFillStyle(3001);		// make it transparent
     
-  fgEllipse->SetLineColor(kBlue-7);
+  fEllipse->SetLineColor(kBlue-7);
 }
 
 //-----------------------------------------------------------------------------
 TEvdTrack::~TEvdTrack() {
-  if (fgEllipse) {
-    delete fgEllipse;
-    fgEllipse = NULL;
-  }
+  delete fEllipse;
 
   if (fListOfHits) {
     fListOfHits->Delete();
@@ -94,19 +92,17 @@ TEvdTrack::~TEvdTrack() {
 void TEvdTrack::Paint(Option_t* Option) {
   const char oname[] = "TEvdTrack::Paint";
 
-  TVisManager* vm = TVisManager::Instance();
+  int view = TVisManager::Instance()->GetCurrentView()->Type();
 
-  const char* view = vm->GetCurrentView();
-
-  if      (strstr(view,"trkxy" ) != 0) PaintXY(Option);
-  else if (strstr(view,"trkrz" ) != 0) PaintRZ(Option);
-  else if (strstr(view,"cal"   ) != 0) {
+  if      (view == TStnView::kXY ) PaintXY (Option);
+  else if (view == TStnView::kRZ ) PaintRZ (Option);
+  else if (view == TStnView::kCal) {
 //-----------------------------------------------------------------------------
 // calorimeter-specific view: do not draw tracks
 //-----------------------------------------------------------------------------
   }
   else {
-    printf("[%s] >>> ERROR: unknown view: %s, DO NOTHING\n",oname,view);
+    printf("[%s] >>> ERROR: unknown view: %i, DO NOTHING\n",oname,view);
   }
 
   gPad->Modified();
@@ -129,12 +125,23 @@ void TEvdTrack::PaintXY(Option_t* Option) {
     
   x0   =  -(1/om+d0)*sin(phi0);
   y0   =   (1/om+d0)*cos(phi0);
-// 	printf("[MuHitDispla::printHelixParams] d0 = %5.3f r = %5.3f phi0 = %5.3f x0 = %5.3f y0 = %5.3f\n",
-// 	       d0, r, phi0, x0, y0);
-     
-  fgEllipse->SetFillStyle(0);
-  fgEllipse->SetFillColor(1);
-  fgEllipse->PaintEllipse(x0,y0,r,0,0,2*M_PI,0);
+
+  // printf("[MuHitDispla::printHelixParams] d0 = %5.3f r = %5.3f phi0 = %5.3f x0 = %5.3f y0 = %5.3f\n",
+  // 	 d0, r, phi0, x0, y0);
+   
+  fEllipse->SetR1(r);
+  fEllipse->SetR2(r);
+  fEllipse->SetX1(x0);
+  fEllipse->SetY1(y0);
+  fEllipse->SetPhimin(0);
+  fEllipse->SetPhimax(2*M_PI*180);
+  fEllipse->SetTheta(0);
+
+  fEllipse->SetFillStyle(0);
+  fEllipse->SetFillColor(0);
+  fEllipse->SetLineColor(2);
+  fEllipse->PaintEllipse(x0,y0,r,r,0,2*M_PI*180,0);
+  //fEllipse->Paint();
 }
 
 //-----------------------------------------------------------------------------
@@ -168,16 +175,16 @@ void TEvdTrack::PaintRZ(Option_t* Option) {
     zw     = hstraw->getMidPoint().z();
     rw     = hstraw->getMidPoint().perp();
 
-    fgEllipse->SetX1(zw);
-    fgEllipse->SetY1(rw);
-    fgEllipse->SetR1(0);
-    fgEllipse->SetR2(rdrift);
-    fgEllipse->SetFillStyle(3003);
+    fEllipse->SetX1(zw);
+    fEllipse->SetY1(rw);
+    fEllipse->SetR1(0);
+    fEllipse->SetR2(rdrift);
+    fEllipse->SetFillStyle(3003);
 
-    if (hit->isActive()) fgEllipse->SetFillColor(kRed);
-    else                 fgEllipse->SetFillColor(kBlue+3);
+    if (hit->isActive()) fEllipse->SetFillColor(kRed);
+    else                 fEllipse->SetFillColor(kBlue+3);
 
-    fgEllipse->PaintEllipse(zw,rw,rdrift,0,0,2*M_PI,0);
+    fEllipse->PaintEllipse(zw,rw,rdrift,0,0,2*M_PI*180,0);
   }
 //-----------------------------------------------------------------------------
 // now draw the trajectory in Z-R(local) space - device is a station
@@ -321,4 +328,5 @@ void TEvdTrack::Print(Option_t* Opt) const {
 // 	   hit->energyDepTotal(),
 // 	   hit->numberOfROIdsUsed());
 //   }
+}
 }

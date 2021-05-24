@@ -191,6 +191,7 @@ Stntuple.paths : {
 # p41     : same as p40, but no CRV reco
 # p42     : (De+Dmu) 
 # p42_dar : (De+Ue) , only DAR reco 
+# p401*   : event display sequences
 #------------------------------------------------------------------------------
     stntuple_p40 : [ @sequence::su2020.trk_hit_reco     ,
 		     @sequence::su2020.calo_reco        ,
@@ -213,6 +214,16 @@ Stntuple.paths : {
 		      @sequence::Stntuple.post_reco_de   ,    # track-calo matching and ele PID
 		      @sequence::Stntuple.post_reco_ue   ,    # track-calo matching and muo PID
 		      MuHitDisplayDe
+		   ]
+
+    stntuple_p401_dar : [ @sequence::su2020.trk_hit_reco     ,
+			  @sequence::su2020.calo_reco        ,
+			  @sequence::su2020.trk_reco_de_dar      ,
+			  @sequence::su2020.trk_reco_ue_dar      ,
+			  @sequence::su2020.crv_reco         ,
+			  @sequence::Stntuple.post_reco_de_dar   ,    # track-calo matching and ele PID
+			  @sequence::Stntuple.post_reco_ue_dar   ,    # track-calo matching and muo PID
+			  MuHitDisplayDeDar
 		   ]
 
     stntuple_p40_crv : [ # @sequence::su2020.trk_hit_reco     ,

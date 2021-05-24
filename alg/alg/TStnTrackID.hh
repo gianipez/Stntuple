@@ -148,9 +148,7 @@ public:
   virtual Int_t  TightIDWord(TStnTrack* Track);
   virtual Int_t  LooseIDWord(TStnTrack* Track);
 
-                                        // Mode=1: tight ID, =2: loose ID
-
-  void FillHistograms(Hist_t* Hist, TStnTrack* Track, Int_t Mode=1);
+  void FillHistograms(Hist_t* Hist, TStnTrack* Track, double Weight = 1.);
 //-----------------------------------------------------------------------------
 //  overloaded methods of TObject
 //-----------------------------------------------------------------------------

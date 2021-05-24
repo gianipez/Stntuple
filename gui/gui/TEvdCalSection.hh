@@ -28,6 +28,7 @@ public:
 protected:
   const mu2e::Disk*   fDisk;
   int                 fSectionID;
+  float               fCalViewOffsetX;
 
   TEllipse*           fEllipse[2];
 

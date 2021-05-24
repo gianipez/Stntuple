@@ -667,6 +667,12 @@ Stntuple : {
 	    trkCalMatch            : "TcmDeMHDar"
 	}
 	
+	MuHitDisplayDeDar : { @table::MuHitDisplay 
+	    trackCollTag           : "KFFDeMHDar"
+	    trkExtrapol            : "TciDeMHDar"
+	    trkCalMatch            : "TcmDeMHDar"
+	}
+	
 	MuHitDisplayDpp : { @table::MuHitDisplay 
 	    trackCollTag           : MergePatRecDpp
 	    strawHitFlagCollTag    : "FlagBkgHits:StrawHits"    # run TrkPatRec only

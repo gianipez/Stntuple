@@ -26,8 +26,9 @@
 #include "Stntuple/gui/TStnVisManager.hh"
 
 
-ClassImp(TEvdStation)
+ClassImp(stntuple::TEvdStation)
 
+namespace stntuple {
 //_____________________________________________________________________________
 TEvdStation::TEvdStation(): TObject() {
   fListOfPlanes = NULL;
@@ -67,10 +68,10 @@ void TEvdStation::Paint(Option_t* option) {
 
 				// parse option list
 
-  const char* view = TVisManager::Instance()->GetCurrentView();
+  int view = TVisManager::Instance()->GetCurrentView()->Type();
 
-  if      (strstr(view,"trkxy" ) != 0) PaintXY (option);
-  else if (strstr(view,"trkrz" ) != 0) PaintRZ (option);
+  if      (view == TStnView::kXY) PaintXY (option);
+  else if (view == TStnView::kRZ) PaintRZ (option);
   else {
     // what is the default?
     //    Warning("Paint",Form("Unknown option %s",option));
@@ -115,3 +116,4 @@ Int_t TEvdStation::DistancetoPrimitiveRZ(Int_t px, Int_t py) {
   return 9999;
 }
 
+}

@@ -14,6 +14,9 @@ namespace mu2e {
   class Straw;
 };
 
+
+namespace stntuple {
+
 class TEvdStation;
 class TEvdStraw;
 class TEvdStrawHit;
@@ -72,8 +75,8 @@ public:
   virtual void Clear(const char* Opt = "")       ;
   virtual void Print(const char* Opt = "") const ; // **MENU**
 
-  ClassDef(TEvdStraw,0)
+  ClassDef(stntuple::TEvdStraw,0)
 };
 
-
+}
 #endif

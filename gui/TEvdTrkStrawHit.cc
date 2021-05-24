@@ -24,8 +24,9 @@
 #include "Stntuple/gui/TEvdTrkStrawHit.hh"
 #include "Stntuple/gui/TStnVisManager.hh"
 
-ClassImp(TEvdTrkStrawHit)
+ClassImp(stntuple::TEvdTrkStrawHit)
 
+namespace stntuple {
 //_____________________________________________________________________________
 TEvdTrkStrawHit::TEvdTrkStrawHit(const mu2e::TrkStrawHit* Hit): TObject() {
   fHit = Hit;
@@ -62,15 +63,13 @@ TEvdTrkStrawHit::~TEvdTrkStrawHit() {
 void TEvdTrkStrawHit::Paint(Option_t* Option) {
   const char oname[] = "TEvdTrkStrawHit::Paint";
 
-  const char* view = TVisManager::Instance()->GetCurrentView();
-//-----------------------------------------------------------------------------
-// define lines
-//-----------------------------------------------------------------------------
-  if      (strstr(view,"trkxy" ) != 0) PaintXY (Option);
-  if      (strstr(view,"trkrz" ) != 0) PaintRZ (Option);
-  else if (strstr(view,"cal"   ) != 0) PaintCal(Option);
+  int view = TVisManager::Instance()->GetCurrentView()->Type();
+
+  if      (view == TStnView::kXY ) PaintXY (Option);
+  else if (view == TStnView::kRZ ) PaintRZ (Option);
+  else if (view == TStnView::kCal) PaintCal(Option);
   else {
-    printf("[%s] >>> ERROR: unknown view: %s, DO NOTHING\n",oname,view);
+    printf("[%s] >>> ERROR: unknown view: %i, DO NOTHING\n",oname,view);
   }
 
   gPad->Modified();
@@ -119,3 +118,4 @@ Int_t TEvdTrkStrawHit::DistancetoPrimitiveRZ(Int_t px, Int_t py) {
   return 9999;
 }
 
+}

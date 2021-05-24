@@ -4,56 +4,68 @@
 #------------------------------------------------------------------------------
 import os
 # from stntuple_helper import *
-Import('env')
+Import('stntuple_env')
 Import('stntuple_helper')
 # env.Append(BUILDERS = {'StntupleRootCint' : stntuple_my_rootcint})
 #------------------------------------------------------------------------------
 # 2016-10-10: STNTUPLE link: add ROOT 'EG' library after 'Physics' library
 #------------------------------------------------------------------------------
-env['CXXFLAGS'].append('-DSTNTUPLE_NOSAM');
+def local_build():
 
-babarlibs = env['BABARLIBS']
-rootlibs  = env['ROOTLIBS']
-if ( not ("EG" in rootlibs)):
-    rootlibs.insert(rootlibs.index("Physics")+1,"EG");
-if ( not ("Geom" in rootlibs)):
-    rootlibs.insert(rootlibs.index("EG")+1     ,"Geom");
+    local_env = stntuple_env.Clone();
+    local_env['CXXFLAGS'].append('-DSTNTUPLE_NOSAM');
 
-stn_helper = stntuple_helper(env);
+    babarlibs = local_env['BABARLIBS']
+    rootlibs  = local_env['ROOTLIBS']
 
-stn_helper.handle_dictionaries();
+    if ( not ("EG"   in rootlibs)): rootlibs.insert(rootlibs.index("Physics")+1,"EG"  );
+    if ( not ("Eve"  in rootlibs)): rootlibs.insert(rootlibs.index("EG"     )+1,"Eve" );
+    if ( not ("Geom" in rootlibs)): rootlibs.insert(rootlibs.index("EG")+1     ,"Geom");
 
-list_of_cc_files =  env.Glob('*.cc', strings=True);
-skip_list        = []
-libs             = [ 'Stntuple_obj',
-                     'Stntuple_geom',
-                     'Stntuple_base',
-                     'mu2e_BTrkData',
-                     'mu2e_RecoDataProducts' ,
-                     'mu2e_MCDataProducts' ,
-                     'mu2e_CalorimeterGeom',
-                     'mu2e_GeometryService',
-                     'mu2e_TrackerConditions',
-                     'mu2e_ConditionsService',
-                     'mu2e_Mu2eUtilities',
-                     'mu2e_Mu2eInterfaces',
-                     babarlibs,
-                     'art_Framework_Core',
-                     'art_Framework_Services_Registry',
-                     'art_Framework_Principal',
-                     'art_Persistency_Common',
-                     'art_Persistency_Provenance',
-                     'art_Utilities',
-                     'canvas',
-                     'cetlib',
-                     'cetlib_except',
-                     'boost_system',
-                     rootlibs
+    debug = False
+    helper = stntuple_helper(local_env,debug);
+    helper.handle_dictionaries();
+
+    list_of_cc_files =  local_env.Glob('*.cc', strings=True);
+    skip_list        = []
+    libs             = [ 'Stntuple_obj',
+                         'Stntuple_geom',
+                         'Stntuple_base',
+                         'mu2e_BTrkData',
+                         'mu2e_RecoDataProducts' ,
+                         'mu2e_MCDataProducts' ,
+                         'mu2e_DataProducts' ,
+                         'mu2e_CalorimeterGeom',
+                         'mu2e_BeamlineGeom',
+                         'mu2e_BFieldGeom',
+                         'mu2e_GeometryService',
+                         'mu2e_TrackerGeom',
+                         'mu2e_ConfigTools',
+                         'mu2e_TrackerConditions',
+                         'mu2e_ConditionsService',
+                         'mu2e_GeomPrimitives',
+                         'mu2e_Mu2eUtilities',
+                         'mu2e_Mu2eInterfaces',
+                         babarlibs,
+                         'art_Framework_Core',
+                         'art_Framework_Services_Registry',
+                         'art_Framework_Principal',
+                        'art_Persistency_Common',
+                         'art_Persistency_Provenance',
+                         'art_Utilities',
+                         'fhiclcpp',
+                         'canvas',
+                         'cetlib',
+                         'cetlib_except',
+                         'xerces-c',
+                         rootlibs ,
+                         'CLHEP',
+                         'boost_system',
+                         'boost_filesystem',
+                         'boost_system'
                      ];
 
-stn_helper.build_libs(list_of_cc_files, skip_list,libs);
-# print "tmpdir:"+env['TMP_LIB_DIR']
+    helper.build_libs(list_of_cc_files, skip_list,libs);
 #------------------------------------------------------------------------------
-# in the end restore CXXFLAGS
-#------------------------------------------------------------------------------
-env['CXXFLAGS'].remove('-DSTNTUPLE_NOSAM');
+local_build();
+

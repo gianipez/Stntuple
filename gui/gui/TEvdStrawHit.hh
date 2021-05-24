@@ -28,6 +28,7 @@ namespace mu2e {
 };
 #endif
 
+namespace stntuple {
 class TEvdStraw;
 
 class TEvdStrawHit: public TObject {
@@ -78,16 +79,20 @@ public:
 //-----------------------------------------------------------------------------
 // accessors
 //-----------------------------------------------------------------------------
-  const mu2e::ComboHit*        StrawHit()    { return fHit; }
+  TVector3*                    Pos()         { return &fPos; }
+  TVector2*                    Dir()         { return &fDir; }
+  const mu2e::ComboHit*        StrawHit()    { return fHit;  }
   const mu2e::StrawDigiMC*     StrawDigiMC() { return fStrawDigiMC; }
 //-----------------------------------------------------------------------------
 // modifiers
 //-----------------------------------------------------------------------------
   void SetMask (int Mask ) { fMask = Mask ;}
+
   void SetColor(int Color) { 
     fLineW.SetLineColor(Color); 
     fLineR.SetLineColor(Color); 
   }
+
   void SetSigR(double Sig) { fSigR = Sig; }
   void SetSigW(double Sig) { fSigW = Sig; }
 
@@ -101,16 +106,16 @@ public:
   virtual void  PaintRZ    (Option_t* option = "");
   virtual void  PaintCal   (Option_t* option = "");
 
-  //  virtual void  ExecuteEvent(Int_t event, Int_t px, Int_t py);
+  // virtual void  ExecuteEvent(Int_t event, Int_t px, Int_t py);
+  // virtual Int_t DistancetoPrimitive  (Int_t px, Int_t py);
 
-  virtual Int_t DistancetoPrimitive  (Int_t px, Int_t py);
   virtual Int_t DistancetoPrimitiveXY(Int_t px, Int_t py);
   virtual Int_t DistancetoPrimitiveRZ(Int_t px, Int_t py);
 
-  //  virtual void   Print(const char* Opt = "") const ; // **MENU**
+  virtual void  Print(const char* Opt = "") const ;               // *MENU*
 
-  ClassDef(TEvdStrawHit,0)
+  ClassDef(stntuple::TEvdStrawHit,0)
 };
 
-
+}
 #endif

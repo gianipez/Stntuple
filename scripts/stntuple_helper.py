@@ -4,7 +4,7 @@
 import os, re, string, subprocess
 #------------------------------------------------------------------------------
 class stntuple_helper:
-    """mu2e_helper: class to produce library names"""
+    """stntuple_helper: class to build stntuple code"""
 #   This appears to behave like c++ static member and is initialized at class defintion time.
     sourceroot =  os.path.abspath('.')
 
@@ -22,7 +22,7 @@ class stntuple_helper:
         self._debug  = debug
         if (debug) : print ("-------------- building directory: "+self.dirname+'/'+self.subdir)
 #
-#   Accesor
+#   Accesors
 #
     def base(self):
         return self.sourceroot
@@ -106,9 +106,11 @@ class stntuple_helper:
                 o = '#/tmp/src/'+self.d1+'/'+cc.split('.')[0]+'.o'
                 self._list_of_object_files.append(o);
                 self._env.SharedObject(o,cc)
-
+        #------------------------------------------------------------------------------
+        # need to keep MU2E_SATELLITE_RELEASE for a while for building in a satellite release
+        #------------------------------------------------------------------------------
         dir = os.environ.get('MU2E_SATELLITE_RELEASE');
-        if (dir == None) : dir = os.environ.get('MU2E_BASE_RELEASE');
+        if (dir == None): dir = os.environ.get('BUILD_BASE');
         lib_name = dir+'/lib/'+self.libname+'.so';
 
         if (self._debug):

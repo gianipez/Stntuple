@@ -1,29 +1,34 @@
 #!/bin/bash
+#------------------------------------------------------------------------------
+# BUILD_BASE doesn't replace the SATELLITE_RELEASE, need both
+#------------------------------------------------------------------------------
+base=$MU2E_SATELLITE_RELEASE ; if [ ".$base" == "." ] ; then base=$BUILD_BASE ; fi
 
-dir=include
-
-# echo [build_config]: pwd  `pwd`
+ pkg=Stntuple
+list_of_subpackages="alg ana base geom gui loop mod obj print val"
 #------------------------------------------------------------------------------
 # Stntuple and its subpackages
 #------------------------------------------------------------------------------
-if [ ! -d $dir/Stntuple ] ; then mkdir -p $dir/Stntuple ; fi
-
-list_of_subpackages="alg ana base geom gui loop mod obj print val"
+if [ ! -d $base/include/$pkg ] ; then
+    echo pwd=$pwd ; creating $base/include/$pkg
+    mkdir -p $base/include/$pkg ;
+fi
 
 for d in $list_of_subpackages ; do
-    if [[ -e Stntuple/$d ]] && [[ ! -e $dir/Stntuple/$d ]] ; then 
-	echo `pwd`$0 : creating symbolic link $dir/Stntuple/$d
-	ln -s ../../Stntuple/$d/$d $dir/Stntuple/$d
+    if [[ -e $base/$pkg/$d ]] && [[ ! -e $base/include/$pkg/$d ]] ; then 
+	echo `pwd`/$0 : creating symbolic link $base/include/$pkg/$d
+	ln -s ../../$pkg/$d/$d $base/include/$pkg/$d
     fi
 done
 #------------------------------------------------------------------------------
 # SCons-related things: executed from Stntuple
+# execution in Stntuple
 #------------------------------------------------------------------------------
-if [ ! -d ./site_scons ] ; then mkdir ./site_scons ; fi
-cp -u Stntuple/scripts/site_init.py       ./site_scons/.
-cp -u Stntuple/scripts/stntuple_helper.py ./site_scons/.
+if [ ! -d ../site_scons ] ; then mkdir ../site_scons ; fi
+cp -u scripts/site_init.py             ../site_scons/.
+cp -u scripts/stntuple_helper.py       ../site_scons/.
 #------------------------------------------------------------------------------
 # .rootrc and rootlogon.C could be modified by the user, copy them just once
 #------------------------------------------------------------------------------
-if [ ! -f ./.rootrc     ] ; then cp Stntuple/scripts/.rootrc     ./. ; fi
-if [ ! -f ./rootlogon.C ] ; then cp Stntuple/scripts/rootlogon.C ./. ; fi
+if [ ! -f ../.rootrc     ] ; then cp scripts/.rootrc     ../. ; fi
+if [ ! -f ../rootlogon.C ] ; then cp scripts/rootlogon.C ../. ; fi

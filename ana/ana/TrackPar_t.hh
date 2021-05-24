@@ -1,5 +1,5 @@
-#ifndef __stntuple_ana_TrackPar_t__
-#define __stntuple_ana_TrackPar_t__
+#ifndef __Stntuple_ana_TrackPar_t__
+#define __Stntuple_ana_TrackPar_t__
 
 #include "ParBase_t.hh"
 
